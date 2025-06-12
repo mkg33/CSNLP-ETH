@@ -13,3 +13,6 @@ Computational Semantics project
 - also, with the QR code, we avoid the whole bibliography section that will just take up valuable space on the poster
 - we'll simply reuse our diagrmas from the paper, it's extremely important that we visualise our ideas/architecture (you've already done this in the group meeting last week)
 - I'll also provide a very simple visual explanation of Optimal Transport
+  
+#### Code of factorized attention model & its tuning / ablation study: https://colab.research.google.com/drive/10HSKr8ka7Nivxhipu6fg1TovVV8j4hOc?usp=sharing
+#### Link of factorized attention model: https://drive.google.com/file/d/1yMx-brh16xzph3grfJtQ6hI4MjQG_XM1/view?usp=drive_link
