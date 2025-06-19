@@ -43,8 +43,8 @@ plt.plot(dims, f1_medium, marker='s', color=contrast['medium'], label=r'\textbf{
 plt.plot(dims, f1_hard,   marker='^', color=contrast['hard'], label=r'\textbf{Hard}')
 
 plt.xticks(dims)
-plt.xlabel(r'Dimension of style embedding')
-plt.ylabel(r'Macro F$_1$-score')
+plt.xlabel(r'Dimension of Style Embedding')
+plt.ylabel(r'Macro F$_1$ score')
 plt.title(r'Effect of Style Dimension on Macro F$_1$')
 plt.legend(loc='best')
 plt.grid(True)

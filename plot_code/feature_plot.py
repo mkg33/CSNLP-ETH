@@ -31,7 +31,7 @@ f1_scores = [
     [0.9058, 0.7981, 0.7274],
     [0.9113, 0.8184, 0.7580],
 ]
-methods = ['Feature set 1', 'Feature set 2', 'Feature set 3']
+methods = ['Feature Set 1', 'Feature Set 2', 'Feature Set 3']
 difficulty = ['Easy', 'Medium', 'Hard']
 contrast = {'easy'  : '#004488',
         'medium': '#DDAA33',
@@ -56,8 +56,8 @@ for i, (level, hatch) in enumerate(zip(difficulty, hatches)):
            label=rf'\textbf{{{level}}}')
 
 
-ax.set_ylabel(r'Macro F$_1$-score', fontsize=10)
-ax.set_title(r'Macro F$_1$-score for Different Feature Extraction Methods', fontsize=12)
+ax.set_ylabel(r'Macro F$_1$ score', fontsize=10)
+ax.set_title(r'Macro F$_1$ score for Different Feature Extraction Methods', fontsize=12)
 ax.set_xticks(y)
 ax.set_xticklabels(methods)
 ax.set_ylim(0.7, 1)
