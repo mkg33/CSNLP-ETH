@@ -33,17 +33,27 @@ f1_scores = [
 ]
 methods = ['Feature set 1', 'Feature set 2', 'Feature set 3']
 difficulty = ['Easy', 'Medium', 'Hard']
-colors = ['#66c2a5', '#fc8d62', '#8da0cb']
+contrast = {'easy'  : '#004488',
+        'medium': '#DDAA33',
+        'hard'  : '#BB5566'}
+
+hatches = ['', '///', '\\\\']
 
 
 y = np.arange(len(methods))
 width = 0.25
 
 fig, ax = plt.subplots()
-for i, level in enumerate(difficulty):
+for i, (level, hatch) in enumerate(zip(difficulty, hatches)):
     values = [scores[i] for scores in f1_scores]
 
-    ax.bar(y + i*width - width, values, width, label=rf'\textbf{{{level}}}', color=colors[i])
+    ax.bar(y + (i - 1)*width,
+           values,
+           width=width,
+           color=contrast[level.lower()],
+           edgecolor='black',
+           hatch=hatch,
+           label=rf'\textbf{{{level}}}')
 
 
 ax.set_ylabel(r'Macro F$_1$-score', fontsize=10)
