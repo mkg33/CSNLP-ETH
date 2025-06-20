@@ -39,6 +39,7 @@ models = {
                                    [0.7715, 0.7708, 0.7712, 0.7708]]),
 }
 
+"""
 models = {
     r"\textbf{Sliced}": np.array([[0.9122, 0.9118, 0.9108, 0.9143],
                                   [0.8261, 0.8263, 0.8258, 0.8261],
@@ -50,7 +51,7 @@ models = {
                                    [0.8235, 0.8263, 0.8273, 0.8223],
                                    [0.7650, 0.7708, 0.7715, 0.7677]]),
 }
-
+"""
 
 #Projection dimension ablation:
 """
@@ -77,7 +78,7 @@ cell_h = 0.25
 n_rows   = len(tasks)
 n_cols   = len(lambdas)
 
-n_cols = len(dim)
+#n_cols = len(dim)
 n_models = len(models)
 
 fig_width  = n_models * n_cols * cell_w   + 0.6*(n_models-1)
@@ -110,11 +111,11 @@ for ax, (model_name, arr) in zip(axes, models.items()):
                     fontsize=6, color=txt_colour)
 
 
-    #ax.set_xticks(np.arange(len(lambdas)))
-    #ax.set_xticklabels(lambdas)
+    ax.set_xticks(np.arange(len(lambdas)))
+    ax.set_xticklabels(lambdas)
 
-    ax.set_xticks(np.arange(len(dim)))
-    ax.set_xticklabels(dim)
+    #ax.set_xticks(np.arange(len(dim)))
+    #ax.set_xticklabels(dim)
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     ax.set_title(model_name, pad=6)
     ax.grid(False)
@@ -131,8 +132,8 @@ cbar = fig.colorbar(sm, ax=axes, orientation="vertical",
 
 
 #fig.supxlabel(r'Projection Dimension', fontsize=8, y=-0.04)
-#fig.supxlabel(r'$\lambda$ (Orthogonality Loss)', fontsize=8, y=-0.04)
-fig.supxlabel(r'Style Dimension', fontsize=8, y=-0.04)
-fig.savefig("style_ablation_heatmap.pdf", bbox_inches="tight")
+fig.supxlabel(r'$\lambda$ (Orthogonality Loss)', fontsize=8, y=-0.04)
+#fig.supxlabel(r'Style Dimension', fontsize=8, y=-0.04)
+fig.savefig("lambda_ablation_heatmap.pdf", bbox_inches="tight")
 plt.close(fig)
 print("Wrote ablation_heatmap.pdf")
