@@ -1,4 +1,6 @@
 # CL + OT
+# this could be run in a Jupyter notebook
+
 import torch, torch.nn as nn, torch.nn.functional as F
 from transformers import AutoModel
 from geomloss import SamplesLoss
@@ -8,7 +10,8 @@ def info_nce(z: torch.Tensor,
              labels: torch.Tensor,
              tau: float = 0.07) -> torch.Tensor:
     """
-    Supervised contrastive loss.
+    Supervised contrastive loss. Implementation based on this paper:
+    Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. 2020. A simple framework for contrastive learning of visual representations. In In- ternational conference on machine learning, pages 1597–1607.
     """
     b = z.size(0)
     sim = torch.matmul(z, z.T) / tau
@@ -178,7 +181,7 @@ def train_model(model,
             optimizer.step()
             running += loss.item()
 
-        print(f"Epoch {ep}/{epochs} – BCE+SupCon: {running/len(dataloader):.4f}")
+        print(f"Epoch {ep}/{epochs} -> BCE+SupCon: {running/len(dataloader):.4f}")
     return model, optimizer
 
 from torch.optim import AdamW

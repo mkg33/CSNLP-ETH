@@ -34,7 +34,7 @@ def main() -> None:
     for diff in DIFFS:
         train_dir = root / diff / "train"
         if not train_dir.is_dir():
-            print(f"error: {train_dir} missing – skipped")
+            print(f"error: file {train_dir} missing, so skipped")
             continue
         n_files, n_changes = count_changes_in_dir(train_dir)
         grand_total += n_changes
