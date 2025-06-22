@@ -1,7 +1,7 @@
 # CSNLP-ETH
 Computational Semantics project
 
-* The full code used to train the OT-based models in available in the `model_code` directory.
+* The full code used to train the OT-based models is available in the `model_code` directory.
 
 * The pre-trained OT-based models can be downloaded here: https://polybox.ethz.ch/index.php/s/krYnXS3FJWNS2aM.
 There are 35 models in total (average size 737MB). The model filenames correspond to the conventions used in the paper.
