@@ -4,7 +4,7 @@ Computational Semantics project
 * The full code used to train the OT-based models is available in the `model_code` directory.
 
 * The pre-trained OT-based models can be downloaded here: https://polybox.ethz.ch/index.php/s/krYnXS3FJWNS2aM.
-There are 35 models in total (average size 737MB). The model filenames correspond to the conventions used in the paper.
+There are 35 models in total (average size: 703MB). The model filenames correspond to the conventions used in the paper.
 
 * All evaluation scripts (for OT-based models) are provided in the `evaluation_scripts` directory.
 
