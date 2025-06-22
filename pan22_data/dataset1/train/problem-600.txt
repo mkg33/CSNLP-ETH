@@ -1,0 +1,17 @@
+A compiler may see the redundant subtraction ((x[i + 1] - x[i])*(x[i + 1] - x[i]), but optimizing out the square of a square root is not something I'd expect a compiler to do and so could be improved changing code.
+Code could take advantage the the previous iteration bb is now the next aa and save that computation too.
+Advanced idea: this whole approach can be simplified using mostly integer math.
+I have not yet coded a solution yet it go like this.
+Consider each set of 3 points: (x0,y0), (x1,y1), (x2,y2).  Form points D and E which are extensions of segment P0,P1 and then +/- 45 degrees off for a distance of P1,P2.  If P0,P2 is less than P0,D and P0,E, then it is a sharp angle.
+Ditch "stdafx.h".  It's not a standard header, and the code compiles fine without it.
+Importing all names of a namespace is a bad habit to get into, and can cause surprise when names like begin and size are in the global namespace.  Get used to using the namespace prefix (std is intentionally very short), or importing just the names you need into the smallest reasonable scope.
+The exceptions to this rule are namespaces explicitly intended to be imported wholesale, such as the std::literals namespaces.
+This looks like the work of a Fortran (or early C) programmer:
+What are these all for?  Why isn't pi a constant?  A less error-prone way of writing π is 4*std::atan(1) (that's a constant expression, so evaluated at compilation time).
+Instead of creating separate vectors of x and y coordinates, it's better to declare a "point" structure and have a single vector of points.  This gives better locality of reference, and also avoids a class of error caused by failure to keep the two in sync.
+That looks like a long-winded and obfuscated way of writing
+Since setting sharp is the only side-effect of this loop, there's no need to do any more work here:
+It seems that you're more comfortable in degrees than radians, so tend to convert values to degrees.  It's going to be more effective to convert your constraint to radians and then work consistent in radians (which are more natural to <cmath> trigonometry).
+But in any case, beware that you're working with std::vector<bool> here, which is optimised for compact storage at the expense of speed (and compatibility).  You might be better off with a vector of char.
+The bool variables are already boolean and can be tested directly.  And these comments don't add any insight:
+And we can reduce the number of tests in the chain by re-ordering the conditions:

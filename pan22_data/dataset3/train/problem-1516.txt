@@ -1,0 +1,13 @@
+This means that they have access to the same user database, with the same RID in place - in other word, you should encounter no problem in replicating ACLs.
+My solution was to use rsync to incrementally synchronize the two fileserver, with a very brief final synchronization step during which the original share was put in read-only mode.
+So you could setup a volume on the destination, and present it through iSCSI, then connect to it through your client system, and then mount the volume directly on the Windows 2003r2 box.
+Moreover, rsync is a very efficient and versatile tool, and it should have no problem in incrementally copying your files.
+Anyway, presuming you can't really use smb, you have two possibilities:
+Before doing all that, however, really reconsider why (and if) you can't use SMB/CIFS for file transfer.
+Well one method that would completely avoid SMB, but would probably be fairly difficult to build would be based on iSCSI.
+Then you can use your local copy tools (ie robocopy) to do your preseeding.
+The ene results were an almost perfect ACL replica on the Linux machine (some minor differences were due to how SMBACL and Posic ACLs differs).
+You should really give us some more information, especially on why you want to avoid smb/cifs in the first place.
+Windows 2012r2 can be an iSCSI target, and Windows 2003r2 can act as a client.
+You are in a somewhat similar, but better, position: both your fileserver are Windows based, and I suppose they are in the same domain.
+Some month ago I needed to migrate about 200 GB from a Windows 2003 fileserver to a new Linux+Samba setup, all without downtime.

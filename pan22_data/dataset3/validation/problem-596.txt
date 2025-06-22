@@ -1,0 +1,13 @@
+Other Authentication Methods - You could try to isolate the issue by having the user attempt to connect to some other service.
+This is almost definitely an Open Directory authentication issue.
+Password Server Log - The log you should be watching while the user attempts to log in is /Library/Logs/PasswordService/ApplePasswordServer.Server.log.
+Global Open Directory Policies - Look in Server Admin.app -> Open Directory -> Settings -> Policy.
+Anything in there that explains why they can't authenticate?
+User Open Directory Policies - Look in Workgroup Manager.app -> Select the user -> Advanced -> Options.
+You could have them connect to AFP from some other computer that is already logged in.
+Look inside PasswordServer DB - As the admin user on your Open Directory master, do sudo mkpassdb -dump and find the user in question.
+Look closely under the Access Features to see if anything is amiss.
+A shaking login window means PasswordServer didn't authenticate the user.
+Problems with mounting network home directories generally produce an error dialog after login has been successful and the dock and desktop have appeared.
+Find the hexidecimal slot ID, and then do sudo mkpassdb -dump 0x42f0a7b01234758e00220189001231ff.
+Or on the server, you could log in as an admin user and then type kinit <username> in the terminal.

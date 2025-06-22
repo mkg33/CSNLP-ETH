@@ -1,0 +1,12 @@
+Most browsers in use at the moment allow 6 concurrent connections to a single domain (over HTTP) and 30 concurrent connections in total.
+But the majority of my assets are served from Rackspace's CloudFiles CDN.
+Should I merge them all into one (as is the preferred serving method for SPDY files, to cut down on DNS lookups), or should I leave them as they are because they're coming over regular HTTP 1.1?
+DNS lookups will cost you about 20-120 milliseconds and are cached for varying periods.
+If you can't do that, you need to calculate the appropriate number based on how many files you are serving.
+Do those files get streamed through SPDY somehow, or are they pulled in via separate laborious HTTP requests?
+If you have several subdomains which use the same images and your users may visit all of those subdomains it makes sense to keep the same asset domains for all subdomains.
+Because no matter which subdomain your user visits, it's already cached.
+The best approach is to put everything on single domain using SPDY.
+Thanks, I couldn't find any decent information on this via googling.
+I currently have these CDN assets split across 3 different sub-domains.
+If you have more than 6 files they should be evenly split over (filecount/6) subdomains, up to a maximum of 5 subdomains.

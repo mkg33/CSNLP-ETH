@@ -1,0 +1,8 @@
+That doesn't make much sense.  If you restore a database from a time earlier, you won't be capturing data that has changed since the backup. (but I'm assuming you mean a backup directly followed by a restore)
+Given these two factors, it's recommended to (a) run index maintenance procedures to eliminate the internal database data file layout fragmentation, and also (b) run Defrag at the Windows level to eliminate physical storage layout fragmentation*. Doing only one of the two does not eliminate the need for the storage device to do random I/Os.
+Doing a restore as you suggest may eliminate the physical storage fragmentation, but it won't eliminate the internal data file fragmentation.
+In general no, the restore, at least in "modern" sql servers, is optimized to read and write data quickly. The indexes are left as they were at the time of backup.
+See this blog post that on database restoration and index fragmentation that debunks that myth.  Restoring a database also restores the fragmentation at the time of the backup.
+There are two layers at work here that you should be concerned with (there are more if you consider the underlying storage subsystem, but I'll ignore this here):
+If you're talking about taking a full backup and then immediately a restore, then you will persist the fragmentation in the restored database as it was when it was backed up.
+So either way I will say no that is not advisable.  Prudent index rebuilds/reorganization based on the fragmentation is best practice.

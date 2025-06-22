@@ -1,0 +1,27 @@
+Note - you might also see some SSH bans going on in your fail2ban log.
+Tail the fail2ban logfile: tail -f /var/log/fail2ban.log and hopefully, after a minute or two, you'll start to see something like
+Save that file, then restart fail2ban: service fail2ban restart
+Now you have to tell fail2ban that you want it to look for that filter.
+logpath is the path to the log file you want it to search in.
+bantime is the number of seconds a user is banned for.
+If you can't do that bit you probably shouldn't carry on without some more help.
+Your HAProxy log should be at /var/log/haproxy.log.
+The important bits we want fail2ban to get hold of are the IP of the attacker and the page they are hitting.
+To tell fail2ban how to do this, first we want to create a filter.
+maxretry is the amount of times a user can hit the page in findtime seconds.
+I called mine applogin.conf but you can call it what you like, as long as it ends in .conf.
+A sample of a "bad" entry in my log looked like this:
+It creates some rules for SSH automatically when it's installed, so don't panic.
+You're safe from baddies (the ones that try to get to that specific page, anyway).
+The part in the square brackets is just a name - use what you like.
+So, in my example, if someone tries to get to www.mydomain.com/login more than six times (or maybe exactly six times, I'm not sure) in 2 minutes then they will be banned for 20 minutes.
+fail2ban works by scanning your access logs, looking for a pattern you set up.
+filter is the name of the file you created in /etc/fail2ban/filter.d (but without the .conf).
+There's very little documentation about how to use fail2ban with HAProxy, however - so little in fact that this page is already nearing the top of a Google search for "haproxy fail2ban", so I'll detail how I did it.
+If you're under heavy load it might be too big to open with Vim or Nano, so just look at the last few lines by using tail: tail -n50 /var/log/haproxy.log
+Thanks to a comment by EEAA, I was able to solve this using fail2ban.
+<HOST> is the point in the line from your log where the IP address appears.
+Create a file in the folder /etc/fail2ban/filter.d.
+If it finds that pattern X times in Y seconds, it will automatically ban that IP for Z seconds.
+Make a copy of /etc/fail2ban/jail.conf (in case you mess up and need to start again), then open jail.conf and add the following lines at the bottom.
+If you want to use the same regex as me, replace /login with the address the attackers are targeting on your server.

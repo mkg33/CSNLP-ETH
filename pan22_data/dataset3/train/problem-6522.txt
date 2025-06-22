@@ -1,0 +1,19 @@
+It’s ugly, but less ugly than what was there (a duplicated hard-coded path), or than any other suggestion I could find.
+It was not acceptable for me to just apt remove openjdk-11-jdk-headless or update-alternatives --config java and choose Java 8 as the default.
+It certainly would be nicer to have this be a setting in org.jenkins-ci.plist, but that would still require changes to jenkins-runner.sh, so this was the minimal change for our purposes.
+The caveat with editing the startup file is that it might be overwritten when Jenkins is updated: I'm going to have to keep an eye on it.
+The default is to just run java, thus relying on what's in the PATH environment variable.
+Like a linux version of this: https://dzone.com/articles/make-jenkins-windows-service
+You must then run systemctl daemon-reload in order for the changes to be picked up.
+Depending on the distribution, you will have one of "/etc/sysconfig/jenkins" or "/etc/default/jenkins".
+    I added/changed the following to the beginning and end of /Library/Application\ Support/Jenkins/jenkins-runner.sh:
+I've found guides on Windows servers how to do this, but nothing that relates or transfers to Linux Jenkins servers.
+This is specific to the Macintosh installer version (for the benefit of those brought here, as I was, by a web search), and the path is specific to the Java version which Jenkins is willing to run, which needs to coexist with the Java version we need to test with.
+You can specify a custom Java executable by editing the line:
+Usually all the options are commented out to show what the file can configure.
+This will have a property to set the java home location.
+One way to accomplish this is editing the startup file: /etc/init.d/jenkins.
+This is what I had to do in order to make Jenkins use Java 8 on a Ubuntu system with Java 11 set as the default.
+Is there a way to change the JRE used by the Jenkins server on linux?
+The Linux machine has a Java 1.8 JDK/JRE installed, but I cant find a way to tell the Jenkins server to use it?
+A Jenkins server is running under Java 1.7 on a linux machine and I need to change it to 1.8 so that I can run a specific plugin.

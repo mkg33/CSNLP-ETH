@@ -1,0 +1,7 @@
+Your rotation/zoom functions then never actually move the camera - they just update the relative offset coordinates, which automatically gets picked up when the camera is positioned.
+It looks like your x,y,zoffset variables are set up for the camera in its default position (say, "South" of the player), and don't update when the camera is turned (say, to put the camera "West" of the player) - so when you perform the skill, the camera teleports back to its initial ("South") offset, which puts the player off-screen to its left.
+I may be misreading, but it looks like for everything other than the skill, you're tracking positions for the camera and player independently, counting on the fact that moving them by the same offsets should keep them in synch.
+A better approach is often to have the camera keep track of a desired offset from the player (often in spherical/cylindrical coordinates) and in each timestep re-calculate its position using the player's (possibly with some smoothing applied).
+Here's a crude example - not best practice by any means, but it should prevent the camera from coming unglued from the character at any time:
+This shouldn't need any special handling for the player's skill - wherever the player goes, the camera will follow.
+The trouble with this approach is that any glitch in your code, rounding error, or unexpected physics interaction, can cause the two to diverge from your desired relative positions, and they have no means to correct this divergence.

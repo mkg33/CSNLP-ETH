@@ -1,0 +1,23 @@
+IMHO, vertical sharding can make sense depending on the context.
+I have tables with >30 Gb partitioned in 10 tables.
+These tables have only ID - BLOB and to me is easily to keep.
+Let's pretend we're using this for web server logs and we want to partition by month.
+So the question is: Is that split worth for performance, or it harm the performance?
+Instead of altering an existing table in place every day, we could create a new table every day and log rows to that table.
+The algorithm based storage of rows seems sketchy and error prone.
+Continuous operations are not locked out by operations on older data.
+If a query targets enormous data, split of data by query conditions would has a notable improvement of performance.
+This way, the data remains maintainable and searchable.
+But such split, as you have seen, brings some programming issues up.
+In your situation, the modification of existing code may be a long-term solution to make code easier to maintain.
+If you have a transaction that needs to lock multiple rows over several tables and there are issues on it(for example, deadlock or transaction timeout), you may like to combine them into single table and rewrite the SQL to repair the issues.
+For example, using StringTemplate to generate SQL dynamically.
+Go with one table, index it properly, and consider it a solved problem.
+In the scenario you've presented you're locked into a structure anyway, so why not use a single table optimized for this purpose?
+Your solution creates tables in as needed in the weblog database:
+When I think about whether to split table, I used to consider the trade-off between performance gaining and programming complexity.
+When I see this, it's typically in some sort of log form.
+I like to generate SQL from meta-programming engine if modification of existing code is too hard.
+When you need to store files in table, to use this metodology helps to export, repair and restore.
+You don't need to consider partitioning, whether "homemade" or otherwise, until you start handling extremely large volumes of data--think billions of rows and up.
+You could simply index and partition a single table properly unless there's some other information not revealed in the description.

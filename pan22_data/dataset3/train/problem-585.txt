@@ -1,0 +1,21 @@
+Writing Reader/Writer classes that implemented or consumed my contracts was fairly straightforward.
+For one of my own projects, I started with a WCF prototype.
+WCF also supports multiple endpoint bindings, so you can have the local player connect through a named pipe binding while remote players connect through TCP bindings.
+I've been using WCF for my own turn-based strategy game, and it's worked out very well.
+WCF will allow you the greatest flexibility without adding very much to your development efforts, especially if you already know .NET.
+I probably could have kept support for both with a little bit of #if WINDOWS mangling, but I had decided to just drop WCF support at that time, because it simplified things on that project.
+If you feel comfortable and productive in WCF there may not be a strong reason to use anything else.
+It natively supports turn-based games, as well as account management and all the other things:
+The durable sessions area great, and duplex channels with client callbacks are ideal for pushing messages to the client at will from the server.
+Since it seems that latency is not an issue in your game, WCF is a great choice, because it will abstract away all of the message encoding from you, and since you don't need to eek out every last bit of performance, this abstraction should be more benificial to you than harmful.
+(Of course, XNA's networking library assumes you are working in an XNA game, and unfortunately still doesn't support publishing the game on Windows without a GfW Live contract.)
+I recommend TCP bindings with binary formatting if you're sending lots of data on each turn.
+I didn't touch that much of my networking code in the switch from WCF to XNA Net, because the contracts themselves (the interface classes) didn't change all that much (other than dropping the WCF attributes).
+In that project I ended up switching to XNA's network library, which gave me the Xbox-like matchmaking (and GamerTags and whatnot) that I was looking for and (badly) attempting to emulate in WCF.
+When I started into "the last mile" I found that more often than not I was fighting WCF to get things done.
+I've been meaning to write a blog post on that subject, actually, because I think it is a good pattern to follow.
+I was particularly having issues with game matchmaking in WCF's peer-to-peer stack, which didn't quite give me the tools that I needed.
+I certainly think that WCF is a good place to start because if you follow its contract pattern it is an easy pattern to convert to work with other systems, should that need arise.
+Perhaps interesting, in starting other projects directly with XNA Networking, I've still been using something of WCF's interface/proxy-driven "contract" pattern.
+Consider Neutron: http://www.exitgames.com/Neutron
+If you are simply passing "turn" changes back and forth then you are on the best path.

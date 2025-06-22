@@ -1,0 +1,23 @@
+I'd boot a disk imaging program on the VM (Ghost, Clonezilla, etc) and clone the SCSI disks representing the physical disks over to the virtual disks.
+Perhaps you have a similar machine that the drive will boot on (after imaging the drive first!)
+This tool was written by Mark Russinovich and the gang at SysInternals.
+Windows historically 'freaks out' when you take a drive from one machine, install it in another that has different hardware components, and attempt to boot (which is essentially what you'd be doing).
+It also neatens up the device listings so the VHD will boot correctly under VirtualPC/Hyper-V/Windows Virtual
+You should use the free Disk2VHD tool which will create a VHD from a disk, even if currently running.
+You'll see a lot of driver detect messages, and you'll have to use a virtual machine manager that has driver support for WinME for its virtual devices.
+Well, it's really, really easy to convert physical disks to VHDs with Hyper-V: http://blogs.msdn.com/virtual_pc_guy/archive/2008/04/08/copying-a-physical-disk-to-a-virtual-hard-disk-with-hyper-v.aspx
+But if you get around that, it should be possible.
+I've not tried creating an image from a bare disk, however the converter tool appears to be quite robust and I would hope it supports your particular scenario.
+I'd also add SCSI disks that connect to the physical hard disk drives (already mounted up in the host computer).
+If the original system was using IDE disks, I'd say you've got an 80/20 shot that it'll boot.
+One issue you'll definitely run into is hardware recognition.
+It might be just as easy to pop the physical disks into another machine or a caddy and create a ghost image from them which you can restore to a vhd, keeping in mind the issues others have mentioned about keeping the settings of the virtual machine as similar to those of the real one as possible.
+Now, after you convert those disks, will they boot?
+Basically, if Windows determines upon boot up that too much has changed in the system from the current configuration in the registry, it will just stop the boot process and give you an error message.
+If I were going to do this with VMware, I'd create a new VM with the same number, size, and type (IDE or SCSI) disks as the host computer.
+By using VMWare Converter, as Dan suggests, we have had great success converting 'deprecated' development machines into perfectly functional virtual machines.
+It runs perfectly even while INSIDE the machine being imaged.
+A physically attached disk would likely be faster).
+That looks possible with VirtualPC to a point, but the release notes for VirtualPC 2007 (http://download.microsoft.com/download/4/4/c/44ccd131-67fb-4224-a96e-193be1765b43/relnotes.htm) say that attaching physical disks to VMs is no longer possible.
+Note that the process does take quite a long time to complete (I did the conversion to another machine over the local network.
+Also, there are methods to convert the VMWare VMs to Virtual PC VMs, if you really want to run on Virtual PC or Hyper-V.  You can use the free VMWare server product to avoid this step.

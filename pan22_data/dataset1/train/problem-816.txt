@@ -1,0 +1,5 @@
+Can't help with SQL Server but Oracle has a couple of parameters that can be set to validate against memory or disk corruption including DB_BLOCK_CHECKSUM and DB_BLOCK_CHECKING. At the top end, Oracle can automatically go to backups or a DR location to get a 'clean' copy of corrupted block.
+Obviously a RAID configuration can also help protect against disk failures. As pointed out in comments, at the hardware level a desktop machine isn't built to the same standards of resilience as a server.
+I just finished reading SQL Server 2008 Internals and the last chapter in that book written by Paul Randal on DBCC internals covers the huge variety of possible corruptions that can happen to database pages that can be detected by DBCC CHECKDB.
+You can use checksum protection on your data pages, backups, and regular checks for corruption with DBCC CHECKDB
+Your plan of writing and re-reading data seems somewhat pointless as unless you are continually running checkpoint to ensure all dirty pages are written to disc and then dbcc dropcleanbuffers you will likely just get handed the page straight from memory anyway.

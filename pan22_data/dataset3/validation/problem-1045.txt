@@ -1,0 +1,30 @@
+The impact will depend upon the type of transaction.
+A few quick fixes (after reading the deadlock XML) could be an easy win to get rid of most of them.
+The real impact is what has to happen to the failed transactions ?
+If this is a hardware issue best to catch it as early as possible.
+Then look at the transactions, tables should be hit in the same order, from "outside" to "in" (where the parent tables are "inside").
+How many deadlocks are problematic and what can be the possible consequence of ignoring this issue?
+I have a few production SQL Server instances and I get around 100 deadlock alert emails a day (up to 100 for one server, 150 in total).
+Please use sql profiler trace to find the cause and to find more on how to minimize and fix this issue, you can  refer to below link:
+The effort required to roll back an online deadlock is generally tolerable compared to rolling back a batch process with limited commit points.
+A timeout is not quite the same thing, as we may need to perform some maintenance that will involve an extended lock.
+Count cannot tell you the impact, deadlock itself is deadly!
+At least I would personally be worried if there's over 100 deadlocks per day and try to solve the issue before it gets worse, but like everything, it of course depends.
+Typically it is the same workload or type of workload that generates the majority of deadlocks.
+And, in good theory applications should have some sort of retry logic in them for situations like this... but in practice this almost never happens.
+There are a number of strategies, without seeing your transactions, that spring to mind.
+Deadlock is quite a heavy operation from performance point of view because it takes some time to figure out that there is a deadlock, choose which one to kill, roll back all the changes it has made -- and most likely then try to do the operation again.
+Avoid hotspots, defaulted values in an index can be hashed etc.
+https://www.simple-talk.com/sql/database-administration/handling-deadlocks-in-sql-server/
+With that being said, investigate what is deadlocking.
+It's typically not the count of deadlocks that can cause a serious problem, but the reason to investigate would be to find out what workloads are deadlocking on each other.
+But any recurring deadlocking pattern, whether it is 1 or 100, should be investigated)
+I would suggest you receive one email, with a daily summary.
+Developers will ask the DBA to fix the problem, DBAs will push the problem back on developers.
+Online transactions will generally not be as tolerant.
+So now you have a process that didn't complete the work that it intended to complete.
+Batch processes and asynchronous processes should be tolerant with little or no impact (continuous deadlocks may require transactions to be serialised or a redesign).
+Also the end users might get frustrated especially if they get error messages they don't understand or have to do certain actions again, but this of course depends on what you're working with.
+Is your application capable of tolerating these or is a manual process required.
+Users will complain about the app being slow or broken.
+Yes Deadlock is a serious problem and it should be dealt accordingly as Deadlocks are sometimes called a deadly embrace.

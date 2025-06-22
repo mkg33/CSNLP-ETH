@@ -1,0 +1,22 @@
+At that point, IP Source Guard drops all of their traffic until they pull a new DHCP address.
+This prevents someone from spoofing to receive traffic destined for a different port.
+I "resolved" it by disabling ip device tracking on the switches, but this was not an ideal solution.
+Lets say a user connects to an AP on Port 1 and pulls an address via DHCP.
+I think Cisco APs will work with a controller feature built into the WS-3850 switches that will alleviate this problem.
+It protects the network by making sure that each address is only coming from one port on the switch.
+Wireless stations roamed between WAPs ( and because the director of IT didn't believe in site surveys, even stationary clients fast roamed ) and the switches threw errors and warnings about "MAC-ADDRESS-FLAP xxxx.xxxx.xxxx".
+Cisco has a document, IP Source Guard, which explains this:
+Wasn't really able to resolve this, but potentially one solution - at least for Enterprise WAPs that have a controller appliance or controller server - would be to switch the WAPs from "bridge mode" in which traffic is directly bridged to your wired network and into "tunnel mode" in which traffic is routed either IP in IP or in GRE tunnels back to your controller appliance/server.
+We want to have IP Source Guard enabled as a best practice, to prevent someone wreaking havoc on our wireless network with a static IP address.
+You seem to want it to work only for static addresses, but that is not how IP source guard works or what it is designed to do.
+They then begin to walk across the office and migrate to another AP on port 2.
+If you have a campus type network setup or you're in a single building this is not so bad, but the amount of overhead you incur depends greatly on the location of your controller relative to your WAPs.
+Problem: We have our Ubiquiti wireless APs hooked up to an SG300-10P.
+Unfortunately we had to disable IP Source Guard because it appears to lock the MAC to a port as well as an IP.
+Ran into a similar issue with Cisco WS-3850 switches connected to both Aruba and Aerohive systems.
+The user's MAC can roam from AP to AP without asking DHCP for an address.
+To use the same device from a different port, you would need to pull an address from DHCP on the new port.
+It uses DHCP snooping to lock the IP address to the port.
+IP source guard doesn't do this by MAC address, but by IP address, so it isn't locking your MAC to a single port, it is locking the IP address to a single port to prevent spoofing.
+It require DHCP snooping to allow an IP address on a port, and that is how it blocks statically assigned IP addresses, but there is no feature that only blocks statically assigned addresses; it is sort of a side effect which you can get around by putting a static binding on a port to allow a statically addressed device to work on a port.
+If your clients access internal resources that are not in a centralized location then the overhead is higher.

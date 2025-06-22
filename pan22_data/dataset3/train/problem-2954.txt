@@ -1,0 +1,38 @@
+Even though users expect them to behave identically, the DNS server needs to explicitly be told to behave appropriately.
+Reason being, if you need to change your web servers address, you just change the A record and the CNAME will follow.
+Once you have gained access to your DNS, you will be able to allocate the IP addresses against the domain names.
+If after all this it still doesn't work, update your question with the output from the following two commands (run from the command prompt):
+Alternatively, you could have only one active site, say www.example.com.au and have the default/index file for example.com.au redirect everything to www.example.com.au automagically.
+If the address for www.example.com.au is different from example.com.au when you ping them, then there is a DNS issue.
+So we've delegated our DNS and configured the DNS to point to the web server.
+(note: using a ping service for this is not a particularly good idea, because ping can fail for any number of reasons.
+Leave the TTL to default, or set it to 1800 if there is no default.
+Under "Multiple Identities for this site", click Add.
+If you want them to stay on example.com, then locate your existing website in IIS (you are running v6 if you are on 2003), right-click it and go to Properties.
+Now, locate the site you just created and right-click it and choose Properties.
+Under the "Web Site" tab (should be default) click on "Advanced".
+Whoever is listed there is providing your DNS service.
+You will need to open Port 80 (and 443 if you plan on using SSL) on your firewall and point them to the internal IP address of your web server (say, 192.168.0.1).
+Change the "host Header" to be example.com.au and click next.
+Once that is done, you will need to configure you web server in order to point both domains to the same site.
+I see from your question that you have 'no experience' in this matter, so whilst I beleive sybreon's answer is technically very good, and absolutely correct, I'll try and elaborate it for you in laymans terms.
+You will typically need to set an 'A-record' for example.com.au and then set a 'CNAME-record' for www that points to example.com.au.
+You will know who your DNS provider is by logging in to wherever you have your domain name purchase (planetdomains, austdomains, etc) and looking under your DNS delegation to see which name servers you are using (it will look like ns1.examplens.com, ns2.examplens.com, etc).
+An NSLookup (name server lookup) will print out any details it finds for the domain name.
+Then, we need to create an entry for www.example.com.au.
+A lot (or all) of this may have already been done, so good on you for sticking with it so far!
+The minimum required to get a website to work in the way you want is to have an A an and a CNAME record.
+Leave the IP address alone (unless you have reason to change it), TCP port 80, host name is example.com.
+Under Path, point this to your existing website folder, or an empty folder, or anywhere you want (don't worry we will change this later).
+Voila, you have mapped example.com.au to your web server.
+Seeing as how example.com is already working, I'm guessing this is already done.
+Right click on "Websites" and go New > Web Site... Click next.
+If you want to redirect them to www.example.com, you need to create a new website in IIS.
+Create a CNAME record for 'www' and refer it to blank (this will make it point to the example.com A record).
+Check the radio for "A redirection to a URL", and under "redirect to", enter www.example.com.
+First you need to have a 'zone' (which is the bottom level of your domain, so in your case the zone is example.com.au).
+Tick the box for "The Exact URL" and "A permanent redirection".
+In the world of DNS (which is what your web browser uses to map a domain name to your IP address), www.example.com and example.com are two different things.
+You will create an A record in the zone, leave the prefix blank (so its an A record for example.com - not www.example.com), and point the IP to your web server.
+Do you want the user who goes to example.com to stay on example.com (but see your corporate website), or do you want the user who goes to example.com to be redirected to www.example.com?
+Assumming that the Windows Server 2003 does not do the URI rewrite directly....you might want to look at the DNS configuration for the domain.

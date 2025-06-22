@@ -1,0 +1,13 @@
+Is this a one time thing, or is this information you want to be able to extract regularly?
+That way the information is merely a query to the quota database away.
+The find would be something like which returns username (or id number of no username) and space used in bytes, in a null-byte delimited file:
+I am aware of df and du commands: I could list the entire filesystem and AWK the output, but I wonder if there is a more standard command.
+You can replace the \0 with something that might be a little bit easier to work with, like tabs or newlines, but that would be less safe if you have funky file names.
+For a one off,  I would just do 1 find command, and output the owner and size of each file, and then do some sort magic on that file.
+I need to find out how much disk space is being occupied by each user on the network.
+Doing that the system continuously keeps track of the amount of data used by each user.
+What we do in many places is use the quota system, but set absurdly high quotas.
+We periodically bump the quota higher as serviceable disk grows -- initially it was 30GB per user, something that was absurdly high at the time.
+ThorstenS's method seems like more work then is needed to me because it runs find multiple times.
+In case it is the later then one option is to apply quotas on your filesystem.
+If you wanted to be even more efficient, you could pipe the output to script that handles it as it runs, but that would be a little more work, and you would have to get it right the first time.

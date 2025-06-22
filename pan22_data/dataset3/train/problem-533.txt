@@ -1,0 +1,11 @@
+It's not very fast and it's using only 2% of the CPU.
+We completely killed our server here on multiple occasion with stunts like these.
+Use tools like strace and Wireshark to study read/write calls and network traffic, for example.
+you could shard in multiple invocation of p4.exe but I would try and keep them small, at least not beyond your available core count.
+Perforce does however offer an option to parallelize your sync for you --parallel, it does require some server side adjustments but you should give it a try.
+If the disk is the bottleneck, parallelizing might actually make it slower, because you'll have lots of processes accessing different files simultaneously, causing the disk heads to thrash around.
+Parallelizing it in multiple processes isn't likely to help, because the bottleneck is the disk or network.
+Before you jump into scripting, do some analysis to figure out what's making it slow.
+I have zero experience with Perforce, but this sync sounds like an I/O-bound operation.
+I would stear away from the sync per files... especially so if you have multiple users trying to do this from an embedded tool or something similar.
+I am trying to write a function in bash, given a parameter n, it forms a queue of all files and folders n levels deep and forks of a process of p4 sync -f $thatDirectory/... or p4 sync -f $thatFile.

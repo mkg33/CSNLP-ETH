@@ -1,0 +1,9 @@
+For figuring out which replacement string goes with which search string, it might be better to use a HashMap<String, String> instead of a linear search.
+If you really want to test the actual exception text, then the better solution would be to have separate specific exception types for each problem type, or to reuse different existing exceptions. For example - it is quite OK to throw a NullPointerException if one of the input strings are null when they should not be. An IllegalArgumentException for empty-strings is OK. Or, create the DuplicateSearchStringException if you need it.
+This is a StringUtils class, not RegexUtils.  Therefore, I would expect all of the searchStrings to be taken literally.  You must quote each of the searchStrings when composing your regex.
+It's better because it stops streaming when the first problem is found - it does not need to check everything.
+There are few small things that stick out to me... starting with the least significant, and moving up...
+Why are your error message text values public? If it is to satisfy the Unit testing, then the common solution is to make them package-private, and put the unit tests in the same package as the code. Most common build tools (ant, maven, etc.) have separate folders for the tests and the source, and you can have the same package structures in each.
+Having said that, you should also consider your search-patterns - are you looking for exact strings? You should probably be escaping the inputs, if you are. Otherwise, what if someone inputs "Hi|there" now what?
+Despite its name, anyNullOrEmpty returns true if all values are null or empty. As a result, validation will only raise an error when all values are null or empty. If there is one non-null non-empty element, validation would incorrectly pass without raising errors.
+These test null or empty values in the search strings, or null values in the replacements should throw validation errors.

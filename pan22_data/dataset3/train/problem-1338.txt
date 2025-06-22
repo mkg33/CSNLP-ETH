@@ -1,0 +1,15 @@
+Both developers of applications and organizations that disable this feature own the responsibility of ensuring the external dependency (root certificate) is present.
+"The issue is this: the SChannel security package used to send trusted certificates to clients has a limit of 16KB.
+I would not agree that it is common to disable this.
+http://blogs.technet.com/b/windowsserver/archive/2013/01/12/fix-available-for-root-certificate-update-issue-on-windows-server.aspx
+A TON of applications would just not work as expected if it were turned off widely.
+It is a flawed assumption that any application that requires an external dependency (root certificate) would always work without testing it.
+And a better solution for your problem would be for the installer to check for the root/intermediate CA certificates and install them if not present.
+That means if an organization disables this, they know to expect this issue (or will soon learn about it).
+Sure, there may be some organizations that disable this feature, but that's really up to the organizations, based on their requirements.
+Therefore, having too many certificates in the store can prevent TLS servers from sending needed certificate information; they start sending but have to stop when they reach 16KB.
+It's also worth noting that one useful purpose of the Trusted Root CA program mechanism (dynamic installation of root CA certificates) is that it isn't practical to install all or even most of the well-known/trusted root CA certificates.
+Some components in Windows break if there are too many certificates installed, so the only feasible practice is to install only the certificates that are needed, when they are needed.
+A better way to phrase it would be to ask why someone would disable it.
+If clients don’t have the right certificate information, they cannot use services requiring TLS for authentication.
+Because the root certificate update package available in KB 931125 manually adds a large number of certificates to the store, applying it to servers results in the store exceeding the 16KB limit and the potential for failed TLS authentication. "

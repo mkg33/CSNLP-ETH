@@ -1,0 +1,14 @@
+Using the mod_rewrite... will effectively rewrite the URL to a different path than was anticipated.
+In the example... they're making use of the FQDN... and setting up a default site that pulls from a sub-folder.
+test.local.com would resolve to /somewhere/test.local.com/
+but test.domain.com and test2.domain.com would get auto-mapped to /somedirectory/test.domain.com and /somedirectory/test2.domain.com respectively.
+test.somewhere.com would rewrite the addresses to something like www.something.com/test.something.com/  (you can make it work both ways so the end-user would never see the domain.com/sub-domain.com URL...  but for permissions & such apache sees it that way.)
+VirtualDocumentRoot /www/%0/ would automatically dump you to the /www/some.domain.com/ directory (if browsing to some.domain.com)  and mod-rewrite would pattern match on it & also rewrite the path to whatever directory.
+$0 translates to the full-domain name of the site requested.
+Using the mod_vhost_alias works similarly... but it makes assumptions that may not always work.
+The key thing to make note of is the variables used in the configuration.
+Basically... anything thrown at that IP will look for a folder with a matching name as the DNS name.
+I'm not 100% sure... but I believe any site that does not have a /somewhere/_______/ folder will throw up an error... rather than a default web site.
+There's actually several different ways to implement it.
+with that model... you would have a sub-domain.com folder (or alias) in your document root for that site.
+I don't think you can have a "default" root.... where everything that doesn't match gets dumped to.

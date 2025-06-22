@@ -1,0 +1,7 @@
+I'm having strange issue with rsyslog on some of my EC2 instances running Amazon Linux 2012.3.
+Upon yum upgrading rsyslog 4.6 to 5.8.10, it seems like every INFO level log message is suddenly treated as an EMERG level issue and they are getting broadcast everywhere. Commenting out *.emerg    * from /etc/rsyslog.conf squelches the messages, but obviously that's not much of a solution.
+Most of my logging is coming from a Python 2.6 logger with a logging.handler.SysLogHandler, the configuration of which I've posted below. I've had no luck finding any other information about this specific problem online, and the only thing that seems to solve the problem for me is rolling back to rsyslog 4.6, which instantly solves the problem.  It's not a tragedy if I'm stuck with 4.6, but this problem is very disconcerting and makes me wonder if I've misconfigured something that just took until I updated to rear its head.
+And this is the configuration for the Python logger:
+I'm not sure if I've provided enough information about my question, and this is the first time I've posted on serverfault, so my apologies for any breaches of etiquette.
+Most likely you are running into a bug/limitation of SysLogHandler that leads to a BOM inserted in the wrong place. This confuses the rsyslog parser, and leads to the message being attributed the EMERG priority.
+This has been "fixed" in Python 2.7 by removing the BOM insertion altogether.

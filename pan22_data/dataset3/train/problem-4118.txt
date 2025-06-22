@@ -1,0 +1,8 @@
+Assuming there is actually a gateway on each network, and you are just trying to define a specific behaviour (regular host traffic going out the private network, but public facing traffic sending it's return traffic to the gateway it came in on) - you need some kind of policy routing based on source address.
+In linux, you should be able to handle this by creating a second routing table that specifies the gateway on the public network side, whatever it is, and then a policy routing entry that says that anything with a source address of  should use that routing table rather than the system default one.
+What's probably happening right now is traffic is coming in on the correct interface, and then, if it's a non-local address, it's going out the default route to another gateway, which is probably a firewall that's dropping the packets because it's not seeing the other half of the session.
+You don't apply a gateway to an interface as such - you apply a gateway to a routing instance - generally, unless you've defined multiple routing tables, just one.
+The reason it works from other devices on the same public network you are using is because they don't have to go out the default route - they have a more specific interface route to use, which gets the return traffic to where it needs to be correctly.
+You do not want the two default gateways you have specified now  - that's going to create strange behaviour - drop the public one from the configuration.
+It should go in it's own routing table via the iproute2 mechanism.
+Google for "iproute2 policy routing" and look for "simple source routing" or somethign similar - it should get you where you want to go.

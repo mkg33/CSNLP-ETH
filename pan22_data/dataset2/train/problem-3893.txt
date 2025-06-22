@@ -1,0 +1,13 @@
+Note that you can't do map(max, *rows) because max acts differently if it only gets once element to if it gets multiple.
+You have ',' in multiple places. If you ever want to change this, this will be pretty akward. You could store this in a variable on its own. Even better, you could make this a parameter with a default value. You have the benefit of making things easier for you as a developer of the function but also as a user of the function because it is easier to change its behavior if needed.
+hold makes a string of the form -,-,-,-,... crops the final , and then splits it. You can just do d = [','] * amount. d seems to be what you're merging into, so call it merged.
+It is quite hard to understand what your code is supposed to do. Let's try to progress little by little.
+You are handling the three different cases here. Funny thing is that you have a case where you do nothing (pass) and one where you do something which looks like nothing to me (d[z] = d[z]). At the end of the day, I have the feeling that this could be written : d[z] = max(x, con[z]).
+A cleaner way to do this will be to use the magic of zip or itertools.izip with splat operator(*) as they allow us to transpose a list of lists and that's exactly what you want here:
+The dashes don't seem to be particularly useful at this point but do make me a little confused; if you are using them to count elements then why does 
+A sensible way to deal with the code is to split the fake lists into real lists. I suggest removing the dashes first:
+As you only care about the splitted version of the string, it would probably be interesting to split them at the very beginning so that you don't have to worry about this later on in the function.
+You are performing some super tricky logic involving string manipulation, list slicing and split. I realised that the whole thing does the same thing as d = ['-'] * amount.
+The first thing I note is that your naming is too terse. What is tl? li? hold? con? i? d? z? x? I have no idea. I think i might stand for item.
+with an extra - on the end? If this is meant to happen, the dashes seem useless for getting the count; you should just do elem.count(',') + 1.
+A list with a single element seems to be handled in a special way. If we replace the check with if tl == 1 and False:, we can see that the result is the same if we don't handle this case in a particular way.

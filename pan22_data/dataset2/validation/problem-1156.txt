@@ -1,0 +1,10 @@
+Besides, I'm testing some OSs to absolutely clean install a new system and the more I'm into it, the more it catches me. 
+Using the bridged apapter gives me 169.254.95.179, so no connection to the internet at all. VMnet0 (auto-bridging) lets the guest imitate a second computer in the usual home network 192.168.0.x. Via VMnet1 (host-only) again there's nothing.  
+Is this possible without installing a VPN between host and guest or using a second VM with a server connecting them?
+I found out that the host cannot access the guest using NAT. Somehow I could access guest's shared folders, although ping did work only from guest to host. Further I found out (in the documentations and in fora) that the host can route its traffic through the guest. 
+When I choose NAT in VMware as network adapter traffic obviously isn't channeled through the proxy connection since the IPs are located in different cities. Assuming the connection is: 
+The only entry in netstat -n showing VM IPs is the one from the VM to the guest's SMB port 445 (in netstat -f it says microsoft-ds). 
+Of course I simply could install the VPN & Proxy software on the guest OS, but this solution seems not clean enough to me. I'd like to have one straight line of data traffic.
+Somehow VMware and Virtualbox haven't considered implementing this. In Virtualbox I only found how to set up the NAT configuration to redirect traffic from host to guest.
+My host is Windows 7 Professional 64bit using VMware Player or Virtualbox (more familiar with VMware) and the software shared by the VPN provider. [Means: no PuTTY or FoxyProxy things, no shell code (in Win7 at least). Easy software which monkeys like me are able to use without any solid knowledge base in network engineering.]
+In other words and according to netstat -n, I connect from my 192.168.host:port to VPN:22. On the VPN server I get a new internal IP, let's say 172.168.host. Then 172.168.host connects to Proxy:22.

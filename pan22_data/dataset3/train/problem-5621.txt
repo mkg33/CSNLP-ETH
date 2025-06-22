@@ -1,0 +1,17 @@
+http://www.mail-archive.com/apache-fp@lists.joshie.com/msg00585.html
+It is possible that your apache conf directives may need some changes to properly serve up your cgi.
+chmod 755 /var/log/httpd/ or whatever the directory for apache's logs is, on your server.
+The mpm_event_module is now often specified at httpd compilation time in most packages, which causes httpd to default to mod_cgid instead of mod_cgi.
+Without knowing the apache conf and the details of the cgi and it's location on the filesystem, its really hard to do more than just speculate.
+If it does then you can start focusing your efforts on either adjusting the policy to allow what you're trying to do or bringing your system into compliance with the SELinux policy.
+Any of the suggestions in the other answers may work, or they may not.
+set permissions on /var/log/httpd directory to fix.
+This is the error pattern, which does not contain any clues as to which permission is root cause.
+may or may not work, seems highly unlikely, but someone had a similar problem, and this was the solution;
+The error is not specific to any particular file or directory.
+For instance, another case encountered was when we created a group "sites" so that specific users could access site content without loosening other permissions.
+The /var/run directory had "apache" as its group, which created a permissions denial when trying to create the socket.
+Also if you do suspect SELinux, try disabling it to see if apache starts serving the CGI again.
+If the above pattern appears in the httpd log entries but selinux audit logs are clean, then the issue is SOME access rights related to the CGI daemon, not the files listed in the error message.
+The CGI daemon must be able to locate and write to multiple things.
+I have had module behavior change across apache upgrades.

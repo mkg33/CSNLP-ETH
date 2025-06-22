@@ -1,0 +1,11 @@
+We already know that the requested hostname does not end in examples.co (by the first condition).
+If you are then you will need to redirect HTTP to HTTPS first on the same host.
+Any optional subdomain is captured (in the %1 backreference) and everything after this is ignored.
+The %1 backreference contains the hostname less the www subdomain (if any) and less any trailing dot (a FQDN) - as captured by the CondPattern ^(?:www\.)?(.+?)\.
+Just to note, if you are using standard wildcard subdomains (as suggested in your other question) then a request for https://www.<subdomain>.<domain> will likely get stopped by the browser (and consequently no redirect will occur), since the SSL cert won't be valid.
+Any request for anything other than the canonical domain needs to be redirected to the canonical domain.
+Your additional "note" at the end regarding subdomains is really the main complication here.
+The second redirect occurs when a non-canonical domain is requested.
+Only change to a 301 when you have confirmed that it's working OK. You will need to clear your browser cache before testing.
+The first rule primarily strips the optional www subdomain (or sub-subdomain).
+Test with 302 (temporary) redirects to avoid caching issues.

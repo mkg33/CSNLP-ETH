@@ -1,0 +1,9 @@
+You see, an IP address is really made up of four, 1-byte numbers. Each Octet of an IP address is one byte. So, this means that an IP address can be represented by either 4 bytes, or a single 32 bit unsigned integer. In other words, this is why the "largest" IPv4 address is 255.255.255.255.
+new Ip4Address(null) throws NRE which is never allowed as a proper exception. That whole constructor needs to be revised because other uncontrolled exceptions are possible.
+Processing a list to build an IP in String Format to reinvent the wheel a little bit and play around with explicit struct layouts. 
+For performance reasons, address.Split('.').Select(a => Byte.Parse(a)).ToArray() is not ideal. Whether to keep that or not depends on what your performance needs are. Maybe this needs to become a helper method with a specialized loop doing this.
+I believe you have a bug in that 1 . 2 . 3 . 4 is going to be allowed because some BCL parsing methods allow whitespace.
+I've been looking for a reason to use the StructLayoutAttribute and this seemed like the perfect opportunity. I'm aware of the System.Net.IpAddress class, but I'm ignoring it (and IPv6) for the purpose of learning about memory layouts and data representation.
+CanCreateFromBaseTenAddress is misnamed because a unit is not base-10. It is not of any particular base. Maybe CanCreateFromInteger would be better.
+I would put the two tests for length (ByteArrayLengthCannotBeLessThan4, ...) into one method and use an Assert.Throws method. There is little point in maintaining multiple tests for different length. Unit testing is no excuse for not having high quality code. Don't explode the code size by a factor of ~2x for no good reason.
+Note: I'm using C# v6 and leveraging string interpolation. This won't compile in earlier versions of the compiler.

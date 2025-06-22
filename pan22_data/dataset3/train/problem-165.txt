@@ -1,0 +1,25 @@
+Alternatively, you can restore to a separate SQL server instance with the same database name.
+Consider using native SQL Server backups if your database is a mere 1GB.
+The other thing they can tell you is how long ago they will need to restore.
+If there are occasionally mistakes they need "rolled back" up to 3 months ago, your backup plan needs to keep backups around for 90 days so you're able to pull from those.
+It's difficult to write a long enough answer to properly address this topic; I'll explain a little on my short answer and give you some links to more information.
+You'll need to perform transaction log backups at regular intervals between FULL backups in order to allow point-in-time recovery of your database.
+The frequency of backups is important to address "minimal loss" - it depends on how frequently the database is used, and more importantly, how much data loss is acceptable.
+Testing backups is extremely important; merely taking backups will not ensure that they're useful.
+If the users/analysts can lose an entire day of data and be okay with re-entering it, you only need daily backups.
+Check out Brent Ozar's site for a more complete discussion of backup practices and why and when to employ them.
+If they can only lose 5 minutes, you need to be taking log backups every 5 minutes to satisfy that requirement.
+Doing this everyday will soon become a pain so automating the process with a SQL Agent job or some PowerShell would be ideal.
+Again you will need to consider if the MOVE syntax is relevant.
+ola.hallengren.com can provide scripts to do the backups.
+Short answer: test your backups, and validate the backup frequency.
+The only way to be 100% certain is to restore the backups.
+Test your backups obviously - restore them and perform DBCC CHECKDB to ensure their integrity.
+See Retore SQL Server database to different filenames and locations for help.
+For added piece of mind, you should create all your backups with checksum and after validate the metadata consistency with a RESTORE VERIFYONLY check.
+You should RESTORE your backups to another SQL Server instance to check that the backups are OK and that they can be restored.
+Most DBAs will periodically restore the backups to another database or another server - for practice and to test the validity of the backup.
+The restore verify can be automated by using using Ola Hallengrens excellent backup solution SQL Server Maintenance Solution
+Communication with the database stakeholders is key to identifying a proper backup strategy.
+This restored version of your database also gives you a great place to run consistency checks without adding extra load to your production system.
+If you are restoring to the same SQL Server instance then you will want to restore with a new database name and make use of the MOVE restore syntax to restore the .mdf and .ldf files to a different directory.

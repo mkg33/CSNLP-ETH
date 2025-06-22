@@ -1,0 +1,19 @@
+The constructor would then initialize the Node::data member:
+Use something like size_t instead (and change the type of getsize() as well, of course).
+we may have to ~Node(); and Node::~Node()=default;, if you get a strange error do that (and other =default), as we have a smart pointer to T within T.
+Too much whitespace spreads out the relevant details too much which can make it harder to read.
+As pinkfloydx33 mentioned in the comments, in pop() you have two lines after the return, which are important and which are currently not reachable.
+So we need a counter that zeros when you move out of it:
+Otherwise the compiler will generate its own (incorrect) copy and move facilities which will lead to dangling pointers and double frees.
+Here I use the style of doing things-that-throw in locals, modifying non-local (object) state in no-throwing operations, and bailing out on error early.
+You should add a constructor to the Node struct which takes a T parameter, and then pass elem into the constructor in your new Node() call.
+In push() you use this->size_ += 1; but in pop() you use this->size_ --;.
+As an aesthetic point you can be a bit more frugal with the whitespace.
+For consistency reasons you could change the push() method to use this->size_ ++;.
+With this, we can follow the rule of 0 -- don't implement copy/move assign/construct or destructors.
+That means your code shouldn't have a copy constructor, destructor, move constructor, or assignment operators.
+However, it is tied to the above value, and the above value gets zeroed when moved-from.
+on Linux x86_64 systems an int is only 4 bytes, so if you have more than 231 elements on your stack the size_ member will overflow.
+size_ should not be a signed int, since that type might not be large enough.
+If you have a destructor you should also define the copy constructor and copy assign + the move variants.
+To do this we write smart resource management types.

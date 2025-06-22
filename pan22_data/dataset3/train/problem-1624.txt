@@ -1,0 +1,16 @@
+Everyone gets 2 by default, 3 if it's a heavy workload, and 4 for things like SQL Servers or really heavy batch processing VMs, or a terminal server with a lot of users.
+What they are referring to is Strict Co-Scheduling.
+Now, if the host only has 4 threads, then you'd be silly to allocate all of them.
+All that said and done, I very rarely allocate more than 3 vCPUs per guest.
+The rationale is that the VM hypervisor (VMWare in this case) waits for all the CPUs to be available before engaging any of them.
+However, it's something you should test for your exact configuration and workload though.
+This used to be true, but is no longer exclusively true.
+Our IT created a VM with 2 CPUs allocated rather than the 4 I requested.
+Sometimes more CPUs is better if you can actually take advantage of them.
+A handful got worse and needed to be bumped up on vCPU count.
+So there are scenarios where fewer vCPUs can perform better than more, but it's not true  100% of the time.
+I've reduced the vCPUs on a number of our VMs and have seen an improve on throughput on the majority.
+Thus, it takes longer to wait for 4 rather than 2 CPUs.
+Their reason is that the VM performs better with 2 CPUs rather than 4 (according to them).
+If it has two processors and 4 threads per processor, then you might not want to allocate all of the contents of a single processor, as your hypervisor should try to keep vCPUs on the same NUMA node to make memory access faster, and you're making this job more difficult by allocating a whole socket to a single VM (See page 12 of that PDF above).
+However, if you don't actually have that much parallelism, a VM configured with less CPUs will often perform slightly better as it avoids slowdowns due to CPU Ready State pauses.

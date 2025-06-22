@@ -1,0 +1,42 @@
+Finally, and perhaps the best option (most large world games do this), is to split your terrain into regions.
+Split the world into chunks of, say, 512x512 tiles, and load/unload the regions as the player gets close to, or further away from, a region.
+What you need to do, is split the world into regions.
+For example with Quadtree structure to get rid of any potential processing(e.g.
+It's not about having the fast implementation of the fastest algorithm as long as you don't know where the actual bottleneck is.
+Of course, assuming that the tree is well balanced.
+Depending on things like the size of your tiles, and screen size, this could easily cut down the amount of tiles you need to loop through, and that would save quite a bit of processing time.
+That's why you should use a profiler to find the slowest(hot) paths of the code and focus on eliminating(or optimizing) them.
+About the dynamic aditing... Maybe quad tree isn't such a bad idea.
+The player could walk far away from the fields, and on returning, the items had been updated.
+If you don't know, I deeply suggest reading about it: might help a lot when it comes to saving memory and processing: http://en.wikipedia.org/wiki/Flyweight_pattern
+These timers would iterate through say files storing information about the plants, their position etc.
+If you loop through half a million tiles when rendering, and half a million tiles when performing the 'update' ticks on them, then you're looping though a million tiles each frame.
+But that ties your rendering code and your update code together into one function, and is generally a BAD IDEA.
+You could keep track of the tiles that are on the screen, and only loop through (and render) those.
+See what your profiler tells you about cache/branch hits/misses.
+If so, that's likely going to cause part of your problems.
+I used this technique in a similar game I made last year, for harvesting and farming.
+You could perform your update ticks while also rendering, thus saving you half the time spent looping through all those tiles.
+And yes, premature optimization is the root of all evil.
+Are you looping through all 500,000 tiles when you're rendering?
+But at every tree level there is only 1/4th of the mesh rebatched wchich shouldnt be that much, 4*tree_height mesh joins?
+You should probably partition the tilemap as already suggested.
+You simply need to read/update/save the files in the timers.
+Assuming that tiles are being put into leaf and non-leaf nodes are just batched meshes from its childrens, root should contain all tiles batched into one mesh.
+This also saves you from having to loop through far away tiles to perform any sort of 'update' tick.
+In terms of handling things such as plants growing in areas far away from the players current screen, you can have timers for example.
+Removing one tile requires nodes updates (mesh rebatching) up to the root.
+Oh and if you use this tree in clipping algorithm you will render not always root node but some of its children, so you dont even have to update/rebatch all nodes up to root, but up to the (non-leaf) node you are rendering at the moment.
+I don't want to sound dull or anything by repeating the "old", but when optimizing, always remember to use the optimizations supported by your toolchain/compiler, you should experiment with them a bit.
+Perlin noise terrain generation can use a common seed, so that even if the world isnt pregenerated, the seed will form part of the noise algo, which nicely seams the newer terrain into the existing parts.
+even simply looping through) of the unnecessary(not visile) tiles.
+Trust your compiler, it knows better than you in most cases, but always, always measure twice and never ever rely on guesstimates.
+And if you batch all your tiles into a single Mesh it should be drawn in one draw call.
+This way you only process what might need processing and increasing the size of the dataset(tile map) does not cause any practical performance penalty.
+If you put all your maps tile textures int a single image - tile atlas, there will be no texture switching while rendering.
+Low-level knowledge of the target architecture is often essential for squeezing out everything the hardware has to offer, so study those CPU caches and learn what a branch predictor is.
+This way, you dont need to calculate more than a small buffer ahead of the players view at a time (a few screens around the current one).
+I've been thinking about how to handle that much zillions of blocks and the only thing that comes to my head is the Flyweight Design Pattern.
+(Obviously, if your engine doesn't perform any sort of update tick on tiles, you can ignore the part of this answers that mentions those.)
+When the player reaches those parts of the world again, the engine would read in the files as normal, and present the newer plant data on screen.
+And as using some form of a tree data structure shows, it's better to have intelligent data structures and dumb algorithms, than the other way around.

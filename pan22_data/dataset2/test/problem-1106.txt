@@ -1,0 +1,7 @@
+I have written callback plugins for logging to elasticsearch, influxdb, redis - they are quite powerful for hooking the results of your ansible runs up to other tools. Unfortunately I can not share them here as they were implemented during my day job.
+Here are the callback plugins bundled with ansible by default: https://github.com/ansible/ansible/tree/devel/lib/ansible/plugins/callback - it's possible you may be able to use one of them to send results to logstash, which would feed them into Elasticsearch for viewing with Kibana.
+Or choose another route, setup syslog forwarding to logstash/elasticsearch on your target box to collect all logs, then just filter your desired cron jobs.
+I don't think there is anything to do with ansible after you add cron. How about writing log of cron on file or send it by otherway maybe through el and view on kibana? 
+I would suggest checking out ansible callback plugins - they are python modules that implement callback functions that ansible will call during playbook execution. In fact, the messages ansible-playbook logs to your terminal is actually implemented as a callback plugin.
+So at first, you should create some wrapper script that will execute your actual job and send it's result to elasticsearch.
+But as far as I know no existing cron-like services support sending logs to elasticsearch (Kibana is just a viewer, btw) out of the box.

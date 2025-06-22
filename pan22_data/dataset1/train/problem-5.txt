@@ -1,0 +1,5 @@
+I have a single OEL/RHEL 5.3 server with a 'source' mount to a 16TB 10Gbps NFS share and a 'destination' mount to a 16TB FC LUN formatted with OCFS2.
+I need to ensure that the destination matches the source and I'm happy that they're out of sync by even as long as an hour or two - that bit is easy using rsync.
+But it would be nice to know that in the event of someone deleting every file on the source that it's not deleted by rsync at the next scheduled period - that it detects that it's about to remove say >20% of the source from the destination and chooses to halt.
+Is that sort of thing possible or would a different tool be more appropriate for this problem? I have flexibility with this machine's OS and file system but not the actual connection type to both storage boxes.
+You could use rsync's --max-delete=NUM to tell rsync not to delete a specified number of files, where NUM is some number less than approx 20% of your files, and the --backup/--suffix options to rename files on the target rather than delete.

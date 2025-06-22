@@ -1,0 +1,5 @@
+You need to look at your routing tables and see which destination IP addresses are routed through your VPN:
+The problem here is that all traffic is being routed down the VPN tunnel. This should be resolved by enabling split tunneling for the VPN. How to do that depends on the server and client software in use.
+All of your traffic is probably routed through the VPN (at the exception of the LAN addresses and the VPN endpoint). This means that the packets of your services are routed throught the VPN (with you local -- and private -- IP addresses). Those packets are dropped somewhere in the remote network (probably at the VPN endpoint) because:
+You can do something like this to force packets using your local IP as a source address to go through the local gateway:
+This should work for TCP services. You might have issues for UDP services which might response with your VPN address to queries made on your local IP address: in this case, you can probably use iptables to either rewrite the source IP address of the packets or tag them (-j MARK --set-mark 42 and fwmark 42) based on the UDP port. 

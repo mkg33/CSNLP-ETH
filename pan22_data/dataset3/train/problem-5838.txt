@@ -1,0 +1,11 @@
+First, http://www.kashum.com/blog/1217783696 describes using the plist method, but it appears to specify more options in the xml than you're using.
+If I use launchctl to execute this file, svnserve starts as expected, but it doesn't automatically start when the system starts up or I log in.
+As I understand it (I'm still fairly green with OSX), the best way to do that is to utilize launchd.
+You have to use NetworkState when running in daemon mode as launchd doesn't do dependancies at all, so the daemon almost always gets started before the network is up.
+To that end, I have created the following .plist file in the /Library/LaunchDaemons folder.
+I have installed Subversion onto my iMac running Snow Leopard, but am having trouble getting svnserve to start up automatically.
+So, I'd probably try a /Library/LaunchDaemons/org.tigris.subversion.svnserve.plist that looked like this:
+If anyone here could provide any suggestions as to how to get this to work, I'd really appreciate it.
+I've not created any launchd plists in inetdCompatibility mode, but I've found running programs in daemon mode w/KeepAlive's NetworkState set to true to work pretty well.
+Second, http://www.scottboms.com/2007/03/launchsvnserveatstartup/ describes using an prebuilt working plist file to drop into the LaunchDaemons folder, modify the path specified, and then run
+(at the same 'level' than Disabled, Label, ... keys

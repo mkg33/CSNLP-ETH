@@ -1,0 +1,7 @@
+Short answer:  You need to rewrite the query.  Or maybe upgrade.
+MySQL has long been dumb when it comes to IN ( SELECT ... ).
+By using a derived table, the optimizer will do the subquery first, thereby being a lot more efficient:
+Or...  Upgrade to 5.7 (or 8.0) with its "query rewrite" so that you can rewrite the query after it is sent from whatever is building it.
+I have a track and a waypoint tables. The track table is also connected to a bunch more tables that are irrelevent. I wish to get all tracks, where at least one of their waypoints is in specified bounds. The tracks should have all their waypoints, even ones outside the bounds. My query looks like this:
+the efficient way to do this query would be first build a table of all track_ids from the subquery, then connect them to table entries, then left outer join other variables, and then inner join the waypoints from point1 table.
+Instead, MySQL first gets a table of all tracks, then outer joins, then does a lookup by both track_id and mbrcontains function, and then joins the inner waypoints.

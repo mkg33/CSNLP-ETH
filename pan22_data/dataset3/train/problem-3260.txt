@@ -1,0 +1,30 @@
+Also it may be possible to use it as a way to (somewhat naively) filter spoofed packets if they're obviously coming from somewhere unlikely to be advertised in BGP as the correct route (e.g.
+Another advantage is ease of configuration management.
+This way, your clients will be sent to the "best" and "closest" datacenter based on BGP routes.
+A final advantage is that of horizontal scaling; if you find that one server is being overly loaded, simply deploy another one in a location that would allow it to take some proportion of the overloaded server's requests.
+First, in steady state, users of an anycast service (DNS is an excellent example) will always connect to the 'closest' (from a routing protocol perspective) DNS server.
+When someone queries for that address they are given the closest/best route.
+Depending on how anycast is implemented, it can also provide a level of high availability.
+If the advertisement of the anycast route is conditional on some sort of health check (e.g.
+If you're in the US, you'd be sent to your US datacenter.
+Basically, you announce the same route out of multiple datacenters across the world.
+You can place 5 different DNS servers in various physical and network locations but share a single (or sometimes both primary and secondary DNS) addresses.
+Rather than having to configure different DNS servers depending on where a server/workstation is deployed (Asia, America, Europe), you have one IP address that is configured in every location.
+Generally, things work out for the best with anycast, but it's not a guarantee.
+Again, it's based on BGP routing and not actual geographic routing, but that's usually how things break down.
+If unicast is you going to a single person, and multicast is you going to several, and broadcast is you going to all people, then anycast is being schitzophrenic and having multiple personalities where the personality best suited to each person connects with them.
+Informally it makes your service more resilient and with better network access/latency/speed by allowing you to setup the same service in multiple locations across the world all using the same address.
+This does some traffic balancing plus it provides redundancy if a DNS server dies.
+This reduces latency, as well as providing a level of load-balancing (assuming that your consumers are evenly distributed around your network).
+a DNS query for a well known domain, in this example), then as soon as a server fails its route can be removed.
+An example of this would be to list your DNS servers as 1.2.3.4 and 1.2.3.5.
+packets coming into Europe when the ASN indicates a N American block).
+Once the network reconverges, user requests will be seamlessly forwarded to the next closest instance of DNS, without the need for any manual intervention or reconfiguration.
+The network then decides which location to route a user request to, based on routing protocol costs and possibly the 'health' of the advertising servers.
+Your routers would announce a route for 1.2.3/24 out of multiple datacenters.
+If you're in Japan and have a datacenter there, chances are you'd end up there.
+Depending on where the source is, they get routed to their closest node.
+Anycast is networking technique where the same IP prefix is advertised from multiple locations.
+Again, as no client configuration is required, this can be done very quickly.
+I put "best" and "closest" in quotes because network providers can play games and route traffic from certain networks differently.
+According to one of my colleagues, it's also useful as a DoS attack mitigation technique, as people can only attack the "nearest" anycast IP address, so if there are a lot of zombines in, say, the USA, your Euro site would be mostly unaffected, as they can't actually send packets to it.

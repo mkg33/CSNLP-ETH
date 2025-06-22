@@ -1,0 +1,26 @@
+It might be a temperature sensor with remote monitoring or some other equally innocuous device that never needs to be talked to by anybody outside of Comcast.
+That doesn't mean, however, that a private IP can't cross routers.
+If we had a VPN setup, it wouldn't show up as being routed across the internet.
+It is very possible and even highly likely that Comcast uses private IP address ranges for networking equipment that isn't ever supposed to communicate with the Internet as a whole.
+Since your traceroute shows that all the packets remain within the Comcast network, it's actually not a very surprising circumstance that you've run into.
+would the fact that it's all comcast mean that they have their routers setup wrong?
+Does your machine or your router know about the 172.30.138.x network?
+But in your case, the traffic never left Comcast AS7922.
+Comcast was using the RFC1918 private address, just like everyone else (ISPs usually use them for STB, modem, DHCP, DNS etc.).
+If it hit an internet server, Private IP's (such as 192.168) shouldn't get routed.
+It's not very likely, though, that there are many Comcast routers sporting default routes that accidentally go all the way to a responding host with a private IP.
+It's my strong assumption that this is something purposeful.
+If not, it will just sent it out its default route like any other network it doesn't know.
+It also means that that an ISP will probably kill those routes at the borders to their network to prevent them from possibly propagating.
+A private address is just like any other ip address.
+Those routes may be forwarded by interior routing protocols throughout the entire Comcast network.
+What would let a private IP address get routed across servers?
+You'll either need to add an interface in the 172.30.138.x network on your originating machine  or add an interface in that network on your router so that it can properly direct the traffic.
+That means that we agree as a community to never advertise those routes over BGP.
+Let's define what a private IP address is first: It's an address that, by convention, is agreed to not be routed on the Internet.
+It looks like your originating network is 192.168.28.0.
+If it is announced to the Internet, it will be routable.
+All in all, I'm going to guess that it's the case that your router performs NAT translation and then default-routes all traffic that isn't local to the next hop router, including private IP space.
+Supposingly ISPs have inbound/outbound filters to prevent leaking these addresses to "what the end-user perceive as the Internet".
+We are setting up an internal program, on an internal server that uses the private 172.30.x.x subnet... when we ping the address 172.30.138.2, it routes across the internet:
+It's staying within a single autonomous system and not violating any standards.

@@ -1,0 +1,21 @@
+Another major advantage of ssh is that all communications are automatically encrypted, so no one will be able to see what you are doing.
+However, I have a dynamic DNS name set up for my home IP address.
+Now, from hostA, you may connect to hostC as follows:
+and make sure you have login credentials to hostC on hostA.
+Once again, no need to use IP addresses, simple names will do.
+If IPTables did a DNS lookup on every incoming packet or even connection initiation packet, it would be really slow.
+If you want to forward your ssh session, for instance, you need to add, on pc hostA, the following line to your file .ssh/config:
+By the same token, you can forward a given port (portA) on hostA to a different port (portC) on hostC thru the intermediary of hostB, as follows:
+I don't know any particular software that could do this for you.
+name to a pc without a static IP address (hostC), just check noip, it is trivial.
+As soon as it changes (which happens frequently enough) this will stop working.
+To accomplish what you are looking for, you would need to implement a system where the host running IPTables would periodically check what is the IP address for your dynamic host name, and then change its rules accordingly.
+Also, you may add all sorts of options (things like port, crypto key file, user, and so on) either on the Proxy Command file or on the CLI (it depends on whether the option is for B->C connection, or for A->B connection respectively).
+In this, you do not need to use IP addresses, unresolved names are just fine.
+If someone was able to modify DNS records for your domain, it would affect IPTables rules.
+IPTables does not support on-the-fly DNS resolution, because it involves security, performance and implementation issues.
+For the reasons well explained by Tero Kikanen, iptables is not the tool to do what you wish.
+Is there anyway to use iptables so that it will always redirect this traffic to the IP that my dynamic DNS name resolves to?
+I want to set it up so that if I connect to this server using a specific port, it will redirect that traffic to my home network.
+Also, if there are multiple A records for a domain name, which one would IPTables use?
+Another alternative would be to have a software on your computer on your home network, which monitors current public IP address, and then sends it to your IPTables server, which reconfigures the IPTables.

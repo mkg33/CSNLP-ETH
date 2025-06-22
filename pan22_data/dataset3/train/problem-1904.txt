@@ -1,0 +1,34 @@
+http://www.raspberrypi.org/phpBB3/viewtopic.php?f=28&t=23544
+I have managed to partially restore the image data of captured frames from the packets I have captured with Wireshark.
+Apparently the webcam always transfers image data at the resolution of the cmos sensor (640x480) and the image is then scaled internally by the driver.
+For high resolutions there are fewer unused bytes, for lower resolutions there are more.
+Might it be that this type of webcam issue is not related to the USB system, but rather occurs because webcam drivers perform image conversions internally and the Pi's processor simply is not suited for this?
+This suggests that the lower resolution relieves the strain on the USB connection, thus preventing package loss.
+While my Raspberry Pi was performing live capture from the webcam at a resolution of 640x480 and thus with not a single complete image, I sent 5000 ICMP echo requests at a rate of 1000 requests per second to the Pi, each with a packet size of 4 KB.
+There have never been more than 100 correct lines.
+Then, from position 584 to 3060 there are 2476 unused bytes, that are all set to 0.
+There are also many posts in which people complain that they can use webcams connected to the Pi via USB only at low resolutions, because at high resolutions (starting at 640x480) image data gets corrupted, the image being in fact incomplete.
+All lower resolutions work fine, even for 352x288 all images are complete.
+If the amount of USB traffic is the same for all resolutions, the issue can not be related to the usb system.
+As one can see, there is a huge amount of unused space in this packet.
+A small strip in the upper part of the image is fine, everything else is random memory content.
+There are many posts on the web regarding the apparently poor usb system performance of the Raspberry Pi.
+The data associated with the first iso descriptors extends from 0 to 584 bytes.
+Unfortunately I have not yet managed to install wireshark on the Pi (the package files were not found) to verify that on the Pi the behaviour is the same.
+That way, the total amount of data captured is always approximately the same for all resolutions.
+Are these packets effectively transfered as they are captured by Wireshark, with loads of 0's?
+That means that there are no internal scaling operations that would explain the problems I experience at high resolutions.
+Each image has approximately 50 lines with correct image data, the remainder is random memory content.
+I have the same symptoms when using my webcam (eb1a:2571 eMPIA Technology, Inc. M035 Compact Web Cam) with a resolution of 640x480.
+When I was using the webcam on my laptop, running Ubuntu 12.04, where I had no issues, I used wireshark to analyze the traffic on the USB connection.
+http://www.raspberrypi.org/phpBB3/viewtopic.php?f=38&t=23800#p227124
+I learned that wireshark can only capture packets with a maximum size of 65535 bytes, though it should be possible to bypass this by explicitely setting the snapshot length:
+I did another test to verify if package loss on the usb controller causes the problem.
+So I guess that in the end, the issue is with the usb system.
+To my astonishment I found that the amount of data sent by the webcam was always the same, regardless of the choosen resolution.
+For example, the iso descriptors of a captured packet would be as follows:
+In fact it seems that the usb system causes numerous problems and that there is ongoing work to fix this:
+The captured packets were still no longer than 62016 bytes.
+Since the ethernet jack uses the same controller than the USB ports, packet loss on the USB connection should mean that packets are also lost on the ethernet connection.
+Probably not, because then there should be problems for all resolutions, not only for the high ones.
+I believe though, that in my case, this is not related to the usb system.

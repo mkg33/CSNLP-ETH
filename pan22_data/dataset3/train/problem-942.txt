@@ -1,0 +1,27 @@
+In the end I realized that perhaps wanting to entirely separate the shaders from the drawable items was a mistake.
+Trying to make an abstract shader class that can load any shader and work with any drawable element is a mistake.
+But in order to create the object the API requires the vertex shader bytecode for the vertex shader that will be used to draw the object.
+This makes me thing I've either missed something obvious, or else my design of having all the render settings in an Effect, the Geometry in an Element, and a 3rd party that draws it all is just flawed.
+It doesn't reflect how they can be used in reality.
+So instead I've made shader classes AnimatedModelShader, WaterShader, LandscapeShader.
+So the shader is now responsible for creating it's own input layout and it tells the element using it how to layout it's vertices by having a public typedef called vertexType   that the element uses if it wishes to use that shader.
+So I don't really know where to store and how to select the InputLayout for each draw call.
+I can't suddenly decide to use a water shader with an animated model.
+My drawing code sets the device shaders etc using the effect specified and then calls the draw function of the Element to draw the actual geometry contained in it.
+A shader that draws animated models will only work with an animated model element.
+But the Element shouldn't really have to know anything about the effect that it's being drawn with, that's just render settings, and the Element is there to provide geometry.
+Just wondering how anyone else handles their input layouts in directx11 in a elegant way?
+I mean, I've made something work but it seems very ugly.
+I'm looking for an elegant way to handle input layouts in my directx11 code.
+The problem is this - I need to create an D3D11InputLayout somewhere.
+I'll add an answer to my own question because I've moved on a bit from there.
+Each of these might well have options that cause it to load different physical shader files but they will always have the same basic interface by necessity because a landscape  shader will always need the same kind of data input.
+This really belongs in the Element class as it's no business of the rest of the system how that element chooses to represent it's vertex layout.
+They are fundamentally coupled in "real life" so it's perhaps not an issue that they are in the design.
+The effect class encapsulates shaders and similar settings, and the Element class contains something that can be drawn (3d model, lanscape etc)
+Thanks for the answers on this, they are very helpful.
+The problem I have that I have an Effect class and a Element class.
+For example a water shader will only work with an element that wants to draw water.
+Not at all my original design but as it turns out, the desire to separate the two concepts wasn't very useful anyway.
+Only that will be able to provide the data it needs.
+In directx9 it was easy, there was no dependency so my element could contain it's own input layout structures and set them without the effect being involved.

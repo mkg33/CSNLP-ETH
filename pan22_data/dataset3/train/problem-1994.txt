@@ -1,0 +1,34 @@
+If you just cat the tars, you just have extra nulls between headers.
+GNU tar supposedly defaults to auto-detect if a file is seekable, however many users such as yourself may ensure that tar skips the reading of each records full content by adding the -n option:
+As you have stated, the target archive file must be read to the end before the second source archive is appended to it.
+What Jeff describes above is a known bug in gnu tar (reported in August 2008).
+GNU tar has an -n option that instructs it to assume a file is seekable (remember tar was design for tape and stream archives which are not seekable).
+Also, your tar --concatenate example ought to be working.
+The best way to circumvent this bug could be to use the -i option, at least for .tar files on your file system.
+With --concatenate tar must go through all the headers to find the exact position of the final header, in order to start overwriting there.
+Considering the age of the bug I wonder if it will ever get fixed.
+As Jeff points out tar --concatenate can take a long time to reach the EOF before it concatenates the next archive.
+So if you're going to be stuck with a "broken" archive that needs the tar -i option to untar, I suggest the following:
+It will create a output tar with the folder name and go through every tar in the folder, adding its files to the new one.
+As concatenation is I/O intensive, I would recommend either 3 SSD (1tb) in a RAID 0 is necessary.
+For me its working fine with merging thousands of about 1 gb tars.
+This isn't a one line command, but if you can create a file in /usr/local/bin/tar_merger and make it executable, feel free to use this python3 script to merge the tars
+If you try to concatenate more than 2 archives the last archive(s) will be "hidden" behind file-end-markers.
+you will likely be better off to run cat archive2.tar archive3.tar >> archive1.tar or pipe to dd if you intend to write to a tape device.
+The -i option asks tar to ignore these nulls between headers.
+Also note that this could lead to unexpected behaviour if the tapes did not get zeroed before (over)writing new data onto them.
+I doubt there is a critical mass that is affected.
+A single SSD on sata 3 will give 500mb/s read and similar for writing.
+Only the first archive (the one after the -f option) gets its EOF marker removed.
+tar --concatenate -f archive1.tar archive2.tar archive3.tar
+However, if you have the same named file in several tar archives you will rewrite that file several times when you extract all from the resulting tar.
+The above suggestion is based on the following very small sample benchmark:
+This may not help you, but if you are willing to use the -i option when extracting from the final archive, then you can simply cat the tars together.
+*.tar files are all 100GB in size, the system was pretty much idle except for each of the calls.
+If others users have the capability of proving this solution, please comment below and I will update this answer accordingly.
+I am unable to verify (at time of writing) which, if any, versions of tar will perform as expected for this command.
+This question is rather old but I wish it had been easier for myself to find the following information sooner.
+For that reason the approach I am going to take in my application is nested tars as suggested in the comments below the question.
+A tar file ends with a header full of nulls and more null padding till the end of the record.
+Put the tars you want to merge into a folder with the name of the final file, then do
+The time difference is significant enough that I personally consider this benchmark valid despite small sample size, but you are free to your own judgement on this and probably best off to run a benchmark like this on your own hardware.

@@ -1,0 +1,9 @@
+Eventually their cache expires and their attempts to connect to www point at the new server.
+I use CloudFlare's free plan on all of my sites, and since all requests actually go through them, changing my sites' IP address really just changes an entry in their proxy.
+End users see the same IP addresses in DNS so the change is basically instant.
+You could have all of your requests come in through a proxy.
+The result is that clients who get the updated DNS entry work as expected while those who get a cached entry get a temporary redirect to www2 (which is new and always pointed to the new server).
+The key is that it cannot be a redirect to www (otherwise you're back at square one).
+After enough time has passed you could then 301 redirect www2 to www, but I think in most cases you'd be fine just deleting it.
+I have handled this in the past by creating a www2.whatever.com sub domain, which the new server will listen on in addition to www.
+After changing DNS to point www at the new server you change the old server to 302 redirect www to www2.

@@ -1,0 +1,9 @@
+In my case, it was caused by a user without a shell on an SSH server. It has a very easy fix, just use the -N switch with your (Open)SSH client.
+After a lot of searching, I finally found an answer in the case of CentOS 7 running in an unprivileged container.
+I found this solution at https://discuss.linuxcontainers.org/t/regular-user-is-unable-to-login-via-ssh/4119
+Found that the problem was in /etc/ldap.conf. I have changed the bind_policy to "soft", so nss_ldap returns immediately on server failure. The default is "hard_open", which reconnects if opening the connection to the LDAP server failed. Commenting out the line "bind_policy soft" changed it back to the default, and solved the problem. :-)
+It might be LDAP issue.  The authconfig to configure LDAP, Kerberos, and SMB settings was run without,
+Comment out the session required pam_loginuid.so line in the /etc/pam.d/sshd file, and then restart the container.
+I had put a remote command to send to the server under "SSH" configuration. Which works great 99% of the time, however, when the command fails, it just closes the session.
+I just cannot agree with some of the answers here. A user with the shell /bin/false, /bin/nologin is a proper configuration, it's usually used for users used only for SSH tunnels, without the possibility to login and execute any commands on an SSH server. So don't try to "fix" it on the server, just use the -N switch with your SSH client.
+I had similar issues with Ubuntu 16.04 with LDAP. "ssh -vv ..." showed the password authentication succeeded, but then came the msg: "Connection to ... closed by remote host."

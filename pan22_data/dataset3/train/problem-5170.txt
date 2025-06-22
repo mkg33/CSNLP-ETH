@@ -1,0 +1,15 @@
+Their OS (RouterOS) is Linux based, but being an applicance you dont have access to a real shell or the file system.
+I do not know if there is any readily available qdisc which would allow you do do that, but given the sheer amount of different qdisc projects, I'd assume so.
+They are a small ISP platform, though, so youay really like them.
+Regrettably, setting up any traffic shaping in Linux is a painful process with a brutal learning curve, and because tc interface is simply just unfriendly, I'd suggest using MasterShaper or some similar frontend.
+The way HTB works, you just can assign rates for the entire bucket, not individual IPs.
+Another problem is that tc only schedules outgoing traffic on an interface, inbound traffic is never taken into account.
+Mikrotik RouterBoards ;) Best platform you can have.
+What Caleb tried to do, was to evenly distribute the available bandwidth of 2000 Kbps via the SFQ qdisc among your 10 customers.
+The Intermediate Queuing Device (IMQ) helps working around this limitation.
+However, this will not work as expected - SFQ calculates the scheduling per connection, not per IP - if any of your customers has more bandwidth-hungry connections open than the others, he will get more bandwidth in total.
+There is another scheduler called ESFQ which extends SFQ to be able to schedule per-ip, but even then you only would schedule currently active traffic without capping any given user at 200 kbps.
+The standard linux QoS/traffic control system is called [tc][1] (traffic control).
+You will need to initialize a chain, set it's properties, then add your IP's to it, something like this:
+For guarantees and fair division, HFSC scheduler (ported from BSD's altq to linux) is a great thing.
+if you decide to manage tc by your own, use IFB kernel feature for upload shaping - it's like IMQ suggested here earlier, but works on newer kernels and fits the whole framework a little better)

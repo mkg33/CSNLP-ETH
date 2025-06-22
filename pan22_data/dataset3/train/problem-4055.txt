@@ -1,0 +1,26 @@
+The user's profile picture was displayed as the default icon.
+As per other commenters, the UUID value cannot be found anywhere in the registry.
+The code is part of the Windows "shell" (desktop interface) package, and the process is running as the user "NT Authority/SYSTEM".
+DllHost.exe was designed to run unreliable COM objects.
+I think this means it is part of the login / "fast user switching" interface.
+The issue was specific to one user: I was able to reproduce the crash by locking my session and logging in as this specific user, but not the other way round.
+C:\Windows\system32\rundll32.exe -localserver 22d8c27b-47a1-48d1-ad08-7da7abd79617
+The term LocalServer is used elsewhere when talking about a command used to launch a dedicated COM server process.
+https://translate.google.com/translate?hl=en&sl=zh-CN&u=https://social.msdn.microsoft.com/Forums/en-US/ea5b2358-f440-4fb6-bec3-029092ea3829/rundll32exe-localserver-%3Fforum%3D1761&prev=search
+In my mental model, this is a sandboxed process that decompresses the user picture, but I expect a precise description would be more complex.
+I was capturing this trace as the process was crashing, when it processed the picture.
+I saw this process on Windows 10, processing User Tiles - more commonly known as User Account Pictures.
+Changing the user's profile picture stopped the crashes.
+According to someone over at MSDN it is a part of windows called the "Process Profiling Performance Analysis Program (Windows Performance Counter Program)"
+In some sense, the crashes I saw were anticipated.
+This is the command line that started it according to Process Explorer:
+Windows Rundll32 (child process of DllHost) is crashing.
+It shows a class Windows_UI_Immersive!CUserTileValidator.
+I cannot find documentation for the -localserver option of Rundll32.
+I captured a stack trace of thread 0, while it processed an incoming COM request.
+I stumbled upon an instance of rundll32 while checking on the running processes on my windows 10 box.
+My link doesn't comment on  don't know how well it protects insecure COM objects; a particular concern when run as SYSTEM.
+I was specifically looking out for any (buggy) third-party code, and I did not find anything suspicious.
+Looking at the command line of the DllHost, the /ProcessID parameter was an AppID listed in the registry as "Shell Create Object Task Server", from shell32.dll.
+The Rundll32 process had a parent process, an instance of DllHost.exe ("COM Surrogate").
+Possibly it is used to process other types of untrusted user data; I don't know.

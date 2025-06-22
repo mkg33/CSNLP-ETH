@@ -1,0 +1,6 @@
+Once you get the table rebuilt initially, you'll want to set up maintenance jobs to periodically defrag/rebuild the indexes.  Michelle Ufford aka @SQLFool has an excellent set of scripts for this:
+http://sqlfool.com/2009/06/index-defrag-script-v30/
+You set the thresholds of when you want to defrag vs rebuild.  It automatically detects which indexes it can rebuild online, and does that as well, giving you some uptime benefits.
+Be aware that index operations can throw a ton of activity into the transaction log, which can really slow down database mirroring and transaction log backups.
+No way to estimate how long it will take - so many different things would have an impact. Similar to what Paul writes about the length of a CHECKDB, very similar things would come into play with indexing and more. The best answer would be how long has it taken in the past? If you can't determine that, next best option would probably be to try it on a similar non-production environment, but even that won't necessarily match (i.e. concurrency concerns, etc. would be different).
+As a side note, you may want to look into ONLINE INDEX OPERATIONS in Sql 2005 and above...I can't add a second hyperlink, but google "online index operations sql server" and click the top link.

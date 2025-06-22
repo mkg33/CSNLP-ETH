@@ -1,0 +1,20 @@
+I RDP to this VM/sever via Vista (my host OS) but the performance of the server is a little choppy.
+A stopgap as others have said is to move the VM to a seperate disk, but you will still see bad performance as long as the system is RAM starved.
+As a rule of thumb with non hypervisor virtulization systems I never allocate more that 1/2 the physical memory to VM usage.
+How can I improve the performance of Windows (I know how to improve the VM's performance which is another story)?
+I have noticed that the disk queue length is peaking quite a bit.hard disk is preallocate.
+The only two options at that point would be to reduce the RAM allocation to the VM or add more RAM to the system.
+The first thing I would check would be how much is the Host OS paging - I would imagine quite a bit since you have nearly 3/4 of the RAM for the machine allocated to the VM.
+Especially when I run an installer, the whole OS locks up.
+I have installed Windows Server 2008 R2 x64 on a VM in VMWare Workstation.
+increase the spindle speed, use an external USB, or potentially add a drive to the system.
+I'm betting that you're seeing bad performance and disk queue lengths because your VM is sharing the same hard drive as your host OS and is working overtime.
+I have set hardware acceleration to full in Windows Server and turned off the firewall (These two things really improved performance but I will need the firewall).
+Your host OS is trying to read/write to the disk with whatever processes you have going on, and your VM is also making its own requests, which cause more reading and writing to the VMDK file that exists on the same physical disk as your host OS.
+VM settings: 2880mb ram dedicated (max recommended is 2992mb),
+If the Host OS is paging alot that will thrash the disk, which will slow everything down especially the VM.
+The VM only has SQL Server Installation Center on it (due to a failed install, another story).
+Its like trying to serve food in a busy restaurant, with one arm.
+so that it has a physical hard drive arm(s) dedicated to it.
+The best thing you could do is put your VMs on their own storage (another dedicated, single hard drive or, even better, an array of drives/cheap NAS/etc.)
+Sounds like you need to potentially move the vmware virtual hard disk to a drive with more throughput.

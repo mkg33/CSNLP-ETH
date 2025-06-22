@@ -1,0 +1,7 @@
+I have a query that can take a long time to run. I tried running the same query in a test server and it runs very quick.
+There are a lot of Key Lookups happening in the plan: Try adding INCLUDE (PositionReconciliationDetailKey, PositionDate, PaymentCurrencyKey, BreakOriginationDate, BreakAge) to the index [TestReconciliation].[Fund.Accounting.Model.PositionReconciliation].[PositionReconciliationTransaction].[TEST_KOB_02].[PRT].
+But to answer the other part of your question: compare the above index between Prod and Test - with comparable amounts of data, you should probably be getting a similar plan on the two servers.
+Because you're re-using this lookup with the CTE, I expect this change could give you a good performance benefit.
+Key lookups happen when SQL Server uses a non-clustered index to speed up the query, but has to go fetch individual rows and columns from the clustered index (the "base table"). This can be horribly inefficient when you're dealing with a lot of rows. Including those columns at the leaf level of the non-clustered index increases the size of the index, but lets SQL Server read everything from the index without having to perform key lookups.
+If they are in fact the same, you may be dealing with parameter sniffing issues (which you can solve in a number of different ways, one of them being adding OPTION (RECOMPILE) at the end of your query).
+I may have missed a column or two in this list - you should hover the mouse pointer over each Key Lookup icon and check the "Output" list.

@@ -1,0 +1,21 @@
+Enable ACL by setting the following in the [global] section of /etc/samba/smb.conf:
+ACLs are harder to configure but offer much more flexibility as usual on windows machines.
+that doesn't mean necessarily that it's allowed on filesystem-level because the myShare folder just allows domain users.
+Ensure that permissions on share and on folder are free of contradictions eg:
+For details really visit the official docs as linked to above.
+A possible way to create a folder with inheriting default permissions could be:
+Coming late to this question, I'd still like to point to the official Samba documentation for support of ACLs.
+Anyway for the paranoid the share permissions can be narrowed by allowing only specific groups:
+That's because force user, force group, create mask and directory mask enforce use of tradidional unix style permissions which can't be combined with inheriting ACLs.
+when a user has permission as user but not as group samba will disallow access when using ACLs (which seems to me like a bug) eg: the user nobody is member of nogroup then ACLs needs to allow nobody & nogroup write permission otherwise write access is denied.
+The section with the default:* values is the interesting part for inheritance because any new file or folder will get these when created inside the myShare folder.
+This is valid for Samba 4.0.0 onwards, which certainly was not available at the time this question got asked.
+This would allow a share where everyone can write to the share ... but (!)
+Ensure the file system supports acls (ext4 nowadays does by default, no need for extra mount options)
+Your default ACLs must reside on filesystem-level of the folder not on the samba share itself for inheritance to work but be aware that contradictory permissions will always deny access eg.
+But since the question pops up in search engines, this link might be helpful.
+Now the problem with using create mask or directory mask on a folder with default:ACLs set is that samba will then override these default values and in most cases these mask statements are only useful as long as you want the whole folder and it's files containing only a single owner and group.
+See setfacls man page for details of setting default: values on a file or folder.
+which implicates writeable=yes but only for groups defined in write list.
+For samba to honor these default:*:: permissions inherit acls needs to be set in [global] section:
+would allow other group to write to the share but since myShare folders allows only domain users to write it would fail obviously.

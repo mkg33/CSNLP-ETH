@@ -1,0 +1,19 @@
+There is a way to use 'scponly' as the shell to disable interactive ssh and allow scp, but I am not aware of anything existing that works in the reverse manner.
+While you could edit your /etc/ssh/sshd_config to look something like this:
+It's reasonable to want the OS to log every time a file is accessed.
+Usually I see auditors working with managers to make fake fixes, so that they can state something like "the scp file transfer command has been disabled, so that files can not be copied from the server using scp".
+You gain nothing by stopping "scp" when you're still allowing literally infinite additional mechanisms of transferring files.
+This is not possible actually after a little googling.
+I believe you can uninstall openssh-clients (or equivalent) on the server.
+Check out this discussion: http://www.mydatabasesupport.com/forums/unix-admin/387261-how-restrict-ssh-users-block-scp-sftp.html
+Of course there's no difference between "reading" and "copying".
+Your logs could be so noisy that the data is useless, or even that you're forced to keep a ridiculously short audit trail.
+Disallowing scp but allowing other mechanisms of copying files is a method of lying to auditors.
+you can't log every read() - and one application that does something surprising can make logging every open() a disaster).
+I would instead determine what the user is likely to use it for.
+You may be able to explore hacking the scponly shell to accomplish the reverse.
+Maybe Solaris finally added some mechanism or dtrace could be used safely.
+Because if there are only a few commands that you want them to have access to, I would instead remove the ability for them to even invoke a normal ssh shell.
+But this can satisfy an auditor and give significant security to the system.
+If you find that you really do need to be able to run a normal shell, the most you really can hope for, is to slow them down, and make it more difficult.
+I think scp client invokes scp on the server when copying data over so if you get rid of scp on the server, then you should be fine.

@@ -1,0 +1,26 @@
+There are other system too (Pupet, cfengine, for instance).
+The problem I see with using the same SSH key everywhere is the lack of accountability.
+Basically it's an Active Directory-like service for Unix/Linux environments.
+A single identity file on each server violates most security frameworks, including PCI, HIPAA, etc.
+For 2500 hosts, you may already have a configuration management system, but you could use SaltStack if you don't.
+Combined with sudo policies, you get privilege escalation and audit (who sudo'ed).
+Each user can add its SSH key to its FreeIPA profile.
+Each human user needs their own account, and those accounts need to be able to be removed.
+This way, public keys do not even need to be distributed to the target systems, and can be stored in a central directory service like FreeIPA.
+It has *nix native features like NFS automounts, centralized sudo policies, etc.
+It's important to be able to manage your SSH permissions centrally, while decentralizing the actual operation for greater reliability and control.
+There are also Red Hat devs moderating and helping on the freeipa-users mailinglist.
+For example, many centralized systems are so centralized to the point that you might not be able to log into any of your servers, if, say, your LDAP server is down.
+Just use agent forwarding when logging in: ssh -A root@host.
+For example, Userify (where I work), Universal Key Manager, SSH Key Box, etc.
+In addition to gaining accountability, you also have the capability of defining fine-grained Role-Based Access Control (RBAC) policies.
+https://www.slant.co/topics/8010/~managers-for-ssh-keys
+Your choice should depend on what your needs and budget are, and the features that you find important.
+You don't need to have the private key on the jump host.
+I use it successfully at home but many businesses use it in production (the freeipa-users mailing list is hyper-active).
+It's the upstream free software project on which is based Red Hat's Identity Management solution.
+I would, instead, let each user have their own SSH key or keys, and use a centralised authentication and authorisation system.
+I install the authentication server on a Fedora Server though, which is its natively supported platform.
+There are a lot of commercial and open source solutions out there that can handle this for you.
+Then sshd can be configured to use an AuthorizedKeysCommand provided by the sssd package which would be configured to query the FreeIPA server.
+Being a RedHat project, it is a one-liner to install on Fedora or CentOS, but I've successfully installed and configured debian boxes as FreeIPA clients.

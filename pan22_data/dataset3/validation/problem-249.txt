@@ -1,0 +1,28 @@
+The origin for these techniques is something I came across, while researching, about how the networking for Quake was developed.
+That way - all those inputs can be recorded and replayed through the engine at a later time (perhaps with a debugger attached, perhaps in a debug build, perhaps with a specific frame scheduled to cause Debugger.Break() to get called).
+For good measure, I also have a few unit tests that set up an instance of my game world, push it across a virtual network, and make sure it comes out unscathed at the other end.
+This is important - not so much because of your network thread - but because network clocks getting out of sync can be problematic.
+I should say, up front, that the techniques I'm talking about here require that your game is really well architectured.
+You might find you need to use some of the techniques in this excellent article (that John McDonald already beat me to linking in the comments).
+Although, with the tools I've described above, I haven't yet found a need to fully implement recording and playback yet for my project.
+Basically the idea was that the engine takes everything as an input: actual user inputs, packets, even clock ticks.
+First, multiple instances of the game in the one process.
+I've got a DevLog video here showing both techniques being used in development of my game, Stick Ninjas.
+You can use this to do powerful things like graph out the positions of objects over time to see if they're moving correctly.
+If you can manage that, you can do two very powerful things:
+These are methods that you need to rely on with 100% confidence.
+I really like the first technique: Basically set the game to pause if the network times-out.
+But, also with these techniques, I'm yet to encounter a need to implement them in practice.
+And, second, the game graphing out object positions over a short run with a specific set of inputs and network conditions.
+By far the most effective way I have found to handle this problem is to eliminate it entirely.
+Check out the packets flying across the simulated network.
+Of course, all of these depend on your game being deterministic and behaving itself.
+Second: If you really want to go all out, you can run an "offline" simulation of the game (again with multiple instances in the one process).
+First: you can run multiple instances of the game in a single process, connect them together with a virtual (or actual) network, and test them all on a single screen.
+The last technique I should briefly mention is plain ol' unit testing.
+But one thing you absolutely should unit test are your methods for reading and writing data into packets.
+An error in one of these methods can be a nightmare to track down.
+But it becomes extremely powerful when debugging if you set it up so you can re-run that simulation on-demand (being a network game, it should be highly deterministic) and then have Debugger.Break() get called on a specific frame.
+You need to be able to create multiple instances of the game, update the game without rendering anything, render to a specific viewport, plug in different network connection objects (a simulated network is ideal for this), and so on.
+This is fantastic by itself - but comes in really handy when you can just hit "pause" in the debugger and the entire process, including every instance of the game, stops at once.
+Being able to simulate at a few hundred frames per second really helps.

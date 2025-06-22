@@ -1,0 +1,7 @@
+At the core, it looks like you are trying to benchmark your IO subsystem for multiple streaming megabyte sized files.
+No, it is not possible to disable the use of the buffer cache.
+There are ways to do this programatically, (opening the file in O_DIRECT for instance), but apache would have to be rewritten to do this.
+I might be terribly off-kilter here (so let me know if I'm making an incorrect assumption) but disk caching in Linux is known as swap, and uses a swapfile or swap partition.
+You can disable the majority of caching in Apache by disabling the mod_cache module, commenting out the following lines in your configuration should do the trick:
+There are much better ways to do this without mixing the overhead of apache into the picture.
+If you are determined to attempt this you could try writing a small program to malloc most of the physical memory in the machine to reduce the amount of disk cache available, however this would probably cause the server to page ruining your benchmark results (apaches multi process model will interact badly with this unless you set the StartServers, MinServers and MaxServers to the same value to avoid process creation during your benchmark run)

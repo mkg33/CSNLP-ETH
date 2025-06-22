@@ -1,0 +1,42 @@
+When you get into it -- really get into it -- storing componentized address data is an extremely complicated problem because of all the disparate and varied systems in use globally.
+The space cost may not be relevant in a very small system (maybe), but this is more about a technical debt issue.
+Striving for 3NF compliance in a database is a guaranteed catastrophe.
+The Wikipedia article on 3NF says: a table is in 3NF if and only if, for each of its functional dependencies X → A, at least one of the following conditions holds:
+City cannot be said to functionally dependent on itself.
+This would also allow you to list several addresses for a customer (via a link table) if this is what you require.
+The app will only be used in part of one small country (something like 30 cities).
+Having said that, I think normalization is a pointless academic exercise.
+Given that I don't even see a postal code field, I'm guessing this is not something you care about.
+You could also have the same street, city combination represented in different ways (Foo St, Foo; Foo Street, Foo; etc.
+I think whatever you develop needs to be balanced between flexibility, and storing only what your business needs to store.
+To normalize the design, you have to seperate the CITY.
+He also mentioned that because I have duplicate columns - city: foo, city: bar, city: foo.
+"), then you'll have to start componentizing the address lines themselves, which is the really difficult part.
+So the repetition of identical values in different rows does not violate 3NF.
+For an example that would violate 3NF, add CityPopulation to the table.
+At an absolute minimum, create a new table Addresses, and then reference address_id from Customers.
+The fields STREET, CITY are functionally dependant on each other (if you change the city, the street should probably change as well and vice-versa).
+The address line could go in either the Addresses table directly for simplicity, or in a separate Address_Lines table to handle multiple lines.
+After that, a general minimum for being able to slice and dice your data in a meaningful way is to construct normalized Countries, Regions (aka provinces/territories/etc.
+To fully meet 3NF you should create a cities table, whether you need or want to depends on the answer to the following questions:
+Now there is a functional dependency for X = (city) and A = (CityPopulation).
+Usually, though, a business won't ask this kind of question.
+If you need to start adding more address-related fields, you would have to keep adding more and more of them to the Customers table.
+This dependency satisfies none of the three conditions, and this table design would violate normal form.
+A friend told me I should seperate 'city' into a different table 'Cities' and use only city_id in customers table.
+Also alleviates duplicate city name entries, like Foo, foo, Fooo etc and you can have details specific to city in that table like zip code.
+The design doesn't meet third normal form, but not just because of the city.
+This lets you ask business questions like "how many products did we sell in city X?"
+Sooner or later, you'll realize that this is an inflexible design -- if you need to use multiple addresses for a given customer (billing & shipping addresses being the classic example), now you're in a world of hurt without normalizing, as you can't reuse the existing structure to store the required data.
+The biggest piece of the puzzle here is to move all address-related fields out of the Customers table -- addresses are entities unto themselves.
+Personally I didn't see much of a benefit from it (except for saving some space on Customers table which seems insignificant to me in this case for the cost of creating another table).
+If you want to go the multiple address route eventually, even doing just this step (as opposed to sticking with the current design) will save a massive headache later.
+in and link the customer to that via an address id.
+(few customers in the same city) this is not considered normalized, is this true?
+This still leaves you to decide whether to extract the city into it's own table.
+If you need to get more granular ("how many products did we sell to customers on street X?
+If the first point is true, then you should definitely create a CITIES table, otherwise you could end up with one city having different populations etc.
+If the second is true then it's a very good idea to have a separate table as the query to list all your cities will scale much better - you'll only have to scan this table rather than the (almost certainly larger) CUSTOMERS table and then get the distinct cities from that.
+To normalise this you would create a new table ADDRESSES which has the street, city etc.
+), and Cities tables, with only the latter appearing as a field in the Addresses table.
+(Note: depending on where you operate, what data you have, and how the data will be sliced, you may require a 4th table in there between Regions and Cities.)

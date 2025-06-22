@@ -1,0 +1,33 @@
+Raw byte counts are a good start, but you should follow it up with targeted sniffing to get more details about the traffic profiles.
+I don't know how 3Com handles it but usually you can segment different functional groups into different VLANs (e.g.
+Obviously your SAN needs its own VLAN and not the same VLAN as the virtual systems LAN and Internet access!
+I do find it impractical to segment LAN in a room by room basis, but again, I don't know how 3Com handles it.
+You shouldn't start breaking an Ethernet LAN into VLANs unless you have good reasons to do it.
+Typically you create VLANs in Ethernet and map IP subnets 1-to-1 onto them.
+Limiting access on the wire can provide a false sense of security and lull administrators into a complacency where they think "Well, I don't need to configure the app.
+Unless you have 25 test and development groups that regularly kill the network with broadcast floods, 25 per-room VLAN's are 24 too many.
+(Yes, yes-- there are ways not to use a separate subnet for every VLAN, but sticking in a strictly "plain vanilla" world you'd create a VLAN, think up an IP subnet to use in the VLAN, assign some router an IP address in that VLAN, attach that router to the VLAN, either with a physical interface or a virtual subinterface on the router, connect some hosts to the VLAN and assign them IP addresses in the subnet you defined, and route their traffic in and out of the VLAN.)
+securely because the hosts that can talk to the app.
+Broadcast domains can typically be about 1000 devices large before you start to see issues on 100Mbit networks, though I'd bring that down to 250 devices if you're dealing with relatively noisy Windows areas.
+Bandwidth exhaustion problems (unless they're being caused by broadcast packets or flooding of frames) are not solved with VLANs typically.
+Once you know how traffic moves around on your LAN you can begin to think about segmenting the LAN for performance reasons.
+I don't believe there is any significant performance loss if there are many computers in the same VLAN.
+In effect I don't see any reason to even segment LAN into different VLANs if there are no security or operational gains.
+VLANs are only really useful for restricting broadcast traffic.
+This can all be done through a single ethernet port on the host system, so no worries there about splitting those functions.
+You can then control who has access to a particular VLAN.
+You're going to need a LOT of IP subnets for what you're describing, and potentially a lot of routing table entries.
+If you're really going to try and button down packet and stream-level access between VLANs be prepared to do a lot of legwork with application software and learning / reverse-engineering how it talks over the wire.
+If something is going to do a lot of broadcasting, then separate it into its own VLAN, otherwise I wouldn't bother.
+If you have performance crap-outs, consider putting your Phone and SAN on separate network hardware, not just VLAN's.
+Limiting access by hosts to servers can often be accomplished with filtering functionality on the servers.
+It sounds like somebody in your organization wants to create VLANs w/o understanding the reasons why you'd do it and the pros/cons associated therewith.
+It sounds like you need to do some measurement and come up with some real reasons for doing this before moving forward, at least with the insane "VLAN for a room" silliness.
+For the most part, modern day networks don't need VLANs unless you're doing this quarantining (with appropriate firewalling using ACLs, of course) or broadcast limitation.
+They happen because of a lack of physical connectivity (too few NICs on a server, too few ports in an aggregation group, the need to move up to a faster port speed) and can't be solved by subnetting or deploying VLANs since that won't increase the amount of bandwidth available.
+Generally, you only want to consider using VLANs when you need to quarantine devices (such as an area where users can bring in their own laptops, or when you've got a critical server infrastructure that must be protected) or if your broadcast domain is too high.
+Usually the guideline is not size, but rather security or operation.
+If you don't have even something simple like MRTG running graphing per-port traffic statistics on your switches that's really your first order of business before you start potentially introducing bottlenecks with well-intentioned but uninformed VLAN segmentation.
+You might want to have a virtualised duplication of a live system on the same network and want to use the same address range, then again, that might be worth a separate VLAN.
+I'd encourage you to audit the security of your server configuration before I'd start limiting host-to-host communication on the wire.
+Better plan those subnets with VLSM to summarize your routing table entries, eh?

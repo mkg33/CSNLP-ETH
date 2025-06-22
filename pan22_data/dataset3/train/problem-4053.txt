@@ -1,0 +1,16 @@
+You probably have only one IPv4 route on your host - default one.
+ARP requests are normally limited to one broadcast domain (one subnet if you like).
+So now host A should send IP packet with IP B and MAC of default gateway - that is how frame reaches IP nexthop.
+So it works out the next hop address and gets the IPaddress of a router - it will do another ARP lookup for the IP address of the router.
+Otherwise it looks into IP routing table in order to determine nexthop for B's network if any.
+If your guest OS got IP from DHCP server then guest os DHCP client will send a ARP request for the IP it got from DHCP server, to check any conflict is there in the network.
+Why doesn't my guest os just ask directly for the IP address of my host OS like before?
+When I try the same thing on a real network(i.e on my school's network while my 'guest os' is now directly connected to the real network through a usb wifi dongle), it seems that the ARP request sent out from my 'guest os' now asks for the MAC address of another IP(which appears to be a switch) instead.
+What you description sounds like is that it did not match the addresses in the "is it local" part and it found that the Switch is the router it wants to use.
+So when host A knows (based on subnet mask) that host B is located in the same broadcast domain, it sends ARP directly to host B.
+If these are exactly the same then the ARP request will be sent out that interface.
+On my VMware internal nat network, when I try to do a simple HTTP request from my guest to my host OS, the arp request from my guest os asks for the MAC address of my host IP and attach it in the destination MAC of the following packets which is totally expected.
+It first determines if the required IP address is local or requires going via a router  - to do this is compares the RequiredIPaddress  against the LocalIPAddress of each interface , It does a binary and with the NetworkMask to clear the lower order bits
+How does my guest os know what ip to look for when sending requests?
+If however there are no matches for this "is it local question" then it will route.
+With ARP host A determines B's mac and sends frame with MAC B and IP B.

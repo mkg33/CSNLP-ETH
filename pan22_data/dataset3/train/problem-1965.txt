@@ -1,0 +1,48 @@
+There are only so many ports going into the array.
+Does heavy IO in one part of the SAN (say the Exchange server) impact my SQL servers?
+But the following should apply to most SAN equipment.
+That is probably a matter of preference, and also greatly depends on how your storage admins configure it.
+What I would say (I am a SAN admin), is that if your applications are performing up to your expectations, don't worry about it.
+If the array is connected across two redundant SAN's which are load balanced, using trunked links, then it would impossible for exchange alone to suck up too much bandwidth.
+If they gave you individual LUNs on different arrays, in different volumes (physically different disks), then it might be worth it for you to separate them.
+Depending on your environment and the solution you're using, some vendor CE may have just flown in and setup the SAN to whatever standard he prefers.
+Without making enemies on the SAN team, how can I reassure myself and the application developers that our SQL servers aren't suffering from poorly configured storage?
+The performance you will see greatly depends on how the disk controller is connected to is corresponding disk shelves, and the corresponding SAN.
+I suggest opening up a dialog with your SAN Team and vendor to address your concerns.
+If you start to see performance issues that you believe could be related to SAN/Disk IO performance, then it might be wise to inquire.
+Most enterprise storage these days takes a lot of the guesswork out of building raid arrays, and doesn't really let you do it wrong.
+You're going to have to chip away at the "the SAN team knows all" shell until you have confidence that the solution is meeting your requirements.
+I don't imagine your storage admin would change the raid level in order to free up space.
+Would requesting separating logical drives for different functions logical drives (data vs log vs tempdb) help here?
+Just because the array is a essentially a big pool of storage does not mean that you should not worry about IO performance.
+As long as the array and the SAN it is connected to are scaled correctly, heavy IO in other parts of the SAN environment should not impact your SQL performance.
+Would space concerns cause the SAN team to make different decisions on how they configure internal storage (RAID levels, etc) that could impact my server's performance?
+(assuming that the SAN software might "dynamically configure" differently at different points in time.)
+They could give you three LUNs in the same array or volume, in which case its all the same anyway.
+Sometimes there is a SAN switch in between that you can define zones.
+All of the data is being served up via a disk controller, and then a SAN switch.
+If the entire array connects to the backbone SAN on one single strand of 4gbps fiber, then clearly the performance will be impacted.
+It is not all about the disks, or which disks, the servers are on.
+Another thing which needs to be considered is how many IO/sec the array is capable of.
+So if you feel that you are having IO issues, you need to narrow down where the bottleneck is.
+One of the problems you're going to have with running your own benchmarks is that your tests may not have bearing on what happens in production, particularly at peak loads.
+You can ping me offline if you have a specific issue as this could take a while to dig through.
+Additionally, you should have the SAN team monitor access patterns for your app, both from a cold start and running hot.
+I was at an oracle conference once with a talk on this topic - sane SAN for databases.
+Just keep in mind that when you are load testing one box, that being on a shared SAN/Disk Array that its performance can (and will) be affected by other systems using the same storage.
+The SAN team should have tools that can help you reveal if your app is hotspotting.
+If it is somewhere between the HBA and the array, you can then figure out if the HBA is maxed out or if the SAN port on the switch/array side is oversubscribed.
+Gist of the talk is available in this PDF file or at the authors site here
+Unless they are mixing drive speeds and capacities within the same raid groups you can rest-assured in most cases that your disk is performing fine.
+If I load test on these SAN drives, does that really give me a reliable, repeatable measure of what I will see when we go live?
+Space concerns can lead things to be configured differently, but not normally in a performance-impacting way.
+Obviously, you should monitor and measure on your end too.
+They might enable features such as data de-duplication (if the array supports it) which can hinder the performance of the array while the process runs, but not around the clock.
+Most SANs have tons of battery-backed cache, which in many cases (particularly when you run synthetic benchmarks) means that you're writing to RAM and getting kick-ass performance.
+I do not use much HP storage like you do, but in the IBM/NetApp world I can say from experience that there aren't many options which would allow you to configure it "poorly".
+(assuming they aren't giving dedicated disks to each server, which I've been told they are not)
+In short, there probably isn't a way to be truly sure.
+Would the SAN see the different IO activity on these and optimally configure them differently?
+They might just become a little more tight about how much space they give you.
+Obviously, the underlying storage does make a difference say running slow big RAID5 vs speedy RAID10 as you will at some point have to hit the disk regardless of the different levels of cache.
+Application teams being told to trim data archives, etc.

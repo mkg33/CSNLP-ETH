@@ -1,0 +1,20 @@
+But since that agent is getting reloaded every time you log in as root, I'm guessing you have a copy of the .plist file in /var/root/Library/LaunchAgents -- remove that, then log out and back in as root, and it should be gone.
+com.apple.launchd.peruser.0 (homebrew.mxcl.memcached) Throttling respawn: Will start in 10 seconds.
+I have confirmed with launchctl list that memcached is no longer there and I am getting the intended error messages as well when try to unload/remove memcached in launchctl too.
+It looks like the memcached plist was successfully deleted from launchctl.
+I also get 'launchctl stop error: No such process' when I do launchctl stop homebrew.mxcl.memcached.
+When I log off as root and login as another user, the messages stops, and when I log back in as root the messages starts again.
+The file has to be kept off the folder as well becasue when I tried to put it back in and re-login the messages are showing again..
+And I am logged in as root user to unload the homebrew.mxcl.memcached entries and remove the labels in launchd.
+And a solution is to unload the plist from launchd with launchctl unload -w /Library/LaunchAgents/homebrew.mxcl.memcached.plist, and launchctl remove homebrew.mxcl.memcached, which I have done.
+Since all indications show that the plist was removed from launchd.
+I am constantly getting the following messages in system log:
+I eventually had to delete the original plist from /Library/LaunchAgents to stop the messages.
+Note that the peruser.0 in the messages indicates that it is running 'peruser' for the user root.
+After searching online I learned that it is caused by the process failing to start.
+com.apple.launchd.peruser.0 (homebrew.mxcl.memcached[PID]) Exited with code : 64
+When you run launchctl as root, it interacts with the system instance of launchd, rather than the per-user one.
+However the process still seems to be loaded at the user level for the root user as the what I did did not stop the messages.
+As a result, I don't know of a way to use it to manage agents for the root user.
+I am very confused on why the process is still triggered for the root user.
+There is probably a way to unload the plist peruser for root user but for now I have to live with just removing the file.

@@ -1,0 +1,8 @@
+It gets trickier if you need to provide a list of hostnames (a.k.a.
+"subject alternative names") to your certificate provider so they all get included.
+The client doesn't tell the server the hostname it's trying to get until the HTTP request comes through (step 3), but the client knows the desired hostname prior to step 1, and expects the server certificate sent to it in step 2 to have a matching hostname, or the browser will likely put up a "this server might be impersonated" warning screen.
+Something to keep in mind if you're using HTTPS (HTTP+TLS): There is a specific order of operations at the start of the transaction:
+This is pretty straightforward if you have a wildcard certificate and all the hostnames are in the domain covered by that certificate.
+There is a TLS renegotiation mechanism that might be able to serve different certificates based on hostname, prior to step 3, but it's spotty and most servers don't configure it.
+It's much easier to configure a web server to serve one certificate.
+If you have several DNS hostnames pointing to the same IP address, then you need to make sure that the TLS certificate for your site covers all hostnames served by your server.

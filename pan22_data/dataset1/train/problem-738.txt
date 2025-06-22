@@ -1,0 +1,11 @@
+In EL6 the quota code that does the matching shows this:
+Its basically the same (minus spacing changes) apart from one line;
+So in EL6 if you setup a quota, pass some packets through, then do iptables -vnL SOMECHAIN you'll notice the quota value decrements.
+In F20 doing the same thing the value doesn't decrement. I guess the designers believe its probably a better thing to make sure people know what quota was set rather than what the quota really is (seeing as packet counts make it clear what is left).
+However, this has an unintended effect. When you run iptables-save you save the quota value as read via iptables. In EL6, if this value reaches 0 it displays 0 to iptables. Thus, when you restore, you restore the 0 back into the iptables chain.
+With them removing it, this value never decrements and thus you never actually save the quota.
+What really needs to happen is the module needs redesigning. There should be a quota entry and a remaining entry. Remaining should decrement like in EL6 and be what is used to enforce the quota, whereas "quota" should be the actual set value like in F20. This way you get the best of both worlds. A saved state of the quota and a actual description of what quota is set.
+You should probably report this to the netfilter team.
+This works as expected. When the limit (500MB) is reached, all packets for this particular computer get dropped.
+But, if I save the counters (iptables-save -c > /home/iptables.counters), restart iptables, and restore the counters (iptables-restore -c /home/iptables.counters), then no matter what the saved counters were, that computer will still be able to download 500 MB, so the total counter size, before that computer loses internet access will be X + 500MB, where X is the saved counter size.
+I must be doing something wrong, since this is the whole point to saving/restoring counters: resuming from that byte count until the limit is reached. Any type of hint would be greatly appreciated...

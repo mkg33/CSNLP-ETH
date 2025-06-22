@@ -1,0 +1,13 @@
+If you want to keep the companies isolated, that would be a good way to do it.
+This means that if your database goes down, and the worker threads are hung waiting for responses, then no new requests will be processed.
+If the above issues aren't relevant, then it's likely simpler just to use multiple instances of the SQL module to talk to the different databases.
+An example of a virtual server configuration to select between the databases based on realm would be:
+In mods-available/sql you can create multiple instances of the sql module by copying/pasting the existing text into the same file, and inserting the instance name between the module name and the opening curly brace, i.e.
+The servers are grouped by the ones used to process accounting traffic (Accounting-Requests), and the ones used to process authentication traffic (Access-Requests).
+if database1 goes offline authentication requests to company2 (database2) may be affected.
+The proxy.conf file defines realms which are destinations for RADIUS traffic.
+One way of solving your problem would be to run three RADIUS servers, one as a frontend, and the other two as backends.
+There are reasons to keep the company's RADIUS servers isolated beyond security - FreeRADIUS <= 3 is entirely synchronous except for proxying.
+Each realm may contain one or more sets of servers.
+One backend would then service company1, and the other would service company2.
+You can then refer to the instance in sites-available/default.

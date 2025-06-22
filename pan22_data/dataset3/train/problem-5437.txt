@@ -1,0 +1,11 @@
+If you are launching the Command Prompt from the start menu or a shortcut on your task bar,  you must either:
+The environment doesn't update immediately because environments are inherited from their parent process, with the exception of explorer, which is started by the system upon login.
+Above approach will edit environment variables for the root user, maybe not your current user.
+Does it work if you use Win+R from the Desktop to start cmd.exe?
+You should go to user-account -> select your current account -> change environment variables
+In Window 8, each user has it own environment variables.
+Most of the time, this isn't happening because processes are children of a process which already has an environment, so the environment is inherited.
+So changing the Environment Variables updates the registry keys, but these keys are not re-read until the system has to build a new login environment for some process being launched.
+I don't have a Windows 8 machine on hand to test...
+My guess is that starting it from the Start Screen causes the started cmd.exe's parent to be different from explorer.exe (WSAHost.exe, IIRC or whatever it's named), and that parent process doesn't update it's environment during WM_SETTINGCHANGE messages.
+You may be a victim of this issue: User variables are not resolved correctly in Windows.

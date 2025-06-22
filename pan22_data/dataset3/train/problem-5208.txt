@@ -1,0 +1,12 @@
+Presuming that you have a script that processes only the last 100 lines each time it is run, these lines are best captured with the tail command, as it does pretty much what you want to do.
+this would parse the last 100 lines of somefile.log into onlylast100lines.log every 5 seconds.
+The latter approach will rewrite the target file every time, so no need to delete it between each run.
+Logs are text(like) files and being that kind, appending new disk blocks to them when it's demanded by new lines is a quick action well supported by any file system.
+This could be added to your login script or to whatever runlevel you want this to be executed.
+However, constantly dropping out the first line when a new is coming would mean reorganizing at least some if not all the blocks of the file CONSTANTLY.
+The file would be overwritten each time, so it would be always only the last 100 lines.
+Elaborating on Jarmunds method, you could make a bash script like this:
+File systems are not prepared for this (at least I haven't heard about this type),  that's why logrotate/tail/database-backed logging are used where the last records are of importance.
+The key here is the -n switch which dictates how many lines it should capture, starting from the end.
+You can incoprorate tail -n 100 somefile.log in your script directly, or you can periodically run tail -n 100 somefile.log > onlylast100lines.log to create a file with only the last 100 lines.
+That would mean big overhead dedicated to logging while one of the most important characteristics we want from logging is that it be lightweight .

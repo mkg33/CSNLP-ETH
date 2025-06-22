@@ -1,0 +1,12 @@
+For point 2, what queries do you expect to run in production?
+For relatively cold condition try run before measuring:
+Point 1: on the first run, data needs loaded into memory ("buffer pool") and will stay cached until evicted based on memory pressure and usage.
+Completely cold condition means in addition to mentioned above - cleanup operation system's cache too.
+The overhead far outweighs the benefits: partitioning isn't a silver bullet to cure performance issues.
+The first time you run the query the data is not cached in RAM yet but has to be read from disk.
+What do you expect your real life volume of data to be?
+Personally, I'd test with the cache filled because you'd expect your app to require that data very often, especially if you think partitioning is the solution to some problem
+For 10 million rows, I wouldn't bother with partitioning.
+Once it is in RAM it will stay there (hot buffer) until it gets pushed out if it is not frequently requested, so the data that is requested the most will almost always be in RAM (assuming you have enough memory to fit it all in RAM)
+However they should test different realistic filter combinations with and without partition key at least.
+The queries should be representative of this production load.

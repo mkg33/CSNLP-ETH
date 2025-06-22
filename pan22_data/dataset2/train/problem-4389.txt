@@ -1,0 +1,7 @@
+I see you've already noticed this - I believe there is no better way of learning than to fix our own mistakes ;)
+What you had originally was a correct syntax - for tables, not for schemas.  As you did not have a table (dubbed 'relation' in the error message), it threw the not-found error.
+There is a command for covering them: ALTER DEFAULT PRIVILEGES.  It applies not only to tables, but: 
+But there is something more.  What you are doing above is too much on one hand, and not enough on the other.
+This means that a table created by alice, who is neither you nor a role than you are a member of (can be checked, for example, by using \du in psql), will not take the prescribed access rights.  The optional FOR ROLE clause is used for specifying the 'table creator' role you are a member of.  In many cases, this implies it is a good idea to create all database objects using the same role - like mydatabase_owner.  
+The problem lies within point (3.)  You granted privileges on tables in replays - but there are no tables in there!  There might be some in the future, but at this point the schema is completely empty.  This way, the GRANT in (3.) does nothing - this way you are doing too much.
+As you can see, alice has no explicit rights on the latter table.  (In this case, she can still SELECT from the table, being a member of the public pseudorole, but I didn't want to clutter the example by revoking the rights from public.)

@@ -1,0 +1,21 @@
+For whatever reason, even with fonts that render U+1F3C1 correctly installed, Chrome 28.0 won't display this Unicode character: .
+The browsers are encountering the problem of "The selected glyph is not in the specified font".
+I know this is a bit of an old question, but for those who are freshly Google'ing this, I have a solution that worked in 2013.
+More analysis and a possible workaround can be found here: http://gschoppe.com/uncategorized/fixing-unicode-support-in-google-chrome/ .
+http://www.fileformat.info/info/unicode/char/238b/index.htm
+If not, then install a couple of "catch all" Unicode fonts: Code2000 and Symbola
+Chrome 28.0.1500.95 (and probably all recent releases) performs font substitution ... mostly.
+Therefore, Firefox and Opera can display this unicode character in Windows 7, but the other browsers cannot.
+It's not just Chrome -- you might well ask why any of the following browsers can't display it on Windows 7:
+http://www.fileformat.info/info/unicode/font/fontlist.htm?text=%E2%8E%8B+-+Unicode+Character+%27BROKEN+CIRCLE+WITH+NORTHWEST+ARROW%27+%28U%2B238B%29
+However after downloading Symbola font from here and then:
+The issue is here, with all the gory details: https://crbug.com/42984 (star it and maybe somebody will notice it?)
+Firefox 45.0 on my GNU/Linux LFS 7.9 didn't show the Unicode glyph mentioned in question, also didn't display other glyphs like greek etc.
+First, you must confirm that you have a font installed in your Windows 7 PC that can render the font:
+Firefox now shows the glyph in question, and also displays other glyphs.
+There are two directions you can go from here: you can either pull the equivalent glyph out of another font (which will often look broken but it may not be clear why to the user) or just display a character-not-found placeholder (which will always look broken, but at least obviously so).
+The actual answer: It's because there's a bug in Chrome that borks Windows 7 (and higher?)
+http://www.fileformat.info/info/unicode/char/238b/browsertest.htm
+I imagine Firefox and Opera recognise that the glyph being requested is a symbol that is safe to pull from another font, while the remaining browsers are being conservative and just showing the "Uh... dunno" glyph.
+Once you have a font that'll render the symbol, you can try the browser test page:
+Assuming that at least one font in the Local Font List renders this:

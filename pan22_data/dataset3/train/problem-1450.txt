@@ -1,0 +1,24 @@
+Over time, SmartScreen will start allowing emails into inboxes.
+However, the following article may indicate a different approach - Email Delivery Report 2012
+(And yes, we are already signed up on the SNDS and JMRP.)
+I would go out on a limb guessing that this "luck" factor could be related to the IP-Block provider/owner's reputation?
+However, by random chance I stumbled upon the solution - make SHA256 keys!
+Checking the headers of those emails, we see that SPF, DKIM, and DMARC are all "pass".
+The way out appears to be to start using the IP for live emails, and then notify users to "Add Sender to Safe Senders List" in the Outlook UI.
+Here's a link to Hotmail's current (2016-06-01) Email policies page where you can sign up for Junk Email Reporting Program (JMRP) and Smart Network Data Services (SNDS) accounts:
+So the command to generate the key would be something like opendkim-genkey -r h rsa256 -d domain.name -s mail.
+This should be the default way to go, and is generally faster than getting white-listed by Hotmail's investigation team.
+Emails we send to Hotmail continue to be placed in the Junk/Spam folder.
+A Google search on hotmail emails marked as spam turns up scores of similar questions with people having problems sending newsletters, registration confirmation emails and so on to Microsoft webmail domains, so it's probably nothing that you're doing wrong, but you need to put a lot of work into getting a mass mailing or automated mailing to pass through the spam filters Microsoft has in place for their webmail.
+Once the new keys were installed and the updated DNS TXT record had propagated, hotmail was happy to receive mails from my domain.
+You can sender-score yourself by simply starting to deliver e-mail to other major ISP's, and your ratings will eventually show up on SenderScore.org (usually takes a couple weeks) at which point you can re-try Hotmail.
+I could be misinterpreting this but I think it means you may have a better luck inboxing Hotmail on Day-1 if you don't setup Sender-ID authentication, rather than authenticating your domain/IPs prior to building some reputation metrics.
+In my personal experience this happens in 50% of the perfectly configured and authenticated fresh IP/Domain trying to inbox with a naked "Hello world" message.
+I am told by Microsoft that the culprit is their SmartScreen filter, which is actually very dumb and frustrating.
+That means that you might get lucky and your fresh setup will Inbox hotmail/outlook like a charm.
+They have 5 major guidelines you should make sure you're in compliance with (including American legislation you might not be aware of, and yes, it applies even to hotmail.it), some free reuptation management tools you might want to look at, as well as a way to contact "Hotmail Deliverability Support" if you're still having problems after complying with their guidelines.
+The place I'd start looking for "what to do next" would be the Microsoft webmail postmaster policies, practices and guidelines page.
+I don't see anything wrong with your headers, or anything obvious that you're doing wrong, but I would like to point out that, yes, hotmail (as well as live and msn and outlook webmail) are very strict, and tend to classify a lot of mass-mailings as spam, even when they shouldn't be.
+I was experiencing this issue for a while, all the DKIM/SPF/DMARC/etc validators I could find all gave everything a pass.
+I am using Plesk Onyx which generates SHA256 keys for DKIM by default, which I checked using http://dkimvalidator.com.
+Jeff Atwood is correct re: Having to Sender-Score yourself first.

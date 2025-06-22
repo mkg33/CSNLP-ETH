@@ -1,0 +1,18 @@
+Sometimes they might start and finish in a second, other times they might go on for 5 minutes.
+This is a solution if your script runs in python (or you could create a python command to run before the next command) - I ran into this exact problem last week, and although I did find some good solutions, I decided to make a very simple and clean python package and uploaded it to PyPI.
+Typically, a pid file would be used and a pid test would be done against the process to insure it's running.
+If stale, the lockfile would be removed and the process would run anyway.
+We have a set of scripts that need to run every minute.
+If you are stuck with Bash or other scripting language which doesn't support this, the already proposed solution with flock(1) is fine too.
+The advantage is that no matter how a process finishes/dies, the lock is gone with it.
+The directory "/var/lock" is a good place for such files.
+Any additional intelligence would typically be written in the software itself, as a daemon, as opposed to running in cron.
+But this is a little unreliable (i.e., fatal errors would cause the flag to remain enabled even after the script halted).
+We could write our own little manager, but I'm wondering if there is a more fashionable solution that already exists.
+If your scripts are coded in a language which supports the flock(2) syscall, then you could flock() a lock file with a function call too.
+Is there a way to run a script every minute (or 2, or 5, etc), but only if it isn't already running?
+You could certainly lock __file__ to not have to think about giving it a custom resource name to lock.
+Our current way of avoiding simultaneous executions is by setting a is_running flag in each script, and exiting if it's still enabled.
+In any case, you should create a separate lock file only once (if it doesn't already exist), and never delete it.
+a better way is to use flock instead of a pidfile.
+Take a look: https://pypi.python.org/pypi/quicklock

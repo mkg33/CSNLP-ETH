@@ -1,0 +1,25 @@
+When you visit a page there are multiple elements that need to be downloaded.
+The KeepAlive setting you see there will enable keepalives for HTTP/1.0 or disable them for HTTP/1.1 (depending on the option you choose).
+You have the main page but you also have CSS, JS, Images etc.
+This needs to be repeated for every item to be fetched, needing multiple TCP connections.
+An IP packet contains a payload, such as HTTP information, which in turn contains html information.
+If you have a client that requests two items, this is what happens without KeepAlive:
+An IP packet is encapsulated into a TCP segment, which detects problems in transmission over networks, requests retransmission of lost data, rearranges out-of-order data, and helps minimize network congestion.
+For this to be used the client side needs to explicitly request it in the headers.
+if set to "On",KeepAlive will allow each connection to remain open to handle multiple requests from the same client.
+In that time a client that supports keepalives could send a second request within the same TCP connection.
+The way this is done is the TCP receiver responds with an ack message as it receives data.
+For HTTP/1.0 each request requires one connection: Client starts connection, sends HTTP request, server responds with the HTTP headers, then the content and then closes the connection.
+The reason why I ask is because apache2 has a declarative called KeepAlive.
+For a server with heavy load, with pages containing lots of URIs, it can significantly reduce the overhead.
+To make things easier, there was an unofficial extension called KeepAlive to HTTP/1.0 that when enabled would make the server-side keep the connection open for a period of time (e.g.
+2 seconds) after it has finished sending the response.
+The process of where the TCP sender sends its initial request to when the TCP receiver receives its last segment and rearranges the data, is this all done in a single TCP connection?
+Based on this: http://httpd.apache.org/docs/2.2/mod/core.html#keepalive, by default it's enabled for HTTP/1.1 and disabled for HTTP/1.0.
+But won't each connection already remain open until the TCP receiver receives the entire message, which could be an entire html document?
+This extension became standard with HTTP/1.1 and is called persistent connections.
+The sender maintains a timer from when the packet was sent, and retransmits a packet if the timer expires before the message has been acknowledged.
+As you can see, in the second example, the overhead of tearing down and establishing a new TCP connection is gone.
+Yes - but without KeepAlive, it will close once that document has been sent.
+Or are multiple TCP connections required for each transmission and acknowledgement?
+With KeepAlive, it will allow the client to issue the next request without tearing down and setting up another TCP connection.

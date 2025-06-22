@@ -1,0 +1,8 @@
+Another approach would be to have a Many-to-Many table with a UserId field and a DocumentId field to link Documents to Users that have access to them, and to also have a UserId field in the Documents table that is Null if the document is generic or that contains the ID of the user it is related to.
+Let's say I have a Documents table and a Users Table. Documents can be generic or related to a user in three ways: 
+I could model a Many-to-Many relationship with a table containing a DocumentId field, a UserId field, and a bit telling whether the user has access to the document:
+The first method is cleaner.  I would make a few suggestions, however.  You don't need the UserDocumentID surrogate Primary Key.  A composite key of UserID and DocumentID would suffice, while also provide a unique constraint for the junction table.  Also, is HasAccess really necessary?  I believe the existence of the record in the junction table is enough to indiciate that access is granted.
+I am modelling a database for an application I am developing and I am in front of a choice for which I would like to know what the best practice is.
+Tailored for that user, in which case access to the document may or may not have been granted to him yet;
+It seems to me as though the access property should be at the document level. Therefore, I would do the following. The constraint on UserId in Document could be NULL if it does not belong to a user.
+The first approach looks tidier because there is only one UserId FK. The second approach however allows to filter Documents by user without the need to join a table.

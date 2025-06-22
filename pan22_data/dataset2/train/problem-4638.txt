@@ -1,0 +1,7 @@
+What happens if there are more inserts per second than mongod is able to save to the hard disk? Will there be any warning or will it simply fail silently?
+I use MongoDB to store periodically measured values. Every ~100 ms a bunch of values is inserted as document. It works fine, but I'm worried about performance issues. (I use safe inserts, it seems as if in PyMongo this is the default.)
+I am thinking about a simple replication setup using one master and one slave. Does the initial sync or a resync process lock the databases?
+Is there any method to monitor write load? I've found only db.serverStatus().writeBacksQueued which is always set to false when I call it. How could I test how much data I have to insert to fill up the write queue?
+I think have partly answered my own question. I managed to get up to 12.000 inserts per second using a simple while loop inserting a small test document. But qr|qw still shows that there are the read- and write queue is still empty:
+Do I have to worry about write locks? What happens to an insert during a write locked time period? Is it queued and stored later on?
+"Queues will tend to spike if you’re doing a lot of write operations alongside other write heavy ops, such as large ranged removes." (found here]

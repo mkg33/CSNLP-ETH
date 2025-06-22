@@ -1,0 +1,21 @@
+If you make the gradient directions wrap with some period, the noise itself will then wrap seamlessly with the same period.
+The resulting texture is tileable, has no obvious distortion, and doesn't repeat in the way that a mirrored texture would.
+This is why the code above takes the lattice coordinate modulo the period before hashing it through the permutation table.
+This gives a positive region (yellow) and negative region (blue)
+The answer is to walk in a torus in 3D noise, generating a 2D texture out of it.
+Here's some Python code for a simple Perlin noise function that works with any period up to 256 (you can trivially extend it as much as you like by modifying the first section):
+I can think of two ways to (possibly :-) ) resolve this:
+One simple way I can think of would be to take the output of the noise function and mirror/flip it into an image that's twice the size.
+Essentially, you will want each octave to tile the entire just image once, rather than multiple times:
+Put that together and you get something like this:
+I had some not-bad results interpolating near the edges of the tile (edge-wrapped), but it depends on what effect you're trying to achieve and the exact noise parameters.
+Basically, map the X coordinate of your pixel to a 2D circle, and the Y coordinate of your pixel to a second 2D circle, and place those two circles orthogonal to each other in 4D space.
+The other step, is that when summing the octaves you will want to scale the period with the frequency of the octave.
+With some small tweaking and color mapping, here's a cloud image tiled 2x2:
+Works great for somewhat blurry noise, not so good with spikey/fine-grained ones.
+There's two parts to making seamlessly tileable fBm noise like this.
+Here's one rather clever way that uses 4D Perlin noise.
+Now, in this case, it's pretty obvious what you did when you look at this.
+First, you need to make the Perlin noise function itself tileable.
+Perlin noise is generated from a summation of little "surflets" which are the product of a randomly oriented gradient and a separable polynomial falloff function.
+The surflets have a 2x2 extent and are centered on the integer lattice points, so the value of Perlin noise at each point in space is produced by summing the surflets at the corners of the cell that it occupies.

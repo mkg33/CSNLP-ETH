@@ -1,0 +1,18 @@
+I've written $F_D$, because at some point, my model does a query using a Ball Tree, which depends on D. I don't know theoretically why this works, but I can say that experimentally, it works (in the sense that the model outputs things which I expect and are reasonable).
+$$E_u = \dfrac{1}{N_u}\sum_{i=0}^{N_u-1}\left\lVert x(t_{i+1}) - F_D(\{x(t_j)_{j=0,i}\})\right\rVert_D$$
+Essentially, in my first model(the one this question was based on), the weight vectors were applied on the target vectors and on the input vectors that went into the model.
+Otherwise it would seem you actually use the current state to predict the current state, which any good model would exploit for 100% accuracy.
+This is because I introduced the weight vectors in a wrong manner.
+Here I am assuming that $\alpha_j$ is a scalar and learnable, so can acts dynamically with $w$.
+Did you make a mistake in your subscripts though, going one too far?
+As far as I understand the notation, it looks as though it is normal least squares - you are predicting the state, based on the output of $F$ being applied to previous states, constraining the magnitude of the weights.
+The solution was to update my model to use instead the weighed euclidean distance.
+Perhaps you should distinguish your $w^T$ variables; for example using $w^T$ for the sampled weights and ${w^{T}}^{*}$ for your estimates, i.e.
+After some research on this problem I've realised the model I've developed was incorrect.
+Should the argument of $F$ not be: $\mathbf{w}^T x(t_j)_{j=0, i}$ (without: $_{+1}$).
+I was computing an $L_2$ norm...by defining an error as the distance of the model vector from the target.
+Introducing this into $E_u$ we get that $w$ doesn't even matter.
+Suppose this is right...because the model converges to the target => on the long term this will behave like a linear transformation: $F(w\mathbf{x})=wF(\mathbf{x})$
+The fact that you have $\alpha_j$ in your example approximator should linearly scale the weights arbitrarily to counter any (linear) constraints you apply to $w$.
+Diving more deeper I realized this was a property of space.
+No matter how you strech you transform all the points (target and model) in the same manner <=> the relative positions between the points don't change (the errors might be bigger or smaller, but the order relationship between the errors will be preserved).

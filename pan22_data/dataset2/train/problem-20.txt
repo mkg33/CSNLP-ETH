@@ -1,0 +1,6 @@
+Note that I have a .re extension. I don't think that matters, but it may be a good idea to have some kind of extension to know what the file contains.
+The no_address_mappings options will typically be located in main.cf while the other options, in master.cf
+I have tried sending emails from a hotmail to my server with pills in the subject but still no luck! Also is there a return to sender method instead of DISCARD?
+If that works, you may be missing the line to include the header or a line that prevents the inclusion as others have mentioned.
+If postmap -q "<put test header here>" regexp:/etc/postfix/header_checks is correctly returning DISCARD (or the appropriate action for the match) but postfix is not actually performing said action, then there is probably a receive_override_options=no_header_body_checks somewhere in main.cf or master.cf that is turning off the header checks. In the master.cf file, it would be a -o option in one of the service configuration entries.
+In the header_checks(5) manual page, there is this paragraph which says that for a while now the default for all regular expressions is to view them as case insensitive:

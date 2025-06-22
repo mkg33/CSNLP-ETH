@@ -1,0 +1,8 @@
+"No route to host" errors on what is a local link connection are definitely due to problems with IP to Ethernet address resolution (ARP).
+Try hardcoding the Ethernet address of the RPi in the laptop ("arp -s 10.42.0.76 ") with the tshark process OFF.
+It would be helpful if you could post network information ("ifconfig" and "route -n" output) for both the RPi and the laptop, as well as the nmap command line.
+Also the content of "arp -a" on the laptop and RPi when the problem is occurring (with tshark off).
+Try turning off firewall rules on the laptop (or at least on the eth0 interface).
+If that fixes it, look for things that might be ARP packets or redirecting them.
+Since with tshark running on you get results, conclusion is something is preventing the laptop from receiving packets from the RPi due to an Ethernet issue.
+Running tshark on the laptop puts its eth0 NIC into promiscuous mode, which cause the NIC to pass all packets received up the stack, rather than packets that have the correct Ethernet destination field of your laptop (or of broadcasts, or of multicasts to which the laptop is subscribed).

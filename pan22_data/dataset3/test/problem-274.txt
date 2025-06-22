@@ -1,0 +1,12 @@
+I'm trying to condense my Deferred Rendering G-Buffer.
+I know Frostbite and Killzone (the only two AAA company's G-Buffers I could find) use them.
+With that you can apply lighting in world space, as far as I'm aware, Crytek & Epic do the lighting in world-space now.
+So I have some questions about getting 2-component Screenspace Normals.
+How are screenspace normals created, and is this step before or after using normal maps or bump maps?
+After loading your normal maps, you construct a TBN matrix to transform from tangent space to e.g.
+If it's done before using normal maps, how are normal maps going to be affected by the screenspace-ness of the normals, and if after, how can you justify using a Model-View matrix on all fragments rather on vertices?
+So in essence, your normals in the G-Buffer are stored in world-space, not screen-space.
+I realize you can get the blue component using pythagoras, but how are they returned to world space?
+I'm confused when you say "screenspace normals", Killzone uses view-space normals, they store the X & Y coordinate of the normal in FP16 format, and reconstruct Z using $z = sqrt(1.0 - Normal.x^2 - Normal.y2)$ a problem with that is that we lack the sign of Z, even in view-space the normals can point away from the camera, i.e.
+When you sample the G-Buffer on the second pass, for each texel, you get an RGB color (assuming you're using RGB) that maps to your coordinate data.
+I'm not sure what you mean by "screenspace-ness", but when writing any sort of data to the G-Buffer, you're essentially writing their current value, if the normals are in world-space, they will remain in world-space when written to the G-Buffer.

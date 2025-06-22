@@ -1,0 +1,14 @@
+How can I avoid this, entering a control cycle that counts the gpg error message, recognizing when something went wrong and the new archive wasn't created?
+The problem is, every once in a while I must reopen the file not only for reading, like recovering a password I did forgot, but for writing too, like writing down the password for a new account I made on a new site.
+I made a simple script to do all this in just an action, but I just found a major flaw today: if I fail to enter a new password (like entering a different string when it asks you to repeat your choice), the archive will obviously not be created, as gpg will give an error message, but the script will go further, deleting your new text file, when it already had deleted the old archive as first action.
+If the output is not 0, the following will only execute rm if the preceding command (in this case gpg) was successful:
+Note that you should quote any uses of variables (see my code as example), otherwise your script will behave weirdly with file names containing e.g.
+Also, I'd want to keep the updated text file instead of the old archive if some error occurs, as I don't want to modify the file another time again repeating the edit (I might have forgotten it in the meantime anyway).
+You could of course combine both approaches, making sure gpg succeeded and the other file exists.
+To try, run the gpg command, get an error condition, and then (assuming bash) enter echo $?.
+I know that I can just remove the first line, but I'd want to avoid answering 'yes' to the overwriting message each time, as I know the archive already exists.
+If gpg returns a non-zero exit code when an error occurs, you can check that.
+I have a text file in which I save all my important personal data like all my accounts' passwords and my credit cards' PINs in case I forget those.
+Alternatively, you can make sure the .gpg file exists before you rm the text file.
+Then, I need to delete the old archive, create a new archive from the updated text file, and delete the text file.
+Obviously, that file needs to be encrypted, so I resorted to gpg (GNU Privacy Guard).

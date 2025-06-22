@@ -1,0 +1,23 @@
+However, in some configurations, you may accidentally be shown what the firewall is allowing.
+This is the first web service I found by doing a Google search; probably others out there too: http://www.hackerwatch.org/probe/
+It gives you more visibility than the tool performing the scan can provide.
+That way, you can catch any occurrence of packets that got through, even if the target host happens to be down or doesn't respond on a particular port.
+your IP address is under the deny list or is missing in the allowed list).
+Now let's assume the firewall is blocking you (e.g.
+You know port 80 has to be open (it works for appropriate IP addresses), but when you (the disallowed IP) attempt any scanning, all port scan attempts on the firewall drop the packet (including port 80, which we know to be open).
+If you own the firewall and want to perform functional tests against it, you can set up a sniffer on a spanned port of the switch connected to its DMZ interface prior to your scan.
+nmap's built to show when this kind of difference is present, to help you determine the behavior of the host that you're looking at.
+If you use a web service to perform the port scan, or run the port scan against your external IP address from an external location, you'll see which ports are open on the firewall.
+It seems no one has asked this question before (most regard host-based firewalls).
+If you scan the firewall's IP address itself (assuming it has an IP address at all), it's unlikely to be using the same rules as it does for traffic bound to the host behind it.
+Question is though, how do you determine the open ports on a firewall itself (disregard whether the host you're trying to connect to behind the firewall has those particular ports open or closed).
+nmap) knows all about SYN scanning, FIN scanning, and the like to determine open ports on a host machine.
+There's no distinction, from a packet filtering perspective, between what the host is showing you and the firewall is showing you.
+If serverfault.com is behind a firewall and still allows this traffic through, then we can assume the firewall has port 80 open also.
+Say the host listens on only 80, but the firewall lets 80 and 25 in to it.
+nmap would show that host as having port 80 open, port 25 closed, and all other ports filtered.
+This is assuming the firewall is blocking your IP connection.
+Example:  We all communicate with serverfault.com through port 80 (web traffic).
+So, how might we accomplish a direct firewall scan to reveal open/closed ports on the firewall itself, while still using the disallowed IP?
+Take the example of a host that responds to traffic on ports that it's not listening with a rejection (a RST packet, which is normal TCP behavior), and a firewall that drops traffic silently.
+The firewall lets through the port 25 traffic, which the host rejects, port 80, which the host connects, and blocks all others.

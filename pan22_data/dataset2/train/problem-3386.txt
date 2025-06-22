@@ -1,0 +1,6 @@
+The bottom line is that your server has trouble binding to the hostname (not the port like it says in the error message)
+starting up Glassfish AS would tell me the port 4848 is blocked (or any port that I configure). But checking the ports are not used. There is no firewall.
+I had this problem and the culprit was in /etc/hosts, there were two entries and the "hostname" command returned a reference to the second entry.  When the second entry was made the first entry, e.g. 127.0.1.1 my.domainname.com (or localhost) then that fixed the problem.
+Is it possible that it's telling you that the port is blocked on the firewall? If that's the case, you'll have to configure a rule to allow the incoming connections.
+But in the case of nothing helpful from glassfish, you might consider strace(1), so that you can find the system call that fails and the error it throws. You might need -f to follow forked child processes, depending on how glassfish behaves.
+Ubuntu 9.04 Linux ubuntu 2.6.28-11-generic #42-Ubuntu SMP Fri Apr 17 01:58:03 UTC 2009 x86_64 GNU/Linux (its a virtual server hough).

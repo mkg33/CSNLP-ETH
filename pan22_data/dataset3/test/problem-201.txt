@@ -1,0 +1,20 @@
+So the web server sends back something with source port 80 and destination port 35201 (or whatever), the router looks up which of the network client connections it had assigned as 35201.
+Each client inside the NAT assigns a random high-number port to be the source port of their connection to the server.
+Question: Assuming PAT is enabled on my home internet router, how does my router know which hosts to de-multiplex packets to when it receives packets from the internet?
+Note that this means web server will probably not know what source port the original client had requested, just what source port the router translated it to.
+I just want to continue on above answers, regarding the example you mentioned about external device trying to reach your internal host, so based on above, by default your router will drop traffic that has been initiated from the internet, because it does not know which internal host in your lan should receive traffic, since there's no entry created for this in the NAT Table of the router yet.
+My guess: I am going to guess that there is some meta-data that I am not aware of that is attached to packets that somehow identifies each individual host on a private network.
+Devices performing Network Address Translation maintain a translation table which includes information about the source and destination IP addresses and port numbers.
+Each send a request to the same server for the same information.
+(The source port on the request becomes the destination port on the response.)
+How does the router know which packets should go where?
+When the router translates a request, it also sets a source port, and it keeps track of which source port it assigned to which connection.
+The combination of source IP address and port number, and destination IP address and port number create a unique identifier for each session.
+Each packet should have the same source and destination address.
+And the other host doesn't know meta-data other than my network's public IP address.
+The other host sends the packet to my network's public IP address.
+Example: Some host(other) on a different network wants to send a packet to a host(my) on my LAN.
+The ports should be the same unless there is some port magic that I am not aware of.
+But since my host is not expecting the packet it couldn't have given my router any meta data about how to de-multiplex the packet.
+The way to allow traffic incoming to your lan from the internet would be to define a specific port forwarding rule, also known as static nat, so that you tell your router when traffic comes from the internet to port 80 for example, please forward this traffic to my web server on the lan on ip and port 192.168.1.5:80 for example.
+But this doesn't seem to work in the next example.

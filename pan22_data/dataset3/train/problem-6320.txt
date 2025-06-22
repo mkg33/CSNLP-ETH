@@ -1,0 +1,22 @@
+You can actually set it up such that the server only uses a single NIC, which is actually what I would normally do in this situation, but I'm trying to keep it somewhat simple.
+Create an /etc/openvpn/mybridge-server.conf (assuming you made a copy of easy-rsa):
+Any machine running Linux that has 2 NICs can do this.
+It would forward any request from the private network to 172.20.20.15 to the server's current IP (public).
+I am assuming that you will have eth1 as the "internal" interface here.
+Ensure that openVPN starts on boot, and start/restart everything:
+Like any switch, Ethernet frames are passed through only if the destination mac is present on the other side
+To the network, it is indistinguishable from a switch that happens to have two ports in separate locations.
+You could even serve DHCP from one side if you wanted, or remotely perform configuration of devices that come out of the box with pre-configured static IP addresses.
+There are also some router distros, such as Vyatta, that will support this.
+Then delete ifcfg-eth0, since your bridge will the primary interface
+If you want to try this, create the bridge as above, put eth0 in BRIDGE_PORTS instead and copy the IP information from the ifcfg-eth0 to ifcfg-mybridge.
+http://www.cisco.com/en/US/products/hw/routers/ps380/prod_models_comparison.html
+At this point, you will have a bridge interface called mybridge, containing the eth1 and mytun interfaces.
+You could go with some kind of reverse NAT on router A.
+Create the mybridge-up.sh file in /etc/openvpn to ensure that the openVPN interface is added to the bridge when it starts:
+You might be able to use something like DD-WRT as well but I am not sure about that one.
+After all of that, any machines on either side will be able to talk to each other as if they were on the same physical segment.
+I have used it extensively in this mode for similar purposes.
+i don't know how you connect to the ISP Internet Line (Ethernet, ADSL,SHDSL,...) so i cannot suggest you a particular 800 Series Router
+It might be a little easier with something like Vyatta, but I've done this a bunch of times and it works perfectly:
+I don't have any configuration example to show, but it would be easy to setup on a variety of enterprise-class networking.

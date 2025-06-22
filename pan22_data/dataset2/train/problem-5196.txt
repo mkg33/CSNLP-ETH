@@ -1,0 +1,10 @@
+You should be able to set the metric of the interface the host should use to a lower one of of that of the VM and Windows should select that one over the VM-only interface.
+Here's a KB article for XP/Windows 2000 which explains a bit about setting metrics;  this   article has a detailed step-by-step procedure to set it.  
+For the real machine, go to network setting and unselect Obtain IP Address automatically for both IPv4 and IPv6. Choose a random IP that doesn't belong to the network you want to connect to, that way the real machine will not know to whom she's supposed to talk to.
+If I understood well your question, you want to have the real machine on a network card and the virtual machine on another.
+The selection of a route (and therefore interface) is based on the metric of the route.  When confronted with two routes (i.e. same subnet, same router, different interfaces), Windows (actually all IP implementations) should select the route with the lowest metric.  The metric represents the "cost" of a route:  these days it's really just a preference value.
+I have 2 NICs and 2 physical links from 2 different ISPs. I want to set up a Windows XP virtual PC with VirtualBox to use the 2nd link. But I don't want the host (Windows 7) to use it, I actually want it to ignore it in all cases.
+I have set up bridged on the network settings for the VM, and to the proper NIC. As far as I know, there is no way to dedicate a NIC to a VM using VirtualBox, so thats why I want to tell Windows 7 to ignore the 2nd link.
+I don't know any solution to prevent the real machine from using both cards without affecting the virtual machine, but here's a trick:
+Caveat - it's possible to set the interface metric on Windows, but I've never tried it with two identical routes.  Should work though.
+Next time you boot you get your real machine connected to both networks but only understand one, and the virtual machine only sees the one that the real machine ignores.

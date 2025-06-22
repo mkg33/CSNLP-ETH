@@ -1,0 +1,20 @@
+This keep the crontab (of one user login) consistent.
+In our environment we have two DBAs to run some cron jobs defined in cron_jobs.txt file.
+Another way would be to fetch the current file, append it and then load it.
+This is a best practice and offers many benefits beyond fixing your problem:
+Setup a separate account for this purpose, and let cron jobs run under that account only.
+Now, DBA_2 edits the same cron_jobs.txt file and reloads.
+For an example, a job is set to run on 3PM daily by DBA_1.
+The human user would normally do that correctly when using crontab -e.
+In my previous company, I disabled cron & at for all real user accounts.
+Few days later, DBA_2 changes it to 2PM and reloads.
+Liek no matter who loads the cron_job.txt file, only one set of jobs should be running?
+The new sets of jobs will run under DBA_2 useraccounts.
+The problem with this approach though is that the earlier run would always win.
+In which case the earlier edits are present at the time of making changes.
+By the way (DBA_1 has admin access to UNIX, DBA_2 doesn't).
+Frequently we need to chan ge timing and commands in that cron_jobs.txt file and reload it.
+Here, the trick required will be to script the merge of new_command.txt into buffer.txt so that replication is eliminated.
+Have the cron job check on the existence of this file and the date of the file - if it's today's date than the job has already been run - so no need to run - the 2nd attempt to run the file would exit.
+Problem is, if DBA_1 edits and reloads that file ($ crontab cron_jobs.txt) it is loaded under his useraccount.
+One way to do this would be to have a semaphore file that both users can write to.

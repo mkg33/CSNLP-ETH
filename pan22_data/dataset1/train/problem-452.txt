@@ -1,0 +1,7 @@
+We run a web server and need to set up a new site in the same way you'd set up a virtualhost but just based on the IP address of the server rather than a domain name, eg so we can use:
+which runs on a configuration in /etc/httpd/conf/sites/ just like any other vhost.
+This vhost will have it's own set of restrictions (eg whitelist IP addresses) so it can't interfere with other vhosts on the same IP.
+Is this possible? And if so, what's the core thing I should be looking out for.. maybe it's as simple as:
+At the top of the Vhost in your web configuration there's likely a line that says <VirtualHost *:80>.  What that means is that connections to any IP ( the * ) on port 80 ( :80 ) go to this virtual host.  What you need to do is you need to change that * to your current IP and also do it for the one that says *:443 if you have https enabled.
+Then to add the new site, make a new VirtualHost (you can copy the current one and paste it down at the bottom, so you should have two port 80's and two port 443's) and change the * to whatever the new IP is, and edit your VirtualHost settings accordingly.  That should give you two distinct sites, and just an fyi, you don't need two IP's, you can do VirtualHosts by the domain name, but I prefer to do it by IP personally.
+Make sure that the IP is routed to the server, and that your server is set to accept it (normally through an eth0:0 interface if you don't have two real NICs)

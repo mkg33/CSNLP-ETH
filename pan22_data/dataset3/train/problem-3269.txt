@@ -1,0 +1,8 @@
+wget does not support compression, so the server would not attempt to use Content-Encoding when you connect with wget.
+Could your webserver be applying gzip Content-Encoding to the file you're outputting from PHP (or could you have enabled it in PHP itself eg zlib.output_compression)?
+It should create an entry in the request list you can click on, which will open a subwindow with a "Headers" tab, where you can see if it had the Content-Encoding: line in the Response Headers: section.
+BTW, I think you want to do ob_end_clean() there, rather than ob_end_flush() since _flush() sends the client anything you have in the buffer, while _clean() drops the buffer and any headers already in it.
+While that's open, go back to the main window you opened it from and hit the link to download the file.
+If you use Chrome, Ctrl-Shift-J to open the Developer Tools and go to the Network tab.
+Zipping an already zipped file tends to make the actual file larger, so if the client reads the script's Content-Length header, it'll stop downloading before the "larger" zipped file is output.
+Try it with curl and see if you get the broken file.

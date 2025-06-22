@@ -1,0 +1,19 @@
+To do this I would look at the database metadata which would be part of the database structure itself.
+To answer the question of will you get the same results running an analysis such as Brent's sp_Blitz scripts in a non-production environment the answer will lie in what information you are trying to gather and what that information depends on.
+A DMV is at high level just an abstraction layer that provides a view of the instrumentation that SQL Server has running.
+Brent's sp_IndexBlitz also performs this same check and will provide the usage details based on the settings specified.
+Using a combination of this data I could then determine if this index is making inserts run slower or is a benefit to select performance in a way that justifies its overhead.
+1) Suppose I am interested in analyzing the indexes in the database to determine if I have duplicate indexes.
+In this case the results should be the same regardless of environment because the data that is being queried to draw the conclusion is part of the physical database structure.
+Hopefully the above examples have provided some clarity around when and why you would have differences between the environments.
+To further clarify on the "why would data be different" which seems to be a sticking point here lets dig in to what DMVs are.
+From TechNet sys.dm_db_missing_index_details emphasis mine.
+This is mentioned in Microsoft's documentation as shown below:
+To do this I would examine the DMV (sys.dm_db_index_usage_stats) to determine if the index in question has any scans, seeks, lookups or updates.
+For this reason when you perform a backup and restore it is functionally equivalent to a server restart for the purposes of the discussion around DMVs.
+Take the two examples below as a means of showing the difference in results (or no difference) based on the type information sought.
+Brent's sp_IndexBlitz does this as one of the steps in its analysis, among others.
+In this case though the data will be different in results between production and the non-production environment unless the exact same workload and configuration is running in both environments.
+With this being said as mentioned by Tony when SQL Server restarts the data that is within these DMVs is not persisted.
+Once the database has been decoupled from the original host of this instrumentation data the data would be lost unless it was persisted elsewhere.
+2) Suppose I am interested in analyzing an index to find out if the index is utilized.

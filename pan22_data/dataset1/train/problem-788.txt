@@ -1,0 +1,13 @@
+There isn't a routing problem visible from the routing table on the host you have posted.  However, I notice you are using some very awkward behaviour whereby you set two gateways that are in subnets you don't have an address in, one of which you don't have a local route for, which makes me wonder whether you have hit some undefined behaviour.  I would be curious to see the contents of the ARP tables on the hosts while the ping isn't going through.
+I think I see what you are trying to do here - this type of thing is nonstandard.  It seems somewhat purposeless to try to force traffic through a gateway on one network but only do it for hosts which are otherwise directly connected on some other subnet, though if you were to want to send traffic through a router the correct solution is to provision a /30 subnet for each host.
+Failing that, it's possible that the gateway is doing some kind of stateful processing (such as m_conntrack, if it is running linux) and is severely unprovisioned, or you might be having packet loss.  Alternatively, the Xen server might be taking time to figure out where the packets go, particularly if you are using openvswitch which has a lot of surprising stateful behaviour.  It might also be requiring that some outbound traffic be sent before inbound traffic can be received, though this would be unusual.
+It is certainly not the case that traffic to your non-RFC1918 network will be transmitted over eth1, if the routing table looks like it does.  There is no route that would do this.  Also, bear in mind that each host has one routing table in which routes are associated with interfaces.  Any packet which is needing routing (basically, an outbound one) traverses this same table and follows the same rules, matching the most specific route, using the metric to break ties.
+I have sporadic routing problems in my setup which I suspect to be an issue with the routing and two network interfaces.
+The VMs both also have two (virtual) NICs, eth0 with their own public IP and eth1 for the local traffic.
+Occasionally I can reach the servers from the outside but they are not able to ping/reach each other locally.
+Now, sometimes for example I can't ping lb01 from be01.
+With 'tcpdump' on lb01 I can see that the ICMP echo request reaches lb01 but I can't see an answer.
+Also, if I issue a tracepath on one of the hosts to the other, the ping suddenly gets a reply.
+My suspicion is, that since the maschines can reach each other via both interfaces, outgoing traffic of a connection is not routet to the same interface as the incoming.
+I guess that would mean that I have to set up different routing tables?
+Could someone with a deeper knowledge in the whole routing stuff give me a few hints on how fix this?

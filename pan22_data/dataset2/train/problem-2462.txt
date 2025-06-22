@@ -1,0 +1,10 @@
+(And, yes, anytime I had to do this before I did it "the right way", backing things up, scheduling downtine etc. ...but I just want to know if it's possible to do this sort and things "quick and dirty" or if there is any DB system that actually has support for "quick, live and dirty" schema changes)
+The Percona tool uses triggers to aid in it's altering, and it doesn't play nicely if your table already has existing triggers. I ended up having to write one that actually handles existing triggers well, since they're super important to our database https://github.com/StirlingMarketingGroup/smg-live-alter
+How do most "popular" (MySQL, Postgres...) database system handle altering tables on live production databases (like adding, deleting or changing the type of colums)?
+We have used this approach many times to change large live production tables without downtime, with no issues at all.
+Yes, many modern databases will allow you to just add a column or change the characteristics of a column, like adding or removing nullable.
+Shutting the system down and doing all changes at once may be very risky. If something goes wrong, and frequently it does, there is no easy way back. 
+The following approach has low risk, because the change is done in several low-risk steps that are very easy to roll back:
+Someone just suggested Online Schema Change for MySQL from Facebook script (with a tutorial here and source here)... seems like a nice way to automate a the set of "hacky" ways to do it... has anyone ever used it in something resemblig production?
+But... does any current database system support doing these things "on-line" without stopping anything? (maybe just delaying the queries that reference a column that is just being changed/deleted)
+As an Agile developer, I sometimes need to refactor tables without any downtime at all, as those tables are being modified and read from.

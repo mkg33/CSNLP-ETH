@@ -1,0 +1,17 @@
+/proc/meminfo will have a lot of lines about the current RAM usage.
+If the total processes are in the tens of thousands then a forkbomb or something similar may be consuming all of your resources.
+If you can open a new shell but can't run anything in that shell, then it could be all sorts of different things, for instance your PATH could refer to a directory on a network share that's down (try running "/bin/ls" so PATH is not searched) and you have to wait for it to time out before it will look in the other directories ...
+If the drive does not have errors, then it might be safe to try reading from the drive: if you have permission try opening /var/log/kern.log which might give you more insight into what's going on.
+This will have a hexadecimal number counting all of the errors that have been logged for that device.
+The first three numbers are your load average (same as uptime command) the 2/176 says there are two processes currently runnable out of 176 total processes.
+If MemFree is near zero and Buffers and Cached are near zero, then something has consumed most of the memory.
+If you have sysfs mounted (typically /sys/) you can try reading /sys/block/[drivedevice]/device/ioerr_cnt (where [drivedevice] is your drive device name e.g.
+In the order of "least likely to cause vim to crash", start by getting vim to open /proc/loadavg (:r /proc/loadavg) it should insert a line like
+Otherwise it's possible that there is an IO problem, which can increase load numbers without using the CPU (eg failed harddrive).
+You can't ssh in, you can't open a new shell, nothing.
+If the first three numbers from /proc/loadavg are really high (eg 10.0+, depending on # cpus/cores) then it could be a runaway process taking up all your CPU time (in which case your commands should execute... eventually.
+Mine is 0x8 (some boot tests for write cache and other settings cause errors which are normal, depending on hardware and drivers) but if yours is big (and getting bigger, try reading it twice) then the drive is dying/dead.
+You can probably read /proc/[randomnumber]/cmdline and have a good guess at where these processes were coming from.
+Could be all sorts of things, this assumes you can't do anything at all other than use your existing vim.
+Note that MemFree is normally low due to Buffers and Cache, so if Buffers and Cache are high this is normal operation.
+/var/log/syslog and /var/log/messages might help as well.

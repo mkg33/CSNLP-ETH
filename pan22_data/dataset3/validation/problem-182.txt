@@ -1,0 +1,16 @@
+Right now my server is a fully managed CentOS 5 - Plesk 9.2.1.
+If you run very intensive queries eg SELECT * FROM tbl1 INNER JOIN tbl2 ...
+You should start by installing the sysstat package.
+Bernhard response is good, but i suggest you skip sysstat and go straight to munin.
+I don't think the server is getting too much traffic (although it is getting consistant traffic) just something seems to kill it...
+INNER JOIN tbl3... LEFT JOIN tbl 4... as a really basic but obvious example, and you're returning lots of rows, or your query isn't indexed properly, this can slow down your system massively - I've learnt from my inexperienced days where I didn't optimise ;-)
+So my question is, what would be the process that you debug a webserver for issues of performance where you are getting downtime?
+Have you tried some form of query profiling on MySQL?
+When the server starts being slow again, you can look into the output of the "sar" utility (part of the package) to identify what resource is the actual bottleneck.
+It will create statistics about CPU, Memory and I/O load every 10 minutes.
+In recent days the server keeps choking where apache (or) mysql or both seem to slow down significantly and pages aren't returned or are returned incredibly slowly, restarting mysql helps, sometimes restarting apache helps, and others i need to restart the whole server (SSH starts to really work slow).
+mysqlreport is at http://hackmysql.com/mysqlreport, and I can only post 1 link so Google for "tuning-primer.sh" instead :-)
+with graphical representation of load it'll be much easier to figure out if you are swapping [ too many apache proceses?
+], trashing disk [ badly optimized sql queries, too big temporary tables?
+Tools such as mysqlreport and the tuning-primer.sh script are good starting points for this.
+Unfortunatly this is somewhat of a vague question.

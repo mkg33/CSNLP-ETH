@@ -1,0 +1,9 @@
+I'm combining log files from several docker containers on my host and sending them a remote logging service. I'm just redirecting the output to logger and tagging it: 
+However, *.* matches every kind of logs from my host machine, when I only want to send the redirected logs to the remote service.
+The ones containing deviant are the only ones I want. I've tried to specify which log entries like this:
+...and restarted logging...but I still see all entries (not just ones tagged deviant) in my remote logs. Why?
+In syslog.conf you can only assign an action according to a given facility and level of the message.
+The tag specified by logger -t [tag] cannot be used for identifying the message by syslog. However you could use -p [facility.level]' option of logger to set custom facility and level, for example:
+Then in syslog.conf you could catch and redirect these messages:
+Try to find a facility that is not used by any other service. Good choice would be one of local0 to local7.
+When you specify a level, like info, by default it means the minimum level that will be matched by the rule.

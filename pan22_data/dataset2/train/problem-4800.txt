@@ -1,0 +1,6 @@
+Please consider depending on the set there are certain syslinux parameters that must be appended in order to properly set the net services like i.e. ipappend 2 and ip=dhcp or ip=bootp etc
+if your set does not have net support just get a new set. You can find lot of kernel/initrd sets with net suports on Serva's page.
+This is what happens. When you PXE boot vmlinuz/initrd the net transfer of both files are performed supported by the PXE "UNDI" net driver located at your client's PXE firmware.
+From the moment vmlinuz is alive and it has mounted initrd the PXE UNDI driver is not used anymore now the corresponding Linux net driver is used instead ("if available").
+When a vmlinuz/initrd set does have net support you will see when the kernel starts a new DHCP request as it need to initialize its NIC/s despite the UNDI driver has done exactly the same just seconds ago before transferring vmlinuz/initrd. Then you can see if your set has net support or not by confirming if there are 1 or 2 DHCP request; or just see init's code.
+From what you say it seems to me you are using a vmlinuz/initrd set that does not have net support or probably you are messing with the init script and you are invoking the ping services before init sets the Linux network services up.

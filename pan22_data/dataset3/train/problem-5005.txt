@@ -1,0 +1,10 @@
+Not necessarily specific to that issue above, are there established ways of designing an application to be built on top of a multi-primary cluster?
+I have experience with a single primary cluster configuration.
+When in multi primary mode, the group replication is slightly delayed from node to node.
+This could be implemented by connecting to the node with id sessionId % n where n is the node count.
+I'm developing a scalable cloud application and I wish to use a multi-primary cluster to be better able to scale horizontally when needed.
+So I was wondering if there are better, established methods of achieving this kind of consistency.
+However, actually doing that seems rather brittle and non-standard.
+That way anything that's created will be available on subsequent requests because it'll request the same cluster node.
+So, for example, two sequential requests, say PUT /users/1 and GET /users/1, can successfully insert but then fail to select until some time later.
+I considered making each user session stick to one of the databases for the lifetime of the session.

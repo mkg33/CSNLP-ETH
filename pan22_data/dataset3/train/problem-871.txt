@@ -1,0 +1,14 @@
+https://software.intel.com/en-us/articles/using-intel-mpi-library-and-intel-xeon-phi-coprocessor-tips
+Further verifying that the port is open and accessible behind firewall and everything is configured correctly under SE Linux/other security features would be a logical first step since clearly the node is not accessible.
+If you are having these issues and using Intel MPI then you should first do a ping-pong test with the Intel MPI Benchmarks(IMB), and analyze those results.
+mpirun -hosts node1 -n 24 /home/cluster/test is the command I'm trying to run (test is compiled from test.c from the Intel compiler's test directory and is nfs shared between all nodes).
+Everything is setup: I can ssh between all the nodes without a password, and I've shared the /opt directory with nfs, so which mpicc and which mpirun succeeds on all nodes.
+Basically, add -iface [network interface] to the mpirun arguments, or add export I_MPI_HYDRA_IFACE=[network interface] to .bashrc
+I'm using Intel's cluster compiler and MPI implementation.
+I will let you look up the syntax for running that on the Intel website.
+Also check /etc/hosts and/or dig headnode to make sure that the host name can be resolved correctly from the node where the job is launched, if it can't I would check my poor cluster configuration before jumping to blame Intel MPI, I doubt this would work with OpenMPI or any other distribution if headnode can't be resoled correctly.
+It works fine on any single node, but if I try to run it across more than one node, I get:
+The tests and benchmarks Intel already wrote are better than anything you will come up with and will be much more useful when diagnosing this problem.
+I'm trying to setup a small cluster consisting of 3 servers.
+Their hardware is identical, and they are running CentOS 7.
+I also setup a basic virtual machine cluster (CentOs 6.5) and I get the exact same error (so it's not a hardware problem).

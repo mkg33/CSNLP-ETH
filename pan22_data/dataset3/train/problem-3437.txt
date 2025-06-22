@@ -1,0 +1,9 @@
+and attach /var/log/messages along with this thread.
+%sys --> if the cycle is spent in %system then much of the execution is done in lower level code i.e might be issue on kernel side.If this issue is reproducible again,please collect the output of
+High %si would suggest a high interrupt rate (si is the time spent in softirq handlers, AFAIK).
+There are many factors contribute to the high %sys usage such as Logon, system call, context switch(both thread and procedure),IO and even sockets data copying from kernel mode to user mode.
+Therefore my first guess would be that the server network interface is being hammered.
+I suggest you can use sar, vmstat and iostat to check these out.
+I know this thread is a really old and I know you are already aware of this,
+Further more, it would be nice to find out which process caused the high %sys usage when spike.
+gdb would be helpful in this case.Find out the process and use gdb to attach on it and you will see what is going on with this process on this moment.Only thing you need to notice is this operation require debug information embedded in the procedure.

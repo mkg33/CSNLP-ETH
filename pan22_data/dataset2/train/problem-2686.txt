@@ -1,0 +1,10 @@
+I'm having problems with an upgraded fedora system. Recently Amazon added EBS based images and I decided to give it a try. I launched a basic FC8 instance and upgraded it with yum. First up to FC10 and after that up to FC12.
+What Kyle said.  The Fedora wiki has an article: Upgrading Fedora using yum -- in particular, I'd check for .rpmsave files in /etc as described in the "Clean Stuff" section.  Fixing the problem is always a better idea than trying to fix the symptoms and likely missing something important.
+You can and should check the contents of /etc/udev as per Kyle's answer. Although udev should function at a basic level without any rules at all, so it's less likely to be the cause.
+In fact when I've upgraded to a newer Udev it uses signalfd(2) , which is not available in my EC2 kernel.
+I read here http://markus.revti.com/2007/12/creating-devrandom/ , how to "fix" the above problems, however on every start of the system everything is the same. I'm planning to add the fixes to /etc/rc.local . Do you think this is a good solution/workaround?
+Pretty much the only way to "upgrade" a system that requires kernel changes is to either build a new image from scratch or find an existing AMI with the OS rev that you want.
+I believe they are created by udev.  Comparing the contents of your /etc/udev directory to a working system or looking at /var/log/udev might give you some insight.
+Well I'm missing /dev/random on the FC12 instance now and there're some other obscure things. For example: /dev/null has 600 permissions and /dev/urandom is not a block device. /dev/random is absolutely gone :)
+Typically your root FS only needs static entries for /dev/console and /dev/null in order to bootstrap. Once booted, a tmpfs mount overlays /dev, in order to provide the full compliment of device nodes.
+You can't really upgrade an ec2 image like that.  Since the kernel is provided by Amazon, you have to make sure to boot your instance with the kernel that matches, or odd behavior (like you described) will happen.

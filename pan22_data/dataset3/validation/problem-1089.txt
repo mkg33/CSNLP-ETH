@@ -1,0 +1,19 @@
+Without coding for each application, I don't know of a load balancer that can do such a thing.
+For comet, I suggest you configure the web service to reconnect when it detects a disconnect.
+I've heard there is a technique, perhaps with HAProxy, where the two servers keep track of the state of connections and if one of the servers fails, the other takes over, without dropping connections.
+I have two webservers that are using comet, an HTTP technique where you have long-lived HTTP connections.
+In the end, I gave up and invested the time reconfiguring the client application to reconnect to the service in a way that was transparent to the user.
+I have two loadbalancers in front running heartbeat with a shared IP.
+If one of these front-end servers go down, all connections are lost.
+Once comet can reconnect, then your current load balancer setup should function as expected.
+Is it possible to have a high availability setup, in this example going to 2 webservers, and allow it to fail over without dropping connections?
+The issue is that every application (telnet, comet, ssh, etc) has a different set of rules for initiating the connection and logging in.
+Some of the lower layer load balancers have a feature that may be able to accomplish what you are talking about, at least for many connections, by passing information back and forth from the active node to the passive node.
+I've also researched how to load balance long-lived telnet connections.
+Look at the Linux Virtual Server (LVS)  combined with a service level daemon like ldirectord to accomplish what you are looking for.
+Even the big expensive load balancers like F5 don't seem to support "migrating" an open tcp connection from a dead server to another server.
+I considered capturing the handshake and connection packets from telnet on our load balancer, then replaying those if it had to reconnect to another server.
+Sorry for not linking, on my phone in the car on my way home :-).
+You can't do it through HAProxy, because that is on the wrong OSI layer - at the HTTP level, instead of at the TCP level.
+This article about HTTP Streaming on ajaxpatterns.org has a code snippet for detecting a disconnect.
+Using vmwares fault tolerance on esx/esxi can achieve this, but there are a lot of limitations to it as well.

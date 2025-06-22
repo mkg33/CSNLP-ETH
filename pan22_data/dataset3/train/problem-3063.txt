@@ -1,0 +1,12 @@
+But if you don't need that kind of thing to work, then you probably shouldn't worry about adding code to make it work.
+Instead, just focus on making the two codepaths as understandable as possible.
+You should start from some sort of problem in need of solution, and then write exactly the code that solves that problem.
+For example, right now you've got parameters named p and _pin that both seem to be doing the same thing.
+You've got member variables named hilo and hiLoTransition.
+You shouldn't write OOP code for its own sake (in fact, you shouldn't write any kind of code "for its own sake", at least in a production codebase).
+The question I want to ask back to you is, "Why do you need CapSwitch and SimpleSwitch to inherit from some sort of GeneralPurposeSwitch?"
+Once the two codepaths start looking more similar, so that the human reader can look at one of them and then look at the other and say, "Okay, I see what's going on in CapSwitch by analogy with SimpleSwitch"... well, at that point, it might make sense to look at whether CapSwitch can reuse any of the actual code inside of SimpleSwitch — via a non-abstract base class, or CRTP, or any other design pattern of that general nature.
+You asked, "How should I factor out a parent class, so that CapSwitch and SimpleSwitch can inherit from some sort of GeneralPurposeSwitch?"
+For example, if your problem is that you won't know until runtime what kind of switch is hooked up to your hardware, then you might need this kind of code to work:
+But it's still very premature to worry about that, I'd say.
+Consider renaming them both to pin, so that a human reader who has already learned what the English word "pin" means will immediately know what's going on in your code, instead of first having to learn what p means (namely, "pin") and then later have to learn again what _pin means (namely, "pin") and then wondering why there are two different words for what seems like exactly the same concept.

@@ -1,0 +1,6 @@
+If you are using dig and specifying your nameserver using the @ notation, there is no delay.  As soon as you have saved the new zone file and reloaded bind it will start handing out the new information.
+In your case, that's set to one day. What probably happened was that you queried for the record just before creating it (or just after) and the DNS server you queried now has a negative record that is waiting to expire.
+If you are not specifying your name servers using the @ notation, (this is what everyone else will be doing) there is most likely caching involved.  dig will include the current TTL in the response.
+Well, since your negative cache TTL is 86400 seconds (one day) you probably just need to wait a few more hours.
+The negative cache TTL is how long non-authoritative DNS servers should cache NXDOMAIN records. In other words, if a name server looks up a record that doesn't exist, how long should it cache "that doesn't exist"?
+That said, I don't see any A records in that zone file.  Did you leave them out of the question or are they not in the file?

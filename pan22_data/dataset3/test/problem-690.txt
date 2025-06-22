@@ -1,0 +1,10 @@
+None of the devices that I know of will stop you from entering whatever you want in an ACL, even if it's wrong.
+Traditional ACLs are stateless so they do not remember any connection states.
+Whichever it's EXPECTING is what decided which you use.
+With ZBF the zones are stateful so return traffic initiated from Data to QA are allowed, while blocking traffic initiated from QA  to Data.
+You could literally type a mask of 222.222.222.0 and it would accept it.
+Here is Cisco's design guide on Zone based firewalling:
+As a side note, on your Guest and QA ACLs, you're using wildcard masks for your first 2 ACEs but a subnet mask for your third (172.16.0.0 255.255.0.0).
+172.16.0.0 (as is defined in RFC 1918) is a /12 network, so your mask should either be 255.240.0.0 (subnet mask) or 0.15.255.255 (wildcard mask).
+https://www.cisco.com/c/en/us/support/docs/security/ios-firewall/98628-zone-design-guide.html
+If you are using a newer Cisco router I would check out zone-based firewalling to solve your Data to QA problem.

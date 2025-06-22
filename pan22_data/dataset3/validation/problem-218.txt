@@ -1,0 +1,27 @@
+Make sure crontab and passwordless authentication are set up.
+This keeps a lot of extraneous relative paths out of the archive.
+Security: you probably want to do chmod 600 *.cnf so only the owner can read and write to this file.
+date +\%Y-\%m-\%d-\%Hh\%Mm\%Ss_\%A will generate a timestamp like 2015-03-19-08h58m09s_Thursday
+Here are two examples of what I do: one for files and one for MySQL.
+The .cnf file contains login credentials so you don't have to pass them by the shell so they appear in ps for other users to see.
+Have gzip write the compressed file to standard output (c flag) and direct the output to a file on your local machine.
+I want to backup remote server with tar command via ssh but saving tar file on local computer.
+Tell ssh to execute a tar and pipe to gzip on the remote machine.
+The benefit to this is it uses bandwidth most efficiently.
+00 00 * * * /usr/bin/ssh login@host "sudo tar -cf - -C /path/to/directory/to/backup/ file_to_back_up | gzip -9c" > /file/on/local/machine/BackUp_$(date +\%Y-\%m-\%d-\%Hh\%Mm\%Ss_\%A).tar.gz
+It can be a series of files too: file1.txt, file2.php, etc.
+Both are pull solutions; your local machine logs into a remote machine and retrieves files.
+Important: file_to_back_up is the file you are actually backing up; it can be a file or directory.
+I use crontab and passwordless authentication with ssh to archive and gzip on a remote machine and then direct the output of gzip to the local machine over ssh.
+The crontab columns 00 00 * * * basically means midnight every day.
+If you want to back up something in your home directory, I guess you can omit -C /path/to/directory/to/backup/ because ssh will by default log you into your home directory.
+The caveat is you need to make sure your mysql access can be passwordless too; the safe way to do that is with .cnf files.
+I tend to automatically delete backups older than five days with the findcommand, unless they fall on Friday.
+The drawback is it's more resource-intensive, though on modern hardware I doubt this matters unless you're dealing with absurdly large files.
+The -cf - flags and parameter create a new archive and spit the data to standard output.
+Depending on your setup, you may want a bunch of these for different projects/databases.
+However, the local machine tells the remote machine to prepare the archive.
+30 0,13 * * * /usr/bin/ssh user@remote.host "mysqldump --defaults-file=.my.database.cnf -uroot databasename | gzip -9c" > /path/to/databasebackup_$(date +\%Y-\%m-\%d-\%Hh\%Mm\%Ss_\%A).sql.gz
+The -Cflag tells tar to start from a different directory than the current one.
+Skip this section if you don't use MySQL, but the concept could carry over to other tools.
+That's why I include the day of the week in my file names.

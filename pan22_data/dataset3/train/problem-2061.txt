@@ -1,0 +1,16 @@
+How do I make the bios stop trying to load the other hard drives which clearly don't have any operating systems installed.
+I have the drives and partitions on my PC as shown above.
+Your Windows disk has an UEFI-style partition layout.
+However, for some reason the bios tries to first load DISK 0-2 which obviously fail before finally loading Windows 10 from Disk 3.
+You should be able to do this from within Windows using the special {fwbootmgr} object, which directly propagates changes to EFI firmware settings:
+Are my partitions set up in some way that triggers the bios to want to load them?
+I want C: to boot (the third partition in Disk 3).
+It's this entry that needs to be placed topmost in the boot order.
+I also completely disabled all other drives from the boot order configuration in bios settings, but it still tries to load them.
+So placing disk 3 before disks 0–2 is going to be meaningless, because Windows isn't booting from "disk 3" in the first place.
+As you can see in bcdedit /enum firmware, in addition to the disk entries meant for "legacy boot", there is also an entry that directly points to the Windows bootloader.
+In the UEFI boot process, the firmware usually doesn't boot a 'disk' – it boots a specific OS by name.
+Your firmware will likely re-add the legacy disk entries at the end, that can be safely ignored.)
+(Some firmwares expose this in their setup screens as a multi-level thing, where you might need to move "UEFI" above "Legacy", or something like that.)
+I'm not sure what's going on, but I'm looking for a solution because it annoys me that it slows down the startup speed so much.
+(This sets Windows Boot Manager as the only item in the boot order.

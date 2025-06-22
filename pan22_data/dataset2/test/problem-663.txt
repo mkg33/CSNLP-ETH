@@ -1,0 +1,6 @@
+So even if there would be the way to limit log records generation per transaction, it could not save you from uncontrolled log growth.
+that will generate 8-10 log records (depending on server version), but then leave SSMS open and go to a vacation for one week, and if no one kills that open transaction ALL THE LOG generated from that moment will accumulate in a log file independently of recovery model. The log cannot be truncated in this case and it will grow accomodating all the log record generated during the week.
+From the second one I find out that an careless SQL user might leave a very long running transaction and lead to allocating huge amount of disk for the log file.
+The problem of long-running transaction is NOT that it generates too many log records, but in that it prevents the log of being truncated.
+The first one indicates that killing a transaction after a certain period of time can be achieved through a job, although this approach is not recommended.
+If I am sure that none of the transactions opened against a database should not allocate more than a certain amount of log, is there a way to find out how much log is allocated for a SPID, so that can I kill it?

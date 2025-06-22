@@ -1,0 +1,15 @@
+If no-one can see anything obvious from there, I suppose I'll have to start timing individual queries and portions of the code.
+Still, loading a page using the database can take several seconds.
+Especially, there are some large numbers in the MySQL SHOW STATUS output that worry me.
+One of our company's Apache/PHP/MySQL driven sites is being moved to a new server.
+I suppose some kind of MySQL cache is involved, but my main problem is: why is the initial load so enormously slow?
+This does not happen on pages that use few database queries, so I'm ruling out network problems.
+Assuming this a dedicated DB server, and not using MyISAM then you need a much bigger innodb_buffer_pool_size (not shown in metrics quoted?)
+Whether your query performance is the issue will be evident from your slow query log - if you're using anything less than 5.1, upgrade your DB so you can set a slow query threshold of 0 seconds (i.e.
+First thing to check is that name resolving is disabled, and authentication  is done based on IP address, not name.
+It is not yet moved to production, so there are only two users or so.
+As an example: 13.8s at the first page load, and 0.01-0.02s on subsequent page loads.
+It looks as if your tables are in innodb - looking at what you've published here, there are problems with your config.
+Yes, running a query directly against the data on disk is much, much slower than fetching it from the query cache - a large proportion of your queries are being resolved from the Query cache, but making it any bigger is not going to have a huge impact.
+This can introduce huge latency for query operations.
+everything gets logged) and start using mysqldumpslow to analyse the data.

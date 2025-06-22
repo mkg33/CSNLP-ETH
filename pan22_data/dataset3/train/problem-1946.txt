@@ -1,0 +1,38 @@
+Part of your question is that you're confusing your subnet mask with what you read the default is for your class of address.
+You really want to subdivide traffic on those 16 million hosts.
+The subnet mask refers to the part of a network that a router has knowledge to complete a singal connection hop.
+This means that any IP address that is of 192.168.0.XXX will ALWAYS be on this private network, no matter what the XXX is.
+Based on your subnet, your first three octets are all occupied (they are 255), leaving this in a Class-C network block.
+Subnet masks do not have to be 255.0.0.0, 255.255.0.0, or 255.255.255.0.
+(/32 means a single IP, and your formerly classful masks above would be /8, /16, and /24).
+The IP with .252 at the end is 11111100 in binary, so your transformation from dec to bin is incorrect.
+Then you need to subtract 2 from that value to offset for the special subnets of all 1's and all 0's.
+A more compact and easier form of writing the subnet mask is to write a slash, then the number of 1 bits, this is called CIDR notation and is now what is used.
+But internally you're able to subnet as you see fit.
+Hint: calculation is not scientific, but maybe helpful and fast in exam ;)
+You really don't want to have 16777214 (2^24 - 2) hosts on the same network segment.
+You can have a class A IP from a network which has subnets.
+With a 252 as your last octet, it means that you will have two addresses left over for actual hosts.
+In your case, with a subnet mask of 255.255.255.252, your router will have routing information for only a few IP address, specifically 2.
+(*) 10.x.x.x/8, 172.16.0.0/12, 192.168.x.x/16 are non-routed IP addresses, meaning you should never see them on the great Internet, just on your local LAN.
+Well, you are part of a subnet, specifically the subnet 255.255.255.252.
+But let's put that aside ... there should be 4 hosts in .252
+Yes, 10.x.x.x is a class A network, and when interacting with other networks(*) it has a subnet mask of 255.0.0.0.
+So add up all the value of each column that is 0, then subtract 2 to find the number of hosts.
+For example, most private routers run under the 192.168.0.0 domain with a subnet of 255.255.255.0.
+In general, to know the number of hosts you will have available, you can count the number of 0's in binary in your subnet mask (n), and raise 2 to that power, i.e.
+0 bits in a subnet mask are available for hosts, but not the first or last address.
+You have 11111111.11111111.11111111.11111100(B) as the subnet mask, which leaves two bits for the host address, 2^2 is 4, so 4 possible addresses.
+Look below for an example of how binary arithmetic works:
+2 zeroes means your host equation is (2^2)-2 which is 4-2, which is 2 available hosts on the subnet.
+The above subnet mask, 255.255.255.252 could also be written as a /30.
+You need some kind of gateway, such as NAT, to actually have your traffic on the 'real' Internet.
+This is a good way for routers to offload routing to a final device, such as one at a large corporation or university campus.
+Your question "how many hosts" is actually simple to answer.
+Since you can't use all zeros (network id) and you can't use all 1s (broadcast message) you have (bits^2) - 2 => (2^2) - 2 => 2 usable addresses.
+My guess is you're stuck with this because of this is how your ISP does things.
+First, forget anything you've heard about classes.
+Thus, in your case, you have a final octet of 252, which in binary is 11111100.
+You can still route these internally though, say if you wanted your own second network.
+This may or may not be cut down by your router, which would be one usable address for your computer.
+The 1 to 0 boundary can fall on any bit between 31 (left most, or most significant bit) or 0 (right most, or least significant bit).

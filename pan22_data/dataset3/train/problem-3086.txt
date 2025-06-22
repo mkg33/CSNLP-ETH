@@ -1,0 +1,20 @@
+The NIC card needs a source and destination MAC, which appears at specific positions in an Ethernet frame.
+I was wondering at the destination node, does the reassembling of frames into datagrams happen in the link layer or the network layer?
+Generally, at a source node, when passing from a higher layer to a lower layer, does the breakdown of bigger data units into smaller data units happen in the lower layer.
+So the lower layer needs to give the network layer an IP-compliant stream of data not an Ethernet-compliant stream of data.
+Conceptually this is what should/would happen but only examining the source code or disassembly of a TCP/IP implementation would give you precise answers or exactly how the "labor" is divided in software.
+So the Ethernet headers and footers need to be stripped off before the network layer gets them, otherwise when the network layer looks at certain offsets for the data it needs, such as source IP address, etc.
+This is because the TCP/IP stack does fragmentation at the IP layer.
+Then the link layer breaks the datagram into frames, and move entire frames from one network element to an adjacent network element.
+If I am correct, at a source node, the network layer passes the datagram to the link layer.
+Frames are re-assembled into datagrams at the IP layer in systems that use TCP/IP.
+In a situation where you have an embedded device that would only run one possible NIC hardware device you could probably couple the network, data link, and physical layers very tightly, and I'm sure dedicated hardware routers, etc.
+There's nothing "labeling" the fields in an IP packet, they are identified by position in the packet.
+At a destination node, when passing from a lower layer to a higher layer, does the reassembling of smaller data units into bigger data units happen in the lower or higher layer?
+So the IP layer performs both fragmentation and re-assembly.
+it must be a series of bytes in the standard form of an IP packet.
+Does the link layer pass frames or datagrams to the network layer?
+In a situation where you have a general purpose operating system supporting a wide array of hardware you couldn't do that.
+Network layer needs as an input a source/destination IP address and source/destination port, i.e.
+The IP layer requires a layer beneath it that can carry frames but it does not require that a frame be large enough to carry an entire datagram.
+So having the network layer directly ship a packet to the NIC would fail as no Ethernet header containing source/destination MAC would be attached to it.

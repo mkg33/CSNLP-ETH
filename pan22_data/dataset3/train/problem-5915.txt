@@ -1,0 +1,17 @@
+When I stop all activity on DB2 it returns to 3-400ms.
+In other topics I've read that deleting by unindexed field might lead to such behaviour, but unfortunately, not in my case.
+I should also note that while DB1's performance has also degraded a bit, it hasn't completely fallen off a cliff like DB2.
+Is there a more direct mechanism for two databases to interfere with each other?
+I update/delete by "_id" and still performance is terrible.
+Surprisingly, found that mass updates and deletes on DB2 (also 300GB), even in one thread (one console or java application) make regular indexed queries on DB1 run for 5-10 SECONDS.
+Recently, we noticed that reads on DB2 have become ridiculously slow, taking up to 2-3 minutes to simply loop through about a 1000 records.
+We have a fairly beefy server (15 GB RAM, 2 cores) running a reasonably large MongoDB instance.
+The Mongo instance hosts two separate databases that communicate via application code.
+Theoretically it hasn't global locks, but in practice I have a bit more beefier server (12 core, 96GB RAM) and two databases.
+The second DB (let's call it DB2) contains about 10 million records and grows much more slowly (there are a lot of writes, but most are updates).
+DB1 is in production (it is only 300GB in size, so mostly in RAM) and DB2 which I prepare for next release.
+I can add, that WiredTiger and mongo 3.2.11 will not help you.
+On profiling the query, it looks like the right indexes are set and are being used, but that the performance for some as-yet unknown reason has completely fallen off a cliff.
+The larger database (let's call it DB1) contains on the order of 100 million records with more being added all the time.
+I'm trying to identify the bottleneck here, so any pointers in the right direction would be much appreciated.
+Considering that DB2 doesn't grow much, could this be because DB1 is affecting the performance (maybe by competing for RAM)?

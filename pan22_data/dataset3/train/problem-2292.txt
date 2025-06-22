@@ -1,0 +1,12 @@
+if your IP is nat'ed and your router has the public ip and your server has an internal IP then at the very least traffic will likely leave your server and be reflected back onto your server from the router assuming that the router does port reflection as part of its port forwarding - so in a sense no traffic will leave your network but some traffic will leave your server
+However, to do this I had to configure the router with the appropriate fixed IP address, as this is normally issued by the ISP via DHCP.
+Unplug your ethernet cable or disconnect your wifi and try your database connection and you will have your answer.
+In addition to traceroute (already mentioned) you could use tcpdump or wireshark and watch for any mysql connections getting routed out of your host.
+Your results may differ but I'm able to access my system via the external address just fine with the router disconnected from the Internet.
+If you use "localhost" as hostname for connecting to your MySQL server, MySQL won't use TCP, but sockets.
+without any network setup info i cant be more definitive than that
+In real terms though the difference should be so minimal that you should never be able to notice it.
+If your server has the external IP set up "properly", that is, it is not behind a firewall or proxy in an internal network, the traffic won't leave your server as it knows that the target IP address is the same system.
+This should be the fastest way to connect to a locally running MySQL server.
+if your server ip configuration on its machine uses the public IP address, then no traffic will leave your server (but its safer to be sure and use localhost anyway for the performance benefits)
+As for the speed difference, theoretically using localhost should be faster because it removes the various overheads involved in traversing a network.

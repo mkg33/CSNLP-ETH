@@ -1,0 +1,10 @@
+If you're using matrices for your transformations you can use the inverse to find the position of the point.
+You could also use OnCollisionEnter, but I think it's more for when you want to deform the helicopter as the collision occurs. Since you are only using a single image for your chopper, I think it's a little impractical to use this approach.
+To check if a point is inside a rotated rectangle you first rotate everything so that the rectangle is aligned with the axes. Then you do the same thing as before.
+I'm assuming you are using Unity 5 for this, but it's possible that other game engines might have collision detection work in a similar or same way as this.
+This image shows how it works for the x axis. The blue point is between the min and the max of the rectangle. The red isn't.
+Note that you don't have to rotate the rectangle. You can use the coordinates before it was rotated. You just have to rotate the point by minus the angle of the rectangle, around the center of rotation of the rectangle.
+Check if the resulting coordinate is within the untransformed (axis aligned) bounding rectangle in object-space (aka local-space).
+The way this is usually done, because it avoids the any trig, is to take dot products of the line from the bullet to center of the box with each of the boxes axes.  If the absolute value of any of the dot products is greater than half the dimensions of the box along the corresponding axis, then the point is outside the box.
+Checking if a point is inside a rectangle is easier when the rectangle is not rotated. You just have to check if the position of the point on the x axis is between the mininum and the maximum of the rectangle, then you do the same on the y axis.
+You should use OnTriggerEnter, because what you can do with it is not only deduct the helicopter's health, but also destroy the bullet object that still exists even after the collision.

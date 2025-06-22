@@ -1,0 +1,11 @@
+At least part of that will be the stack allocation (RLIMIT_STACK), which is allocated for each thread of cherokee... and cherokee makes a lot of threads.
+I'm unable to even launch cherokee in its default config on my 256MB VPS because OpenVZ thinks it is using more than the 210MB available, just starting up.
+Because many people reported to have successfully reduced  virt memory usage by disabling io cache.
+This memory isn't actually being used and is still available, so it usually doesn't matter, but with OpenVZ it's counted towards your quota and you do need to keep it down on OpenVZ VPSes.
+They have a blog post on how to "Reduce Stack Limit for Multi-Thread Apps".
+I've Ubuntu 10.04LTS 64-bit running on a openvz container and Cherokee 1.0.8 compiled from source.
+A great resource for getting things working on (especially low-end) VPSes is LowEndBox.
+So either do it in a shell before launching cherokee from the same shell, or edit your startup script to run 'ulimit -s XX' before starting cherokee.
+You can either cut down the number of threads cherokee is using under Advanced->Resources in the web config (the setting is "server!thread_number = XX" if you're editing cherokee.conf directly), or you can just change the stack size before running cherokee with 'ulimit -s SIZE_IN_KB' (you can see the default before changing it with 'ulimit -s' -- my VPS defaults to 10240, 10MB per thread).
+The virtual memory usage of cherokee-worker is around 430 MB even after disabling I/O cache from Advanced -> I/O Cache -> NOT enabled.
+Keep in mind that you need to set the ulimit before running cherokee, and it isn't system wide.

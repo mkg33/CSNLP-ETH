@@ -1,0 +1,24 @@
+This project uses Strategy and Factory Design Pattern.
+I had a problem with this lately, there's a lot of information about that on stackoverflow.
+I'd recommend to go with the java.sql.Connection interface, but keep the JdbcConnectionFactory, so you can write your unit tests.
+It's not the pool's task to be robust in the sense, that a user can do whatever he wants with the pool.
+How can I improve the following code and features?
+I'm also one of those guys who wraps abstraction layers around everything, but the java.sql API is not one of them, since it is an abstract layer itself.
+This line: ConnectionPool pool = new ConnectionPool(mockConnectionFactory, poolSize, shortLeaseLife); is redundant.
+-, or use different pools, which introduces more complexity the user usually doesn't want to be bothered with.
+The full code and unit tests are here : https://github.com/spakai/connection_pool
+If you use @Ignore annotation, always write down why it is ignored and if necessary/possible: Write what has to be done, to get rid of the annotation.
+On application servers, such as JBoss for instance, there's a message from the appl server, if the user forgets to close a connection ("closing connection for you").
+The specific factory creates required specific connection class that contains the actual connection to the database.
+But: It's the users task, to use his backend correctly.
+the README which explains the code is here : https://github.com/spakai/connection_pool/blob/master/README.md
+But imo the wrong place to explain, since it's very complicated (or: I'm not very good at concurrency testing :P).
+The type of database supported is determined by the type of Factory object that is injected during runtime.
+If one operation of an app can take hours, you have to either set hours for a leaseTime - which doesn't help very much, does it?
+The definition of the size of the pool is usually done by dev's, dba's, operations, qa and so on, at least for larger applications.
+When there's no connection left to borrow, the usualy behavior is to throw a "PoolExhaustedException".
+the ConcurrentHashMap, the java doc states for instance However, even though all operations are thread-safe, retrieval operations do not entail locking,....
+The simulateMultiplementClientsCalls should be re-written though: You should be able to test your concurrency without a thread pool of 50k or submitting 15k threads.
+It's like transactions on a database if you read committed: You only get what's done, you don't wait until other transactions have finished their work.
+So for example , if you need a MySQL connection pool, pass in a MySQLJDBConnectionFactory object.
+Maybe create a newConnectionPool method with leaseTime as parameter (if you don't decide to get rid of it).

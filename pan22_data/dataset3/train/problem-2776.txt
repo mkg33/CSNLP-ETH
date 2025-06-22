@@ -1,0 +1,16 @@
+It's much easier to test write performance: write much larger files, preferably sizes exceeding your systems build-in RAM.
+That's a bit odd b/c typical benchmarks are some high fraction of rated performance.
+I ran this command on my home ZFS file server (Core i3-4130T with mirrored WDC WD80):
+It's not great but that is a much better test of actual write performance.
+Exceeding it can be explained by ZFS's disk compression.
+An interesting result is that I achieved 187MB/s and my disks rated performance is 178MB/s.
+There are other tools in the FreeBSD ports tree (I've used bonnie & iozone in the past) which can tell you more information about your disks performance.
+You're testing an assortment of factors but mostly controller and disk latency.
+My disks are in a ZFS mirror (2x read performance is more useful to me than storage efficiency) but assuming your disks are also 5400 RPM, you should expect comparable write performance.
+Until you realize that reading from /dev/zero means the data source has no entropy and is highly compressible.
+Otherwise, a MUCH better performance test for a home file server is to copy the contents of a DVD or blu-ray between two disks and time that copy.
+To test disk read performance, you need to jump through hoops to exclude disk caching from your tests, which is non-trivial with ZFS as it means disabling the ARC cache.
+dd is not the best tool for testing disk performance.
+Simply by increasing the blocksize to 1M, my disk performance is now off the charts amazing.
+To see why even a much larger count using dd isn't a great test, check this out:
+With the command shown above, you aren't testing disk write performance.

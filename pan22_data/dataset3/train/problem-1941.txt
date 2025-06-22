@@ -1,0 +1,14 @@
+At first, the setup looks ok as I initially can see files from both Windows and Linux.
+Basically you need to use a file-level sharing system or a multi-OS block-level cluster-aware file system.
+I have a mounted NTFS partition under Windows (2003) and Linux (RHEL 5.7) at the same time.
+But when I add files from Windows, I can't see them under Linux.
+I would like to achieve this in order to avoid copying from the network for a data migration of > 1Tb.
+Writes are only initiated from Windows and I mounted the partition under Linux with read only (ro) and no access time (noatime) options.
+The LUN resides on SAN and is presented to both servers at the same time.
+As far as I know NTFS is not meant to be used like that and the only thing you will probably achieve this way is invalid data read from the filesystem.
+You can either unmount the filesystem from  windows and mount it on linux for the migration, or you can use some clustering filesystem for this purpose.
+Mount the LUN on Windows and present it as a read-only CIFS (windows share) to the Linux box.
+The correct way to do this would be to have the Windows, SAN and linux admins come in to do the migration.
+Unfortunatelly I know of no opensource cluster filesystem that is capable of this.
+NTFS isn't a cluster-aware file system, I get what you're trying to do but there's no mechanism for NTFS to let the Linux box know it's been changed and from the Linux side it has no reason to assume things CAN change without those changes coming from itself.
+I believe CXFS and StorNext should be able to do what you want.

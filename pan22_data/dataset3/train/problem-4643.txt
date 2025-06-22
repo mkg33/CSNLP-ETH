@@ -1,0 +1,19 @@
+It automatically reads the log files of your system, searches for multiple failed login attempts and blocks the malicious clients for a configurable time via iptables...
+After installing rsyslog these errors disappeared from my console: apt-get install rsyslog
+You get these messages because there are many failing login attempts via ssh on your system.
+It seems the above analysis is not completely correct.
+If this is the case, you shoud consider installing a tool like 'fail2ban' (sudo apt-get install fail2ban on Ubuntu).
+It is realy anoying when I am working over ssh and these errors keep popping up all over my screen.
+I have vps that I use to run a webserver on, it currently runs ubuntu server 12.04.
+It doesn't, which I think is a bug (which I just reported with openssh).
+There doesn't seem to be a retry= option for pam authentication (I did find one for pam_cracklib, but that only concerns changing password in the "password" section, not authentication in the "auth" section of pam).
+After 3 retries, pam returns the PAM_MAXRETRIES error code to inform sshd of this.
+Could someone please tell me what these errors mean.
+While the other answers are correct in elimiating the error message you got, consider that this error message may just be a symptom of another underlying problem.
+sshd should really stop trying in this case, regardless of its own MaxAuthTries.
+Instead, pam_unix contains a builtin maximum number of retries of 3.
+There may be someone trying to brute-force into your box (was the case when I got the same messages on my system).
+After upgrading from Debian 6 to Debian 7, i ran into the same troubles.
+In my case, the problem was that rsyslog was not installed anymore after the Debian upgrade.
+Since a few weeks I keep getting a lot of errors in my ssh console.
+Until that bug is fixed, it seems that setting MaxAuthTries to <= 3 is the only way to prevent this message from showing up.

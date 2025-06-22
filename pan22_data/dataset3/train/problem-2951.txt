@@ -1,0 +1,15 @@
+BUT I've about 1600 computers and I don't want to modify each client one by one, then, Could I for exemple use a System Variable on the Config file?
+My clients are Debian Linux Distro's, and I have to modify my DHCLIENT.CONF file on it to send his Full Qualified Hostname.
+AFAIK, the dhclient.conf does not support variable expansion as you have listed.
+I guess you have a number of different approaches here.
+send "$hostname"  where $hostname variable is the alias write on BASHRC for the hostname -f command.
+Before you know it, you will regularly be writing scripts to login to all of your machines, which will take a long time, be error-prone (for instance how do you handle down hosts gracefully and come back later) and hard to maintain.
+I'm not aware of anything available for Debian though - you might want to look at patching your dhclient with the Ubuntu patch
+Option 1. is ugly, it will get you past this hurdle but it will be difficult to maintain.
+Option 2. is definitely what I would recommend, and I would recommend puppet as its far more flexible and easy to use relative to cfengine, yet relatively mature.
+Redhat patch their dhclient to provide -H and -F (-H = send host-name, -F = send fqdn.fqdn) command line options.
+So with the latest dhclient alpha, you can put something like this in dhclient.conf
+Many thanks for everyone (you both), I've discovered a huge tools, named Puppet and increase my skills in scripting.
+My DNS Servers are updated by our DHCP Server (Microsoft Windows 2003 R2 SP2).
+Ubuntu have a patch in their version of dhclient which lets you do
+The bleeding edge (4.2.x) versions of dhclient support this by providing a gethostname() function.

@@ -1,0 +1,10 @@
+By setting up our input so that all the triangles we pass in are wound clockwise when viewed from their outside face, we can tell the GPU to draw only clockwise-wound faces and skip any thar are wound counter-clockwise, since the latter must be back faces.
+To figure out if a particular triangle is a back face, the GPU uses a neat trick: when we wall thorough the projected vertices of a non-degenerate triangle in the order they were given, the path we follow will turn either clockwise or counterclockwise in the plane of the screen.
+Normally the green face would be drawn in front, hiding the back sides of the other faces from view, so it would be safe to skip drawing those faces from this angle.
+The ones on the far side would occupy the same silhouette on-screen, but would be hidden behind the front-facing triangles.
+The fact that these two triangles on the green face of the cube are not being drawn lets you see into the cube and notice that the other faces are also not being drawn — and this is correct, because we really are looking at them from behind.
+When you render a closed, opaque object like your cube, from any particular viewpoint, only about half of the triangles contribute to the final image: the ones on the side facing the camera.
+So in your example, you told the GPU that the last two triangles in your buffer should only be drawn when viewed from the other side, so it culls them as back faces when looking at them directly.
+So, we can cut our rendering workload in half by not even trying to render those "back faces" in the first place, knowing they'll end up hidden.
+When you exchange the order of two vertices in a triangle, you also change its winding order.
+When we look at a triangle from its "back" side, the winding order flips, from clockwise to counter-clockwise or vice versa.

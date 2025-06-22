@@ -1,0 +1,6 @@
+I have unfortunately found that this particular query takes very long, when the DB does not fit into memory - even with an index for description.location present in the MongoDB. (For some reason the $group aggregation operation never appears to be using the available index, while $sort actually does use it).
+The nature of our data is that multiple group of entries / rows generally reference back to the same object, pretty much as if you had multiple versions that relate to a single object.
+I came here to seek advice if the NoSQL DB is a recommended solution for our needs, though. So let's talk about the data:
+We are currently running a Python web app querying a SQL MariaDB (through SQLAlchemy). Unfortunately we have run into some hard limitations of MariaDB (number of joins are limited to 61) and are looking for alternatives. Our database is not very large (generally under 2GB and growing slowly) and the entries could actually very well be broken down to simple json objects, which made us look at a NoSQL solution.
+Initially this seemed like a great solution. Queries were super fast (as the DB fit into RAM) and we were happy (for a few days).
+Imagine the description.location will often need to be grouped and sorted so that I can only display the $last entry for each of these grouped entries. A common query may look like this (in MongoDB):

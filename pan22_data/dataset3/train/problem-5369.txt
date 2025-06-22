@@ -1,0 +1,17 @@
+Is there anyone who has more experience with ZFS under Linux based systems ?
+I can't comment on its stability or performance though.
+Unfortunately, ZFS is really only an option on Solaris, its derivatives (Illumos (Shillix, OpenIndiana, et al)) and FreeBSD.
+While ZFS can be used on Linux systems via FUSE, it's very slow, and since it's a blocking process there are some gotchas.
+While it's nowhere near as feature rich, BTRFS seems to provide some of the functionality found in ZFS, and I suspect it would perform better and be significantly more stable.
+To me, that means it's still squarely in the realm of interest to filesystem developers, and nowhere near the quality or stability that I would require for my personal play boxes, much less anything that had data on it that I actually cared about.
+Interested in it too but the only real option is export iscsi zvol from solaris to linux of share zfs via nfs to linux.
+Also, zfs send piped to zfs receive in the same box works correctly:
+If you give it plenty of memory (ARC > 1GB) it works surprisingly well as a primary filesystem (for home directories/etc).
+For instance, if you're used to doing a zfs send | zfs receive on the same box, that will not work on ZFS-FUSE.
+From my experience testing ZFS on FreeBSD, I suspect there will be some kernel tuning issues and NFS mountd issues compared to Solaris.
+And while there is the zfsonlinux stuff, that is hardly more than a "look, I got it to work" effort.
+ZFS needs a special mountd if you want many subsystems shared via NFS.
+I saw ZFS fuse library, but I don't know it;s worth a test or not.
+I would say it's only for testing or non-io-intensive tasks.
+KQ Infotech has a beta version of their port available since January at http://kqstor.com/ .
+zfs-fuse works pretty well on Linux, and for many workloads the bottleneck will be the disks and not fuse.

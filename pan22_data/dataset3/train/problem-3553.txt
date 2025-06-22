@@ -1,0 +1,17 @@
+For example, the above architecture would allow some "SpriteEntity" objects to have no visual representation at all.
+This would be for doing things like drawing weapons on characters, etc.
+The very first question you need to ask yourself about the "class" Sprite is this: what is a sprite?
+You can choose your own, but the separation of "entity" from "image" is a very good idea.
+It would also allow some "SpriteEntity" objects to have multiple sprites, possibly hierarchically layered.
+Is it an entity in the game world that has gameplay properties on it?
+This is useful to create collision areas (since entities would have collision areas, even if you don't see them), so that you can detect when another entity touches that area and do something based on that.
+Entities contain one or more objects that they will give a position and orientation to, which represents how the visual representation of the entity is presented.
+If a "Sprite" is fundamentally a gameplay entity, then this entity would contain an object that represents how it gets drawn.
+Of course, this is just one way of structuring things.
+If a "Sprite" represents only the position and orientation of an image (possibly selected from a sheet of images), then you don't really have different "kinds" of sprites.
+This class might contain one or more of the SpriteImage objects, and it would be responsible for providing the position and orientation of these objects.
+Here, you should employ smart pointer usage; SpiteEntitys would contain shared_ptr's to their SpriteImages, while the SpriteImageDrawer would have a list of weak_ptrs to every SpriteImage that is created.
+You don't draw entities; entities don't draw themselves either.
+You can have sprites that have different images and so forth, but that's just the data stored in the sprite.
+It would also handle animating them (selecting which image to show).
+However, it would not draw them; the drawing of these images would be handled by an object that also holds a reference to these SpriteImage objects.

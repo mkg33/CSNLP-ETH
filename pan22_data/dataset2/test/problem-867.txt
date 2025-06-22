@@ -1,0 +1,5 @@
+So, to make it simple, the process of replication or sync is just 2 steps: first transfer the same sql queries just happened on master to its slaves, second each slave execute the sql queries received. 
+If you have to do so, I think it is important to understand the mechanism of mysql replication (or "sync") first.
+On the master server side, whenever there is a change happens, it only send the corresponding binary log to the slaves, which contains sql queries in binary format.
+On the slave server side, it uses an IO thread and keeps waiting for the master's event. When a new event happens, the slave save the binary log into its own relay log, and another sql thread start executing the content in the relay log. After all the contents are executed in current relay log, it would be deleted automatically by default (unless you set relay_log_purge=0 manually).
+First I totally agree that you should avoid doing so unless under some extreme situations, such as the master server crashes and each slaves has different status to catch up before promoting a slave to be new master.

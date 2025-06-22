@@ -1,0 +1,32 @@
+Not quite the same goal, but I have run multiple guest VM's that share an internal only network between them, while having a separate adapter NAT'd so that they could both still hit the internet.
+You can then even forward single ports (like 80 or 443 for http and https), so your virtual machine can be reached from other computers as well.
+For example: You setup NAT networking for your VM, your guest is assigned 192.168.15.3 via DHCP.
+I am a web developer and until recently I have been using ubuntu as my OS.
+Your host also assigns (via DHCP) an IP address to your guest on a private network.
+I still want to keep my server on linux platform,  so I setup my local server as a virtual machine.
+This is described in chapter 6 of the VirtualBox manual in further detail, as are the various network modes available.
+At the moment I have a dynamic IP on my host and static IP on my guest.
+Then connect to the guest using the guests name...which you may need to edit hosts file for.
+No need to register your VM on the network as a separate machine.
+You can just assign a static IP to your virtual machine on that same network and change the hosts file accordingly on your host.
+Since I am working in different places and going around clients,  I connect to all sorts of network with different settings.
+Advanced => Port Forwarding => enter this: Guest port 80 Host port 8000.
+Your host acts as a "router" for your VM, so you don't need to constantly adapt the network configuration on the guest.
+That means the possible IP range is very dynamic which causes issues when I work on my local server.
+You change this manually to 192.168.15.250, and on your host you add 192.168.15.250 myserver to your hosts file.
+My question is,  how to setup host-guest networking,  so no matter what network I connect to,  I can keep my static IP on guest,  which is registered in hosts file on my host so I can access the webserver and also I will have internet connection on the guest?
+Would require some testing/tweaking, but it sounds like setting up a second network adapter on your guest VM might be the answer.
+Go to Settings for your VM in VirtualBox  => Network => Enable Network Adapter, Attached to NAT.
+I realise that you seem to not want to have to edit the hosts file, but you will probably only need to edit it from time to time depending on the DNS resolution of the host network you have joined.
+I would try with both addresses dynamically assigned by the network's DHCP server (whichever network you are on I presume will have a DHCP server).
+This basically connects your guest to whatever network your host is connected to - and needs a matching configuration.
+That way I can access the server from my host (by adding record to hosts file).
+If your network configuration is changing often, you're better off with NAT networking instead.
+No need for a hosts file entry, just NAT your VM, you can access it as http://localhost:8000 if you use this procedure:
+This would allow you to use the primary adapter in a NAT configuration as rhubee recommended (which will provide your guest VM with internet access), while the second adapter has a static IP for an internal network that will not change between host and guest.
+For many reasons,  I have switched back to windows.
+But once i change networks,  it does not work (assuming the network has different configuration).
+It seems you're using bridged networking mode for your VM.
+But at least you are sure that from a Subnet point of view both will be on the same one.
+Everything works great,  but i have a little struggle with the networking.
+The testing/tweaking portion would come in as you may possibly need to configure some static routes to ensure traffic for the services/ports route through to the correct interface.

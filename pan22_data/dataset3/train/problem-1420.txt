@@ -1,0 +1,15 @@
+For creating self-signed certs, you have plenty of options.
+The simplest one, if you're a windows shop, is to do it through IIS (see this: http://technet.microsoft.com/library/cc753127%28WS.10%29).
+However, I think your question is mixing different things.
+In your case, assuming I understood it correctly and all you want to do is test your web app with a certificate, all I would do is generated a self-signed cert (using whatever tool you like best) and then install that certificate in the correct store on your test machine (to avoid certificate warnings and errors)
+For integrating a CA with AD, the simplest way is to install the certificate services role on a machine and configure it for AD integration (although in your case, it doesn't seem to be a necessity unless you want to use it for other things).
+Unless you have to work with client certificate authentication, have many different servers (with different names) that you want to use in testing (and perhaps with automated testing) or if you want to be able to test some aspect of your application that uses special certificate properties or chaining, it's probably not worth the trouble.
+Setting up the MS Certificate Authority is not required
+You'll have to install the Active Directory Certificate Services role and create/distribute te certificates from there.
+Finally, you might want to create your own root that isn't integrated with AD.
+If you have a server running the AD CS role issue a certificate, then it isn't self-signed anymore, it's issued by your internal CA.
+To answer your question exactly: no, you can't create a self-signed cert using Active Directory.
+You can also do it with OpenSSL (quite messy but works), with the makecert.exe tool that comes with the .NET SDK or with a number of similar tools (I use my own tool for this but, that's just me).
+Once you do that, though - why use a self signed certificate at all?
+WIndows has a CA component that you can install, bt it is not AD.
+So make a self signed cert, roll this out as a trusted root, then any cert you sign with it will be trusted.

@@ -1,0 +1,15 @@
+Should ReadSampleRegistration be broken out of the function AND some more explicitly typed (but possibly still opaque) pointer be returned, so that a corresponding Unsubscribe function can unregister and delete the instance?
+If the expectation is that bufferSize can ALWAYS be determined by a static vector declaration matching a template argument, the explicit bufferSize overloads wrapped by the template member functions of Task should be made private.
+It seems strangely inconsistent not to have a non-templated variant of SyncReadTimeout as there are for these others.
+SyncReadNonInterleaved and SyncReadTimeout (adjusting for it being a single template function vs. an overloaded function with a template wrapper) are 20-line functions that differ only in 2 function arguments, which SyncReadNonInterleaved simply hard-codes.
+I'd have provided (public) overloaded Task::operator!=(const TaskHandle&) ( and matching "==" ) to use here.
+This void* return seems like a dead end. ReadSamplesRegistration is so well-hidden that there's not even any way to deallocate one.
+The member function of a struct defined within a member function gets private access (like to m_handle) just like its containing member function?  I had no idea.
+A generic declaration like this can help to take the static casting clutter out of the callback code (see modified code below).
+Is there any assurance from the C API documentation that the customScale c_str passed into the C api can be immediately deleted upon return (i.e. is never cached as a pointer)?
+OR a separate neutral private function with no argument defaults could be factored out and called by both functions.
+error, so that if the caller bothers to pass a customScale, it should serve a purpose vs. specifying the default.
+If you are going to use "sealed", #define an ifdef'ed shim for it for platforms that don't support it.
+Suggestion: It MAY be better to force the "no custom scale" case of AddChannel to explicitly use a different overload.
+SyncReadNonInterleaved could take additional arguments defaulting to its hard-coded values: double secondsTimeout = -1, innards::bool32 fillMode = DAQmx_Val_GroupByChannel
+I'd properly specialize this signature and use a function pointer cast (below) instead of a callbackData cast (here).

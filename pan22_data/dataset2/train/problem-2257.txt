@@ -1,0 +1,9 @@
+I fixed the problem by using a ssh tunnel through one of my personal server. I am absolutely stumped as to why this would work. I'm currently in Japan, and my server in Canada, so perhaps there is an issue with IPv6 address (even though the server says it shouldn't)...?
+My FTP is forwarded correctly on port 21 to my NAS IP, just standart stuff. The problem was the passive ports my NAS wanted to use also.
+If you are connecting to a unix server, and it is running iptables (firewall), then check your iptables config, in /etc/sysconfig/iptable-config, for this line:
+PS: Changing the mode of your connection to active can be a trick, but it's not the "best practice solution". ;-)
+and reload or restart iptables: service iptables reload (or restart). Now try connecting (with passive mode), and it should work without a problem.
+According to the FileZilla admins, your router is probably the issue (even though you probably can't do anything about it), and they're not going to fix it to fall back to LIST if MLSD times out. See: http://forum.filezilla-project.org/viewtopic.php?f=2&t=11405&start=15
+This fixed our problem, in the office, in desktops with Windows 7/8.1, behind a NAT, and connecting with WinSCP 5.5.3 to a production server running CentOS 6.6 x86_64, Plesk 12 and ProFTPd.
+Solution: Try Core FTP or similar. It's unlikely you'll be able to convince the stubborn FileZilla folks to add a (stupidly simple) workaround option- "fall back to LIST if MLSD times out".
+Or, since it's open source, see if you or someone else can make the change and compile it yourself. I imagine if you try to submit the change to be added to the official build, they'll reject it, but perhaps we could be pleasantly surprised. 

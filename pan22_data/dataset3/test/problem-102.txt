@@ -1,0 +1,19 @@
+Where the missing index DMVs aren't so helpful is when it suggests slightly narrower indexes that match indexes you already have.
+If a query needs to scan all the PK column values in the table (and only that), it's more (perhaps much more) expensive to scan either the clustered index or another non-clustered index to get that information.
+Now, it's entirely possible for the missing index DMVs to (correctly) tell you that an additional index on the primary key column alone is something that could have helped a query.
+The table's primary key is the clustering key by default - but it doesn't have to be - you can have two totally separate sets of columns for the primary key and the clustering key.
+But all these things aside: the DMV's that identify missing indexes aren't perfect - do take their recommendations with a grain of salt!
+I won't repeat that info in my answer here, but if you want a deeper explanation of the differences between the structures behind clustered and non-clustered indexes, I have a video here which may be helpful for you.
+The course of action to resolve the suggestion is dependent on the queries that are running and what other indexes you have, and getting into that is beyond the scope of this question, so I'll leave it there.
+As Marc mentioned, the primary key is a logical construct and doesn't by itself indicate the clustering key.
+And so the missing index algorithm kicks in and suggests that the narrower index on only the column(s) it needs would be helpful.
+A narrow index that only contains the PK column would be more efficient than that, particularly if there's a merge join involved where the key order is being exploited.
+The primary key is a logical construct - it's job is to make sure each row in a table can be uniquely and reliably identified.
+The clustering key (and thus the clustered index) is what determines the physical ordering of the data in a SQL Server table.
+It's also known in some cases to incorrectly suggest exact duplicates of indexes that already exist.
+For these reasons, you're right to filter the DMV output through your own brain and judgement instead of automatically creating the indexes it suggests.
+The primary key in SQL Server is by default also the clustering key - and the data is physically ordered by the clustering key in a table.
+Don't just blindly implement everything that DMV recommends - sometimes it recommends stuff that's already in place, or some of its recommendations are even contra-productive!
+It has no impact whatsoever on the physical structuring of the table.
+So if this primary key is listed, maybe it's because it is a non-clustered primary key - something that you have to do explicitly - but it's entirely possible.
+Don't blindly trust it - it's a helping tool - but it's not perfect!

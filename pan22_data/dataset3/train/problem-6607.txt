@@ -1,0 +1,31 @@
+Kind of has the kiddie introductory Japanese language textbook feel with cute hand-drawn characters, but at the same time it's talking about Riemann sums by the second chapter.
+Like CeeJay said though, you don't need to worry about this stuff typically.
+XNA could already define static sample buffers (looks like XNASfxrSynth uses this), but now you can have a DynamicSoundEffectInstance fire an event requesting you to feed it a sample buffer.
+It also has a bit depth, which is typically 16 for the final mix.
+It assumes little math background and covers the basics of the Fourier transform and general wave theory in the context of language researchers trying to study speech patterns.
+This translates roughly to having a volume range of 96 dB to work with.
+SFXR works by building some fundamental sound generators and offers the parameters you see in the GUI.
+When you start manipulating sound, you want as much headroom as you can get.
+You could technically write your own mixing engine as well, just have a single master sound instance to which all your sample buffers are sent for mixing.
+Basically, the highest frequency you can represent in an audio signal is half of your sampling frequency.
+The reason why 44.1kHz and 48kHz are the most common sampling frequencies is that the range of human hearing is roughly 0 to 20kHz.
+Also, look at Andre Michelle's site for more awesome advanced audio processing in Flash.
+Both XNA and ActionScript 3 have recently provided a way to directly pass samples to the underlying mixing engine on-the-fly.
+Digital audio effects can sometimes introduce cool new high frequency signals that then get manipulated further down the signal chain and have an affect on the final output.
+If you want to read more about the lower level concepts of audio programming, I recommend looking at The Audio Programming Book by Richard Boulanger & Victor Lazzarini.
+These may get cut off when you mix down to 16 bit, 48/44.1k, but you will have preserved all the data along the way.
+It's like keeping a copy of your high-res .PSD file that just gets re-exported every time you need to alter an art asset.
+I just received my copy a few weeks ago, and it does a great job at easing you into the concepts of audio programming (the introductory C chapter's kind of a tedious though since there's important concepts in it you can't miss, but you also have to sit through explanations of pointer arithmetic).
+This greatly reduces your memory footprint for continuously generated audio signals.
+I started writing this answer, and it just got longer and longer, so this will be the verbose answer, so take from it what you will.
+Often a game will do some internal mixing using 32 bit floating point values and then convert to 16 bit before pushing to the sound card.
+This means that you have 16 bits to represent the amplitude of each sample, -32768 to 32767.
+The standard intensity limit for sound in a movie theater is 85 dB SPL (the SPL bit is a way to standardize the loudness, since the decibel system is relative), so 16 bits work really well for a final mix on most consumer's systems.
+It's really just about knowing how digital audio works and constructing the correct sample buffers to get the sound you want.
+Except this is all happening in real-time in the audio engine.
+When working with digital audio, you have to worry about something called the Nyquist frequency.
+Especially so if you can use an API like FMOD, Wwise, or XACT that lets your sound designer hook everything up themselves so that you're not saying "play this.wav" but instead "trigger the 'PlayExplosionSound' event" you'll have a much easier time integrating sound into your game.
+Like CeeJay said, audio data typically has an associated sampling frequency (usually 44.1kHz or 48kHz--Battlefield Bad Company uses 48 to achieve high fidelity playback when you've got a good 5.1 system hooked up).
+The reason for this is the same reason you will record in 24 bit with a 96kHz sampling frequency.
+Thus 44.1kHz and 48kHz do a pretty good job at reconstructing a high fidelity sound on most consumer's systems.
+A general example of making a sine wave generator can be found in Adobe's documentation for their new sampleDataEvent event in the Sound class.

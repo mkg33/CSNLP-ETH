@@ -1,0 +1,21 @@
+That said, unless you are imaging the system, the OS can be reinstalled without removing the user data, which will also fix permissions on OS related folders.
+Baseball bats and threats to revoke their admin rights may or may not be optional, depending on how you feel.
+Let's assume that Server A is the one with screwed up permissions, and Server B is either the replacement or the temporary staging area.
+Don't use /O as that will overwrite your restored ACLs.
+If you're talking about a disk that doesn't contain a Windows installation, just use the "TAKEOWN" and "ICACLS" utilities:
+Have some quiet words in a corner with the person who did it.
+(On a Windows Server install, substitute "defltsv.inf" for "defltwk.inf".)
+There are probably short cuts you can take here, but I prefer the slow and meticulous way as it's less prone to human error.
+I don't see a way of getting things back to the way they were using only one box, but if you have a second one available, either as a replacement or a temporary staging area (even a PC with a hefty HD will do for temp staging), here's one solution.
+You would have potentially altered permissions and ID's (security ID's) just by adding users and having installed the OS in the first place on the machine because Windows had certain things in the ACL that are specific to the installation.
+Your best bet is to back up user data and wipe the disk and reinstall before copying user data back into the proper folders, then make a backup image of the system.
+If it's a disk with a Windows 2000, XP, or Server 2003 operating system installed (don't know about Vista on this one) you could try re-applying the default security template:
+If not, after having rebuilt Server A, copy back to it from Server B, this time using xcopy /S/E/C/H/R/K/O/Y (note /0 is here this time).
+Chances are it would screw up and you'd have a system that would act weird at random times, unless the program in question had a snapshot of what the state of the machine was when it first installed...in which case it's the same as a backup.
+This is one of the situations where RAID would not help but a good backup can (there are a number of beginning admins who seem to think RAID is a backup; in this situation it wouldn't have helped!)
+Setting the owner of an entire tree to administrators and enabling inheritance on the child objects:
+I've never heard of anything that will "reset" permissions on everything back to a blank slate, unless "restore from backup" counts.
+As an alternative to takeown and *cacls you can use SetACL to first take ownership of every file and directory on the drive and then set the desired permissions.
+Depending on what type of system this is and what is available, put the drive into another system and pull the user data off then do the wipe and reinstall.
+Even if it did, it would need a way to know about who owns what files, as well as registry permissions and other ID information.
+Copy the data from Server A to Server B using xcopy /S/E/C/H/R/K/Y.

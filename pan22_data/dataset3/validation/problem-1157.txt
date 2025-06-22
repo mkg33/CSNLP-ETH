@@ -1,0 +1,13 @@
+So, to sum up -- not recommending this for everyday use, but the option is there should the need arise.
+Since this is a live system, I would like to queue up requests, and send them to the backend servers once they've been upgraded.
+He was intrigued by my suggestion, and committed a small change to HAProxy that allows for setting maxconn down to zero via the admin socket (this wasn't possible at the time I asked), which solved my problem.
+Some of our users set ridiculously low client-side timeouts, so we generally don't want traffic suspended for more than 15 seconds.
+I tried using the tcp-request options combined with removing the static healthcheck file as mentioned in that thread, but had no luck.
+(The "hot-reconfiguration" options using -sf and -st start a new process, which doesn't seem to do what I want).
+But for a recent migration where we had a complex set of code and data migrations to perform simultaneously, having this option available was a lifesaver.
+In response to JesseP's answer -- absolutely, most of the time I never want to do this.
+We generally try and stage our DB migrations in exactly the way you mention, because suspending traffic is risky at best.
+Setting the default "maxconn" value to 0 seems to pause and queue connections as desired, but then there seems to be no way to increase the value back to a positive number without restarting HAProxy, which kills all requests that had been queued up until that point.
+Since I'm doing a database upgrade with the code change, I have to upgrade all backend servers simultaneously, so I can't just bring one down at a time.
+I basically have the same problem as mentioned in this thread -- I would like to temporarily suspend all requests to all servers of a certain backend, so that I can upgrade the backend and the database it uses.
+I eventually ended up asking this question of Willy Tarreau, the author of HAProxy.

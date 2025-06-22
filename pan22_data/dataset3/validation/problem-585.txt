@@ -1,0 +1,11 @@
+During that time the process will continue to run.
+There will be a delay, sometimes in minutes before the ssh daemon on the server side gives up on your connection.
+Not generally, although not knowing what shell or even what OS you're running, it's tough to say.
+As Warner says above, the child of the ssh daemon (that is the login shell and it's children) will get SIGHUP, but they won't get them instantly.
+If you were running it under screen, for example, I think the behavior is to detach and continue running.
+I'll add another heplful suggestion to the thread, something I just learned few minutes ago:
+Alternately, you could also execute the command in the background, by appending an ampersand (&) to the end of the command.
+As Warner also said, the process can choose to ignore SIGHUP, in which case, it will continue to run until it has to request input and then find STDIN has closed.
+If you already started a process that will take a long time (tar restore in my case), and forgot to include nohup in front of it, you can still prevent it from terminating on logoff.
+Maybe some other shells have that as a configurable option.
+If I was running a command before the SSH connection was dropped, will the command continue executing?

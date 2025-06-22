@@ -1,0 +1,29 @@
+Maybe your script can do a "apachectl configtest" to ensure the configuration is valid first (helping prevent it not starting due to error in config).
+The side effect of several instances is that they all can't run on the same port either.
+Existing connections will continue to go to the old port until they are complete.
+So if you have Python 2 code with mod_wsgi2, you'll have to have a separate instance of httpd with mod_wsgi3 if you also have Python 3 code.
+You should multiplex between the sites with a reverse-proxy, perhaps httpd with something like mod_cluster.
+Give them some grace period before shutting down the old instance.
+Hopefully your site would be redundant, and you could restart one side at a time.
+This command automatically checks the configuration files via configtest before initiating the restart to make sure Apache doesn't die.
+This means that if used in a log rotation script, a substantial delay may be necessary to ensure that the old log files are closed before processing them.
+A side effect is that old log files will not be closed immediately.
+If it does start, replace the iptables rule above with one pointing at port 82.
+If it fails to start, you know you have a configuration problem and can continue running with the old configuration until it is resolved.
+apachectl graceful is probably what you want, but if it doesn't work out for you this may be another option.
+This is probably overkill, but I have a cunning plan.
+Now you can try starting a second instance of Apache.
+Then you can do the same with the next configuration going back to port 81.
+), but its been some time since we looked, and I wasn't the one doing the looking.
+I don't know how fine the match has to be, but I think I've been told to expect to have another instance of Apache soon as we finish migrating from 2 to 3, and then 3.next.
+This differs from a normal restart in that currently open connections are not aborted.
+Incoming connections for port 80 would get redirected to port 81.
+apachectl configtest: Run a configuration file syntax test.
+It parses the configuration files and either reports Syntax Ok or detailed information about the particular syntax error.
+Add to that and other module conflicts on the same box for some other middleware, and that box has three httpd instances currently.
+You'll find that with Apache/mod_wsgi, it is version-locked to the version of Django.
+If I had the choice, I'd perhap go with a FastCGI deployment....
+Now, when you get a new configuration, save it to a separate location and have it listen on port 82.
+Are two clients isolated from each other in a secure manner if they are managed by the same httpd instance?
+apachectl graceful: Gracefully restarts the Apache daemon by sending it a SIGUSR1.
+In this way you start a completely new instance and shut down the old one, but without interrupting users.

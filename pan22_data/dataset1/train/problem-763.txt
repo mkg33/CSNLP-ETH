@@ -1,0 +1,10 @@
+Just booted into a newly provisioned windows server 2008 r2 server.
+On the firewall side of things, it is disabled by default.
+This is a web server, so I need at minimum port 80, rdp port left open.
+The inbound/outbound panels have tons of rules already setup to 'allow' certain ports/protocols etc.
+Would it be a good idea to delete all those rules, and then create the few rules I need from scratch? (when it is disabled, then enable when I think I am done)
+One thing I am scared of is if I lock myself out of the server, any tips to ensure I don't? 
+Is this server in a domain environment? If so, you probably want to leave a lot of those predefined rules in place. To start with, I suggest only adding Allow rules for your HTTP and RDP traffic, and leave the rest as defaults.
+If you really want to tighten up the firewall as much as possible, you could do your testing on a server that is more accessible, and once you've proven the configuration then just copy that configuration to your production server.
+When you're working on a remote system and you're worried about making a configuration change that could lock you out, it's a good idea to have something out-of-band that lets you recover. Examples:
+If you don't have those available, you can usually set up some kind of failsafe. In your situation, try creating a scheduled task that runs netsh advfirewall reset. If you lock yourself out with a firewall rule, just wait until the scheduled task runs. Test your failsafe beforehand to ensure that you can rely on it.

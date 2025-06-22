@@ -1,0 +1,25 @@
+Performing a similiar analysis for spid 59, it is likely that we're seeking into IX_tableA_Draw_Date where "Draw_Date is null", reading (and taking update locks on ROWS), LOOP JOIN against tableB, then taking a X ROW lock and updating our "mystery" index (the IX lock on the page implies that there are X locks on rows).
+We can also assume that a relatively small number of rows are expected to be updated (Due to the multi-column join combined with updating nulls or 0's in an insert trigger, this doesn't feel like a query that updates a large percentage of rows).
+This deadlock involves two spids performing UPDATES on tableA, 58 & 59.
+http://msdn.microsoft.com/en-us/library/aa175791(v=sql.80).aspx has an example for SQL 2005.
+Change the order in which the locks are taken so that both procedures follow the same order.
+The two locks are on different tables, so you have the standard "two processes update two resources in oposite order" deadlock problem.
+This would change the order of locks taken as the non-clustered indexes will only be locked for writes, not reads.
+At 3-4 Deadlocks per day, the correct approach is probably to just wrap the statement in some error handling so that it is re-tried if a deadlock occurs.
+Lock escalation isn't a factor, as row locks -> table locks ( not page locks).
+However, since this is in a trigger, you may need to add the error handling outside of the INSERT statement that fires the trigger.
+Both are reading and writing to the same pair of indexes (with the reading and writing swapped).
+You could use a ROWLOCK query hint to make that happen, however you run the risk of increased lock escalation to table locks, which could be worse.
+Therefore, we know that syd_id is either in the index key, in the clustered index key, or is an included column (I'm going to ignore the possibility that spid 58 already owned the lock from a previous statement in the trigger).
+Now, let's examine spid 58's UPDATE query in detail.
+In this deadlock, there are two resources involved:
+Spid 58 is also attempting to acquire an update lock on a page in a different index.
+Both are waiting for an update lock after they've already updated some rows.
+Even if you do everything "right" you can't always eliminate them.
+Another approach is to separate the update into two parts.
+If Spid 58 was taking row locks instead of page locks on the mystery index, then you would only have deadlocks if both queries updated the same row.
+Taking all this into consideration, it is likely that the UPDATE is reading rows from tableA using a scan on our mystery index (don't know if it's clustered or non-clustered ) and performing a LOOP JOIN against tableC to get the  tableC.syd_id.
+There are also 3 different lock ownership modes in use (U, X, IX):
+A create script for tableA including all indexes and the execution plans for the two UPDATE statements involved are required for a definitive solution.
+We know from the deadlock graph that spid 58 has an exclusive lock on a row in IX_tableA_Draw_Date.
+That being said, we can still combine the deadlock graph provided with knowledge of how SQL Server performs updates and have a very good chance of resolving this issue.

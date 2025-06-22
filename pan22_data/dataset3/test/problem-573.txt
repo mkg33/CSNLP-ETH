@@ -1,0 +1,25 @@
+YOU MUST ADD some route on your modem router with destination 192.168.1.0/24 across gateway 192.168.1.69/24.
+Of course I have no Internet connectivity from the test PC.
+I have a strong feeling this may be related to my connectivity issue.
+Now this is where it gets weird: From the router's CLI I can successfully ping 192.168.1.1, 192.168.1.69, 192.168.10.69 and 192.168.10.13.
+The router knows, by default, all the networks it have been directly connected to him.
+In order to have a second "backup" gateway for my company network, I tried to implement this topology:
+If you want to ping your modem (192.168.1.1) from your test PC (192.168.10.13), you must to add a route in your modem for the network 192.168.10.0/24 via 192.168.1.69 (your router).
+This is the way that packets from 192.168.1.0 will be reply to that destination.
+Your ICMP Echo arrives on your modem but it can't send the reply because it has no route for this network: 192.168.10.0/24
+When trying to ping 192.168.1.1 from the test PC it fails.
+It can reach the two networks, but, your modem router, only knows that it wil connect to internet across the serial link or something like this, i´m talking about the link connected with the cloud.
+After some more inspection, my routing table looks really fishy.
+It is pretty straightforward, with the network between the modem and the router being the 192.168.1.0/24 and the network between the router and the stations being the 192.168.10.0/24.
+By default, your modem doesn't know where is the address of your test PC.
+Why have the directly connected networks been broken up like that?
+You ping from your router all IP's addresses beacuse they are all connected to him.
+The problem is this, the REQUEST arrive without problem, but the modem UNKNOWN the location of the network 192.168.1.0/24.
+From the test PC I can successfully ping only 192.168.1.69 and 192.168.10.69.
+I have also configured my test PC with an IP of 192.168.10.13, mask of 255.255.255.0 and default gateway of 192.168.10.69.
+Then, the same happens when the modem receive a packet from an equipment located in the network 192.168.10.0/24.
+I have never before seen The interface IP addresses mentioned in the routing table as separate "/32" directly connected subnets.
+The actual IP addresses are the ones on the sketch.
+The status of the interfaces on the router is like this:
+The modem knows this network cause it has connected DIRECLTY.
+As you can see I have configured the modem's IP address as the gateway of last resort, so that the packets take that way towards the Internet.

@@ -1,0 +1,10 @@
+Given that you're using VPN connections, it's not really surprising that you're seeing a constrained PMTU though.
+The PMTU is the constrained MTU along the path, so if this was specific to mike then it should happen to any machine you tracepath to.
+You're not comparing the same path, so unless there's more information then I doubt this is specific to the server "mike".
+It's quite common from Firewall and VPNs from different vendors - e.g.
+From what you've said, the path from the server "mike" to one customer is limited to 552, and a different path, from "nora" to a different customer, is not limited.
+i think the issue is related to juniper not returning an MTU value in the ICMP Unreachable packet that is part of the PMTUD.
+I'd check the MTU settings for the VPN configuration to the first customer, and I'd also try checking the MTU direct to the customer's VPN end point (eg, the public IP address that terminates the VPN).
+checkpoint to reduce the MTU below 1500 for some types of traffic.
+One or the other of those is likely to have your answer.
+If you have a Windows machine handy you can run mturoute in traceroute mode to determine which link/hop has the low MTU.

@@ -1,0 +1,23 @@
+After investigation, I find out that the entry it's trying to apply was added on the master db right after I started the backup.
+You have to tell the slave what was the last GTID executed on the master when backup was taken.
+Running on Debian Wheezy with all the latest patches.
+When that is done, I copy the resulting directory to the other server and run:
+Slaving went b0rken due to some failures on our side, but we thought we could simply fix it by using xtrabackup to create a backup from the running server and importing it to the slave.
+Slaving starts but immediately stops due to a 1062 error.
+Data is in there and the database is running fine.
+I can fix that, but I immediately get a new error.
+/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "CHANGE MASTER TO MASTER_HOST='10.x.x.x', MASTER_USER='replication', MASTER_PASSWORD='verysecret', MASTER_AUTO_POSITION=1; START SLAVE"
+We've recently upgraded a MySQL 5.0 master-master setup to Percona 5.6.
+To me, it seems like the backup did not contain all the latest GTIDs, only the ones that were available at the start of the backup?
+I thought this was exactly what XtraBackup was supposed to fix?
+innobackupex --use-memory=4G --apply-log /srv/restore
+innobackupex --defaults-file=/etc/mysql/debian.cnf /mnt
+All goes well and I can start MySQL again (after I chown the /srv/mysql directory, which is our datadir).
+Can someone shed a light on what I might be doing wrong here?
+I've been trying to do that this entire weekend (partly because it's a huge database with an insane amount of databases and tables), but to no avail.
+xtrabackup version 2.2.11 based on MySQL server 5.6.24 Linux (x86_64) (revision id: )
+Server version: 5.6.25-73.1-log Percona Server (GPL), Release 73.1, Revision 07b797f
+First, I run the following on the current in production master:
+I see no alternative now to making sure no writes are done on the database during a backup.
+InnoDB Backup Utility v1.5.1-xtrabackup; Copyright 2003, 2009 Innobase Oy
+Source: https://www.percona.com/doc/percona-xtrabackup/2.1/howtos/recipes_ibkx_gtid.html

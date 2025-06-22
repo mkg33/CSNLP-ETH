@@ -1,0 +1,49 @@
+You can take snapshots of servers and do repairs or maintenance on your physical servers after first migrating your systems to one of your other VM servers and users won't know the changes.
+I would use one server for my Infrastructure needs (DNS, DHCP..) plus email.
+The drawback to the plan I mentioned can be significant; copying huge VM images among the machines can take a very long time.
+Mostly its just there for file sharing and email server.
+If you're running VMWare, it's easy to move to their big-ticket servers if you choose to do so down the road, and VMs are fantastic for creating testbeds.
+Second: What's the reason you can't access e-mail when someone is doing a large file transfer?
+Of course, you have a lot of options on how you do that.
+Also I tend to find if people are downloading a large amount from the file server, no-one can access there emails - especially in the morning when everyone is signing in at once.
+If someone can point me in the right direction, or if this simply sounds like one of those Enterprise Cloud's that is now a default setup in Ubuntu Server 9.10+, then I'll go down that route.
+The other two I would set up as a samba Cluster http://wiki.samba.org/index.php/Clustered_Samba.
+If you're a small business with a relatively low number of users and lower demand on the services I'd consider setting up the three servers with ESXi and creating VMs to handle independent tasks, like one for file storage, one for mail, one for DNS...and from there split the load up among the three VM servers.
+I'd test it out and see if it works for your business situation.
+As it appears that you have a limited amount of experience, I wouldn't go the way of a cluster in your case and look for easier alternatives (as stated in the comment above, this is really difficult to get right).
+At the moment I have one Ubuntu server, 9.10, running with a simple Samba share, a mail server, DNS server and DHCP server.
+Next, make sure that every server is configured in a way that the function of another computer can be activated with a few keystrokes in case of a failure (configure the service, but don't activate it) and of course, that you have as recent data from the other server on it as possible (backup, backup, backup!
+This isn't perfect of course, but it's a good start.
+A dies, and you bring up the last snapshot on server B, but it's a snapshot from a month ago.
+But it works for our situation, and may work for yours.
+Clustering adds complexity, and if you're not prepared for it, it can be a bigger pain in the butt than it's worth if you don't have a large number of users that will scream for your head if services are out more than a few minutes.
+It's also really nice for taking snapshots of system states.
+I can spend a weekend copying shut-down VM's to a backup area, then I spend nearly a week compressing them for offline storage on a small server that isn't used for much else at all.
+I.e., you have your file server running on server A.
+Even there you have options as it depends on your budget; if the hardware supports it, you can spend big bucks on a SAN array to store your VM's and a backup server to make backups of your images, then use the three servers as front ends to run the virtualized machines with something like VMWare ESX.
+It's clunky, but if it's acceptable to your given situation, it's not difficult to manage logistically.
+The pros are pretty big; multiple virtual servers makes it easier to recreate and migrate servers as necessary, and partition services and troubleshoot problems.
+This way, E-Mail is unaffected by the samba usage and you somewhat balance samba among two computers.
+Periodically I'd shut down the VM and copy the contents of the data to the other servers, so if you had hardware failure, the other two can pick up the slack and run your virtualized hardware from the point where you made the last snapshot.
+Maybe replace the switches and the server NICs with Gigabit Ethernet instead of 100MB?
+Would it be more beneficial for me to have all 3 servers, all running the same services, doing the same thing with some sort of cluster with load balancing?
+Depending on your hardware, I would consider virtualization.
+After this is all done you can start optimizing the whole setup.
+However, if the first server goes down, all of our shares disappear along with our mail and the system must be rebuilt.
+One errant update isn't going to hose three or four services when it takes a server down, just one VM.
+with various prices (free to several thousand bucks) and support (on your own for free, or several thousand bucks for full support up the wazoo).
+You can store your entire server on an external hard disk if need be, and take it to another computer!
+The first thing I would to is to try to distribute the load to the different computers: Let the first do only E-Mail, DHCP and DNS, the second and third can then be configured to handle different samba shares.
+I also have 2 other servers that are exactly the same hardware and spec as the first, which have an rsync set up to retrieve the shared folders and backs them up.
+I'm not really sure where to begin looking, or how to go about such a setup where 3 servers are all identical, but perhaps one acts as the main load balancer?
+Your architecture appears highly problematic to me and is in urgent need of redesign.
+Then you run a recover with your backup software to recover the VM up to the latest backup time, so you're only recovering hopefully a week or two of data instead of a whole machine.
+Your situation depends on the workload and business.
+This is assuming you have a good backup plan in place.
+You also have options for virtualization; Xen/KVM on your own with open source, ESXi, ESX, citrix, etc.
+First, why would a server go down in the first place?
+Putting in additional RAM or a RAID controller with newer, faster disks?
+They are expected to be stable and if they are not, something is seriously wrong.
+Is the network saturated, do you have problems with disk speed or even memory/and or CPU power?
+I agree that you should have some partitioning of services.
+From there you can look at options like running a backup within the VM's for easier recover.

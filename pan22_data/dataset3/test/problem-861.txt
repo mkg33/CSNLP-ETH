@@ -1,0 +1,35 @@
+You have combinations of components that result in the more general functionality.
+The FSM is probably also a component with a corresponding FSM System.
+The benefit here is whatever logic you need is external to the ECS as the component is merely a means to invoking logic, regardless what it may be.
+Almost always, the FSM really only cares about one common aspect of the collection of entities.
+This case is certainly more complicated than the first component and probably doesn't do what you want and is impossible to change.
+In the door example, I would build a custom component that handles the door logic.
+What considerations are there for choosing a full component/system over an more generic FSM type solution?
+When its open it has texture A and its Collidable Hull is disabled, and when its closed it has texture B and its Collidable Hull is enabled.
+Position + Graphics + Physics gives me a entity that can move around etc etc
+Basically anything that manages 2 or even 3 states.
+Components are data only, Entities pretty much just a Map with some additional metadata and Systems that match combinations of components and contain the logic.
+It has Position, Graphics and a Collidable Hull but it needs 2 states, open and closed.
+Option 1 is to create Door component, with say 2 variables, door state and state change channel.
+Now imagine some generic component that will work for your door as well as a toaster.
+For example, if the components are locked or not, or if they are in their start position, or some heighten state position.
+Would you really expect 100 component/system pairs for each one or would you try and create a more generalized solution?
+In fact, the component could have a time factor associated to the transition so that it takes X number of frames or nanoseconds to transition and allows for a tri-state like script executor rather than just two.
+I would rather treat the component system a means to invoke logic and nothing more.
+Instead, you design a generic component that manages a logical boolean state of 0/1.
+I've been using ECS for a while, at the moment I'm using my own, but it's pretty standard.
+What are the options for implementing this state change?
+This question is about the various options for implementing more specific game logic.
+Imagine the size of it (tiny), and it will do exactly what you want.
+I tend to create a lot of custom components for individual entities and use a FSM when I need to change a lot of entities at once.
+Lets say the state change should be triggered across some internal channel in the engine.
+I'd also need a door system that handled the logic to manipulate the components when it receive the open/close message.
+As it transitions to 0, you fire the deactivated script.
+For example Position + Graphics gives me some nice static background image.
+What if I had 100 different game objects with different behaviours?
+So, mostly, the FSM is implemented by adding an abstraction to each of the custom components that handles that aspect and then using the abstraction in the FSM.
+Logic and state would need to reside somewhere, possibly by sub-classing the FSM or having a generic property map in the FSM and static logic functions for the Door defined elsewhere.
+Actions Lists or Behaviour trees, but they are similar to option 2.
+Now this component can work for doors, switches, vertical/horizontal moving platforms, flashing lights, etc.
+As the component's state transitions to 1, you fire the activated script.
+I've tried both pure approaches in the past and, not surprisingly, I've found a hybrid approach is best.

@@ -1,0 +1,19 @@
+First, check the wikipedia article on file systems: http://en.wikipedia.org/wiki/Comparison_of_file_systems.
+It will handle large high demand systems very well.
+It's pretty much my go-to file system when I have a strong desire for the stability of ext3 but can't deal with the performance quirks (aka inefficient allocation and slow disk access) of the ext series of file systems.
+This kind of depends on the details of "huge folder", specifically whether its a large number of small files or physically large files as well as how deep the tree of directories is.
+Creating and deleting directories takes longer then it does on other file systems.
+This may be a deal-breaker for you if you have a deep directory tree, but I would suggest testing out XFS before dismissing it.
+XFS is a very solid file system that is excellent at working efficiently with large files.
+Until just recently it was still the default in Suse systems and is still a popular option there.
+I have always preferred XFS on systems that deal with large files.
+It often gets knocked in production environments for its aggressive caching of data in RAM and possible data loss due to sudden power failure (not file system corruption, just data loss) although pretty much every file system suffers from this same problem to some extent.
+Without further details on your targetted workload, I can't really give you a definitive suggestion, but I suspect JFS will be a very good choice if you don't have time for extensive tuning and benchmarking.
+Second, consider if you can reorganize your hierarchy to not have so many files at any given level.
+JFS is a rock solid file system noted for low CPU usage and well-rounded performance under many different loads.
+For filesystems with a very large number of small files, ReiserFS has long been king.
+You may not find it quite as high performing with large files when compared to XFS.
+Ext3 is a good "all 'round" filesystem but ReiserFS really excels with large directories of small files.
+The other gotcha is somewhat slower metadata operations when adding or deleting directories.
+Fourth, this is probably a highly-opinion-oriented question, but I like ext3 or jfs, personally.
+(run tune2fs -l /dev/XXX to check) If not, try enabling that as a first step.

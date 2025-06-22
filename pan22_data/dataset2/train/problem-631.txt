@@ -1,0 +1,7 @@
+I have a wildcard application map to the .NET 2.0 aspnet_isapi.dll with "Verify file exists" turned off.
+If I try to hit a fake .aspx file I successfully get sent to the 404 page. I belive this is because there is an explicit mapping for .aspx to the .NET DLL.
+In the website properties in IIS Manager I have set the 404 and 500 errors to Type = "URL" and the same URLs as in the web.config.
+It would appear that these requests for directories are not being routed through the .NET pipeline, which is what I would expect (and need) to happen becuase of the wildcard application mapping.
+Properties > Home Directroy > Advanced Configuration: select the file extension you are interested in and check the 'Verify file exists' checkbox.
+To test your logic, I actually walked through the complete process. I used ETW tracing for IIS and ASP.NET and Process Monitor to see what's happening. Here is what I find:
+If you have a wildcard mapping without the "verify file exists" turned on it will send the request to your DLL.  If the ASP.Net 2.0 DLL that you have it mapped to is NOT using the web.config for your application (you mentioned that was for .Net 3.5) then it would return a generic error.  If you enable the "verify file exists" option IIS will see that the folder isn't there and use its internal error settings instead (which you said are the same as what's in the web.config).  Perhaps try turning that option on to see if helps in your situation.

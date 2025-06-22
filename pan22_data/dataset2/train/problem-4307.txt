@@ -1,0 +1,8 @@
+According to DNS specifications you cannot create CNAME record for your root domain. Even if your DNS server allow you to do that, it will not work.
+Alternatively, although it wouldn't be the most efficient solution, you could also do a conditional redirect with an if statement in a single server context (e.g., one with server_name .example.com;):
+As far as DNS goes, as pointed out by another answer, you cannot do @ CNAME www, i.e., cannot point from the root to a subdomain.  However, doing the opposite, www CNAME @, i.e., pointing from a subdomain back to the root, should be entirely acceptable, and does not have to be symmetric to the way the web-side of the domain is represented (e.g., web-site-wise, you could still point from root to a subdomain, even though you're doing the exact opposite on the DNS side).
+As far as the web-site way is concerned, it would seem that it would make sense to have both server definitions in the same file, where you simply manually prefix www. right in front of <%= ENV['OPENSHIFT_APP_DNS'] %> for one of the servers, e.g., server_name www.<%= ENV['OPENSHIFT_APP_DNS'] %>;.
+I have installed php 7 with nginx on Openshift ver. 2 using this. I have added 2 aliases for the application deployed, as follows:
+Alternatively, if you would rather prefer pretty but less efficient code, you could also use the regular expressions:
+I am not able redirect my example.com request to www.example.com and they are now both different websites, pointing to the same application.
+I don't use Openshift but it seems to me that there is something wrong in your DNS settings where you've created a CNAME for your root domain:

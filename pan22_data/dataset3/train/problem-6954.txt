@@ -1,0 +1,6 @@
+One thing I had a question about was -- if an IIS work process is IDLE, it should get killed -- default is 20 minutes I believe.
+However, I accessed one of the idle websites, it indeed spawned a new w3wp.exe for that site, then ran DHeapmon again, and it still reported the same number of desktops.
+I'm trying to debug some COM+ errors we see in our production environment and a few of them report that the desktop heap is exhausted, so I installed Windows Debugging Tools and DHeapmon for starters after reading the definitive Desktop Heap guide:  http://blogs.msdn.com/b/ntdebugging/archive/2007/01/04/desktop-heap-overview.aspx
+I verified that we are not sharing application pools or desktops, so I should see a desktop for each process, right?
+Basically, as I understand it -- Every IIS worker process (w3wp.exe) should be allocated a (non-interactive) desktop heap; default of 512k.
+We have 30+ sites on our production box, and when I run DHeapmon to report the number of desktops, it not only doesn't report 30+ desktops as I expected (1 for each process, and then the actual windows interactive desktop on the server) -- it reports a single digit # of desktops.

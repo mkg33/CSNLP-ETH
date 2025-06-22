@@ -1,0 +1,29 @@
+This will also add the mask, thus creating the routing entry needed for your hosts to know how to reach each other.
+I won't go into too much detail, but strongly suggest investing some time reading about subnetting.
+You likely want a 24-bit netmask - 255.255.255.0 - or even a 16-bit, if you truly intend to use the entire 10.170.x.x space.
+I do think it's likely that Eric Renouf's answer above is hot on the trail - by default iproute2 is likely to add a 32-bit netmask - 255.255.255.255 - which is correct in a number of situations where routing is involved / necessary, such as at a large hosting provider where some machines have several IP addresses, handed out over time.
+However, as mentioned by others, just add the IPs with appropriate netmask, then the two host are able to communicate.
+I have three servers that currently have ips 192.168.1.1, 192.168.1.2, and 192.168.1.3.
+I can assign ips to each of the three servers, 10.170.0.1, 10.170.0.2 and 10.170.0.3,  with ip addr add 10.170.0.1 dev eth0.
+Now that we know to avoid the default netmask, and why, consider:
+This form is deprecated and has been for years (which means it is likely to be removed from Linux at any time).
+It's possible to have subnets smaller than class C-sized / 24-bit, where the network address isn't zero.
+Probably, what failed there is that you've assigned the IP address to each host without indicating the network mask, you may try this by doing
+connected to a hub or switch and can ping each other on the 192.168.1.x network without going through a router.
+I believe that I need to create some peer-to-peer bridges but I have no clue on how to get started.
+I can't ping any server over the 10.170.x.x network.
+The wording of your question does leave some questions, but I think from context I have an idea what you're trying to do.
+Note in particular that, despite what you will read in outdated Internet guides, you should not use eth0:0 for the second IP address.
+As an aside, the '.x.x' bit of the addresses is really an important detail here, typically we would describe a network using its' "network address", the bottom address in a particular subnetted range.
+To make the change persistent you add it to /etc/network/interfaces.
+This can be done the cheap and dirty way through a post-up command, but the proper way is to add a second stanza containing only that address:
+I assume these hosts are all on the same physical network segment - e.g.
+In this case, your network addresses are 192.168.1.0/24 and 10.170.0.0/16.
+As has been noted by others, when you use ip address add and don't provide a network mask or CIDR range, /32 is assumed, and so no routes are created for the subnet.
+To resolve the issue, you add the CIDR range as well:
+I would like to create a second subnet, on top of the 192.168.1.x, which is 10.170.x.x.
+You just need to check your routing, I think you just missed that.
+if so, you may consider adding supplemental interfaces..
+This is an interesting challenge to which there are a number of solutions.
+In this case, you really want a second network in parallel to the original - a slight nitpick, but relevant to understanding what's happening, I think.
+If you want these configured at boot, also consider adding this line as as post-up command in /etc/network/interfaces.

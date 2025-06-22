@@ -1,0 +1,21 @@
+The order of events here might not be what you expect:
+        if (Advertisement.IsReady("rewardedVideo"))
+            string timeLeft = string.Format("{0:D2}",timeSpan.Seconds);
+            Advertisement.Show("rewardedVideo", options);
+So, instead, I'd recommend that you create an object whose job it is to carry information between scenes.
+So I'm trying to add a "Rewarded video ad" with the reward being more time to play in the next game.
+            TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+Let's call it a Bonus Tracker, and we'll create it as a MonoBehaviour so you can use the Inspector to peek at its state and verify it's tracking the data you want.
+            var options = new ShowOptions { resultCallback = HandleShowResult };
+            //SoundManager.singleton.Sound_RunningOutofTime();
+    private void HandleShowResult(ShowResult result)
+                Debug.Log("The ad was successfully shown.
+Also, I'm still learning so any suggestions or things I can improve, more than happy to take that criticism too!
+        GameOverManager.singleton.GameOverAfterRewardAd();
+                Debug.LogError("The ad failed to be shown.
+And when we start a new timer sometime much much later in a different script, it can say:
+                Debug.Log("The ad was skipped before reaching the end.
+We'll use DontDestroyOnLoad so that it persists between scenes once one exists, and construct it lazily so you don't need to remember to place it in each scene (but we'll check for that case and handle it to be safe).
+            //SoundManager.singleton.Sound_OutofTime();
+The video ad is playing fine and it's resetting my ad counter in my game over manager but I can't seem to figure out how to start the next game with more time (20 seconds to so) but ONLY if they've watched the ad.
+                StartCoroutine(NewGameWithTime());

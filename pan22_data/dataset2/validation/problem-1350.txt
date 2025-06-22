@@ -1,0 +1,12 @@
+Syslog-daemon will then use pattern matching and perform $foo if some match is found. For example, in syslog-ng you can set up a log file hook and filter it like this:
+You can make use of the already available Linux tools like tail, grep, and named pipes. First, create a named pipe (fifo) using:
+Just configure it to keep an eye on Apache log file, or alternatively configure Apache to send logs to syslog facility with CustomLog directive and logger.
+If using this technique, syslog-ng will spawn your script background waiting for new stuff to appear. Because of this you need to modify your scripts to wait for input from STDIN; here's a short Perl example:
+Everytime a new line is written to log, I want that entry to be checked to see if it matches what I am looking for and if so x happens. When I am doing this manually I used cat or tail -f.  I dont want to run the script every 30 seconds via cron and go through the whole log (or even the last 5 lines), figure out which of those lines are new since the last time the script ran and then so some things.
+Third, use tail to read new lines that are appended to apache log file and redirect the output to the named pipe.
+I am trying to write a script that will monitor one of the apache log files and take some specific action.  But how should I go about monitoring the log file?
+The -F option means to follow the file by name which should make it immune to logrotate. So, it will follow always the same file name. The -n0 means to not get any old line. The grep is useful to direct only the relevant lines.
+If fail2ban is not suited to your needs, you can try and modify flog.c which was written by Markus J. Ranum:
+Idea taken from the nagios check_log plugin.  See http://www.kilala.nl/Sysadmin/index.php?id=715 for more details.
+This script reads from the named pipe and prints the line to stdout until it gets the "quit" word. This is just an example that can be customized.
+Using this solution, you don't need any cron job. Just run the script and the tail command shown above.

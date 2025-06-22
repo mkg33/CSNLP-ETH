@@ -1,0 +1,18 @@
+Finally, the optimal editing sequence transforming the input strings $A[1..m]$ into $B[1..n]$ consists of the optimal sequences transforming $A[1 .. m/2]$ into $B[1 .. Half(m, n)]$ followed by the optimal sequence transforming $A[m/2 + 1 .. m]$ into $B[Half(m, n) + 1 .. n]$.
+The values of $Half(i,j)$ can be computed at the same time as the edit distance table $Edit(i,j)$, using $O(mn)$ time.
+Since each row of the memoization table depends only on the row above it, computing both $Edit(m,n)$ and $Half(m,n)$ requires only $O(m+n)$ space.
+The entire optimal editing sequence can be computed in $O(nm)$ time and $O(n+m)$ space, using a mixture of dynamic programming and divide-and-conquer first described by Dan Hirschberg.
+   Half(i,j-1) & \text{if $i>m/2$ and $Edit(i,j) = Edit(i,j-1)+1$}\\
+(The space for the recursion stack is negligible.)
+If we think of the optimal edit sequence as a path from one corner of the memoization table to the other, we need a modified recurrence to record where this path crosses the middle row of the table.
+   Half(i-1,j) & \text{if $i>m/2$ and $Edit(i,j) = Edit(i-1,j)+1$}\\
+So if you run this algorithm $O(n_1 + n_2)$ times, you can recover the entire edit sequence, at the expense of increasing the runtime.
+The algorithm you describe that runs in space $O(n_1 + n_2)$ actually recovers the final edit, and the state just before the final edit.
+Intuitively, Hirschberg's idea is to compute a single editing operation halfway through the optimal edit sequence, and then recursively compute the two halves of the sequence.
+In general, there is a time-space trade-off which is controlled by the number of rows you retain at the time.
+  O(mn) + \max_h \left( T(m/2,h) + T (m/2, n−h)\right)  & \text{otherwise}
+(A linear space algorithm for computing maximal common subsequences.
+There is no need for the tradeoff that Yuval suggests.
+The two extreme points of this trade-off are space $O(n_1n_2)$ and space $O(n_1+n_2)$, and between these, the product of time and space is constant (up to big O).
+Similarly, since we only require space for one dynamic-programming pass at a time, the total space bound is still $O(m+n)$.
+If we compute those two subsequences recursively, the overall running time obeys the following recurrence:

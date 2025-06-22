@@ -1,0 +1,9 @@
+2) Before data is written to the database it is written to the redo logs: this  enables the database to reconstruct its state if the database crashes or if 
+1) if a statement wants to read data that was modified  by another transaction after the statement startet it can find the original data in the undo segments 
+In contrast to deletion and update of rows the insert of rows generates a lot of redo but almost no undo information. 
+1) Before data in the database is modified the original data is stored in the undo tablespace: this enables the rollback of a transaction by undoing the 
+I am not aware of any method to find out how much undo information in the undo segment is from a special table
+If you do not have sufficient old historical data you can try to reduce the undo information written by your applications , keep the transactions short and increase the size of the undo tablespace. If this is not sufficient you can tie a table to a Flashback Data Archive to guarantee that the modified data of the table is kept long enough. Oracle Flashback Data Archive (allso called Oracle Total Recall) is an option of Oracle Enterprise Edition that needs extra licensing.
+These are two different things. Both are necessary tu guarantee the importann ACID properties that are required for a transaction.
+Flashback query is only supported if automatic undo management is enabled which is the default in Oracle 11r2. So contrary to the title of your post for flashback queries the undo information is used and not the redo log information.
+but the  performance view v$transaction (USED_UBLK: Number of undo blocks used) helps you to identifie the transactions that use much undo space.

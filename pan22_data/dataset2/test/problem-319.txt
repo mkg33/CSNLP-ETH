@@ -1,0 +1,6 @@
+There's a (standard SQL) way of getting the guarantees you want, but I'm afraid mySQL 5.7 is not able to handle it. My example has been tested on PostgreSQL.
+After this second table has been defined, you can now add the foreign key constraint users.team_id -> teams.team_id:
+Being this the case: the constraints must be checked at the end of a transaction, not just at the end of a statement. In the case of PostgreSQL, they need to be defined DEFERRABLE and INITIALLY DEFERRED (this is what mySQL cannot handle). You need to enter data for the first team (table teams) and its team leader (table users) all in one transaction, or, otherwise, there's no way to satisfy both FOREIGN KEY constraints:
+Is there any way to normalize this in the database design, or do we have to use constraints or enforce on the front-end?
+By using a composite foreign key constraint you actually make sure that the user you are checking for, is actually a member of the team.
+Each user is on exactly one team. A team has exactly one user in the team_lead role. How can we normalize this in the database? Examples in pseudo-SQL:

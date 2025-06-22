@@ -1,0 +1,21 @@
+Plus, even for Android hardware, drawing a few things off-screen will do nothing to your performance.
+Note that this draws tiles that are off screen and might have a performance impact.
+And batching is at its most efficient when the batches are static: they don't change from frame to frame.
+In my experience this is best solved by simply transforming the co-ordinates that you are about to draw by a scrolling amount (deviation from the starting point).
+You can calculate the scroll value using the player/cursor position from the edges of the viewport.
+You mentioned in a reply to another answer that you are using OpenGl.
+If, and only if, you profile your application and detect that simply drawing the 100x75 map is too slow, you can break the map up into 32x32 segments.
+As in, you ran it on the hardware of choice and it wasn't performing the way you wanted it to.
+Batching means bundling stuff into a single draw call.
+If you have to rebuild your index list or add new vertices, you're batching wrong.
+You can use glTranslate to move objects in your scene.
+If one of these segments is on the screen, you draw it.
+As long as you're using proper texture atlasing (no texture changes between tiles), you could probably just draw the entire 100x75 map every frame with no problems.
+You can perform culling by calculating the tile values that are visible and use those as bounds in your loop.
+I imagine you're drawing your tiles in a loop over a 2D array.
+You didn't say what screen size you're rendering to, so I'll assume it's around 1024x768.
+It is the technique I described but for C# and XNA.
+It takes very simple math to know exactly which tiles are on-screen.
+http://www.opengl.org/sdk/docs/man/xhtml/glTranslate.xml
+See this page on MSDN for some further information.
+Again, only bother to do this if you actually have a performance deficiency.

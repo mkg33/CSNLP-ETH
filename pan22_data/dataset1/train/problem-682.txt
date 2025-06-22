@@ -1,0 +1,31 @@
+number within getIndex is not used, the first parameter can be replaced with an underscore 
+getOutput() function body can be reduced to two lines with one return statement by using destructuring assignment, AND && operator for variables Fizz and Buzz, which FizzBuzz is derived from, and OR || operator
+FizzBuzz, Fizz and Buzz variable names can be substituted for single character variable names fb, f and b variable names within getOutput function body if necessary.
+A single return statement can be substituted for two return statements within getClass function by using conditional operator condition ? expression0 : expression1.
+As the fizz has been done to death I will review this in terms of a page that displays a list of items, could be anything, dates, measurements, or whatnot.
+Not all the values indicated by the height slider can be scrolled to. This is because you set the container size incorrectly <div id="listContainer" v-bind:style="{ height: height + 'px'}"> it should be height: height * listItemHeight + 'px' with listItemHeight  matching the height of a list item.
+Better yet don't set the height let the layout engine do that. You use colon property :class="getClass(number)" You can add another class named Empty and return that if the function is called with a number greater than height. 
+The containing div will size itself to fit the content.
+Changing the height slider (min value is 200) I imagine changes the number of items in the list. However only 100 items are displayed no matter what the height value is.
+When the page loads you set the slider height to 3000 but the array you set to 100. Maybe a constant in the JS to set up the height, and numbers array would help. (See first example)
+Use a label to associate the height slider with the height value display rather than an unassociated div. You can just nest the input within the label to make the association implicit.
+I think that the approach is a little over the top. Having very long pages has a cost in resources. Considering that you can never see more than a screen full at a time it would be more effective to generate the list as a view in place as the user scrolls. That way you only need to create as many elements as can be seen at once. You could use the height slider to replace the scroll and us it to reference the top view item.
+With a little more effort such a list should be zoomable as well, only ever displaying one screenfull. (Really scroll bars are old, ugly, and awkward. Good design means weighted intuitive gesture control, even with a mouse) 
+Addressing some of the problems and bugs. Uses a complete list (set to 1000 for practicality) 
+    numbers: new Array(MAX_HEIGHT).fill(1).map(getIndex),
+      if (number % 3 === 0 && number % 5 === 0) { return 'FizzBuzz' }
+      if (number > this.height) { return "Empty" }
+      const output = this.$options.filters.getOutput(number);
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
+  <input type="range" :min="minHeight" :max="maxHeight" v-model="height" />
+      <li v-for="number in numbers" :class="getClass(number)">
+This does not create the long list, rather it uses a view controlled by the height slider replacing the scroll bar. This lets you display a much larger range of values without having to tax the device with a huge lists of elements.
+I have removed the title (not needed we know what the page does) and height label as that value is now the first fizzBuzz item. This gives needed realestate back to the app.
+Increased the view range to 10000. Also using HEX CSS alpha format colors thus will look a little ugly for some older browsers.
+    numbers: new Array(DATA_VIEW_SIZE).fill(1).map(getIndex),
+      if (number % 3 === 0 && number % 5 === 0) { return  'FizzBuzz' }
+      const output = this.$options.filters.getOutput(number + Number(this.height));
+      return this.$options.filters.getOutput(Number(number) + Number(this.height));
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.js"></script>
+  <input type="range" :min="minHeight" :max="maxHeight" v-model="height" />
+      <li v-for="number in numbers" :class="getClass(number)">

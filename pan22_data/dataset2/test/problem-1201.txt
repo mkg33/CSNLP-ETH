@@ -1,0 +1,7 @@
+The reason for that is that every time new file is created - OS can write data to a different location on the block device. Then when file is deleted - from the point of view of the VM space is now free, but on the underlying VDI space was already reserved, size of the VDI file grew and there is no way to shrink it.
+Some workloads are behaving particularly bad with thin disks. For example if Oracle database is in archive mode - it will create many archive logs and even if those are deleted regularly by running rman - it will quickly fill thin disk to it's maximum size.
+There are some possibilities to actually decrease it, but that would require shutting down VM and punching holes in the VDI file.
+You create 10GB thin VDI disk, mount it and then start creating / deleting series of relatively small files in a loop.
+Now we will run this one liner script in a sequence. Creating and deleting 1000 relatively small 100M size files. 
+Thin (or so called sparse or dynamic in virtualbox terminology) disk images will grow in size over time but will never shrink.
+Even though each of these small files will not be bigger than 100MB - your VDI disk will quickly grow to the maximum size.

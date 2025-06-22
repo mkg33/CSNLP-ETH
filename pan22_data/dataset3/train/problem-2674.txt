@@ -1,0 +1,25 @@
+If you want to know what happened, that's the place to look.
+I've also set up custom SNMP MIBs in the past, which you could put the timestamp of the last time that particular cronjob has run.
+If the PushMon URL doesn't get called because the machine is off, or cron failed to run (it happens), or your script fails, PushMon will alert you by 3:30 AM.
+I'm thinking right now of setting up a database table that stores last run timestamps for each cron command and we get weekly report for the cron commands.
+If you really feel like you need a second tool keeping an eye on cron, there's a perl package (Schedule::Cron) that you could use to regularly check your heartbeat.
+cron does a good job of logging every command that it runs, along with errors.
+The tool is free for individual monitors and paid plans are available for those with multiple monitoring needs.
+Although, if you're really that worried about cron dying, you might want to look into rebuilding or replacing your machine.
+I built a simple tool for this type of monitoring - https://cronitor.io
+Start with reviewing and/or monitoring /var/log/cron.log (or wherever your cron logs are going).
+Or possibly storing in the database when it should run and when it last ran, if there's a problem it'd email us.
+The "emailing" would be done by our internal systems where our employees are consistently logging in so it wouldn't be based off of cron itself.
+It allows you to set both intervals (every 24 hours) and durations (greater than 10 minutes, less than 2 minutes, etc), and then receive email/SMS alerts if your cron job (or any other automated task) doesn't run according to the rules you defined.
+Then "ping" the PushMon URL when your script runs successfully.
+I realize that when any cron has output it will email that output... what I'm trying to determine is that if I have a script scheduled for 3 AM on Tuesday and for whatever reason it either throws an error or fails to run, I'd like to know...
+If you're worried about cron dying, you can setup a cron'ed heartbeat that just logs every 5 minutes, and if you don't see the heartbeat, send some sort of alert.
+Have your syslogs forward to your monitoring system, and then set up alerts within your monitoring system.
+Alternately, you could just use some sort of system monitoring tool (SNMP, Nagios, Hobbit/BigSister, etc) to externally monitor that the cron process is running.
+You can use PushMon and create a URL with a "by 3:30 AM every Tue" schedule.
+cron should be pretty reliable, and if it's failing, it's probably a symptom of a bigger problem.
+I think monitoring syslog would be the easiest solution.
+If you're that worried about the local machine's reliability, you can also send the logs to a second machine for monitoring/processing/alerting/etc.
+You can get alerted by email, SMS, phone, IM or Twitter, and the service is free.
+Your solution sounds a little more complicated than I think it needs to be.
+Then some external system could monitor that snmp MIB for a timestamp older than 24 hours.

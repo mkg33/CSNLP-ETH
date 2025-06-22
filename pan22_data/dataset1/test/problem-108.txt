@@ -1,0 +1,8 @@
+You can reconfigure firewall services to block the sftp ports in use.
+Note that disabling sftp on a system-wide scale is probably unideal, as sftp then becomes completely unavailable for all other possible tasks (both using the current design, and the future design).  The better design (retaining long-term flexibility) is probably to control the "write" permissions of certain data (as noted by the first solution of Martin Prikryl's better multi-solution answer).
+I choose not to duplicate (or try to complete with) Martin Prikryl's better multi-solution answer, which doesn't involve changing sshd_config file nor reloading the service.
+However, for the sake of education/familiarity, I will share another option.
+You could change the sshd_config file, but not reload the service.  (So, as requested, you're not doing both.)
+Then send a SIGHUP to the parent sshd service.  (Make sure it's the parent: SIGHUPping another sshd service may kill a connection.)  The easy way to identify which process is the parent may be to use a PID file.
+(The default name/location of the PID file can vary between different operating systems.)
+SIGHUPping the parent will cause sshd to reload the configuration file (because that is how sshd was designed).  Note that this might not stop any currently-running sftp sessions (and modifying the binary file on the disk might also not do that), so make sure that's handled before you move onto your sensitive can't-have-sftp-running process.

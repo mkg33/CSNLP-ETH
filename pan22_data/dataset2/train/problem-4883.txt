@@ -1,0 +1,10 @@
+Don't forget to chown the files to the correct website owner account/group as well. if you copied it using  root account for instance, the webserver most likely won't have access to the files. Set image file permission to 644 using chmod.
+I am in a folder called images - none of which show up on my website. I believe the permissions are not set correctly.
+I've found that if a folder is regularly added to then setting the group sticky bit to the folder corrects things without thinking.
+You might want to check out chown instead of chmod. Chown == Change OWNership which should be used and files given permissions of the user that is serving the service. httpd generally runs under www-data or httpd user and group on most modern linux distros.
+There are three kinds of permissions: user, group and world. Each RWX in the ls -l command gives the read, write and execute permissions of the user first, then group, then world.
+At a minimum, the web admin user should have read/write access to the images, or rwx . (There are exceptions for locked-down, managed websites, but I have a feeling this is not the case here).
+There are two kinds of ownership: user, and group. Good web administration leaves the web server owned by "nobody" (or equivalent) and the files it displays owned by the web administrator. The group ownership and be the web administration group, if more than one person, or just the default group of the web admin user.
+What do I do to set them correctly so that they will show up. What permisions do I give, and how do I do that, do I navigate up a level first ? Can I set them all in one go? 
+If you are serving up pictures to everyone and anyone, setting world read access to your images directory and the images themselves will solve your problem without bothering with ownership. If the images are restricted to logged-in members only, world r/w/x should be turned off (appear as --- in ls -l )
+Eg having group ownership set as the webserver group and group read/sticky permissions on the folder means that new files get set to that group and readable. If there's a team managing the folder then group write also helps.

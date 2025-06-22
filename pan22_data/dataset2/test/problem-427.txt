@@ -1,0 +1,7 @@
+@Wiscocrew's answer is on the right path, but, unfortunately, it is a little more complicated than that.
+I just ran into this - I suspect you installed the windows version of Pandoc.  In cygwin, if you run which pandoc do you get something like /cygdrive/c/Program Files (x86)/Pandoc/pandoc?
+I'm using Pandoc to convert my markdown files to different formats including html and docx. With PDF though, I get the message pdflatex not found even though it was installed and I can even call it directly from Cygwin. 
+If so, it appears that version expects windows-style paths (e.g. C:\path\to\pdflatex), but cygwin is probably giving it something like "/path/to/pdflatex".
+Pandoc gives a different error: pandoc.exe: latex-engine must be pdflatex, lualatex, or xelatex.. The reason for this error is that Cygwin's pdflatex is an symlink:
+My work around was to copy /usr/bin/pdftex.exe to /usr/local/bin/pdflatex.exe and pass it to Pandoc like so:
+Pandoc permits you to pass the full path to pdflatex with the --latex-engine switch (c.f. http://pandoc.org/README.html#options-affecting-specific-writers), but if you just do something like 

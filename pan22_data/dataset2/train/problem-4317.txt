@@ -1,0 +1,7 @@
+Note: if you have logging, you will need to do this for the django logfile as well or apache won't like it much. 
+Which made sense. So I edited the permissions on the file, so that the Apache process had write permissions. However, instead of it being able to write, I get this cryptic error:
+The development server needs to be run as the same user who has write perms on the database folder, so if you originally created the database as root, you will need to be root when you run:
+I didn't really want to change the ownership of this dir. (mostly because i use the pi user to do things like git)
+Using my Django app, I'm able to read from the database just fine. When the application didn't have permission to access the file, it gave me this error:
+Instead of changing of permissions to www-data, i found that I only needed to change the permissions like this:
+As a result, the database can be accessed read+write by apache2-daemon (user www-data), without giving grant to the project root folder,  and - on the other hand - the app can be run in dev mode by the operational user hape, e.g.

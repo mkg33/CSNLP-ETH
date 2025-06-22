@@ -1,0 +1,8 @@
+While rather sparsely documented, the contents of /proc/<pid>/environ will only contain the environment that was used to start the process.
+replace PID with the PID of the process you want to see. Every information about a running process is under /proc/PID/ directory
+The environment variables are appended to the command line, this removes the command line and we only have the environment variables left.
+If you need to inspect the current state of a process' environment, one way to do that is by using gdb.
+You can create a temporary function to parse the values in /proc/<pid>/environ. At the terminal prompt:
+As others have mentioned, on Linux, you can look in /proc but there are, depending on your kernel version, one or two limits:
+The first shell is a login shell and initially has a very limited environment but grows it by sourcing e.g. .bashrc but /proc does not reflect this. The second shell inherits the larger environment from the start, which it why it shows in /proc.
+First of all, the environ file contains the environment as it looked when the process was spawned. That means that any changes the process might have made to its environment will not be visible in /proc:

@@ -1,0 +1,25 @@
+Do you need all servers to be accessible without NAT or some kind of tunneling for diagnostic / troubleshooting purposes?
+If your thought of segmenting the internal servers into an own VLAN and IP subnet was due to security considerations, then yes, this might make sense in certain cases.
+While architecture can be constrained to some extent by the technologies that implement it, you've provided no details of these.
+At least the RIPE does encourage the applicants not to use public IPv4 addresses for hosts which do not need public access and use vhosts and load balancers instead in order to conserve the IPv4 address space.
+You would need to define a threat model and see if there would be a security gain from segmentation that justifies the add-on management overhead for an additional network.
+Would the registration authority in your region hand out the required number of IP addresses without questioning the actual need?
+We run a hosting solution, which until now has supported shared hosting and VPSes.
+Using one official IP on the Frontend server, and then just set up an internal subnet for the servers behind that?
+Sorry for the mixed-up title, but let me try to explain better:
+Also, run memcache across both nodes at this tier.
+Another single point of failure and complexity in managing load balancing.
+We are now getting larger clients which require a more complex setup.
+Then it's a no-brainer to run replication, using the machine earmarked as the memcache server as the other node (either as slave in failover or master-master replication).
+While vlans switch slightly faster than IP routing, IME the difference is trivial in comparison to the processing taking place at each tier - and using separate subnets has additional benefits in terms of security.
+The issue we are dealing with is to agree on a flexible and easy-to-maintain IP setup.
+Might I suggest that this will not be the most reliable way of providing the service.
+Best approach from here is to go back and start again.
+But this again is separate from the issue of using public IPv4 addresses or not - you could set up IP filters to match your needs either way.
+Use at least 2 with round robin DNS or multi-pathing upstream.
+So far we've been into VLAN'ing the internal servers in its own subnet, we've though of assigning an official IP to each server, and so on.
+We could then just NAT in any eventual sources required to access for instance the DB server directly over 3306.
+We have more or less settled the server-setup itself, which will consist of:
+Are you using IPv6 where address conservation issues would not matter anyway?
+So you want a tall, thin stack, with 2 or 3 single points of failure at the top and bottom.
+Indeed, if you implement the routing on the nodes themselves with seperate NICs, then there is no slowdown compared with a vlan.

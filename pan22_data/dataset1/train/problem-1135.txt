@@ -1,0 +1,12 @@
+I have recently learned about sp_tableoption which gives you the ability to store "large value types out of row" for particular table.
+A colleague of me told me if I enabled it, each field is stored on 8 KB page at least, no matter how large it is. I was not able to find a confirmation of this, so I run the following test:
+So, it seems that really the first row is now occupying more space (8 KB exactly). So, I add one more row and do the test again:
+The result was the same. So, it is not true that each row is occupying at least 8 KB, but the size is actually increased. I know that:
+But this 16 byte pointer can be ignored in this case. 
+Can anyone tell is there a way to determined how much space overhead small values are going to cost if the option is true?
+I am planning to apply this option to a large table and want to calculated how the table size will be affected.
+Note, I know that the value is moved out of the row when it is inserted or updated only. 
+You can obtain the file and page number of the LOB pages (where your "out of row" values are saved)
+Now, with that information get a dump fo the page:
+From those results I can see that for strings with 64 bytes or less the record size will always be 84 bytes. For longer strings will be the actual bytes plus 14 bytes (I didn't analyse strings longer than a page)
+And the storage engine will try to fit as many of those records in a LOB page.

@@ -1,0 +1,15 @@
+In general, I would hope that my monitoring system would pick up on the conditions that could lead to or trigger a crash.
+Having some sort of historical based monitoring solution would help you identify trends.
+Overall, as time allows, a lot of work is being done on trying to make mod_wsgi easier to monitor and better able to automatically recover when your application starts to hang for one reason or another.
+Work is being done in mod_wsgi 4.0 to better recover from the issue where all the WSGI request threads block on something, which is ultimately going to be the cause of this.
+You might consider getting onto the mod_wsgi mailing list and watch for posts about this, or ask any specific questions about it you may have on the mailing list.
+This data will be able to be reported into a tool such as New Relic so you can chart it and then analyse it in conjunction with all the other information about web requests that the New Relic Python agent captures about your application.
+How this then leads onto Apache as a whole blocking and why you may not get any logging out of Apache about it is mostly understood.
+I think you can use Apport for some bits (if you can tie into your application), but everything else may be a combination of utilities: dmesg, dpkg, lshw, udevadm, dmidecode...
+There is also work going on with tracking and reporting thread utilisation so you can know when request threads are starting to block in your code for some reason.
+As part of the new recovery mechanism which has been implemented, mod_wsgi will prior to restarting the blocked daemon process attempt to log a minimal stack trace of each WSGI request thread so you can see where the code was blocked.
+Orca, Cacti, Munin... they all work well for this if it's a standalone system.
+New Relic also now has server monitoring, so it also can track a reasonable amount of information about the system as a whole, disk activity, network activity, cpu, processes etc etc.
+Since you're on Ubuntu, that's not quite available.
+So, as a whole New Relic is one possible option for monitoring your system.
+On the Red Hat/CentOS/Fedora side, we have the sosreport utility, which collects detailed hardware and process information.

@@ -1,0 +1,7 @@
+You can make this change permanent by adding a line net.ipv4.tcp_sack=0 to /etc/sysctl.conf (on other Linux systems YMMV).
+Are you running the latest version of whatever ssh servers and clients you're using? I'd also recommend hitting their email lists on this as it seems rather obscure.
+On Debian, tcp_sack is enabled by default. If I read http://www.frozentux.net/ipsysctl-tutorial/chunkyhtml/tcpvariables.html, it should make no sense to disable this option, but in our case, it helped.
+Any thoughts? I see this question being asked in various places out there, but never any answers. Any help would be appreciated.
+I have a series of files I need to copy via SCP over a VPN to a remote linux server each night. The files are not large, we're talking about tens of megabytes here, but the file copy almost always stalls after a few seconds. Running the SCP command with -vvv, I see the following over and over throughout the attempted copy process:
+Are you allowing ICMP through the VPN? "TCP connection stalls after a few seconds" often translates to "PMTU black hole".
+We were able to do away with the stalls by disabling the TCP variable tcp_sack ("tcp selective acknowledgements") on the remote servers:

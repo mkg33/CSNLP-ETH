@@ -1,0 +1,8 @@
+After you know if the problem is with the disk or with the rsync/ssh speed you can continue debugging.
+One thing would be to verify that this is the case. Take a look at dstat output and iotop output. Also check that the file system for backuppc is mounted relatime or noatime, so that every file access doesn't translate into a write.
+I've had problems with slow speeds with rsync over ssh (12-15MBps on gigabit link, but on relatively slow pc's).
+in another terminal to see the local write speed. If the speed is good enough, then try some other network method (try first with netcat (check the man page for the first command, some distos dont need the '-p' flag)
+So you suspect random read performance is the problem. The solution to that would be to get storage with better IOPS (SSD, or HDD with higher rotational speed, or RAID with more spindles). More RAM (cache) can also help, if the working set (inode cache) fits in memory.
+BackupPC is very I/O intensive program and can lead to lots and lots of disk seeks. With low-end hardware there's only so much you can do, but try the following:
+First try benchmarking the raid performance locally, to see if it's really the raid problem. You can even use:
+If I were you, first I'd upgrade the server RAM and would also check the BackupPC settings. If those would not help enough, then I would tinker with file system and RAID settings.

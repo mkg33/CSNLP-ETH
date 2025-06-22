@@ -1,0 +1,9 @@
+At the moment the only way I can think of doing it is shutting down our website (so data stops being written to db1), waiting until all the slaves are up to date, flush logs on db1, shut it down. Reset master on db2, change all slaves to point to db2 with log position = 0.
+3) on slave[1-6], 'start slave until master_log_file = $file, master_log_pos = $pos'.  These are the positions from slave info ((Master_Log_File and Exec_Master_Log_Pos) from above.
+4) at this point verify that slave[1-6] and db2 both have the same replication positions in 'show slave status' with respect to their master db1.
+6) change master on slave[1-6].  The new master_log_file and master_log_pos values are the info you got from 'show master status' on db2 in step 2.
+2) stop slave on db2.  Note it's file/pos info as a slave of db1 (Master_Log_File and Exec_Master_Log_Pos) and it's master log pos (show master status).
+It's sort of unclear if you are moving over the app to write to db2 or not, but you can re-master the slaves to replicate from db2 while the system is live.
+Note that this method incurs some time where replication is stale on all the slave dbs.  This should be a few minutes if done manually, or you could script it and push that down into seconds.  If your site cannot tolerate any staleness of data due to replication delay, then you will have to do this work a different way.
+You should also make sure db2 has log-slave-updates turned on, or it will not correctly replicate statements from its master to its slaves.
+I currently have a master db server (lets call it db1) and 6 slaves (slave1-6). I've setup a new server (db2) as a slave of db1 and it's in sync. I want to change all the slaves to use db2 instead of db1, but with minimal downtime/data loss.

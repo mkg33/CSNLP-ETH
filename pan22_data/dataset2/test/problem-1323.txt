@@ -1,0 +1,9 @@
+I find it confusing that you use both \n and WriteLine() for newlines. I would prefer to write it like this:
+You're not always using var in what I think of as a good way. We should only use the keyword when it's obvious what type the variable is. Consider this line.
+You should be consistent regarding whether you put a space after the for keyword. The common way is to put a space there.
+If iterations is greater than 1, you're going to overwrite old Tasks with new ones, which means you're not going to wait for the old tasks to complete. That's not okay.
+Also, unless few extra allocations are important for you, I would use a lambda here to make the code more type-safe (no more casts in GetAction) and clearer (your GetAction returns a lambda, my TestUrl is a normal method):
+I don't see any reason to use List.ForEach() here (or pretty much anywhere else). Normal foreach is simpler and more efficient (no need to copy the array to a List):
+It's completely obvious what tasks is because you're newing it up right there on that line. There's no reason not to simplify by using var. 
+The default number of concurrent requests to the same server (ServicePointManager.DefaultConnectionLimit) is only 2. So I believe most of your tests are going to be limited by that and not by the server you're trying to test.
+I have also change the name of the iteration variable to request to make the code somewhat more readable.

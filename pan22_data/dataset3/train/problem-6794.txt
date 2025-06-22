@@ -1,0 +1,35 @@
+If you have millions of primes, every one of those index calls is secretly a hidden loop that runs millions of times.
+Instead, if you are checking whether the first prime is 3, you know that the second prime has to be 97.
+So first you use a sieve to find all numbers up to 32,000.
+Then you don't have to search for your place again every time you go round the loop, because you have a bookmark to it.
+You are looking for two numbers that add up to a target.
+As suggested by Graipher in the comment, you're probably spending a lot of time generating a list of primes.
+And once you reached addend1 > addend2, you know there is no solution.
+This will be very quick, since usually you don't need to check too many values for addend1.
+So instead of maybe 50 million primes, you look only for maybe 50 or 100.
+In the example with n = 1,000,000,000 you probably find two primes adding up to a billion with addend1 ≤ 1000 and addend2 ≥ 999,999,000.
+If your target is 100, you might first say "what if it's 3?"
+If so, it's a match, if not, you can move on to checking 5 and 95, and then 7 and 93, and so on.
+That would be worth profiling, but I can't speculate as to how it might be improved without at least seeing the code.
+You usually don't need all the primes, only a very small number.
+That takes a while, but it gives you an array of all primes in sorted order.
+So you are checking a huge number of sums needlessly.
+Then you create a sieve that finds all primes from 999,999,000 to 1,000,000,000.
+If you call index on a list, python has to check every element in the list one at a time to see whether it's the thing you're after.
+That makes the search a lot quicker, but doesn't help with the sieve trying to find all the primes.
+This likely doesn't happen, but if it happens, you create another sieve for the numbers 999,998,000 to 999,999,000 and so on.
+In this way your algorithm checks each prime against one other number instead of each prime against all the others, and should be massively faster.
+So here's what you do: To find all primes say in the range 999,999,000 to 1,000,000,000, you need to check if these numbers are divisible by any prime up to the square root of 1,000,000,000 which is a bit less than 32,000.
+So all you have to do is check whether 97 is prime.
+There are two things that stand out to me as very clear performance sinks.
+Start with addend1 = first prime, addend2 = last prime in your array.
+Second, and slightly more subtle, is the way that this is looping.
+It then calculates 2 + 2, 2 + 3, 2 + 5, 2 + 7, 2 + 999,999,xxx to check if one of these numbers equals 1,000,000,000.
+Let's take n = 1,000,000,000 for example and see what your code does.
+It then calculates 3 + 3, 3 + 5, 3 + 7 etc., and again, addend2 would have to be 999,999,997 million.
+You run your search algorithm until it tries to examine primes that are not in this range.
+If their sum is too small, replace addend1 with the next prime to make the sum larger by the smallest possible amound.
+If their sum is too large, replace addend2 with the previous prime.
+But obviously when addend1 = 2, addend2 has to be 999,999,998 to add to one billion, so you are checking tens of millions of sums unnecessarily.
+The good news is you can resolve this easily enough: just keep another variable which stores where in the list of primes you're up to.
+This means your trying all the primes with all the primes.

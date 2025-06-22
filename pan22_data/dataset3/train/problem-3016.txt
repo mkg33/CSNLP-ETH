@@ -1,0 +1,24 @@
+Secondly, addressing this network communication is only one small part of the pie.
+Or it is no problem using serveral /120 prefixes for example to not needlessly waste the IP range?
+Inside your network, I guess, technically, you can do anything you like.
+Because a server will only route to a default gateway (and thus pass through a network level firewall) if it has no route to the target - but in your case it has a direct route to the target because the IP addresses are all on the same machine.
+IPv6 is built around the assumption of /64 (or larger) subnets.
+I used to assign different IPv6 addresses for different services on the same server this way I can filter what can be accessed from where, which is improves network security.
+Should it work as per standard, or the behavior is implementation-specific?
+If I understand correctly, /64 is the smallest prefix that is recommended be assigned.
+I just realized that the only thing I might be doing wrong is that I choose these addresses from the same /64 prefix.
+In fact you can assign an entire /64 or larger if you want to (and there are reasons why you would want to do this).
+If you make subnets smaller than that, you need to really do your research to know what features you may break.
+This would probably be my recomendation, but it is further from what you are asking for.
+Here's the thing though - even if you assign IP addresses from different networks intra-server communication is still going to work.
+There should be zero issue assigning multiple IPv6 addresses from the same /64 to a single server.
+I would also like to add that you do not need to assign a subnet to do IP filtering.
+The last thing to look at is if these services need to be segregated, they should maybe be on separate machines, VMs, or (Docker) containers.
+The most common way to enforce that sort of segregation is via Virtual Machines.
+Some manufacturers have coded IPv6 implementations to assume /64 as the base size.
+But is there actually a problem you're trying to solve here?
+Now, that all said and done, it appears that you are mostly concerned with intra-server comunication.
+It is not a problem to filter out connections from the outside world on the gateway, but the isolation may be bad between the server processes.
+You are correct that inter subnet communication would trigger the traffic to be routed through the gateway, but if all of your services are on the same machine, you could look into doing iptables rules or similar on that machine to filter inter-service communication.
+If I want to disallow (using packet filter on the server) the services to communicate with each other then they should not be in the same subnet so I have to assign the addresses from different /64 prefixes.
+If you're concerned about security in depth, what's to stop an attacker (or a rogue application) from just reading and writing directly to the memory space of the other application?

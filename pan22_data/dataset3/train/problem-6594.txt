@@ -1,0 +1,10 @@
+Only when you tell routers not to fragment IPv4 and turn the DF bit on do you need to learn about lower MTU's further along the path.
+Routers will send back ICMP messages (Type 2: Packet Too Big, it's not a subtype of Destination Unreachable anymore, it now is so important it has its own type) and the sender has to take those into account when determining the packet size.
+It therefore behaves in a similar way as IPv4 with the DF flag on.
+If you leave the DF flag off you can just send packets as large as possible on your local link, and routers along the path will fragment if/when necessary.
+You therefore as a sender don't need to discover the MTU for the whole path.
+IPv4 packets have a Don't-Fragment (DF) flag which indicates whether routers on the path are allowed to perform fragmentation when the packet doesn't fit the MTU of the next link.
+Routers that would have fragmented will now send back ICMP messages (type 3: Destination Unreachable, subtype 4: Fragmentation Needed and Don't Fragment was Set) and the sender needs to receive these so they can adjust their packet size.
+IPv6 doesn't have a DF flag, fragmentation along the path is always prohibited.
+So whether you have to implement Path MTU Discovery has nothing to do with where in the header the fragmentation is implemented (main header vs extension header), it depends on whether fragmentation is handled along the path or whether the sender has to determine the right packet size.
+If the routers along the path handle it (IPv4 with DF off) then the sender doesn't need to care, but otherwise (IPv4 with DF on, and IPv6) the sender must be able to receive those ICMP messages so it can adjust its behaviour accordingly.

@@ -1,0 +1,9 @@
+So I guess what you're saying is that you want to convert from world space (isometric coordinates) to screen space (a point on the screen).
+This is a known and solved problem in 3D graphics, so we can use a transformation matrix. First, let me give you the general solution and then we'll work our way up to your specific case.
+The general solution is that you have a projection matrix. It can be perspective or orthogonal, it doesn't matter. It transforms points from world space to clip space, which is a really complicated 4D (yes, four) space that will make your head hurt if you think about it too long. This results in a homogenized space coordinate, meaning that it starts at the center of the screen, runs from -1 to 1 on the horizontal plane (-1 being left, 1 being right) and -1 to 1 on the vertical plane (-1 being up, 1 being down).
+So, what about your specific case? You mention that you have an isometric projection. That means an orthographic projection matrix and a camera that is fixed to a certain angle, let's say 45 degrees on the Z axis and 90 degrees on the Y axis.
+If you plug that matrix into the function you should get the results you want.
+Knight666, this helped me TREMENDOUSLY solving this issue.
+However, there is some scaling to do as well; this code will not work out of the box. I use:
+The reason for these weird sqrt(2) is all explained there:
+http://www.alcove-games.com/isometric_tile_picking.php

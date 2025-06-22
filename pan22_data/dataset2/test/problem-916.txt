@@ -1,0 +1,9 @@
+*  The storage locations that you yank into and put from are called registers. A buffer is the thing that you edit, usually a copy of a file from disk.
+When you yank the text into the unnamed register*, a copy is also put into register 0. Each time you replace selected text, you can just paste from the 0 register.  See
+The solution, according to :h v_p, is to yank into a named register, such as "0y, then paste using "0p as many time as you need. It may be helpful to map <leader>y and <leader>p to use a named register, if this is something you do frequently.
+This actually works by 'putting' the register after the selection and then deleting the selection. The problem is that this deletion is now stored in the unnamed register and will be used for the next put action.
+Pasting from "0 register is important to know, but you often want to replace many times. If you make it a repeatable action, you can use the . operator, as alluded to by garyjohn. It's explained on the vim wiki:
+When using put in visual mode, the text you're replacing, wrong1, is overwritten by the contents of the 'unamed' register.
+In addition, if you are replacing a number of words with the same word, you can just move to the start of the word to be replaced and type .. That will repeat the last editing operation. See
+This plugin offers a two-in-one gr command that replaces text covered by a {motion}, entire line(s) or the current selection with the contents of a register; the old text is deleted into the black-hole register, i.e. it's gone.
+As something like vnoremap p "_dP(I also tried x or c) has issues with line beginning and end, I ended up doing this: vnoremap p :<C-U>let @p = @+<CR>gvp:let @+ = @p<CR>which I found simpler than the existing plugins (which also did not work with set clipboard=unnamedplus out of the box).

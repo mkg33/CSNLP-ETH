@@ -1,0 +1,31 @@
+If a whole region goes out you can't access them from another region.
+Creating EBS snapshot can mainly depend on the volume, as well as read/writes happening on the disk, network latency (minor impact).
+If your application works just as well on two smaller instances than one large instance this will cost you a little more for the ELB, with an RTO of zero.
+The problem with that answer is that it doesn't tell the whole story:
+This means if you have an AZ fail your other instance will keep serving traffic and your ELB/AS will create more instances in working AZs automatically.
+You can also prewarm your volume, which takes a bit of time but brings all the blocks in quicker, so you take the performance hit up front.
+If the volume is a data disk, yes, you can go with snapshots as a backup.
+Another potentially better option depending on your use case and budget is to use an elastic load balancer with auto scaling and multiple smaller instances, spreading your traffic across two or more AZs.
+If price is more important than availability then you probably want to follow your original plan with the original RTO.
+Michael has a great answer to your question, as always.
+Spinning up an instance in another AZ could probably be scripted with some combination of events, lambda, and CloudFormation or Opsworks, though it would take some experimentation.
+What the documentation omits is the fact that you can use either of these in a read-only mode with the volume mounted, and get the benefit of immediate availability while prepping the volume for action.
+Continue using it over a period of hours and days, and note what you observe.
+I am taking periodic snapshots of a 1TB EBS (Amazon Web Services Elastic Block Store) volume as backup.
+Immediately does not mean the volume is as fast, initially, as it will eventually be.
+Remember: the difference between microseconds and milliseconds seems intuitively small but it is still a factor of 1,000.
+It's not the way things are usually done in AWS though.
+How can I figure out how long it will take to create the new EBS volume?
+The link, above, goes on to explain how you can speed up the warm-up process with dd or fio.
+I have an RTO (Recovery Time Objective) of 6 hours.
+I believe your RTO should be good enough to recover the volume.
+In the case of the whole AZ (Availability Zone) becoming unavailable, my Disaster Recovery plan is to create a new EBS volume from the latest snapshot in another AZ in the same region.
+However, you have to understand what the term "immediately" means, here.
+The lag in loading the blocks is, overall, a small price to pay for the immediate availability of any specific block anywhere on the volume, but the impact can be significant, with the significance depending in part on how the volume is used.
+When a volume is restored from a snapshot, every block on the volume is logically present and logically available as soon as the new volume becomes available, but not necessarily physically present on the volume the first time you try to read it.
+This will have a further negative impact on initial random accesses, but the pain will end sooner than if you do nothing at all, and for that reason it is probably going to be your best choice... but you must put your DR scenario through its paces, observe its operation, and adjust your strategy, accordingly.
+It probably shouldn't/doesn't make any difference, but I am in the ap-southeast-2 region (i.e.
+Once the first AZ comes back up it will eventually balance the load across all AZs again.
+And personally I wont suggest taking EBS root volumes snapshot as backups because of OS issues.
+This is my point, above -- creating the volume only requires a matter of seconds, at which point it is usable, but slow.
+The first answer to your question is that it actually only takes a few seconds.

@@ -1,0 +1,5 @@
+So there are two options.. use stunnel with the xforwardfor patch
+This will allow you to set the header for the backend servers to read from
+I would just sit nginx in front of it to handle the ssl termination and also setting the xforwardfor header back to the app. Put it on the same server as haproxy. Also you could just use ngninx for passing back based on routes also so there would be no need for even haproxy. 
+To me your setup seems a little bit strange and complicated. I also think it will be hard, if at all possible, to manage to get the original visitor's ip address into the final nginx logs.
+A common alternative is to use stunnel in front of haproxy. Stunnel will decrypt the ssl and feed it to haproxy, which can in turn forward the stuff to the appropriate backend server. This solution also has some difficulty in forwarding the original ip address, but if you use the current 1.5 development version of haproxy and v. 4.45 or later of stunnel, you can use the PROXY protocol for that.

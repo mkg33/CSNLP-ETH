@@ -1,0 +1,9 @@
+But there's one thing that's bothering me a bit - this example must be simplified, because it describes taking a sum. 
+There's just one thing that's nagging at me a bit though - The DP sum can't work that way, because if you do an 'XOR style' dual parity... you end up with an ambiguous result. You create a bunch of simultaneous equations, that allow you to figure out the relationships between bits - e.g. you know which bits are equal and not equal to each other. 
+Maybe http://www.netapp.com/us/media/tr-3298.pdf which has more details and references can help you understand the design?
+But the net result is ambiguous - you can either have the 'right' answer, or an inversion of the 'right' answer. 
+That's fair enough - for 'normal' parity in RAID4 and RAID5 - you do XORs rather than straight additive sums and this works because XORs are quite efficient and you can reconstruct. 
+Don't worry about the result not fitting for addition.  Just ignore the overflow.  There is no ambiguity.  For example, let's imagine buckets that hold a single decimal digit.
+Since it only holds one digit, we'll just write "6" for parity.  Now we need to reconstruct the fourth data digit.  The inverse for addition is subtraction:
+I assume that's why the worked example uses additive sums... but the thing that bothers me about that is: Your additive sum will often be a bigger number of bytes than the source. If you 'sum' 10  values a byte long, and your sum might be bigger than a byte. You could 'wrap' your sum I guess, but you still risk getting an ambiguous result. 
+You're right that for dual disk, you can't work on a single row and recover the information.  You must be able to read multiple rows.  Here is a USENIX paper that covers an algorithm for row diagonal parity.

@@ -1,0 +1,11 @@
+In your case, 120k dirs holding 20 files each, it's like 2.4 million files are being stored.
+The normal linux filesystem ext3 will have problems with that much files.
+without having further info on your system, this is what can be told.
+A good way is to get the MD5SUM of the file, and take the first 2 characters as a directory name, then the next 2, etc depending on how many files you have.
+Note no file system is good at storing files like that, you would be much better using a hashing scheme if you control the code that is writing in to the directory.
+If you have that many files you should probably split them up somehow.
+You need to use a file system that uses something like B+Tree examples of these are XFS JFS.
+having the simple math, sqrt(120000*20)=1549, so if you distribute the files between ~1600 dirs and ~1600 files in each dir, you optimized the directory entries decrease by 98%+ (1600 entries instead of 120k entries), but with introducing further directories, this optimization can be better.
+In this case, you need to distribute the load between different inodes.
+if you access the files by exact pathname, the performance loss will be less, but you should not forget about directories, which are special files.
+Every time you list a dir or search within, you are parsing the file.

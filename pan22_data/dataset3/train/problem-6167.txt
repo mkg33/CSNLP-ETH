@@ -1,0 +1,18 @@
+Or, instead of Ceph RBD you can use Ceph iSCSI gateway.
+And this filesystem would be served via NFS/CIFS from the very same VM.
+We are planning to build NAS solution which will be primarily used via NFS and CIFS and workloads ranging from various archival application to more “real-time processing”.
+So we would build distributed block storage on those commodity servers, and then, via virtualization (like OpenStack Cinder) we would allocate the block storage into the access VM.
+Both designs would be built from commodity servers and should scale as we grow.
+We are considering primarily two designs and I’d like to kindly ask for any thoughts, views, insights, experiences.
+Inside the access VM we would deploy ZFS which would aggregate block storage into a single filesystem.
+Both designs utilize “distributed storage software at some level”.
+If your goal is to have single access VM to provide NFS/CIFS, Linux can
+I should also say that we are internally inclined towards the "monster VM" approach due to seemingly simpler architecture (data distribution on block layer rather than on file system layer).
+Gluster has some rules regarding adding nodes and capacity.
+In this case Gluster has simpler architecture than CephFS.
+The NAS will not be used as a block storage for virtual machines, so the access really will always be file oriented.
+If you require HA for access VM, then add HA cluster:
+Both designs involve virtualization for instantiating "access virtual machines" which will be serving the NFS and CIFS protocol - so in this sense the access layer is decoupled from the data layer itself.
+Second design is based on distributed block storage using CEPH.
+First design is based on a distributed filesystem like Gluster or CephFS.
+We would deploy this software on those commodity servers and mount the resultant filesystem on the “access virtual machines” and they would be serving the mounted filesystem via NFS/CIFS.

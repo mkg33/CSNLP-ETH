@@ -1,0 +1,13 @@
+The condition variable will automatically release the lock passed in while it's waiting. This means that you don't need a second mutex:
+To wait for all worker to finish you can join the threads (this will wait until the thread is finished) like you do in the destructor. You can check the joinable property of std::thread to see if it's already been joined or add another boolean flag:
+and in the destructor you simply call stop_and_wait_for_finish();
+With a few experience of python and golang, I tried to make (simple) thread pool executor. Tasks of the executor must be copy-constructible std::function<void()> and the result of tasks are required in the main thread.
+        std::cout << "work " << i << " try lock\n";
+            using namespace std::literals::chrono_literals;
+            std::lock_guard<std::mutex> guard(mu);
+            std::cout << "work " << i << " acquire lock\n";
+        using namespace std::literals::chrono_literals;
+        std::cout << "sleep count: " << ++count << "\n";
+I've tested with sample code using MSVC 15 (also tested with shared_mutex instead of shared_timed_mutex) and clang 3.8. The result is printed as expected, but I cannot sure what I did it.
+Q2. It is possible to use single mutex in PoolExecutor class?
+Q3. Is there any ways to wait executor until finished? 

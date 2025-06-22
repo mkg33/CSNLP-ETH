@@ -1,0 +1,59 @@
+as a HashMap — but you should usually just program to the interface whenever possible) to let you look them up efficiently.
+Even better would be changing the API of Tape to have the methods to access the cells (tape.getCellAt(int), tape.setCellAt(int, Character) instead of returning the array for you to mess around with.
+When using the Collections API, it's preferable to declare interface types rather than implementations (List instead of ArrayList) unless you need functionality specific to the implementation type.
+Note that you'd still need to maintain a string-to-state-object map while building the state machine, but you no longer need it after all the states and transitions have been built.
+Your second for loop with the k index has the same break; issue as the first.
+I would also make the Transition class store direct references to its source and target State objects instead of string labels, and have getFromState() and getToState() return the states directly.
+Since you need to look up the transitions using a combination of two keys (the current state and the character on the tape), you have two options: either use a nested Map<String, Map<Character, Transition>> or define a wrapper class to store a (state, input) pair, with a suitable hashCode() method, and use it as the key to a single map.
+It might be nice if the Tape constructor accepted a list of cells.
+And have inputAlphabet() return a Set instead of a List, which gets you contains() at O(1) instead of O(n).
+If that's not how you intended it to work, then your code would appear to be buggy.
+So the only methods you really need are something like:
+Then that if .. else if .. block reduces to i = possibleTransition.applyDirection(i); tape.setHeadPosition(i);
+input.toCharArray() is easy to read, which makes it probably correct in this case, but be aware that it's marginally less efficient than using an indexed loop and calling input.charAt(i) because it creates a new char[].
+Also, you should explicitly define and document the behavior of this method in the case where no matching transition is found (which in most standard definitions of a Turing machine indicates that the machine halts).
+I agree with Eric Stein that your Tape class as written doesn't provide a useful abstraction.
+A more efficient method would be to store the state transitions in a Map (implemented e.g.
+However, arguably an even more elegant solution would be to introduce a State class that stores all the properties of a single state in your state machine, including both whether or not it's an accepting state and all the possible transitions from that state.
+One advantage of going this way is that you can later optimize the internal implementation of the tape without having to change any code that uses it.
+While you're at it, add a method like size() or length() to tape and get rid of getCells altogether.
+Probably not relevant, but your code is not thread-safe.
+Due to the lack of an infinite tape, its computational power is strictly weaker than that of a proper Turing machine (and in fact theoretically equivalent to that of a finite state machine, although in practice your machine can have much more complex behavior than a simple FSM with the same number of states could).
+and a constructor that accepts a CharSequence and/or a char[] parameter to initialize the content of the tape.
+Then you can use an enhanced for loop rather than indexing on j.
+Finally, I should note that the way your "Turing machine" works seems kind of unusual.
+Also, the way you're representing the state machine itself is quite inefficient: at every step, you're looping over all the possible state transitions to find the matching one.
+It makes it hard for the reader to keep track of what it contains.
+Don't reuse a variable (pT) for different things in the same method.
+Rather than setting the value of j to break the loop, just use break.
+Declare variables as closely to where they're first used as is possible.
+If you were to make all of these modifications, your code might look something like the code below.
+Call inputAlphabet() once and keep a local variable to hold it.
+While there are several different (but essentially equivalent) ways of defining a Turing machine, yours doesn't really seem to match any of them.
+This is untested, so I might very well have broken something.
+Since Tape is returning an unsafe copy from getCells(), you could just do tape.getCells().set(i, ..).
+Unfortunately, writing a proper builder class for an immutable state machine would be a somewhat nontrivial exercise all by itself, due to the possibility of circular state transition chains, so just leaving the classes mutable might be easier in practice.)
+For example, one simple optimization might be to use a StringBuffer instead of an ArrayList<Character> to store the contents of the tape, which should be more efficient.
+(You may also want to provide a toString() method for easier debugging.)
+It's unclear what this loop is doing with Tape, since you're making changes that effectively vanish once the method exists.
+Also, the State class should not expose its internal implementation of the transition map (which should probably be something like a HashMap<Character, Transition>), but rather should simply provide a method like:
+When variables will not be reassigned, it's helpful to declare them as final to reduce cognitive load on the reader.
+In fact, since getHeadPosition is never called in your codebase, I'm not sure why you're tracking it at all.
+It also be nice if Transition could be changed so you could do something like i = possibleTransition.applyDirection(i), and the Transition determines whether to add one, subtract one, or do nothing.
+If you wanted to get fancy with wrapper objects, you could even make the method return an Optional<Transition>, although I don't personally see any real added value in that for this particular use case.
+Your code might be easier to read with a guard clause if (.. != .. ) { continue; rather than nesting.
+Basically, what you have looks like some kind of a weird hybrid of a Turing machine and a classical finite state machine that reads its input strictly sequentially.
+(Also, if you wanted, you could make the State and Transition objects immutable, since there's no need to change them after the state machine has been built.
+Basically, as far as I can tell, your machine uses a finite-length tape (whereas most definitions of a Turing machine allow the tape to extend infinitely in one or both directions) and runs until either:
+You can localize i and use a for loop, because you know is has to be tape.getCells().size() when you're done looping.
+Variables should clearly indicate what they're referencing.
+Let Tape hide the fact that it's using a List under the covers, and you can change the implementation later without breaking other code.
+It's traditional in looping constructs to check <=, instead of != to avoid a possible infinite loop if a bug puts you past the exact value you want to terminate on.
+In fact, you don't even need to allow access to values at arbitrary positions, since a Turing machine tape, by definition, only allows reading and writing to the cell at the current position of the head.
+Also, letting the tape extend in both directions could be easily and efficiently implemented by using two StringBuffers (or ArrayLists) internally.
+It's unclear why a Transition's direction and the current state are treated as Strings when they're only ever one character long.
+Calling inputAlphabet().contains() once for every character in the input is very inefficient, especially given that inputAlphabet() is running a loop to create the list.
+The loop building the transitions could be extracted into a method.
+When you return in the if clause, you don't need an else clause.
+Reasonable behaviors might be either returning null or throwing a specific custom exception, but either way, this should be documented.
+It will break if multiple threads call run at the same time.

@@ -1,0 +1,7 @@
+You can check disk access using iostat (see how many reads/writes are occurring on a disk). From the MongoDB side of things, use db.serverStatus() in the mongo shell, to get relevant data (e.g. the mem section describes memory usage, while backgroundFlushing describes writes to disk. 
+Secondly, various instance classes have different 'I/O Performance' - the large instance class has 'high' I/O performance. 
+MongoDB uses memory mapped files - so it is fairly efficient about what it stores in memory and what it writes to disk. Indexes are prioritized, and should always be in memory (the performance implications are significant if the indexes do not fit in memory).
+Finally, You can improve the read/write performance of your EBS volumes by setting them up as a RAID. This is fairly easy to accomplish using mdadm.
+MongoDB performs best if the entire database can fit in memory - so a high memory instance may be a consideration, especially if your application is read-heavy (good indexes will also help). 
+For a small read-heavy database residing on the same machine as the application querying it, all instance sizes (except, perhaps t1.micro) that will fit it in memory should be essentially equivalent (since the required I/O is minimal). For write-heavy applications, I/O becomes a much more significant consideration.
+As a general guideline, you should try to minimize indexes on write-heavy applications (since each write requires an additional write for the index). Read-heavy applications should use indexes on whatever fields are commonly accessed.

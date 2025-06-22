@@ -1,0 +1,12 @@
+You might have to guess the correct partition name. It is not possible for us to tell from the information you supply. To try another partition unmount the former partition by 
+You should either copy the three usr, lib and lib64 folders while preserving links, or just mount --bind them to /mnt/sysimage.
+If it works on some machines but not others its possible the architectures are different.. I suspect one was setup 32 bit and the other 64 bit - need to ensure binaries and shared libraries exist for both architectures or the USB stick wont work for both..
+Could anyone provide some insight into why the chroot command does not work on the HP machines? Thanks.
+This was because I had the Rescue Disk on a USB, so the system mounted the USB on /dev/sda instead of another partition.
+I am using Clonezilla to put a new CentOS 7 image on our computers. Most of them are Lenovo desktops, and we have a few HP desktops that are all currently running the old image.
+To get around this, I downloaded the ISO for CentOS 7 and burned it to a DVD and booted to that.  I can now execute my chroot command without issue since the Linux partition is now on /dev/sda.
+This works just fine on the Lenovo desktops, but when I run this command on the HP desktops, I get this error message:
+should tell you what is mounted at /mnt/sysimage. If there is no output, /mnt/sysimage is not mounted, in which case try mounting it manually. Use command: 
+Both the Lenovo and the HP machines have the same HD size (80 GB), and I am putting the exact same new image on both of them. I cannot for the life of me figure out why one is working and the other is not, and I don't want to dismantle the new image and start from scratch (we only have about 5 machines that are HP, the rest are Lenovo).
+In order for the new image to work after Clonezilla restores it to the new image, we need to insert a USB with the CentOS 7 Rescue Disk and boot to it to run some commands, beginning with chroot /mnt/sysimage.
+So I found that the HP machines (along with newer model Lenovos) were mounting the Linux partitions on /dev/sdb instead of /dev/sda when I inserted the CentOS 7 Rescue Disk.

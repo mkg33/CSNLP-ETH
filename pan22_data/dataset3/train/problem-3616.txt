@@ -1,0 +1,26 @@
+Will this work ok or do we need to trunk by the fiber ports?
+The next step would be designing STP etc, but that's out of scope for this question.
+You haven't provided any info about the interfaces you're going to use with the fibre link, so I'm guessing that this is 1gbit.
+A better topology that would allow for link or core switch failure would be this (note it only uses two fiber ports in the core, but you have a building-to-building link).
+Obviously spanning tree of some sort must be enabled on all switches to prevent loops:
+If you can run two fibers from one of the switches, this would provide the best performance with the gear you have, one hop to the core.
+(Link between HQ North and Building 2 would actually be optional)
+Can we use two switches in the north plant each with 2 fiber ports to accomodate this?
+With a portchannel you can bundle several copper ports together to increase the bandwidth between the switches.
+In a datacenter access setup, servers have two or more ports and are connected to at least two separate switches.
+We have three buildings in the same area that are all connected by fiber.
+Our main building is very large and needs to be connected by fiber from north to south.
+I need to warn you however - if those core switches only have two fiber slots each then what are you going to do if one of the switches go down?
+The copper interfaces should be the same speed as the fiber to avoid serious bottleneck.
+My question is this: We will have three fiber connections coming into our core switches - 1 from each remote building and 1 from the south side of the plant.
+This would ensure that any single link can go down without interrupting the network.
+We are planning to purchase new switches for our network.
+I would also recommend a portchannel / etherchannel between the two core switches in the north.
+If the switches you're going to use have 1gbit copper interfaces aswell then it's no problem to trunk between them, this is the normal way of connecting switches that have several uplinks.
+Alternatively, you could go with stackable switches and not worry about the uplink between them at all.
+Since you don't have more than 1 link to each building I highly suggest that you either get core switches with enough (sfp) ports to carry all the fiber links, or get more links between the buildings to build a ring topology - like this:
+And still provide redunancy for all access switch links.
+What you propose will work, but is not ideal from a redundancy perspective.
+We would be trunking the two core switches by ethernet ports.
+Of course the best thing would be to have two switches at each location, but that is not usually done for campus access switches, since end-user machines only have one link anyway.
+It will work in this setup, however, your Ethernet trunk could be a potential bottleneck.

@@ -1,0 +1,20 @@
+from easy-rsa directory to display serial numbers of revoked certificates.
+A lot of the information is taken from this useful resource but if your OpenVPN server is set up like mine, the certificate authority is configured alongside the OpenVPN server settings, with the client certificates generated on-server (I use Ansible + Sovereign to set up certificates for a number of users all at once).
+Also check the openvpn logs for "CRL CHECK FAILED" message.
+On easy-rsa directory there's a 'revoke-full' file.
+And finally tell OpenSSL to regenerate the revocation list
+I used the easy-rsa/2.0 programs to build server and client certificates for OpenVPN.
+When you run this script with your user/key as parameter, index.txt file on easy-rsa/keys directory will be updated.
+It's created some files in a subdir of the examples/doc folder.
+I copied the client ones to the clients along with ca.crt.
+This revokes the certificate and updates the database, but you still need to make sure that OpenVPN is checking a certificate revocation list so edit the server.conf and check for a line starting with crl-verify.
+I now need to revoke a client certificate from a stolen laptop.
+I've copied the created crl.pem to /etc/openvpn/crl.pem and I've added crl-verify /etc/openvpn/crl.pem
+Also, I'm not clear where this "Data Base" is stored or what it refers to?
+I've run this successfully and it says "Data Base Updated".
+You'll see an 'R' (for Revoked) on the first column from the left for your user.
+(You can use any path you want, but most OpenVPN servers are configured to run as nobody:nobody so you will need some path that is world executable - not /etc/openvpn)
+In /usr/share/doc/openvpn/examples/easy-rsa/2.0 there's a revoke script.
+Restart the OpenVPN service and it should pull in the changes to the config and use the CRL when verifying connection requests - if the certificate is revoked the connection will be dropped.
+Is there any way I can verify that I've done the right thing and that it will indeed block access?
+On my server I didn't have the easy-rsa scripts, but you can revoke OpenVPN client certificates without easy-rsa manually using openssl.

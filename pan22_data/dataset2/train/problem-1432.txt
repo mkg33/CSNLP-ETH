@@ -1,0 +1,8 @@
+it's not clear from the documentation what cursorname is supposed to be, I suspect it is a unique name you make up so that gatewayd can keep track of events it has shown your application versus some other application that may also want log entries.
+Your use of -f in journalctl makes it function like tail -f would, in that the stream stays open. This tells me your intent is to create a persistent HTTP tunnel that sends new log-lines to the log-server over http. Per the man-page:
+That behavior doesn't match your intent. You probably want to also run with the -N or --no-buffer options so each line gets piped to curl as it comes in.
+Alternatively you can use systemd-journal-remote to receive journal entries in the native format on the remote computer, then use journalctl locally to receive the JSON data.
+It looks like the correct way to retrieve JSON events over the internet is likely to be systemd-journal-gatewayd  You'll need to rewrite your other end to pull events from the server, but based on the documentation the server can stream JSON data if you add the follow parameter to the url:
+If your receiving application keeps track of the events it has received it can use the range header to avoid receiving duplicate events if it has to reconnect:
+You may need -X POST in there to be sure how data is sent to the server, though it does seem to be implied in -d. 
+I am trying to send logs to a remote server using curl. I tried the following command and nothing happened

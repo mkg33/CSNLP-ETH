@@ -1,0 +1,11 @@
+I'm a researcher in cognitive science and I conduct experiments using keyboards and gamepads (usually a wired xbox 360 gamepad) for human input where an increased polling rate would mean better measurement accuracy of response times.
+With older than 4.12 kernels I modified my hid-core.c as follows, making mousepoll affect all devices it handles:
+The devices here are 04d9:2013, 0810:0003 and 056a:030e
+It appears that newer kernels (4.12 and up) already have usbhid.jspoll parameter  but still no parameter for keyboards.
+Now to get 1000Hz (1ms interval) poll on gamepads and keyboards:
+After rebooting or reloading usbhid, to verify it working, unplug and re-plug the USB devices and run dmesg |grep pollExpect something like this on the last few lines:
+If you just rmmod usbhid;modprobe usbhid after modifying the file above, you need to unplug and replug a USB device to actually change its polling interval even though the kernel messages seem to suggest otherwise.
+I just came across this tweak that permits one to increase the polling rate of a usb mouse to 1KHz.
+Is it possible to achieve the same increase to other USB devices (or all USB devices)?
+If you're willing to compile your own kernel, modifying drivers/hid/usbhid/hid-core.c is an option.I had a similar issue as I want to change the polling rate of my keyboard and drawing tablet so I have modified my hid-core.c for some time now.
+And for versions 4.12 and up I modified it differently as I didn't want to break the working usbhid.jspoll:

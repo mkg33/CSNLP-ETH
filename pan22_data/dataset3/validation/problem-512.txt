@@ -1,0 +1,30 @@
+The calling code (perhaps the DoSubmittal procedure) can then handle all errors with a simple message box, because any error that could be raised in the procedures called by this one would contain a specific and meaningful description:
+What's less good, is what's under the covers here:
+Constants are usually clearer in YELLCASE... but I read that identifier as "error number for MyModel", which means absolutely nothing.
+Looks very confusing, given that instance is an Class_MyModel instance.
+That's sad, because based on what I'm seeing, this whole "ensure MyMODEL is set" spaghetti looks futile, since MyMODEL is really a dependency of the DoSubmittal method, and should be passed as a parameter.
+Why not make DoSubmittal a Public member, and simply call it Submit?
+Assigning a null reference (Nothing) isn't illegal, so this assignment will never blow up; you don't need to expect an error here.
+But let's say it has to be an instance field because other members need to access it later (or earlier... whatever).
+The name given to errNoMyModel looks like a private field or local variable.
+Best practice would be to add the built-in vbObjectError constant to your own custom error codes - and for better maintainability, it's often best to define these constants in an Enum:
+But without a Property Set accessor, client code can't even do this:
+However, I want to mention this just in case you really want to stick with the error handling pattern that you're using right now.
+There's a bit of code here that essentially does nothing.
+As per your post, we're not seeing the whole picture.
+Contrast to MyModelError.ModelNotSet, which tells you just by its name, that the model isn't set on MyModel.
+Any time you call an On Error statement, the global Err object gets reset.
+I have to look half way across the screen to see what type these variables are.
+...and then you don't even need a MyModelExists function, you could just inline that simple check.
+...which would be the correct and expected way to assign an object reference.
+By the way, nulling a reference in a garbage-collected language (like VB.NET, or C#) would not force garbage collection.
+VBA doesn't do garbage collection, it does reference counting: that line is utterly useless, since tempModel is locally declared - its reference is destroyed as soon as the procedure exits.
+The variable names more or less tell me what type these are without those prefixes.
+Bottom line, On Error Resume Next is hardly ever an option for clean code.
+The key here, is to avoid God-like methods that do everything that ever needs to happen: by splitting the work into specialized methods that do one thing (and ideally, do it well), you limit the number of runtime errors you need to handle.
+What you're trying to do here, is gracefully handle the runtime error 91 that would occur if DoSubmittal were to execute without MyMODEL being set.
+Here's how I'd handle this - I would have a procedure responsible solely for assigning the member values; this procedure would need to handle the case where MyMODEL is not set:
+In fact, you don't even need this tempModel - and this is overkill:
+You've already received a very good answer, that I completely agree with.
+This should be a Property Set accessor; Property Let works better for value types.
+I like that you're declaring a constant for custom errors.

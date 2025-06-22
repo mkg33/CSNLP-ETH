@@ -1,0 +1,12 @@
+Take this simple three machine network, with MAC addresses 00:00:00:00:00:0A through 00:00:00:00:00:0C corresponding to machines A, B, and C.
+How can all you networks gurus miss the obvious? The answer the teacher obviously wants is to install Windows Internet Connection Sharing on some of the computers. Or maybe add a USB network to some computers?  ;-)
+However, a different private block inside the main private block with a router capable of NAT/PAT would work just fine.
+But seriously, it could be a trick question. Are we assuming that all 300 computers are switched on/connected simultaneously? If not, then maybe the expected answer is DHCP 
+Repeating the same addresses inside is not the way to go, that'll confuse the router.  Can't have the same blocks on BOTH sides!
+And the reason we don't do this is because it is impossible to manage, so now you can forget that I said this.
+However, you CAN have 300 machines all with IP addresses in that 255.255.255.0 subnet (some with duplicates) AND in the same broadcast domain (which you don't have with a NAT router) AND able to communicate with a subset of the remaining 299 machines such that that subset contains unique IP addresses IF you use static ARP entries.
+"Class C" means a /24 subnet, that means a subnet with 2^(32-24) = 256 IP addresses in it, one of which (the last one) goes for the broadcast address, and one of which should not be used (the first one, also called network address).
+You cannot have 300 machines that can each communicate unrestrictedly with the other 299 machines on a 255.255.255.0 subnet using IP addresses.  This has been mentioned above, and bears repeating.
+It is true that you can connect more than X systems in such a way that they all originate traffic in that subnet, via NAT for example, but then you have other limitations (NATted hosts cannot usual get incoming connections) and you cannot actually do that for everything (remember we're talking about IP, not necessarily restricted to tcp, udp, icmp, igmp).
+If the "machines" you're talking about are actually network hosts able to connect to each other, they are 254. It doesn't make any sense to ask how to put more than X hosts in an X addresses subnet.
+If you need a subnet capable of keeping at least 300 hosts, you need at least ceil(sqrt(300+2)) bits of address space, that's 9 bits so you need at least a /23.

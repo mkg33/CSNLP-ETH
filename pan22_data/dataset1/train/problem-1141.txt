@@ -1,0 +1,11 @@
+The whole point of the domain part of the email address is that it indicates which set of SMTP servers is responsible for delivery of mail for the whole domain.  Put another way: you cannot subdivide domains like that.
+However, it sounds like what you really want to do (besides circumventing policy, but this is an interesting question theoretically so I'm answering it anyway) is just relay mail.
+In that case, you should have it relay all the mail it sees, as long as the user is authenticated.  I believe you can set it up to not have a local domain at all.  After all, I assume you don't actually want to have your relay MTA accept delivery of mail, and thus have two inboxes with the same address.  That would just be confusing.
+If you tell it to relay everything, it will send it out to whatever is in the MX record for the destination domain, which I think is what you want.
+This is best accomplished by setting no local domain.  That setup is common for relay MTAs that are used for virus and spam filtering, for instance.
+I do recall there being a feature called relay_recipient_maps, but I don't think that is the right approach in this use case.
+If you set up your secondary machine as a backup server, you'll need a few settings.
+You will also be using your transport_maps like this:
+Then you would (as Falcon says) need the relay_recipient_maps with either a wildcard entry, or an entry for you, and your boss.
+Then I'd set up TLS encrypted SASL authorizaion, and allow only users who authenticate to send.
+smtpd_relay_restrictions = permit_sasl_authenticated, reject 

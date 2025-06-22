@@ -1,0 +1,25 @@
+In fact I was talking to an EMC rep about email storage a little while ago, and he said huge email servers are a very common sale for them.
+I hear lots of good things about GFS2 for transactional workloads - and by reducing down to smaller systems, then running this on top of DRBD would give the replication required.
+But do try to isolate the pairs on dedicated switches (or use cross over ethernet connections) to keep the noise of the main network.
+(I'm guessing that you are using maildir rather than mbox)
+All the storage is in one place with multiple paths to redundant server modules, so there's no replication latency.
+Most people stopped applying this approach to components such as disks and network cards a long time ago, but applying it to servers is a bit more tricky.
+Performance for a lot of short random reads is achieved with SSD or battery backed memory cache.
+That allows the storage to be shared by any number of servers over high speed ethernet, so you can scale to the maximum I/O performance of the storage box which you can then expand as needed.
+Certainly glusterFS IMHO does not work well on highly transactional systems.
+I'm a bit wary of the big iron approach - it's often difficult to scale and people tend to adopt the approach of building a failover solution and hoping the it will work when an outage comes along.
+I'd agree that having a fixed set of mappings of users to clusters is a bit of an overhead - and not the most efficient usage of available resource - perhaps the best compromise might be LVS on top of a GFS2 SAN and letting the SAN handle to replication stuff.
+This may be easier than trying to migrate a user's data around in an effort to balance traffic and IO load.
+You can shard the data by splitting the users via LDAP - but this does directly solve the replication issue, however by running with, say 8 pairs of load-balanced servers, the contention would likely be significantly less.
+I'm sorry to say that although dovecot is probably a lot better than courier for this type of operation, I think your new architecture is a step backwards.
+For a cheaper solution, although this is a lot of guesswork, and would require some investigation/testing, perhaps running a FUSE filesystem with a database backend - and using the database replication functionality (e.g.
+In addition to the backend work you are doing, you may want to investigate the imap proxy in Nginx.
+It depends heavily if the application can work reliably over NFS in parallel with other instances.
+The problem being that there are lots of little changes which need to be carried on on all the mirrors synchronously - and really this is best done at the application level to maintain consistency/
+As far as redundancy on the application servers, the cheapest is a software clustering package.
+The application servers access the storage using NFS or iSCSI which is less flexible but sometimes required by the application not behaving well with NFS.
+It was designed to allow you to route user connections to particular backend servers.
+Basically they take all of the storage issues away from the application.
+Although Dovecot is intended to work with mutltiple server on shared storage, a NFS/iscsi type approach still implies a SPOF or failover type of approach rather than load balancing.
+There's also appliances like Big-IP that handle it at the network level and are OS independent.
+What I've seen with medium to large companies is redundant storage devices such as NetApp or EMC.

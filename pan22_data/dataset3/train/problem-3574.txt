@@ -1,0 +1,15 @@
+Since my zone files were already properly configured, the domain name instantly became visible on the internet.
+You'll need to add the appropriate IP address in there.
+That was really the issue with this "dig status refused" business.
+I had exactly the same problem (dig status NOERROR locally, dig status REFUSED from the outside), and the solution was changing the match-clients from "localhost" (which is the default for bind install) to "any" (later I may find out what the exact ip of my domain name provider is and restrict it to that specific ip for security reasons).
+There also is an allow-query configuration statement with BIND9 however i think the default is to allow queries from anywhere.
+I was banging my head against the wall for quite a while to solve this one, though.
+Just at a quick glance it appears to me that it's not configured to listen to the rest of the world due to listen-on { 127.0.0.1; };.
+In my particular case, I found that I had to include allow-query { any; }; in each zone definition in named.conf.
+Are you sure you're sending the queries to the right place?
+Your server on 188.165.34.72 (r29901.ovh.net) is running BIND 9.5.1-P2.1 - it answers a query for dig @ip version.bind ch txt as expected with that response string.
+although I may be digging up an old thread, I'm doing so because this is one of the most relevant results while doing a google search for "query status refused".
+However the IP address you quoted above returns a NOTIMPL error, even though there's nothing in your quoted config file about the *.bind pseudo-records and BIND requires explicit configuration to disable them.
+Right after I changed the match-clients parameter, my dig @12.34.56.78 mydomain.com queries started to resolve with NOERROR status, and the domain name provider (godaddy) immediately cached the nameserver record.
+Also, I changed the view name from local_something to default.
+NOERROR when it is not accompanied by a resource record (RR) means that there is no such record, so when you get a NOERROR response and no 'record' upon setting "version" to "none" then it is working as expected.

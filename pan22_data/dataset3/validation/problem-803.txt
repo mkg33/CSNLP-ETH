@@ -1,0 +1,16 @@
+Edit system/bind9.service to use the options in /etc/default/bind9.
+If you are disconnected for a long time they can fill up the disk.
+Add EnvironmentFile=-/etc/default/bind9 and modify ExecStart to include $OPTIONS.
+You can't turn off a particular message in bind, so this is as close as you can get:
+This will stop it using IPv6 on start up and restart DNS
+Make sure to keep the -f option needed for systemd.
+Move bind9.service to avoid it being overwritten on updates
+For me the problem caused by this message was a little more serious.
+In that case, you need to modify the systemd bind9.service file:
+It may be worth noting that in Debian Jessie with systemd, the -4 option in /etc/default/bind9 may be ignored.
+The problem is caused by an update to BIND in Centos, it tries to use IPv6 as well as IPv4.
+For ubuntu order than 16.04: sudo vi /etc/default/bind9
+Best way to fix it is either use IPv6 or configure bind to only use IPv4
+When the server is disconnected from the internet you get many of these per second.
+The obvious solution is to turn this particular message off, not just for IPv6 as mentioned in the other solutions but for all protocols.
+(I remove -u bind, because on Debian, it is already included in $OPTIONS)

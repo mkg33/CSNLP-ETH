@@ -1,0 +1,16 @@
+When creating reverse tunnels on recent versions of OpenSSH a remote port of 0 can be given to bind any available port:
+My question is how I can (in an automated way) determine this port allocation on the server.
+But neither of these is pleasant from an automation point of view, and there isn't any way of tying the dynamic ports back to the origin service port if more than one such tunnel is created.
+I used this command line between two of my machines, I do have ssh-key login set up, so no password prompts or delays
+-N specifies no command is given, and -T stops allocation of a tty for this connection.
+Do remember, that using a LogLevel of DEBUG or higher could be a privacy risk, since much is logged.
+It seems rather unhelpful that it is reported to the host running the ssh client - but not to the target, which will want to make connections to this port to access services on the client.
+Having the TCP stack automatically manage the port pool seems like the most effective way of doing this.
+on the server and look for suspect ports bound on 127.0.0.1 by sshd or by looking at the output of
+If you set the 'LogLevel' in the sshd_config configuration file to DEBUG1 (or any DEBUG level), then sshd will log the port numbers in /var/log/auth.log.
+(from /var/log/auth.log, removed a few lines to show relevant information)
+For some context, I'm trying to create potentially very many simultaneous reverse tunnels to a host, tunnelling back to the same port number on many different hosts.
+Another way to disseminate the port connection information would be to parse it from the client side and send an email, jabber, text msg, smoke signals or pigeon to carry the port # to whomever needs it.
+Two similar options I can think of are either running
+Is there anything I'm missing to effectively get a list of active tunnels (both local and remote port numbers) on the sshd server side, like an equivalent to the SSH_CONNECTION environment variable, but for active tunnels?
+If you follow it through, you can see where you could parse the connection information, and then the forwarded port (39813 in this case)

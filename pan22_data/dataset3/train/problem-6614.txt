@@ -1,0 +1,8 @@
+First of all /etc is really a rather unorthodox location for regular services to have write access.
+This applies in addition to filesystem permissions.
+So what I suggest to do is store your slave zone fiels to a more sane directory which is defined in your named.conf.local file, and give the ownership of the directory to bind group or give the write permission to bind group,
+What's happening is that the named process is unable to create a file in the /etc/bind/slave/ directory.
+Regarding why your extremely liberal permissions (not at all a good idea) do not help, I would guess Apparmor (more likely for Ubuntu) or SELinux has a profile for BIND which is based around reasonable assumptions (see above) for which file paths need to be writable by named.
+I would suggest that you simply move the writable files to a more sane location.
+/etc/bind/named.conf.options, which is directory "/var/cache/bind.
+Normally you would use a directory under /var/lib or /var/cache depending on the type of data.

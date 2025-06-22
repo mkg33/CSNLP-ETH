@@ -1,0 +1,8 @@
+This flushes out any time information they may have accumulated. Now that we have a clean slate to work with, I Set one DC as the primary time source. This is the machine that goes out on the internet looking for a time source to sync with, it then advertises as a reliable time source. (All other DC's in the domain sync with this DC and then advertise as well to their local clients.) The line you have above is pretty much the same line I use, but this only sets up the peerlist:
+First of all they must already be domain members, the DC will not respond to them if not. So join them to the domain if you haven't already.
+Let me tell you how I setup and run time on my Domain controllers, they work without any problems. And the clients have no problem syncing up with them.
+And lastly, and this is where I think you are having trouble, I tell the DC to advertise on the network that it is a reliable time source:
+Zeus' firewall allows all incoming traffic on domain networks for purposes of testing, and there's no other network devices in between them.
+They go through the first four lines and get a clean slate, then they are instructed to sync up(they automatically know to sync with the primary DC) and lastly they are told to advertise as a reliable time source.
+I think in your case, you didn't tell the DC to advertise as a reliable time source, so the clients couldn't find a reliable DC and therefore they run from CMOS.
+However, when setting Neptune to pull from the domain hierarchy, or, even configuring to pull from Zeus directly, W32Time always just pulls from CMOS:

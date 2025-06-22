@@ -1,0 +1,24 @@
+(Nagios launches check_nrpe, the client is requested, performs checks locally and replies back to nagios).
+For instance, you might have load average, disk space, memory on every host.
+Use servicegroups for dependencies, escalations, and logical grouping in the web UI.
+So it's quite easy and handy to create a generic template and use it.
+"cfg_file=/usr/local/nagios/etc/objects/NEW_FILE.cfg"
+The other thing is just making groups depending on your infrastructure.
+Multiple inheritance can get tricky, but when used correctly it's a huge time-saver.
+The configuration is the same (same configuration files, same syntax).
+I was used to configure my nagios servers (before I switched to Icinga) this way, and there is no lack of performances until you reach more than 500 services at least with a 512Mb Memory / 1 CPU server.
+hostgroups and servicegroups can be treated completely separately, and I would recommand this approach since it allows having one file per server (services for this server defined in this file) and then, on file per hostgroup/servicegroups.
+You cannot complicate the configuration with making groups.
+Make extensive use of service and hostgroups, and templating.
+As asciiphil say, you make a file or you can define the same groups in some of the existing files like (hosts.cfg or what ever),and you make this file or you say to nagios that this file is active ( this is if you create new fiel, if not it is already active), and this is in nagios.cfg file where you put the path of the newly created file.
+Create hostgroups, and assign services to the hostgroups.
+And for the file or the part how to make a group it is simple.
+If you have groups for everything, adding a new host is just 3 or 4 lines: name, address, template(s), and (optionally) hostgroups.
+To finish with, and even if it may seem out of scope regarding your question, I would suggest to switch to Icinga, which is ways more scalable, hold by a stronger community really caring on new feature implementations and user support.
+And on the host configuration / or if you using template or if you have define already a host template or service and using use, you can tell automatically to all hosts/ windows or linux hosts to be a members of a defined hostgroup that you created.
+If for example i have linux and windows server i will make two different groups one for linux and other for windows.
+If you run into scalability troubles, you may want to have a look at nagios-nrpe-server, which performs checks on client side and all your nagios server does is asking for results only; which spare the resource of the check.
+Besides with the templates you can always make your config cleaner an more readable.
+Be sure to read the docs on inheritance, and also the time-saving tricks page.
+Depending on how you would like to configure and see when you monitoring on the monitor, how would like you to see them as groups.
+Keeping in mind that all checks can't be treated this way (SNMP for instance).

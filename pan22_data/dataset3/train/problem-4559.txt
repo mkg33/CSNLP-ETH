@@ -1,0 +1,25 @@
+If the gap is caused by a test scenario, there's no reason to worry from my point of view.
+It might be the best solution to use BIGINT instead of INT just to be on the safe side to cover MS next "improvements"...
+For performance, the major products allocate these in batches, so automatic recovery mechanisms for various normal operation glitches can result in numbers being left unused.
+Thus, those 1000 records can all have the same number in that column.
+This is the principle reason that autoincrementing mechanisms are purposely designed to never ever reuse a value.
+The most reasonable explanation for SQL Server versions prior to SQL2012 -assuming you're talking about a test database- would be that there was a load test followed by a cleanup.
+That makes the database unreliable as an accurate representation of the facts.
+Reuse of key values for unrelated records invalidates the database
+Starting with SQL2012 the most probable reason is due to several restarts of the SQL Engine (as explained in the first link Max provided).
+Sometimes if the number is going to be given to customers, the initial number is greater than zero, let's say 1500 for example, so the customer do not realize the system is "new".
+And as said in other response, if you worry about running out of indexes, then you should not worry, smallint can handle unless you have a millionaire business.
+If your row space is small, then this can be a drawback, if not they is does not matter much.
+It's "funny" that MS states that both alternatives (either trace flag 272 or the new SEQUENCE object) might impact performance.
+Using "the first unused integer" introduces the probability that at some point in the future, a number will get reused for records unrelated to the original.
+The drawback of using bigint instead of smallint is that as bigint uses "more disk space", when disk reading you read less disk blocks for every disk.
+Also it does not matter much if you are not querying for a lot of resources at once and if you have the proper indexes.
+The main task to do is to find the root cause why the current value is that high.
+When you need an unbroken sequence number, such as is often expected by users, it should be a separate column that is assigned programmatically and should not be the PK.
+Inventing a mechanism to "recover ids" is expensive and adds failure points and complexity to the software.
+Missing sequence numbers are the most basic sign of error uncovered in any kind of auditing.
+However, what works for small numbers of records maintained by hand, has a serious problem when applied to very large numbers of records in databases...
+They are primarily intended for creating unique PKs.
+But to be on the safe side I'd check the identity values during normal use of the application as well as before and after an engine restart.
+Or the starting values is 10.000 and from then on all are adding 1 ?
+Gaps cannot be avoided in RDBMS autoincrementing columns(fields).

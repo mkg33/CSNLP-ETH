@@ -1,0 +1,10 @@
+Seems to me that what you are doing is equivalent to allowing users a shell prompt and access to the passwd command.
+You can probably search against the source code for passwd pretty easily for that.
+There wouldn't be a way to break out of the passwd command and into a shell unless passwd makes some provision for execing into a shell.
+I like @datasmid's answer, it makes some good points.
+One thing an attacker might try is, if they already have a local password, is to buffer-overflow passwd by entering an insanely long reply to passwd's prompts.
+passwd is a setuid program but I would hope (haven't checked source) that it drops privileges once it discovers its euid is not 0 BEFORE checking for input.
+I don't know what passwd does if its input buffer is exceeded but that's the first thing that comes to mind for me.
+If you are comfortable doing that, then I see no reason why you should not do what you are doing.
+In that case, anything might be possible (risks may be mitigated by running on a CPU that has XD/NX support and heap address randomization).
+If anything, it's slightly more secure as you aren't letting the user execute any other commands easily.

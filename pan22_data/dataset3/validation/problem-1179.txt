@@ -1,0 +1,13 @@
+It takes > 5 minutes to upload files that FileZilla can do in 30 seconds.
+Which resolves correctly to the following command:
+I am attempting to use the Putty SCP program to copy files to a server.
+It feels kind of like kludge, but it appears to be functional.
+subprocess.check_output(pscp + ' -r -l ' + self._properties['ssh user'] + ' -pw ' + self._properties['ssh password'] + ' -4 -batch ' + local_path + ' ' + self._properties['ssh user'] + '@' + self._properties['target ip'] + ':' + destination_dir)
+subprocess.check_call('echo y | ' + plink + ' -l ' + self._properties['ssh user'] + ' -pw ' + self._properties['ssh password'] + ' -ssh ' + self._properties['ssh user'] + '@' + self._properties['target ip'] + ' "echo > /dev/null"', shell=True)
+I have looked into preceding it with a plink call, but it isn't clear from the manual that it would behave any differently.
+I had hoped using the -batch option would resolve it, but all it does is make it abort.
+Just before people ask, I am switching away from Paramiko due to poor performance reasons.
+pscp -r -l root -pw password -4 -batch projects\packages\controller-fw\build\packager\controller-fw-iMx6-release root@10.52.120.201:/root/temp
+Which resulted in running plink in a do nothing and piping an accept to it in case it prompted for storing the key.
+I ended up adding a plink call with the input piped into it:
+Is there a way to automatically accept the SSH key stuff?

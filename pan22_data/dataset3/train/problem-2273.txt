@@ -1,0 +1,23 @@
+In my case, we have a single computer with multiple users on, all of which have sudo rights.
+I am pretty much convinced that there is another solution than running syncthing as root, but at the moment I don't see how...
+When I had a similar issue with a completely different background I found chmod was restricted to root.
+This seems like a better alternative then trying to mess with permissions settings so that syncthing is allowed to chmod files it doesn't own.
+Replace syncthing with the full path to the executable if you're not in the right folder.
+To do that, just use setcap "CAP_FOWNER=EP" syncthing.
+The syncuser user does not have permissions to execute chmod on files it does not own but which it has synced (read/write permissions managed by groups), and this is where it fails.
+Interactively, I know that I can do this by configuring sudo with the sudoers config file(s), and I can also define an alias like
+My solution was a incron job (inotify) [1] on the folder where the files were stored.
+This will also give it some additional abilities like changing extended attributes on files or modifying the access time of any file.
+This approach breaks though if chmod is not executed from the command line within a bash shell, but from a program.
+I would like to allow a certain user who does not own the files in a directory to execute chmod on them.
+An alternative solution is to make a syncthing user and grant it ownership of the files, and have others use them via chmod 777.
+Also, syncthing shall not be running as root but as user syncuser.
+They share a single folder with a number of subfolders that should sync automatically and be available to all.
+If you're on a recent enough Linux, you can use the capabilities system to give syncthing the ability to chmod any file.
+I used the hack solution of running syncthing as root.
+I chmod 777 the main folder and the subfolders, but syncthing still complains and tries to chmod the files for some reason (why?
+The incron (run as root) would chmod all new files to 'user:user' allowing it to be processed further.
+in .bashrc, .profile, or .bash_profile so that the user does not need to type sudo chmod each time anymore.
+The background is in setting up Syncthing, which I want to use to synchronize files from different users.
+See also this other earlier question on the more general issue of allowing non-owners to use chmod and chown.
+[1] http://inotify.aiken.cz/?section=inotify&page=about&lang=en

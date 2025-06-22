@@ -1,0 +1,16 @@
+I also want to be able to lookup a player by username quickly.
+If so, are there any drawbacks to such an approach?
+With index duplication you not only waste disk space, but also increase the overhead for changes to the table.
+Is it possible to combine them into one index, maintaining uniqueness and fast lookup?
+This is the worst type of key duplication, and as noted only the Unique index is necessary.
+There's no advantage to having a second index on the same column marked as non-unique.
+Right now I have a postgresql 8.4 database set up for players in a multiplayer game.
+I also run across indexes which are a subset of another index.
+This seems like an inefficient use of disk space by having two indices on the username column: one for uniqueness and one for fast lookup.
+Connect to you database and compare the results of the following before and after you drop the index and confirm that they are the same:
+The entries in the other index will be unique, but may not be as efficiently stored, as the index needs to handle non-unique entries.
+Each additional index increases the time to add and delete rows, and may increase the time for updates.
+You can verify that this by performing an EXPLAIN on the query.
+Rarely have my tests shown significant query speed improvement from the extra index.
+Queries to lookup by username will use the unique index.
+These are usually not required, although in some cases may be justifiable.

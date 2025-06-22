@@ -1,0 +1,5 @@
+The easiest way to fix it is to remove v8 and it's dependencies and reinstall them using only the nodejs-stable repository:
+Both answers given are not complete solutions: as soon as you execute yum update or yum upgrade v8 will be upgraded again. The complete solution is as followed:
+V8 won't be downloaded from the updates repository anymore, but only from the nodejs-stable repository. Therefore yum will always download the right v8 version for node.
+The second error is a decent clue that the problem is not a code error in Node.js but a binary incompatibility problem between C++ components.  That symbol in C++ is v8::V8::AdjustAmountOfExternalAllocatedMemory(int).  So let's try a different version of v8, like this:
+On my system there were 2 repos providing v8: updates and nodejs-stable. We only want v8 from nodejs-stable, so we should exclude v8 from all the other repos. We can exclude a package using the repo config files. These files could be found in /etc/yum.repos.d/. The config file for the updates repo is fedora-updates.repo. Open that file and add exclude=v8* to the [updates] section of that file. Finally you can reinstall v8, node and npm:

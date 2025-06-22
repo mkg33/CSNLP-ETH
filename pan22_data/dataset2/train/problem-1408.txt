@@ -1,0 +1,5 @@
+I have a set of starting and ending times that I need to store in an Oracle database.  I need to store them in a manner that makes them easily searchable (i.e. a typical search is find all rows where a time value, such as 9:30AM, falls in between the start time and end time).  In SQL Server I would just use a TIME datatype field, but Oracle does not appear to have an equivalent.  
+You also have standard functions to extract the various components of the time (hour, minute, etc.):
+If you've no need to store the date component, then an interval day(0) to second is the most practical approach. The biggest advantage comes if you need to do any calculations finding how long has elapsed between two times as you don't need to do any extra processing out of the box.
+Try storing as number.  Worst case is 3 bytes for HHMM, and 4 for HHMMSS.  01:00 would take 1 byte. 
+I have seen a number of blogs and forums that recommend just using a DATE field and doing conversions with TO_CHAR then comparing, or to store the time values as varchar(4 / HHMM) or varchar(6 / HHMMSS) fields.  Both of these seem needlessly inefficient.  

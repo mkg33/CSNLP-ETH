@@ -1,0 +1,14 @@
+The only other option that I can find for now would be to be compile your own cross-compiler.
+The Rasberry Pi 3B+ has a ARM Cortex-A53 and the Pi Zero has a ARM1176JZF-S processor.
+More detailed directions are available with a bit of searching, e.g.
+This is gcc 4.9.3 which isn't recent, but should still be fine for a lot of code.
+A more recent option appears to be available on SourceForge at https://sourceforge.net/projects/raspberry-pi-cross-compilers/files/Raspberry%20Pi%20GCC%20Cross-Compiler%20Toolchains/GCC%209.1.0/Raspberry%20Pi%201%2C%20Zero/ (via https://github.com/abhiTronix/raspberry-pi-cross-compilers).
+Unless you're fairly confident with Linux I wouldn't go this route, but broadly speaking download and extract the binutils, glibc, and gcc source archives from https://ftpmirror.gnu.org/binutils/, etc., the compile them in that order.
+The first is to use the older official cross-compiler available from https://github.com/raspberrypi/tools.
+Specify --target=arm-linux-gnueabihf --with-arch=armv6 --with-fpu=vfp --with-float=hard --disable-multilib as configure options.
+https://gist.github.com/sol-prog/94b2ba84559975c76111afe6a0499814.
+I think the issue is down to the differences in the processors.
+Both are ARM CPUs, but the 3B+'s CPU is a much newer ARMv8 architecture compared to the Zeros' ARMv6 architecture.
+To cross-compile for ARMv6 it looks like there are a couple of options.
+gcc-linaro-7.4.1-2019.02-x86_64_arm-linux-gnueabihf targets ARMv7 (the Raspberry Pi 2 and 3's ARM Cortex-A7 CPU architecture), which is compatible with the Pi 3+ and 4, but not Zero.
+The i7 can run applications specifically compiled for the Core 2 Duo, but not necessarily vice-versa.

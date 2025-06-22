@@ -1,0 +1,13 @@
+If there is an error in the nginx config, it returns non-zero and the Ansible task would error (changed_when).
+I'd like to use the validate parameter to Ansible's template module to call nginx -t and make sure my new configs are syntactically valid.
+    validate: bash -c 'nginx -t -c /dev/stdin <<< "events {worker_connections 1;} http { include %s; }"'
+It runs the equivalent of sudo nginx -t and checks its output.
+You may do there some trick and validate placed file like (idea borrowed from https://gist.github.com/psd/5042334):
+If you installed Nginx as a user, just remove the become, although I think it would still work even with it.
+I have a single Ansible-provisioned server running a number of sites.
+It makes no sense to directly call validate on a file included in your nginx main configuration file because the validity of directives in a particular configuration file may depend on the rest of your configuration files (for instance you have two configuration files that declare the same server block etc).
+Here's a more straightforward way that works at least with Ansible 2.5:
+Putting validate on the site-specific templates doesn't work, as they need to be wrapped in an http directive to be valid.
+You must always call nginx -t on the main configuration file and not one of its subpart whenever you want to validate any nginx's configuration change.
+What can I do to check the validity of these site-specific files?
+But it doesn't seem to pick up changes to the site-specific config files.

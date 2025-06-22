@@ -1,0 +1,16 @@
+smartctl is a great tool for that, as user2986553 already mentioned.
+The easiest way to ensure this happens on your next reboot is to create a file named "forcefsck" on the root of the filesystem.
+Once you've ensured your disk is healthy, run an offline check on your root filesystem.
+You're able to mount this filesystem, so it's not that damaged.
+EXT4 can be automatically repaired very easily, and can be fixed after some pretty impressive failures.
+When it completes and mounts the filesystem, it should delete that "forcefsck" file.
+You will have to reboot for this, as EXT4 cannot be repaired while online, and read-only checks on an active mount will provide unreliable results.
+This will very likely go well and fix any problems.
+If your underlying block device has problems, running a filesystem repair has the potential of causing more problems than it would normally fix.
+You may want to make sure it's gone and delete it if it's not.
+However, before you check and repair the filesystem on /, make sure the underlying disk is healthy.
+The following could possibly be classified as "major changes".
+Make sure your backups are intact and workable before making major changes to the host filesystem.
+Create a file named "forcefsck" to force a check at the next mount attempt:
+EXT4 is a filesystem that requires offline maintenance like this every so often.
+You should definitely enable "pass" on the fstab to make sure your filesystems get checked regularly.

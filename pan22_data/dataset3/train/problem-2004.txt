@@ -1,0 +1,38 @@
+Any recent version of Subversion takes excellent care of your configuration management needs, but, like Peter said, it's not a deployment tool.
+I wouldn't recommend using a Subversion hook script for this.
+Does anyone know a good resource for that kind of scripts.
+Subversion is a version control system not a deployment system.
+We are looking for an easy way to deploy and possibly revert our code to a previous version.
+How often are you going to be doing releases that need to be deployed?
+We are using Subversion for version control and I'm now wondering what the best way would be to deploy to staging and later to production.
+There's also Ant, and even Make scripts that could be used for this.
+Webistrano is a web-frontend to Capistrano, a popular deployment and automation tool in the Ruby community.
+This should work fine for a staging environment though.
+I typed "post-commit hook script linux" in Google, and got some good hits.
+This question is really a question about release procedures (and tools), rather than system administration, but here's my best answer:
+Tools like Hudson can also handle deployment for you, but you'll still need to tell it what to do and I simply prefer to keep my configuration management procedures as simple as possible.
+Because we did not check into the promotion plugin yet.
+When researching CI servers, I noticed that commercial systems usually offer a better support for release management.
+Right now we develop and test with 2 persons locally on our own machines and commit to our staging server which is our SVN server.
+Deploying and rolling back deploys is easy, as well as hooking in other tasks that need to be done, like flushing caches or migrating databases.
+If you want to automate more, I would recommend a CI server or some sort of deployment solution for that.
+If your webapp is large, consider having the hook drop a special file in /tmp which a cronjob checks every minute and takes appropriate action on.
+We are building a web app and are almost ready to start deployment to a production server.
+You can pretty much use any scripting engine that available in Linux to do post-commit scripts.
+We are starting to use Hudson for testing and deployment (at least for the sandbox environment).
+You'll need to make sure that you exclude the .svn folders when you pointing the website to the working copy.
+Just do a check out, and map the correct folder to be the root of the web app.
+Somebody on the team will have to manually update this working copy, but this gives you the flexibility to revert to a previous version if necessary.
+One example would be to let Hudson invoke 'make deploy' but store no other information in Hudson that you'd need to recover to recreate on additional machines.
+One option would be to build deployment into your regular build infrastructure (e.g 'make deploy') and manage your deployment rules alongside your code.
+We also use Subversion to control our source, but use Webistrano to deploy from Subversion to our servers.
+I know there is a post-commit.tmpl hook which can run a script?
+Since you are doing everything manual right now (building & test) I would also deploy manually, that can also mean that you write some scripts that check the right version out from subversion and deploy it to whatever environment you want it to.
+From a configuration management point of view, you need to keep track of everything your application needs to function, including code, external libraries (in specific versions), webserver, OS versions, etc.
+'make deploy' should try to ensure all those things exist before it attempts to deploy a new version.
+If you want more detailed answer, please elaborate on your release schedule, size of codebase, choice of language, OS environment and dependencies.
+I've heard of teams using CCNET.net or FinalBuilder Server for this.
+Basically, what happens is that the build script has code to push the latest build, every time somebody makes a check in.
+I would consider something along the lines of tagging your webapp into tags/ and having a post-commit mechanism that knows that tags/webapp-1.0.4 needs to be exported to your webroot.
+It allows you to describe your deployment process in Ruby scripts (most functionality is built-in).
+I'm not very familiar with build servers on Linux, but I know that there are a few.

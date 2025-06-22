@@ -1,0 +1,7 @@
+I just tested this by using EXECUTE AS in a test database, and I was able to create a table in the schema that had ALTER permission, but not in the dbo schema (for which I didn't grant ALTER permission). So as long as you haven't gotten too liberal with ALTER permission on schemas, this should be the way to do it.
+Working with security in SQL Server 2008, I'm trying to grant a user CREATE TABLE permissions, but only within a specific schema.  Does CREATE TABLE permission only apply at the database level?
+Granting permission to create tables to a specific user in a specific database not only requires CREATE TABLE permissions but also requires ALTER permissions to the schema, e.g. DBO.
+Therefore I would conclude: no you can't, create table can only be controlled at a database level (this would appear to apply to all securables).
+But, the user is still unable to create a table within the target schema.  It's not until I run this, hat the user can create a table:
+There is nothing about such a permission in the documentation of permissions applicable to schemas in 2008 R2: http://msdn.microsoft.com/en-us/library/ms187940.aspx
+Sure you can. If you have user1, then define its default schema as user1 also. Grant the CREATE TABLE in database permissions to this user. That's it. user1 can only create tables within the user1 schema.

@@ -1,0 +1,12 @@
+Offloading would be the normal mode -- an ELB in SSL mode is doing SSL offloading for the instance -- handling SSL instead of the instances, themselves, handling their own SSL.
+They are dutifully handed over to ever web browser that makes a connection.
+Note, of course, that securing your "certificate" is a silly concept.
+Of course this puts more work on your instances, and it isn't called "offloading" -- the terminology is reversed -- this configuration would be "not offloading."
+The part that needs to be secured is, of course, the private key.
+They should be as secure, there, as your account credentials are, so this seems like a misplaced concern, to me, once you have this information.
+You can let ELB balance TCP connections to instances that are handling SSL for themselves, by simply configuring the ELB listener in TCP mode, rather than HTTP.
+So much so, that not even you can get it back once you've stored it.
+If you decided, for whatever reason, that you wanted to fetch your cert and its private key from IAM... well, you can't.
+You can list them, overwrite them, and delete them from the IAM database, but not even the account owner can retrieve then.
+Arguably, on your instances, the accompanying private key would be less secure... but...
+The ELB instances fetch the cert, chain, and private key from IAM whenever they start up or scale up.

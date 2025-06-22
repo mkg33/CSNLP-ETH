@@ -1,0 +1,22 @@
+Otherwise you are defaulting to your local administrator account.
+Yes, you can use RSAT tools even if the management system is not on the same domain (and therefore not using the same auth database) as the target system.
+You can then go into Server Manager on the management system and add in the server through the Manage menu -> Add Servers.
+For domain accounts, it's DOMAINNAME\username or username@activedirectorydomain.com.
+At that point, you can right click and, assuming that the proper roles are found on the server to support that particular tool (i.e.
+I know this is a fairly old question - but since it was bumped to homepage by the site, I'll answer it.
+How you get around this is by using a PowerShell command that will add the target system to the management's system's "Trusted Hosts" list.
+For local systems, the format is SYSTEMNAME\username.
+To do that, go to the All Servers tab on the left sidebar and right click on the server (that, at this point, should have a WinRM Authentication Negotiation error) and click on "Manage as...".
+This refresh will fail because you haven't specified credentials yet.
+It's important to note that these are your target system credentials that you're entering at the Manage As prompt.
+Because it's not joined to a domain, you'll have to go into the DNS tab and manually type in the DNS name of the server.
+Firstly, if the systems are in separate domains, more likely than not (especially if this is the first time the management system is being used to manage the target), the target will not be approved to be connected to by the management system's WinRM service for security.
+you need the DHCP role on the target server as well as the DHCP RSAT tool on the management system to have the option show up in the right click context menu), you can open the tool from there and it will authenticate properly.
+Unfortunately, you can't do it directly through MMC, as you can't specify a separate username/password pair in the MMC snap-in itself.
+to actually connect using MMC and make changes to the services on the target system.
+The command to do this is: Set-Item WSMan:\localhost\Client\TrustedHosts -Concatenate -Value "<put in the client's IP address and/or DNS hostname>"
+After you add it to the Server Manager console, it will attempt a refresh.
+This is assuming that you're an administrator with the appropriate rights assigned to 1.)
+Follow the syntax instructions in inputting the username in proper format.
+I believe that you need to specify user@domain as the username when you use the runas command.
+"Slightly" roundabout, yes, but if it's a last resort, it's a good one.

@@ -1,0 +1,16 @@
+You can also do this with bootable Linux routers, as I've seen them made to boot from a floppy that's read-only.
+For example, I usually partition a desktop to have a /home/ partition for user data, a root partition / for the rest and then any additional drives I will partition on their own and add to fstab after install to mount them where they belong.
+You can create a writable space for things like log files by using a RAM disk. Space will be very tight, though. I wouldn't recommend doing this except for very specialized circumstances.
+Start your systems not from hard disk but from hardware write-protected Live USB flash drive. There's an utility in Fedora - livecd-iso-to-disk - which also works for Centos LiveCD. You can customize it easily using "overlay" feature and then turn on write protection.
+In most cases you can hybridize the process; most of the server is read-only but there's a scratch space for log files with an internal drive or USB drive.
+You can however setup partitions in such a way that the system is separate from the rest of your storage.
+Our system has a number of Linux machines each with their own disk with it's OS installed.  Everything is read/write enabled at the moment.  We're booting from these disks but running all our software that we develop on some external disks shared over NFS.
+The OS itself is going to want to write its own log files etc so I can't see that mounting the drives as read only would result in a functioning operating system - or would it?
+Yes, it's possible to run a Linux server with read-only media. See Devil Linux; those servers run off a CD disc.
+Another drawback is updates. The thinking was that even if someone were to crack some flaw, they couldn't do much damage since they can't alter system files or anything like that, I guess. Periodically you update the master image or get the newest ISO image and use that to boot from as the update; with the Devil Linux server I had experimented with I had the ISO image to boot from then used a USB disk to pull the configuration-specific files for that server. Alternatively you can edit the files required for your particular setup and re-integrate them with the CD's /etc directory and re-burn the disc.
+What we want to be able to do is ensure that nothing is ever written to the internal disk with the OS on it, only to the external drive shared through NFS.  I'm thinking we can probably manage this by editing the /etc/fstab file and mounting the drive as read only.
+I'm wondering if it is possible to run a Linux server from a read only disk, specifically CentOS 5.4.
+So if we took an image of the internal disk then booted the system, ran our software (which would only touch the external disks), then shut down the system and took another image of the internal disk there wouldn't be a single byte different.
+Just mounting partitions read-only would not help much with security, as when system is compromised the first thing a cracker will do will be remounting it read-write. Only physical security will assure that no data on disk is changed.
+Anyway, yes, it can be done, but it's a maintenance hassle and something to only be considered in very specialized cases.
+I can only think some kind of network boot would achieve this, but there is zero possibility of adding an extra machine to act as a DHCP and TFTP server for this.

@@ -1,0 +1,9 @@
+That's a bad idea to begin with - it means that you've potentially exposed functionality which could be accessed by someone not intended to have access to it.
+....and if the process is started by a web request, then why use cron in the middle? Certainly you'll get privilege seperation if the cron job job is NOT accessing the php script via HTTP, but you're making things much harder than they need to be and introducing delays / load on the server you don't need.
+Do a graceful restart on the apache, that will allow childs to finish the current request before reloading the config.
+The right way involves using some kind of software "router".  I don't actually mean an IP router, I mean an URL rewriting type router.
+But failing that the best way to do this would be to implement it as a setuid root script on the server (with authentication built-in as well as authentication on the web page) and call this from the web page.
+From your description, you seem to be trying to provide a facility for users to create their own domains. It would be much more preferable to use a wildcard vhost definition, then use mod_rewrite to map the dynamically mapped path to a new directory.
+So your application listens to anything on *.domain.com, and then hands it off to the right user's application instead of that tedious apache reloading nonsense.
+As a result, to add a new subdomain, all I need to do is create a directory under sites/"subdomain", and it's instantly accessible.
+Basically, for any subdomain under domain.com, it gets mapped to $DOCROOT/sites/$subdomain/index.html

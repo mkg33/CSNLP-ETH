@@ -1,0 +1,21 @@
+There's an Usermin module for Subversion, but I'm unsure that it would let you do what you need.
+Another suggestion from the svn dev mailing list from Dec 09, so its quite recent!
+They tend to be written once and work forever, so these GUI tools do not need to change either.
+We have implemented this with our new svn distribution a year ago.
+You need to create an LDAP schema based on your requirement obviously.
+The apache server uses ACL file created based on LDAP DIT (given above) to give read-write access to different users and groups.
+The above 'groups' organizational unit is custom groups for subversion repositories/projects.
+Also, we use 'viewvc' with https to view repositories in svn.
+So, we brought all info into LDAP and we granted team managers write access to directory information tree (DIT) for subversion:
+We have all users/hosts information in LDAP so, it wasn't a big deal to extend it to include svn info.
+We have multiple development teams and they their own projects.
+ou=repositories,ou=subversion,ou=apps,dc=example,dc=com
+Named repocafe, available at http://repocafe.cs.uu.nl/.
+Late answer as I'm new to serverfault: we (university compsci department) developed our own self-service svn webinterface and made it available as open source.
+Modelled to our own needs it can deal with single or multiple ldap servers and guest users.
+I think you'll find that most of the community effort for something like this is small - SVN is actuvely maintained, but the admin tools are one part that do not.
+Here's another script that I feel seems to be a good option for svn management:
+So, if there is a new repositories added with read-only and read-write users/group.
+There is a cron that reads the LDAP DIT every five minutes and created the ACL file.
+The cron will read that and create the repositories, and incorporate that information in ACL file for the newly created repository.
+So - don't worry too much about how large the community is in this case.

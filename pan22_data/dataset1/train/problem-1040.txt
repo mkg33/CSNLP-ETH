@@ -1,0 +1,8 @@
+This query requires you to scan every row in the table because
+"a function on a WHERE predicate" means indexes won't be used
+If you batch it (say on UPDATE TOP (10000) ... AND costPercentage IS NULL) then you need an index on costPercentage and this assume you are setting it.
+There is an interesting detail to this query that I did not spot at first. Thanks to Fabricio Araujo's answer I now see it: you are accessing two tables. I have never seen this kind of usage of the update statement before and I do not advise using it. I recommend you use the more intuitive join syntax per Fabricio's answer.
+The likely cause is that the join between the two tables produces an extreme number of rows. This might happen if the LEFT(col, 3) expression produces duplicate values. If it produces 10 duplicates this will result in 100000x100000=10000000000 rows in the join result.
+I do not think that indexing plays a role here. SQL Server can resolve this unindexed join just fine with a hash or a merge join. Does not take 4 days.
+The other probably cause would be a cardinality underestimation of the join inputs or outputs. SQL Server might have chosen a loop join.
+As this is still speculation I recommend that you post the query plan which will shed light on this issue.

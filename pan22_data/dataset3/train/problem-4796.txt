@@ -1,0 +1,10 @@
+It is related to the blog article http://blog.dovecot.org/2012/02/dovecot-clustering-with-dsync-based.html
+Apparently ObjectiveFS https://objectivefs.com/ supports multiple mounts (according a support email they're replied to), although I've not tested it, and can see very little information about it around on sites in general
+You should try to set it up in a way, that all of a single users connections are accessing her mails via a single "backend" dovecot during a single session.
+I think the problems encountered with Maildir depend on how the storage is shared.
+There should be no technical problems with using S3QL to store Dovecot maildirs, however, things will be significantly slower than with a local filesystem (like ext4 or btrfs).
+For a picture of a fairly complex example setup (with replication that you might not need) using frontend directors, see http://www.dovecot.org/img/dsync-director-replication.png
+Another possibility for S3 storage is the commercial object storage plugin from Dovecot Inc http://www.dovecot.fi/products/
+From http://www.dovecot.org/ that Dovecot Maildir does support being accessed from multiple systems at the same time, although there might be some config regarding caching, and it doesn't mention S3QL.
+This may or may not be a showstopper for your use-case.
+Due to periodically running out of space on EBS volumes on AWS EC2, and looking to make the setup more fault resistant in case of server/volume failure, I'm considering moving a Dovecot maildir installation over to S3QL.

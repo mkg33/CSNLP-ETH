@@ -1,0 +1,6 @@
+To anyone who might run into the same problem. The data center guys finally figured it out today. The culprit was a NSS (Network Security Services) library bundled with Libcurl. An upgrade to the newest version solved the problem. 
+Definitely it could be a filesystem issue. A filesystem bug causing dentries not to be released, for example, is a possibility.
+Yes, if the system isn't under memory pressure. It has to use the memory for something, and it's possible that in your particular pattern of usage, this is the best way to use that memory.
+Apparently, in order to determine if some path is local or on a network drive, NSS was looking up a nonexisting file and measureing the time it took for the file system to report back! If you have a large enough number of Curl requests and enough memory, these requests are all cached and stack up.
+I don't believe there is. I'd look for any directories with absurdly large numbers of entries or very deep directory structures that are searched or traversed.
+It should, and I can't think of any reason it wouldn't. I'm not convinced that this is what actually went wrong. I'd strongly suggest upgrading your kernel or increasing vfs_cache_pressure further.

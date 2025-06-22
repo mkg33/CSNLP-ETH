@@ -1,0 +1,20 @@
+As an extreme example, if you want to converge in a second or less, the hub router must generate, send, receive, and process 14400 hello packets per second (2 x 4 x 1800), and you use significant bandwidth doing so.
+OSPF is still an option; I just don’t think it’s the best option.
+How volatile these connections are will affect that, this could be often depending on how aggressive your timing is.
+But the hub router will still generate them internally, and that takes a lot of CPU and memory.
+The number of tail sites you have quickly exceeds the benefits of most IGPs.
+Both BGP and (Cisco’s implementation of ) OSPF can filter routing updates to the spoke routers, reducing bandwidth.
+For example, you can break up OSPF into some number of areas to reduce the flooding, but at the expense of memory and CPU.
+Any solution we (you) come up with will necessarily be a tradeoff between router processing power, memory (ie.
+What you want to do is pushing the limits of any protocol implementation, so there is no good answer.
+Each SPF recalculation is going to cost you a pretty penny on resources.
+And when anyone says they are looking for a way to scale to 7,000+ networks1, BGP is a no-brainer.
+Convergence time is important, because the faster you want your network to converge, the more CPU and bandwidth you require.
+Whatever your decision, BGP was designed to scale.
+1 Forecasting based on growth to 1,900 sites x 4 networks at each site.
+You could always setup each leg of your network as a Totally Stubby Area so inter-area routes aren’t propagated down to the each site.
+If not for your remote sites, then certainly for the hubs – that’s where all the processing is going on.
+Then you could have separate routing instances at each site to handle their networks independently of your head end.
+I will emphasize @MikePennington’s point that for a network this size, you should really look at a hardware router.
+BGP would allow you to achieve all of your desired implementation requirements, such as limiting tail site knowledge to the primary/backup DC, standards based protocol, ability to efficiently handle over 5,000 different routes, etc.
+I think BGP is probably your best bet in this situation.

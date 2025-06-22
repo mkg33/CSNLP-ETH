@@ -1,0 +1,8 @@
+I am trying to get some practice making a backup maintenance plan and restoring those backups. I have a script that churns through the most recent full database backup and any subsequent transaction log backups, all of which are in a single appended backup file.
+My question is in two parts. First, is it possible to determine everything I need to know to restore a database from my backup file itself, without querying the msdb backup tables? Second, If I was to accidentally run sp_delete_backuphistory and wipe out all history, how bad of a day would I have?
+Bonus question: How do expiration dates work when I have a backup that I continually append to? Does the expired data get deleted on subsequent backups, or do I need to create a new backup file, or something else? If I was creating a new file for every backup, I could simply check that files expiration date and delete it, but I am more confused with the appended backup sets.
+If you have a single file with all of a set of backups in that single file, you should be able to use the command:  
+This will provide you all of the details within that file, including the log file LSNs and other details you might need.
+http://technet.microsoft.com/en-us/library/ms178536.aspx
+The EXPIREDATE and the RETAINDAYS are just data that you include with the backup.  You have to decide how to use that information.  In an appended file, it is mystifying indeed. You could perhaps use the information to skip over backups that expired.  (For me, each backup is a separate file.) See Tibor Karaszi's comments at:
+http://sqlblog.com/blogs/tibor_karaszi/archive/2012/07/08/backup-and-the-evil-retaindays-option.aspx

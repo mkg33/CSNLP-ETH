@@ -1,0 +1,9 @@
+See also: http://blogs.technet.com/b/askcore/archive/2012/05/14/windows-8-and-net-framework-3-5.aspx
+I've been able to solve this by using the server manager add features wizard and there specifying an alternate source there. 
+If all of the above fails, I highly recommend that you provide the DISM servicing logs to do any further troubleshooting, but at this stage, I would leaning more to do a full server rebuild.
+For whatever reason, my optical drive shows the files on the disk, but the DISM doesn't like it, but copying the files to C: seems to have worked.
+I have had the exact same issue. My resolution was to remove the server from Active Directory, Install .Net 3.5, then add back to AD. I'm sure it has to do with WSUS at some layer, but that solved it for us. We just make sure we install 3.5 on all servers before adding to the domain.
+When the DISM command skips the media specified by the /Source switch and goes looking for the files online, it means that the source files in the specified media is either corrupted or not applicable to your server (version mismatch).
+I had the same issue when I mount the Windows install disk or use the physical DVD, and here's how I fixed it:
+Where D:\ is the mounted ISO or DVD drive. The only difference from yours is the /LimitAccess, but I believe that is the important part, as it prevents it from attempting to contact Windows Update or WSUS. For whatever reason, this aspect (contacting Windows Update) is totally broken for .NET Framework 3.5 on Windows 8/8.1 and Server 2012/2012R2 and will always cause it to fail.
+The error code 0x800f0906 further proves this behavior as documented by Microsoft: https://technet.microsoft.com/en-us/library/dn482067.aspx

@@ -1,0 +1,18 @@
+And when I disconnected, the [home-ip] gateway would still be there.  When I'd connect to my work network I couldn't connect to the internet at all, and run into the same issue as OP
+There might be an issue with how the OpenVPN server/client is configured which is leaving this (and I'd be interested in finding out what that is), but I installed a Tunnelblick post-disconnect script that automates this route deletion.
+I can't under any circumstances connect to my home network (VPN, ping, anything) after this happens. If I then just delete the route:
+For completeness, when I connect to my VPN at home and running the following command, it'd show the default gateway as below
+I think that step 1 is route flush (to remove all routes). And step 2 needs to reload all of the default routes.
+I was running into the same issue as @Sean (I'm also running OS X), in that when I switched between home and work networks the default route was not getting deleted.  
+I was running into this issue while using a home OpenVPN server and connecting to it using the Tunnelblick application on Mac.
+Example: I am at school and after a fresh computer boot, I connect to a wireless network. I connect to my home OpenVPN server with Tunnelblick. 
+What was happening on my end is that a route with my home IP as the destination and an incorrect gateway was getting leftover after disconnecting from the VPN. Deleting this route solved the issue, simply
+You need to flush the routes . Use route -n flush several times . Afterwards add your routes with route add. 
+Which means the route is set up as root, but when the connection is taken down the user is no longer root, so the route can't be deleted.
+Also, I'm noticing another symptom is traceroute also fails on the address in question. For instance:
+Sometimes I get the routing table so jacked up I get ping: sendto: Network is unreachable for urls that should otherwise resolve. 
+Currently, if I restart Mac OS X then everything is back to normal. What I'd like to do is reset the routing tables to the "default" (e.g. what it is set to at boot) without a whole system reboot. 
+Commenting these 2 lines in my .ovpn file fixed the problem, without having to use a post-disconnect.sh.  
+I'm using vpnc for a VPN client. I'm also doing some tricky things with route to make sure I can still access my local network, etc. etc. (the particulars here are not very important).
+Initially I put the "route -n delete" in a post-disconnect.sh script, but that was a little messy so instead I found this link
+First you need a route for your network interface. If the VPN is disconnected then just take your network interface down and then bring it back up with ifconfig. Then use the route commnand to build in your default gw. So something like: 

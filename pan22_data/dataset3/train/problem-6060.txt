@@ -1,0 +1,15 @@
+I created a minimal test case, which what I think is the answer.
+If I don't put the non-standard port there, then the Digest redirect appears to use the standard https port 443 once the username / password has been entered, which results in the behaviour I outlined in the original question.
+Please comment if this isn't the case, or if it's just a horrible hack workaround something else.
+So it's configured to run on port 8443, and I have this line in the non-SSL configuration which redirects all requests to the 'admin' pages to the secure connection:
+I couldn't find anything in the Auth Digest documentation about port numbers, but I'm presuming it's something to do with the original URI being either from the browser request, or the rewrite rule.
+Note the ServerName line in the SSL configuration.
+At that point, an authentication form appears to log in, with AuthType set to Digest.
+This is something I hadn't seen from the documentation.
+So it appears, at least from this, that if SSL is running on a non-standard port, and using Digest (or I guess Basic) apache authentication, it's necessary to specify the port in the ServerName configuration.
+then the same apache authentication form appears, but this time after logging in, the port number is retained, and the admin page is displayed.
+So, my question is, without changing the port numbers, can I make the non-SSL page redirect to the SSL page in a way that preserves the port number after authentication?
+Once the port is there, the behaviour is as required.
+Now, if you start off by typing the full correct address into the browser:
+This is for a legacy system running Apache 2.2, and for various reasons, the secure webserver can't run on port 443 (that port is used by something else).
+That seems to work fine, but on entering a valid username and password, the browser is redirected to:

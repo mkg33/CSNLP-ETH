@@ -1,0 +1,12 @@
+(If You want to execute the file on some machine You can change the execute bit there before execute.)
+So two options: automate on server or on client that the bits get set if You really need them on files.
+That said, You can of course compile a patched ProFTPD Yourself (which starts persmissions / umask calculation by 7 instead of 6) and set Umask Configuration to 002 for files.
+For 2: there are different possibilities, depends on Your exact use case.
+It would be possible to allow ftp-users changing file permissions explicitly to have execute bits set after upload.
+Alternatively a ProFTPD specific approach to Force a Owner Group would be to set the UserOwner Parameter for the Directories where this shall apply (http://www.proftpd.org/docs/directives/linked/config_ref_UserOwner.html).
+A generic solution that should work also with ProFTPD is to make a group www-data the owning group of the parent directory and set the directories Set-GID bit.
+This would cause all uploaded content (including created diretories) into that directory to have owner group www-data, with the directory Umask setting new directories to be group-writable.
+I would like that the new uploaded files via FTP has 2 features:
+I have activated an FTP server with ProFTPD on Debian Server 8.11.
+For 1: It is for security reasons not permitted to allow default execute-bits on files, and they are also not really needed.
+Maybe You should elaborate first on why You want them 775 or such by default, then You could get an answer.

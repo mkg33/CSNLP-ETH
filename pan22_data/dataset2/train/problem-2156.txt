@@ -1,0 +1,14 @@
+Because of the 'MVC solves everything' approach, you ended up writing an Application class that does, a bit of everything but only half and all in the constructor.
+Your application class is doing to much. And what happens if I want to run multiple applications? Each with a different url passed in? And what is a 'Application'? What does it represent/do? And more importantly: What problem does it solve?. Ow, and if the words describing the problem don't fit on a post-it, your class is doing to much.
+Setting a default controller and/or method seems like something that should be accessible as a public method of our Application:
+What is the point here? Instead of having one line in the __construct and doing the assignement there. You added 4 lines. Remove them and add the assignment to the construct:
+Your Application is in fact some kind of Router. It maps urls to controller::method(params). So why not call it a Router?
+The above example is a developer trying to use your code without reading it - you should never have to read code, the api should be enough.
+Now that we've had our beer, try and explain to yourself why you should use the Application class and what problem it can help you solve. But because we are lazy, we simply write up the API for that class.
+A pattern is not a rule, but a best practice to solve a certain problem. The MVC-pattern helps us solve some of the code-clutter and seperation of concern of domain logic, controlling logic an displaying stuff to the user.
+This is a mistake a lot of starting developers are making. They read about how good MVC is. And that everyone should use it. A bit like jQuery, where jQuery is always the answer, independent of the question. It's like using a boat to plow a field because it is really good in the water and everyone like a boatride!
+The moment you do more then assignments (plus the optional exception throwing for bad data) in a __construct, it's time to walk away from your code, take a break (or a beer) and then come back to look at it - with some fresh eyes.
+But then there is the problem of tight coupling. A class should have as little as dependencies as possible. And all dependencies should be added in the __construct. If you need ask it:
+And we have now succesfully decoupled the getUrl() function from our Application class. The Application class shouldn't care how the url is formed. It only tells us that it wants a url.
+A constructor is there to instantiate the class. It shouldn't do anything. Let the developer choose when to load the controller, or filter the url, ...
+Aaah, so it's a kind of parameterbag. But then without any get/set methods and only public variables.

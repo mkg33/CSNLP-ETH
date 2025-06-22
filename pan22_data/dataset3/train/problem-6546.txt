@@ -1,0 +1,18 @@
+Your debug log shows that the server did not accept any of your private RSA keys.
+If any of those are group writable it can be a problem.
+on the machine that will be connecting (your workstation for example)
+chmod 600 ~/.ssh/<private_key> Ex: chmod 600 ~/.ssh/id_rsa
+Based on the above I cannot say what the problem is.
+As @Fredrik said, permissions on files can also play a role.
+I recommend that you start another sshd in debug mode with: /usr/sbin/sshd -d -p 2222 which will start another sshd on port 2222, then run ssh -p 2222 user@sshserver on the client side.
+It should ask for your password, and then copy your key and setup the permissions appropriately.
+SSH will refuse to use public key entries that others can write to and private key entries that others can read.
+These problems (which are usually permissions related) are much more easily debugged from the server side.
+However, most of times I've encountered this the reason has been that the keys have had their rights set to be too readable (as in readable to group or other, not just the user).
+it could also be a problem with /, /home, or /home/$USER.
+You should check the permission of the files on the remote machine using ls -l ~/.sshand setup the permission:
+chmod 700 ~/.ssh/<public_key> Ex: chmod 700 ~/.ssh/id_rsa.pub
+Another common problem is that you mis-paste and put linebreaks in the middle of your key in the authorized_keys file
+You should either specify the specific correct keyfile or check that the server has the right public key file.
+Watch what comes out of the sshd when your client tries to authenticate.
+Permissions problems don't have to be just /home/$USER/.ssh.

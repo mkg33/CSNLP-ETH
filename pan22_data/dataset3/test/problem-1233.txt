@@ -1,0 +1,16 @@
+easier to predict in case of error autocorrelation :
+I've found interesting case of RF overfitting in my work practice.
+Electricity prices are created in batches (24 prices created on electricity market in one fixing in one moment of time).
+OOB obs are not contained in 24-hour blocks, but dispersed uniformly, as there is an autocorrelation of prediction errors its easier to predict price for single hour which is missing then for whole block of missing hours.
+This is creating me quite some confusion about the issue.
+Then I took the hyper-parameters of the overfitted model and check the error while adding at each step 1 tree.
+known, known, prediction, known, prediction - OBB case
+known, known, known, prediction, prediction - real world prediction case
+When data are structured RF overfits on OOB observations.
+According to the original paper of Breiman, they should not overfit when increasing the number of trees in the forest, but it seems that there is not consensus about this.
+I have been reading around about Random Forests but I cannot really find a definitive answer about the problem of overfitting.
+The model with full trees has lower train error but higher test error than the model with pruned trees.
+I try to predict electricity prices on electricity spot market for each single hour (each row of dataset contain price and system parameters (load, capacities etc.)
+Maybe someone more expert than me can give me a more concrete answer or point me in the right direction to better understand the problem.
+As you can see the overfit error is not changing when adding more trees but the model is overfitted.
+So OOB obs for each tree are random subsets of set of hours, but if you predict next 24 hours you do it all at once (in first moment you obtain all system parameters, then you predict 24 prices, then there is an fixing which produces those prices), so its easier to make OOB predictions, then for the whole next day.

@@ -1,0 +1,12 @@
+the problem is, I created some self signed certificates with a CA on server-0.
+I have two servers working in a multi-master mirror mode OpenLDAP setup.
+also, if server-0 goes down, and server-vip points at server-1, how are clients supposed to transparently work in as far as SSL goes if they have a client certificate for server-0?
+give the server-vip certificate to your clients as trusted certificate.
+server-0 must have the certificate of server-1 as trusted and vice versa.
+what is the distribution of ssl client/server certificates that needs to happen for the two servers to speak to each other, and more importantly, for clients to speak to server-vip.example.com?
+Personally, rather than use self-signed certs I prefer to run a private CA using the OpenVPN easy-rsa scripts, for which there's a patch for subjectAltName support.
+You can create a single certificate with multiple subjectAltNames that will be valid for all hostnames listed.
+server-0.example.com, server-1.example.com and server-vip.example.com
+simply copy/pasting configs doesn't seem to be the answer, especially since the common name on the servers is unique, they each have different host names.
+this way your clients won't recognize a failover and your servers are independent of the server-vip certificate.
+server-vip.example.com is a floating virtual IP that associates itself on the interface of the active node (server-0 or server-1), a rather common setup.

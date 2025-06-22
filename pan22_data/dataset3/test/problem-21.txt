@@ -1,0 +1,19 @@
+I have a number of Samba shares on fileserver so that I can access files from Windows PCs.
+I am also exporting /data/www-data to the apache server, where I have it mounted as /var/www.
+That way all files automatically get the "right" GID.
+If this is not the right way to do things, I am open to alternative suggestions.
+In the (distant) past this was co-oridnated with NIS and NIS+, although there are other schemes that have been wedged into this framework (Samba's Winbind being one of them).
+Given you're coming from Windows, you'll find that NFS is....different.
+The problem with that is that all users on the apache server will see your mount point with nobody nobody as user & group, and could write in the mount (but anyway, on the Samba server, the files will be created as <your UID>/<your GID>).
+With Samba, I can specify force user, force group, create mask and directory mask, and this ensures that all files are created with suitable permissions for my Apache web server.
+This means that you can get a situation where the UID/GID on the server is passed back to a NFS client, but it can't matched in the client's /etc/passwd or /etc/group, which means no access.
+NFS is passing the UID and GID of the files/directories back and forth between the machines with the assumption that the user and group IDs are mapped identically on both.
+Although I've spent quite a bit of time with Linux, and am weaning myself off Windows, I still haven't quite got to grip with Linux permissions...
+You could also use the all_squash option which makes anonymous (user & group) all the exported files & folder, and attach them to a specific GID & UID.
+The setup is okay, except for when I come to create files on the NFS mount.
+I end up with files that cannot be read by Apache, or which cannot be modified by other users on my system.
+There are different ways to fix this, but the cheapest/quickest is to create a group with the same group ID number on both machines - say, group ID 50000 - and set the group bits on the file server while adding the appropriate user to the group on the client; then use the group permissions on the files to control access.
+Is there a way to force permissions and ownership with NFS - am I missing something obvious?
+However, this requires a central ID server, followed by a lot of hand-fixing permissions.
+For those files that come inbound via a Windows share (aka Samba) simply force the group to be the same as the one you create.
+Note that you could have problems with services that explicitly change their group at runtime (aka privledge drop) and you might need to change the setting that controls what group is assumed at runtime to ensure it is the one you have created.

@@ -1,0 +1,15 @@
+As long as you use the microsoft AHCI driver: Check the properies of the drive in the device manager, note the "bus number".
+I did all the above and my system still thought my two hard drives were removable drives but I did the following and It fixed the problem.
+64 bit operations cannot cope up so 64bit os is patched to treat internal drive as portable removable drive.
+Install 32bit version of windows, this issue is not there.
+Check Control Panel --> Device Manager --> Disks --> double click on the disk drives and make sure that under Policies tab drive 'write cache' is enabled and there is no 'optimize for quick removal' enabled.
+This is generic problem of windows 64 bit versions.
+Source: https://support.microsoft.com/en-us/help/3083627/internal-sata-drives-show-up-as-removeable-media
+The issue lies in your BIOS, and has little to nothing to do with Windows.
+Check if you can manage your SATA devices, and Disable the Hot Plug function.
+Check Control Panel --> Device Manager --> Disks -->right click on the drive in question and select properties --> then select Volumes --> populate... this will identify the drive as a hard drive.
+Also, update to the latest chipset and AHCI/RAID driver.
+reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\storahci\Parameters\Device" /f /v TreatAsInternalPort /t REG_MULTI_SZ /d 0
+This is directly related with how windows considered or not a drive being removable.
+reg.exe add "HKLM\SYSTEM\CurrentControlSet\Services\storahci\Parameters\Device" /f /v TreatAsInternalPort /t REG_MULTI_SZ /d 0\01\02\03\04\05
+If it is Bus 0 it is this registry key for Win8/Win10:

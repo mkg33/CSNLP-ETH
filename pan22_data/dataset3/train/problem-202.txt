@@ -1,0 +1,7 @@
+You can then start and change where the database client is pointing without the worry of data is outdated.
+The data filesystem is filling up and I'd like to move the archive database's data directory to a different filesystem (and then symlink it back, obviously).
+lsof reports that MySQL does have the .ibd files open, so presumably it would have to reopen them.
+You best bet for transferring would be to setup a trigger so that when something is created in the old database it is mimicked in the new.
+I have a MySQL instance containing a number of databases, one of which is an archive database (although using the INNODB rather than ARCHIVE storage engine) that is not queried or written to in normal operation.
+I plan to rsync the database directory to the new filesystem, then rename the old one on the original filesystem to something different and create the new symlink.
+If there are no SQL statements attempting to query or update the data during the move, can I safely do this while the MySQL instance and the other databases stay online and in use?

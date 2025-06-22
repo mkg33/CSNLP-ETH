@@ -1,0 +1,19 @@
+The advantage of this method is that it is a single function which makes it easy to interpolate a grid of values as shown in this image (note the cells are coloured according to the values to better visualise the effect of the interpolation):
+Where the "interpol_array" is defined as the column you want to interpolate the values from and "lookup_array" is the column you search for the values.
+I have written VBA code for bilinear interpolation which you can find here: https://github.com/DanGolding/Linear-and-bilinear-interpolation-in-Excel
+On screenshot below A12:A16 holds x's, B12:B16 holds y's, and C12 contains formula that calculates y for any x.
+The single-step calculation formula would then be entered in the top left cell of the data table. This 2,100 (minus one)-character formula is included in the downloadable worksheet.
+The corresponding column numbers and column values for the horizontal index range are constructed in a similar fashion.
+You have a number of tables that have index values in the first row and first column of each table and a set of values in the interior of the table, each of which is associated with specific row and column index values.
+As for your case (3-d data), Excel has capability to build 3-d charts also, but I don't know if they have 3-d trends.
+With this many steps, it may seem that calculating the interpolated amounts for multiple input values would be impractical. It's actually quite easy using a two-way data ("what-if") table.
+where vnum is the input value and vrng is the vertical range of indexes in the first column of the table. The -1 third argument of theMATCH function indicates that a "less than" lookup will be performed. This use of the MATCH function requires that the vertical range of indexes be in descending order.
+This answer also states the same thing https://stackoverflow.com/questions/42877228/vlookup-and-interpolating
+The setup of these calculations for multiple tables can be simplified even further by using the one-formula version of them. To use it, the named ranges vnum, hnum, vrng, hrng, datarng, validvnum, and validhnum would need to be set up. The tables need to be in separate sheets or in separate workbooks. If in separate sheets, the names for each sheet must be set to have worksheet scope. 
+Given two values that, respectively, may equal exactly a row or column index, or may lie between two row index values or two column index values, you want to do a straight-line interpolation of the values in the table based upon the two given values for the first row and first column.
+Actually you have a 3-d table - x and y are independent variables, and the one you need to find is z.
+The key element in this formula is vnum>=vrng, which produces a boolean array in which the first TRUE is in the row position that holds the largest vertical index value that is less than the input value. (The use of ">=" may seem counter-intuitive; it's needed because the indexes in the column are in descending order.) The remainder of the formula converts this row position into a row number.
+The best answer ever for this problem is found in this video https://www.youtube.com/watch?v=LFUd5qF8nyE
+To do the interpolation for input values that lie between the index values in the table, the following are needed:
+These two upper and lower row numbers are used to calculate both the index values that bracket the input value above and below and the interior table values corresponding to those index values.
+So if you have 2-d table, you can find out which formula fits best your data, using Excel's "trend line" feature. Using that formula, you can calculate y for any x

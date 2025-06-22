@@ -1,0 +1,17 @@
+Can we make sure the backup archive embodies a consistent/clean snapshot state of the GitLab instance?
+I know I could stop GitLab for a few seconds and snapshot the LVM volume or filesystem instead of using the integrated backup mechanism but I do not want to interrupt GitLab.
+In the GitLab documentation docs.gitlab.com/ee/raketasks/backup_restore.html#backup-strategy-option it is stated that:
+I can not find any information in the documentation in this regard.
+The STRATEGY=copy argument makes gitlab-rake gitlab:backup:create run a rsync -a command to copy all files before creating the archive with tar.
+At the moment I have no idea what happens when you archive a repository being modified or when a backup is done on a database running transactions?
+When you ask a running GitLab instance to generate a full backup archive with the gitlab-rake gitlab:backup:create command :
+In my understanding of the documentation it is stated that by using the copy strategy GitLab will never produce a technically corrupted archive and will never fail creating it.
+You can run a backup of GitLab, interrupting all services but the postgresql one, so no modification can occur while backing up with the integrated mechanism of GitLab, but still you have to black out the service to your users for some time.
+I can cite you @SørenLøvborg's answere that seems correct:
+Edit: you have already received an official response from Gitlab Team.
+I assume this strategy ensures that the archive generated is restorable but what about the consistency state of the data?
+There are a lot of questions about taking consistent backup of Gitlab but I haven't found a good answere.
+Bonus: My questions applies also on snapshotting the LVM volume or filesystem!
+GitLab just run the tar command on the files to backup.
+I read through the backup code of GitLab today gitlab.com/gitlab-org/gitlab-ce/tree/master/lib/backup but could not find any hint to my questions.
+I do not code with Ruby so that doesn't help me...

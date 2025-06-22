@@ -1,0 +1,10 @@
+I have deployed a EC2 Storage Gateway (Volume Storage mode) and encrypted all the EBS volumes using AWS KMS keys, all good so far.
+What I didn't expect was that once you create the volume it hides the backend S3 bucket so you can't assingn a KMS key.
+Does anyone know if you can specify a key for the S3 bucket to use?
+What problem are you having? Curious why you want to specify your own key. If you want more control you could encrypt the files on the file system that's being backed up to S3, but that's a fairly significant overhead.
+Based on the FAQ it seems like it's going to use S3 managed encryption, without an option to use your own key.
+I know this doesn't solve your problem, but I suspect there's no way to do exactly what you're asking.
+Q: When I look in Amazon S3 why can’t I see my volume data?
+Your volumes are stored in Amazon S3 and accessible through AWS Storage Gateway. You cannot directly access them by using Amazon S3 API actions. You can take point-in-time snapshots of gateway volumes that are made available in the form of Amazon EBS snapshots. Use the file interface to work with your data natively in S3.
+Q: What sort of encryption does file gateway use to protect my data?
+All data transferred between the gateway and AWS storage is encrypted using SSL. By default, all data stored in S3 is encrypted server-side with Amazon S3-Managed Encryption Keys (SSE-S3). For each file share you can optionally configure to have your objects encrypted with AWS KMS-Managed Keys using SSE-KMS

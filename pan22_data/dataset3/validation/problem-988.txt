@@ -1,0 +1,17 @@
+A log delay while using SSH could be also caused by blocked processes and/or cron-jobs misconfiguration, so check them also (i.e.
+For example say you want to ssh to "glitch.somewhere.net", in your config file do something like:
+One potential gotcha, is to make sure the permissions are set correctly so that ssh doesn't freak out.
+Perhaps a bit silly but did you restart the ssh server after making the changes?
+From here you can map the host to the numeric ip and it should bypass the DNS lookup altogether.
+Also, I'd recommend running ssh in verbose mode (ssh -vvv) to make sure it is hanging where you think it is, but I suspect you're on the right trail.
+It disables ipv6 which triggers a bug in some old systems (it's in the openssh faq).
+When connecting from an external network, the process was quick, with a two, maybe three, second delay before the password prompt came up.
+The key here is that the "HostName" is actually set to a numeric IP rather than a true hostname.
+You can insert a ton of options here as describe in the ssh_config man page (man ssh_config).
+I had similar problem logging into CentOS/Fedora servers from my Fedora laptop.
+You should be able to create your own user level config file in ~/.ssh/config
+Second question, are you able to connect to the servers externally or only through the VPN?
+First questions, are you connecting via IP Addresses to the servers or via Domain names?
+The likely cause of the delay is the VPN and connection speeds, not necessarily the result of an SSH connection.
+However, connecting from the internal network, it would take 10-20 seconds to get to the password prompt.
+Make sure that ~/.ssh/config permissions are read-only for group/others, write only for user.

@@ -1,0 +1,10 @@
+If they can see the data you are wanting to capture then craft your own version (it's not hard, I have done so myself).
+Also, to identify that as Bob's phone it helps if you already know that the MAC is fd:63:9a:a2:33:16
+Arpwatch is probably a better way to do it.  It uses the same pcap library that tcpdump does to capture packets, and only looks for ARPs.  It logs new MAC/IP pairings, and can be configured to send e-mails.  The first time it runs, all pairings are new to it, so you'll probably get reports on several devices.
+This doesn't work so well when talking about wired devices connected to a switch, but for a home wireless network it should work just fine.
+Since I use my Pi as the router with isc-dhcp-server, I run a script to watch the /var/lib/dhcp/dhcpd.leases file. For IPv6 environments radvd can be monitored, and if your environment have an abundance of Apple devices you can also use avahi-daemon to do this.
+Those are just some basic examples but I'm not aware of anything that passively listens for other devices on the network.
+The Pi is not the DHCP server or router by any means, just another device connected to the network. Can it listen for device names? MAC addresses? Device manufacturers?
+I'm hoping to utilize another Pi as part of a larger home automation project but I didn't know if it was feasible for a Raspberry Pi to essentially "listen" for particular devices to join the same local network that it is on? 
+One way to do it may be to use a packet sniffer to watch for the BOOTP/DHCP request the device makes when it attempts to find a DHCP server.  Here's sample output from tcpdump:
+If it has to do with wifi, then kismet is your very bestest friend indeed. You will be able to see the devices, when they connect, what they connect to, regardless of whether it is your own device or your neighbour's or your neighbour's cat's uncle's wireless necklace.

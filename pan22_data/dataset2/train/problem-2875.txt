@@ -1,0 +1,12 @@
+I've used GB NICs on Oracle databases talking to SAN/NAS arrays for years using iSCSI with no performance problems.  I've been quite surprised at how little traffic really flows.  Little enough that I'm having a tough time letting my vendor sell me more NICs.
+Where you do have to fear is throughput. 3G SAS is faster than 1Gb Ethernet, that's all there is to it. However, for highly randomized workloads you may not be pushing even 1Gb on SAS. It all depends. 
+Currently we run a rack-mount white-box server using commodity hardware, and ESXi 4 as the hypervisor to power 9 VM's for internal development/DC/Exchange etc.
+I've also used VMware over NFS in a similar fashion for more guests spread across a few servers than you are using, again with little troubles.
+We are looking to use a SAN for storage, and have come up with a network diagram which allows us to use the spare ethernet port on the physical server to attach to another server - which is proposed to be used by the SAN.
+My current config with ESXi is running 17 (soon to likely be 18 later tonight) over NFS on a single redundant GB link.
+iSCSI is a method VMWare certifies solutions for, so it's good enough. Whether or not it's good enough in your exact use-case we can't tell from here. VM workloads tend to be very highly random, and storage capabilities expand by number of disk spindles more than they do raw capacity. If you SAN has more actual disks than the direct-attach storage you're using now, you shouldn't have to fear there.
+I've had good luck with iSCSI and moderate workloads, but of course whether or not the single gigabit connection will be able to keep up with your environment is not something we'll be able to help you determine.
+With the virtual machines looking a bit like this (onbviously the connection between pfSense and eth1 would be removed if the top server was a SAN ):
+SAN over Ethernet is very much doable. But the answer to the question that would it succeed in your environment would be subject your disk usage. If you requirement is disk intensive then it may not suffice.
+The question is, is an ethernet port sufficient for this application? It is a gigabit ethernet port. I have used fibre in the past for this, but not ethernet.
+The one glaring omission I noticed immediately with your plan is that, by only using a single port for your storage, you have no option for failover or load balancing. Of course, if you only have a single-head SAN (which seems to be the case), you have a single point of failure there as well.

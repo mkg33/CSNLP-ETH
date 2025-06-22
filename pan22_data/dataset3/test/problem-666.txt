@@ -1,0 +1,19 @@
+Yep, RAID is the wrong technology to use in this scenario.
+Check mdadm(8) for "write-intent bitmap" -- basically, it's a way for mdadm to remember which blocks are in sync, and only resync those that it doesn't know are up to date.
+You also get the ability to mask local disk errors -- if the local disk fails, DRBD can serve blocks from the remote disk so that as far as the OS knows it still has a fully functional disk.
+The RAID is managed by server 1 and the drives are in 2 different servers.
+My problem with this is that it causes a FULL RESYNC of 500GB over the network.
+Would I be better off with rsync because all I need is just a backup copy of whatever data I write/delete?
+I'm going to suggest something other than DRBD.. and that's GlusterFS.
+The only downside is it's FUSE based, but in recent RHEL/CentOS kernels this is fine.
+The RAID works great once I get it setup, however, at random times the connection seems to get dropped and mdadm marks it as faulty and even though I use nbd-client with the -persist option; mdadm refuses to see the drive as good.
+I suggest this because rsync, supposedly, only transfers the delta (or changed) data instead of what mdadm seems to be doing.
+Seconding the suggestion to use DRBD, because this is exactly the scenario for which it was designed.
+The only way to get this disconnect drive back into the RAID array is to:
+Is there a way to tell mdadm not to complete a full resync because it does complete a resync before it disconnects so I can't see a good reason for it to perform a FULL resync?
+DRBD also has the necessary infrastructure to manage failover and consistency in ways that are superior to using a simple software RAID solution.
+It's got a whole bunch of different storage mechansims, you can simulate RAID across multiple block devices, by striping across them, or mirroring, or having a RAID-5 like array structure.
+Whilst I would never in my right mind consider doing network RAID 1 over NBD, and am a massive fan of DRBD for all things "HA storage", there is one point in your question that is applicable to other mdadm situations.
+You want to either go with rsync or look at some of the distributed file systems that are being developed.
+In your situation I'd still use DRBD, but for large local RAID sets, it can help a lot after a crash, too.
+(I don't work for gluster, but I do use it on some large-scale installations, and it's a damn good network filesystem.)

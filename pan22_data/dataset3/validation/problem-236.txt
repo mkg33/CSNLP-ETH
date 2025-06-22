@@ -1,0 +1,13 @@
+Just add -r or -o ro to the mount options to make it read-only.
+I'm trying to back up an LVM volume using Duplicity (note: not just the file contents of the volume, but the actual volume itself, byte-for-byte).
+The best way I've so far found is to dd all the data on the LVM volume to a temporary file, include that file in the backup set, and delete it after the backup is made.
+Duplicity will backup the block special file the same way tar or rsync does.
+In other words, I don't want to mount a file as a block device: instead, I want to 'mount' a block device as a regular (read-only) binary file — one that Duplicity will then read from and back up for me.
+For example, with a folder mountpoint, you could call diskfile /dev/dm-0 mountpoint, and then mountpoint/dm-0 will be a regular file with the same contents as /dev/dm-0.
+This seems horribly inefficient, though: I'm needlessly thrashing the disk and duplicating all the data.
+They can be read by any program – after all, dd uses just the standard open() and read() functions to create the image.
+But that's probably out of the scope of this question.
+There is a software project called diskfile, a FUSE filesystem which exposes block devices as regular readonly files.
+The only solution that comes to mind would be to write a fuse filesystem to presents all of your block devices as regular files.
+What would seem to be needed is a way to do essentially the opposite of mount -o loop.
+It's not that duplicity has special treatment for block devices, it sees them for what they are, "block special files".

@@ -1,0 +1,5 @@
+It's possible that your replication has been done programmatically, read "manually", as in code. You have no choice but to manually re-sync everything.
+Before you try anything else, check if DB 2 is a replication slave of DB 1. Execute "SHOW SLAVE STATUS" on DB 2. If it gives you a result, it is likely, that an error occured, that stopped the replication.
+To dig deeper, I recommend reading the MySQL manual, especially the chapter about replication setups: MySQL 5.0 Replication 
+You need to first confirm if DB 2 only contains a subset of the DB 1 data, or whether both server contains records that the other doesn't (i.e. DB 1 is missing data also).  If this is the case, then remove the replication, wipe DB 2, and start again, doing it properly this time...
+If the "running" columns show "No" and "seconds_behind_master" is greater than just a few seconds, check for value in "last_error". It should give you an idea of where the error occured. Try to fix it (by modifying the data on DB 2) and give it a new shot by running "START SLAVE" on DB 2. Check "SHOW SLAVE STATUS" immediately afterwards.

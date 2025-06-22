@@ -1,0 +1,19 @@
+If you are sending to email accounts on servers you don't control then your alert emails may get dropped as spam unless you setup your DNS mx/spf records appropriately and configure your server correctly.
+Basically I'd like to use this server to only send emails as alert messages, not receiving any external emails.
+It will prevent/alert you to bruteforce attacks against your server.
+Also you should think about setting up Mx Toolbox mointoring it's free and alerts you to problems with your email server.
+I've already set up a firewall, but not very sure what to do in this case.
+If you are not expecting to receive email via SMTP, then you can either (a) block port 25 on your firewall, or (b) configure your MTA so that it is not listening for incoming connections on port 25.
+From the origination address you are on a private network and I assume the destination is on the same network too.
+Maybe I'm missing something here but these are my thoughts...
+If you aren't an open relay and the malicious person doesn't know the username and password to an email account, then is how an email server is supposed to work.
+it sits between the internet and the smtp server) you are fine, as it can make outgoing connections to its smtp forwarder without any incoming requests reaching it.
+Setting up a firewall is the first step to securing your server.
+The latter choice is in many ways a better solution, but exactly how you accomplish that depends on your MTA.
+The firewall will allow (if it is a simple kind) all outbound connections, with replies assumed, but not allow any incoming connections on port 25.
+It looks like you're running Postfix, so this might help:
+As an alternative you could still block port 25 inbound and use a properly configured email server as a relay for the emails from the application server.
+This is not bad as long as the connection was not made from outside of the firewall.
+http://www.postfix.org/postconf.5.html#inet_interfaces
+The next would be making sure it isn't an open relay, which means that spammer can't use your Mail Server to send mail out of your server without, an account on your server.
+This would work if you are only interested in sending alerts to email accounts on email servers you control.

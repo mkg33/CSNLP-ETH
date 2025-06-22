@@ -1,0 +1,14 @@
+At a count of 0 the query takes only a few milliseconds but as soon as the count starts increasing the time it takes to do the same query rises to when Im on a count of 170003 for example the query takes over 1 second...
+@count starts at 0 and works its way up to the number of users in the database.
+MySQL will then do a full table scan, as indicated by the expression ALL in the EXPLAIN plan.
+Depending on the operations you perform, and the resources available, what might happen is that your table is kicked out of the buffer cache after every read you perform on it, and then loaded again and so on.
+I would create a temp table with all the email addresses, treating it like an array but accessing it like a table.
+This is because the engine could not know that you need the table repeatedly.
+I have an alternative that is a little unorthodox.
+When the Query Optimizer sees too many rows to have to process, it decide to "throw indexes under the bus".
+In a stored procedure I need to loop over every user in the table and preform some other queries and I noticed as it gets further in the loop the queires take longer and longer to preform.
+What I would expect to take a few hours is now taking days...
+Is doing it the two queries the only quick way of doing this?
+I have found that splitting the query into two is quicker:
+Usually, it is recommended to retrieve rows by cursors.
+To loop over one row at a time I am using this query:

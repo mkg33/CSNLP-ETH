@@ -1,0 +1,30 @@
+That should at least be enough to get you started.
+Once created, open a cmd prompt on a desktop machine, and type:
+While not exactly what you're after, why not use a URL shortener on your internal servers?
+So apparently you need a combo of DNS CNAME and HTTP Redirects.
+The URL shortener would rewrite that to your necessary internal URL.
+How about creating a DNS entry for "expenses.mycompany.com" that sends to a webserver with a redirect rule of expenses.mycompany.com -> mycompany.com/expenses?
+You mention that this is a windows environment, but don't tell us what the websites are hosted on.
+It means a few extra DNS entries, and some virtual hosts on the webserver that do nothing but redirect to the "real" URLs?
+Someone over at brighthub wrote a howto do this for a internal helpdesk url shortcut.
+The IP address of the web address will not change amongst the different 'shortcuts'... i.e:
+Then you can setup a virtual host on your server that hosts the URL shortener, and do something like:
+When a user types expenses in the browser address bar and presses enter, I want the browser to automatically direct to the specified address as above.
+I'm not sure if I worded the question correctly to be honest but basically what I want to do is:
+Repeat for any other "quick " names you want to use.
+I hope I have put my question forward appropriately :-)
+DNS relates a DNS name to an IP address in the case of an A record.
+As long as clients have a DNS suffix of "mycompany.com" set they will convert "expenses" into expenses.mycompany.com, and hit that webserver.
+What you can do is setup a proxy server that all clients must use to access the web and you can do it that way.
+I'm guessing Windows too, but assuming 2008 as you don't state.
+The other alternative is as mfarver says, you'll need to setup a DNS record pointing to a host that reads the host header requests, and redirects appropriately.
+If you have IIS installed on the server hosting "domain.com" and all the sub folders, you will want to install the URL Rewrite module (details can be found here).
+<meta http-equiv="Refresh" content="0;URL=http://www.mydomain.com/newpage.html"/>
+These can be CNAME/Alias records pointing to the domain.com entry.
+This would need to be done via a URL Rewrite rule in IIS (or apache if you want to run it on windows), or some code to do all the work for you.
+The response for both ping statements should have the same IP address.
+Or just have a www proxy before your webserver that proxies requests based on yours to the correct IP
+Once installed, you will need to create DNS entries for "Expenses", and "tracker".
+Once DNS has been confirmed working, you will need to go to the web server hosting domain.com, and create an IIS rewrite rule that looks something like this:
+They both do essentially the same thing as the URL shortener.
+When a user types in something like Expenses in the URL bar of a browser, I want the browser to be directed to a specific web address (very very similar to how OpenDNS shortcuts work)

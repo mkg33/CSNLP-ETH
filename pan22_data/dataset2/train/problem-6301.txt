@@ -1,0 +1,9 @@
+Strangely the most sane answer much well be NFS. We have used NFS on Amazon's cloud. It may not scale as well as some file systems but the simplicity should not me overlooked. A single name space is probably not worth the effort it would take to implement.
+There is an extension called HekaFS, which also adds SSL and more advanced Authentification mechanisms, which is probably interesting for cloud computing. 
+With Lustre you have to have a special kernel on the servers, and I would only have the servers being servers and nothing else.
+i'd agree with @larsks in that NFS is the best option; set up some iSCSI targets, NFS, done. this will scale to about 5-10 nodes; YMMV based on I/O, network capability, etc. (alternatively, set up iSCSI with multipath I/O support).
+GlusterFS would seem like the ideal solution to me. To the guy who claims that Gluster takes lots of effort to set up I've got to say that he's probably never tried. As of Gluster 3.2 the configuration utilities are pretty awesome and it takes 2 or 3 commands to get a gluster volume up and sharing on the network. Mounting gluster volumes is equally simple.
+MooseFS (Distributed File System) fits to your requirements. It is scalable and works well on Ubuntu. It might also be useful for you to see how to install install/update MooseFS from officially supported repository on Ubuntu.
+On the plus side it also gives you a lot more flexibility than NFS. It does striping, relication, georeplication, is of course POSIX compliant and so on.
+If you need something about 20+ nodes, you may want to investigate Ceph. Lustre is promising and stable, but is an (F/OSS) Oracle product and I have personal dislikes against Oracle. :)
+While I haven't personally implemented it anywhere in our systems, I have looked pretty extensively at Gluster. I know a few people at some large sites that use this and it apparently works really well. They use it in production for some heavy duty HPC applications.

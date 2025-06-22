@@ -1,0 +1,19 @@
+Let $G$ be a weighted undirected graph with $n$ nodes and $m$ edges.
+It can be shown that the size of $\Gamma(u)$ is $O(n)$, in expectation.
+Let $\Gamma(u) = B(u) \cup N(B(u))$, where $B(u)$ is the ball of node $u$ and $N(B(u))$ is the set of neighbors of nodes in $B(u)$.
+Sample $\alpha = O(m/n)$ nodes uniform randomly; call these landmark nodes.
+In terms of query time, note that growing balls takes $O(n)$ time for a $m/n$-degree bounded graph; constructing $\Gamma(u)$ and $\Gamma(v)$ given respective balls takes $O(n)$ time (since neighbors are stored within the data structure); and checking whether $\Gamma(u) \cap \Gamma(v)$ is empty or not also takes $O(n)$ time.
+For each node $u$, store its closest landmark node $\ell(u)$.
+It can be shown that the size of each ball is $O(n^2/m)$, in expectation.
+The above bounds are in expectation; I think it is easy to derandomize the construction.
+R. Agarwal, P. B. Godfrey, S. Har-Peled, Approximate distance queries and compact routing in sparse graphs, INFOCOM 2011
+So, assume that $G$ is a $m/n$-degree bounded graph.
+Unfortunately, this technique does not seem to allow getting approximation better than $2$.
+If you are happy with approximate distances, here is a way to get a $2$-approximation.
+It is shown in the following paper that for approximate distance queries, designing data structures for graphs with $m$ edges is no harder than graphs in which each node has degree bounded by $m/n$:
+At a high level, you are asking whether one can preprocess a graph such that shortest path queries become independent of the density of the graph, without using much extra space -- interesting, but as you say, unresolved.
+Also, store the graph within the data structure, say as an adjacency list.
+When queried for distance between $u$ and $v$, grow balls around both nodes -- ball of node $w$ is defined as the set of nodes that are strictly closer to $w$ than to its closest landmark node, say $\ell(w)$.
+During the preprocessing phase, store the distance from each landmark node to each other node in the graph; this requires $O(m)$ space.
+Answering the query: if $\Gamma(u) \cap \Gamma(v) \neq \emptyset$, return $\min_{x \in \Gamma(u) \cap \Gamma(v)} \{d(u, x) + d(v, x)\}$; else if $d(u, \ell(u)) \leq d(v, \ell(v))$, return $d(u, \ell(u)) + d(\ell(u), v)$; else return $d(v, \ell(v)) + d(\ell(v), u)$.
+It is easy to show that this is a $2$-approximation.

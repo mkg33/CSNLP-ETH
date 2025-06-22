@@ -1,0 +1,18 @@
+Caching proxy servers can respond on behalf of the central servers if they've previously seen a reject, or if the central server is offline and they've previously seen an accept.
+They're sometimes useful as aggregators, or in federations, but on their own don't really do much in a pass-through configuration.
+In an ISP environment a large portion of the traffic is made up of rejects, as clients will keep re-authenticating.
+If a NAS starts misbehaving and floods the authentication servers with traffic, there's a greater chance of the system being overwhelmed.
+Each FreeRADIUS instance should be able to handle around 20,000-30,000 auth/s on moderate hardware against an OpenLDAP instance running MDB.
+If there are disruption to the network links between the NAS and the central servers the NAS will be unable to authenticate users.
+Upgrading, monitoring, fixing issues with the database are simpler to do with fewer instances.
+You will have to manage each of those instances though (use ansible or salt), and correct faults should issues arise.
+The servers in this configuration represent a single point of failure.
+The advantage of a distributed architecture with a locally replicated copy of the data, is redundancy, and reduced latency.
+A pair of servers would likely to be sufficient to handle the load of up to a million users.
+There's increased hardware cost of having to place a server next to each NAS in a 'shared-fate' (if possible) sort of configuration.
+Synchronisation is not difficult to achieve, OpenLDAP's syncrepl protocol does a good job of hub and spoke, or even mesh topologies.
+It will perform partial and full resyncs of data as required.
+You've not really provided enough info about the NAS to say if that would actually be appropriate.
+New instances should synchronize to the master as they start for the first time.
+Caching proxy servers can be useful as they take some of the load off the authentication servers.
+The advantage of having a single (cluster) of RADIUS servers, behind redundant load balancers (hint hint), is simplified management.

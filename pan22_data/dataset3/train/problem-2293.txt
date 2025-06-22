@@ -1,0 +1,32 @@
+Then resized the partition via parted (originally it was started from 742 to 750):
+(When replicating your root filesystem, you should kill everything except sshd, and ideally be in single-user mode.
+I know how install Debian with LVM at beginning, but in this case I can't install the system at beginning because the provider gets me a server with remote access and the system installed in this way.
+Once everything was there then the entry for the root filesystem in /media/etc/fstab had to be changed as well:
+After shrinking your existing partitions, you can create an LVM physical volume in the freed space, a volume group and logical volumes inside it.
+As a safty deposit I also added the panic=10 parameter and didn't change the default boot entry in the header.
+Considering the ext4 is not shrinkable the only way was to reuse the swap partition as temporary root.
+Important to use the /dev/mapper/ path at this time.
+Almost there, the last and let say the most unwanted part without console access was to modify the /boot/grub/grub.conf:
+Instead of that I went for a try with telling the grub to boot with the new setting only one time and in case of failure the original entry could work:
+Next step was to copy the root to the temporary place:
+Context: today I got online a dedicated server installed with physical partition scheme instead of LVM.
+Now I want to replace that partitions with LVM partitions.
+That said, if you have a brand new installation with no data to lose, why not try it?
+How can I change that partitions using only an ssh connection and possibly other remote server where to put some temporal data?
+I found a tutorial to remotely convert a Linux system to RAID1; the steps you would attempt for LVM would be analogous.
+Just to be on the safe side: insmod lvm was added along with the dolvm parameter for the kernel and the root path was also changed to root=/dev/mapper/VolGroup00-tmproot.
+It was OK for me at the first time so I repeated the whole procedure with creating a new volume group on top of the original root partition and finally I got the root at the right place using LVM.
+Then, you would prepare an initrd with LVM support and tell GRUB to boot into the new system, as described in Warren Togami's tutorial.
+Once you do that, it's a simple matter to delete the old filesystems using parted and growing the LVM volumes.
+Nothing is impossible in Linux, but you would have to be determined and crazy to attempt what you describe.
+Due to the nature of not having console access the final goal was the convert the existing root partition to LVM.
+If you have a remote "serial" console and virtual power switch, that could help a bit.
+Assuming you don't have a second disk on the server, you could shrink the existing partitions using parted.
+Keep in mind that if you only have SSH access, there's a good chance that you will lose access to the server if you make a mistake.
+First, let's consider the necessity of temporary storage space.
+He could setup an intermediate rescue system into the (previously disabled) swap partition (nerve wrecking work to do if you dont have a RAC in the machine) and work from there.
+Of course, this requires that your boot and root partitions use less than half of the disk, and they must use a shrinkable filesystem.
+You will probably have to use rsync rather than dd since you are replicating a mounted filesystem.)
+Also, online resize tools exist for certain filesystems, and then shrinking the partition afterwards and rebooting is a case of KWYD but possible.
+I also decided to set up the temporary root with LVM to be sure the process can work in the right way.
+I have a server with Debian that have 3 physical partitions covering all the disk: boot, root y swap.

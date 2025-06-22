@@ -1,0 +1,15 @@
+Fortunately my number of videos without the date modified in the filename is low enough I can change those manually, won't take too long.
+It doesn't have all the advanced settings like HandBrake but it does the job (also using ffmpeg) and retains the metadata I need.
+The first and best is to use Advanced Renamer's timestamp method, which CAN change file date modified, created, and accessed, not just the file name itself.
+Unfortunately it seems handbrake can't do it on its own, but similarly to the ffmpeg example, the timestamps can be copied from the original after compression by using the touch unix command:
+I found an easier way to do this, using a different software called Adapter: http://www.macroplant.com/adapter/
+In its current state it only works if the filename is structured exactly as it is in that example.
+That kind of internal metadata Handbrake already does fine with anyways.
+this will set the timestamp on the compressed file to the same as the given reference file.
+This takes the metadata and FileModifyDate from input.mp4 and copies it to output.mp4.
+After much searching, I mostly gave up on using old video files with correct date created/modified to overwrite the date created/modified of my new Handbrake-compressed video files.
+Since most of my videos have the date/time in the filename, I experimented and got two methods to work.
+To automate this as I had a large number of files to transcode, I created a tool called Shrinkwrap that first transcodes with FFmpeg (I moved away from HandBrake because of needing to preserve more metadata), then recovers the modification timestamp with exiftool.
+If you mean the file-level modification time, then I had the same problem, and was able to recover it with exiftool.
+I tried using ffmpeg, but its map_metadata command only changes data inside the file, not the date modified, created of the file itself.
+I also found a powershell script https://www.michaelmiklis.de/set-creation-and-modification-date-from-filename/ which could be adapted by a programmer for other file name/date formats.

@@ -1,0 +1,6 @@
+How are the MD devices configured? If you use a RAID1 (mirroring) or Raid5 (striped with parity), you will loose capacity. A RAID1 will have half the capacity of all disks, and a RAID5 will have the capacity of n-1 disks. 
+Should shed more light on what is going on, giving you the exact reported capacity of your drives that the OS sees. How is your RAID set up?
+It seems like sofware raid (/dev/md* devices belongs to linux md raid). Probably there is something like raid5. Take a look to /proc/mdstat.
+I have a CentOS server with 4 disks, each with 1TB that totals to 3.636 TB of usable space (according to http://www.jonathanlaliberte.com/2007/12/18/calculating-actual-hard-disk-space/).
+The usable space calculation on the website appears to just convert between GB and GiB, without any consideration for file system structures, reserved space, your RAID arrays (and their overhead) and so on.  Furthermore, it's entirely possible that you have unpartitioned space on the drives or other partitions that aren't mounted.
+Check cat /proc/partitions to see the actual partition and device size information (in 1KiB blocks) not counting the overhead.

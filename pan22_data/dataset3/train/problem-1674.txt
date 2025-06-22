@@ -1,0 +1,15 @@
+From the look of your .bashrc and .profile, the shells inside tmux are overriding the 'default-terminal' setting in your tmux conf.
+Tmux is relatively picky about having a terminal set correctly.
+If you can, set the term value in gnome-terminal's configuration, not in your .bashrc.
+while using vim within tmux I can see that 256 color support is enabled.
+Based on bloy's answer and current content of my ~/.profile (actually, it's the same as winchendonsprings') I've solved my problem as follows:
+As explained here, disable Background Color Erase (BCE) by clearing the t_ut terminal option (run :set t_ut= in Vim and then press Control+L to refresh the terminal's display) so that color schemes work properly when Vim is used inside tmux and GNU screen.
+You could add it to your ~/.bash_profile or other profile to always be set on start.
+However changing the colorscheme in vim while in tmux will change the colorscheme on a per line basis but not the entire background.
+My original colorscheme is solarized dark and then after running :colorscheme molokai you see what happens.
+A quick fix is to run the following in the terminal.
+Tmux REALLY wants the terminal set to screen or screen-256color
+Here is a snippet of the my .vimrc file for example.
+Any ideas how I can get a full colorscheme change in vim?
+Logic is simple: if we're not inside tmux session, then use xterm (colored or not).
+Failing that, surround those settings with a check for "screen" or "screen-256color" TERM, and don't reset them in that case.

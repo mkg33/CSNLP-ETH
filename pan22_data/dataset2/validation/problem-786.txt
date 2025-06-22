@@ -1,0 +1,9 @@
+In places like schools and universities they register users based on their mac address, Tools like arpwatch have a database of static ARP entries. It is best to audit your network space prior to building an MAC address database. This is run on the NAT/DHCP gateway.
+I'd look at http://search.cpan.org/~jhthorsen/Net-ISC-DHCPd/lib/Net/ISC/DHCPd.pm which seems to have modules for reading both of those types of files.
+DHCP should not be depended on for network user management. What happens if someone picks a static IP? 
+I've no idea if or how well this works but it appears to collect some of the data you require so it could be a start.
+In our case, we have a perl script that reads a specially formatted source file and generates NIS, DNS (forward AND backward), and DHCP tables automatically, distributes them, and notifies the serving daemons.  This means we have one stop to clean up after ourselves and/or add something new.
+You are cleaning up your DNS (and, if applicable, NIS) when old computers are decommissioned, right?  So add a note to that process to clean up DHCP reservations at the same time.
+If you mean dynamic allocation of leases, you don't have to do anything.  The ISC dhcpd tries to hold on to previously assigned leases as long as possible until the lease pool is empty.  It will then scavenge from expired (and therefore currently unused) leases.
+I think you could put together a pretty simple perl script that would compare /etc/dhcpd.conf and /var/lib/dhcp/dhcpd.leases
+Are there any good FOSS tools to do an audit of reserved IPs used in a Linux/UNIX ISC DHCPd environment?  I'm trying to ensure that we do not have stale IP addresses reserved when old MAC addresses are pulled.

@@ -1,0 +1,15 @@
+There are what looks like 5 active .conf files in /conf, including httpd.conf.
+I'm looking at a CentOS 6.5 server with a webframework installed that has been added to over the years by many.
+Does Apache load everything from /conf or is there a list specified somewhere?
+So, obviously, it includes everything in "conf.d" that looks like "*.conf".
+You can use apachectl -t or apachectl configtest to get some idea of whether or not your configuration is going to cause trouble.
+and that grabs all the files in that directory, but without any specific order applied that I'm aware of, and so what about the /conf (no .d) directory?
+Is there a setting that states the load order or are they just taken from a-z?
+In what order does Apache load the files, alphabetically?
+Does a file that does not end in .conf get included?
+For example if I name something myconfig.conf.old will Apache skip it?
+Apache loads extra configuration based on the "Include" directive.
+In the case of Include conf.d/*.conf apache will load all files with names ending in .conf.
+To make it even more insane, you can add an arbitrary number of directories with "include" all of which could contain roughly the same config files, that all would happily override each other at start up...And then themselves be over-ridden by the .htaccess file in various hosted directories.
+I'm not the server admin, I'm a developer and the problem lies in the paths for uploading files to a /Temp dir, where I have checked that the path specified is correct for the files I myself am concerned with.
+As near as I can tell, httpd.conf is first, followed by the directories in the order in which they are included and then alphabetically from there.

@@ -1,0 +1,11 @@
+I'm not a C# expert by any means, but in languages that support this I'd use first class functions.
+So you can basically remove them from the if/else statement and only write them once.
+If I take newHeaderHeight = HeaderViewHeightConstraint.Constant - offsetDifference and expand offsetDifference I get: newHeaderHeight = HeaderViewHeightConstraint.Constant - (offset - _previousOffset) which is newHeaderHeight = HeaderViewHeightConstraint.Constant - offset + _previousOffset
+I think you can get something similar using delegates in C#.
+Your if/else block can then be replaced with this:
+The second part is a bit more tricky to refactor because you compare it with min values in one condition and max values in the other.
+To combine the second block together you can write a Clamp method that makes sure a value is between two other values, like this:
+It would however still refactor each ternary operator statement with Math.Min() or Math.Max() (careful not to get them the other way round).
+You'll probably have to have another value that holds the min/max values depending on the branch.
+If I then go to the else statement and expand newHeaderHeight = (HeaderViewHeightConstraint.Constant + offsetDifference); I get newHeaderHeight = HeaderViewHeightConstraint.Constant + (_previousOffset - offset); which is newHeaderHeight = HeaderViewHeightConstraint.Constant + _previousOffset - offset;
+As D. Jurcau mentioned, you can move that first block of code outside of the if and else and only write it once, and you can handle the min or max checks with Math.Min() and Math.Max().

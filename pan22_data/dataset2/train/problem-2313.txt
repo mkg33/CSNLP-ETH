@@ -1,0 +1,9 @@
+http://www.articlesbase.com/networks-articles/how-to-configure-windows-server-as-a-ntp-server-108481.html
+I think this is what you're looking for. It describes how to configure the W32Time service to provide NTP service to other clients. Scroll down to the section titled "Configuring the Windows Time service to use an external time source" since you're probably going to sync to another NTP server instead of relying on the server's internal clock.
+We have a number of webservers, application servers and database servers that we want to keep in sync. Some of these servers are not connected to the Internet so accessing external time sources is not an option.
+Are these all on a Windows Domain?  I think if they are, you can set the source of the PDC emulator, and the rest will stay in sync with that.
+You can download NTP software for free, configure you non windows machines to point to this ntp source.
+The ‘Special Poll Interval’ registry entry defines the period in seconds that the Windows 2003 machine should poll the NTP server. A recommended value is 900 seconds, which equates to every 15 minutes.
+So, what we'd like to do is configure one server to be the primary time source - it will stay in touch with time.windows.com using the Windows Time service. Which is 'out-of-the-box' default, so fine. We'd then like to configure the other servers to get their time from it.
+The ‘NTP Server’ parameter is used to provide a list of IP addresses or DNS names, separated by a space, of NTP servers that the Windows 2003 machine can synchronise to. 
+This article describes how to make one of your servers a time server and you can then change the TimeServer setting from the windows clock to this server. The key steps are.

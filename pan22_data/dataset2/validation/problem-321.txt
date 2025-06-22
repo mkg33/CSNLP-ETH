@@ -1,0 +1,12 @@
+I have a lot of threads that writing to DB some data in two tables. tbl_raw_data and  tbl_parsed_data where tbl_parsed_data have foreign key to tbl_raw_data.
+Im using SQL server, the threads are coming from TomEE server that writes data that came via HTTP requests via JDBC and JPA (ORM).
+An ORM requires information about the first write (SCOPE_IDENTITY or such) to complete the second write. This means 2 (with an OUTPUT clause) or 3 database (with SELECT SCOPE_IDENTITY) calls in general in a client side transaction.
+While checking the options on improving the writes (asuming reading time is nu so important) a friend of mine told me that I need to check the Transaction Isolation Level that is appropriate for my logic.
+If you want more performance, then the best concept stored procedure to do an atomic write (in a transaction) to both tables in one database call. This means 50% or 66% reduction in database calls
+Bulk writes indeed are fast but will not be logged. If that is not what you want, consider procedure calls with table valued parameters. That way we have realised significant write improvements.
+The only isolation level that influences writes is SNAPSHOT (and the READ_COMMITTED_SNAPSHOT). Snapshot isolation requires row versioning and row versioning requires extra writes. Read Understanding Row Versioning-Based Isolation Levels.
+after reading some articles regarding this issue what I understand is that this property influence reading.
+Now about the 'super-fast' part of the question: the 'super-fast' option for INSERT is the bulk insert path. This requires a client API that understands bulk-insert: IRowsetFastLoad in OleDB, ODBC send_row or managed .Net SqlBulkCopy, EnableBulkLoad=true for JDBC. You do not want 'lots of threads running lots of connections', you want one thread doing lots of inserts, in bulk API mode. Use a producer-consumer pattern in the app to funnel all your app threads to one single bulk writing thread.
+Is there a Transaction Isolation Level that affect writing? Which isolation level is "best" for lots of Threads running on lots of connections?
+Then there the design: are you using IDENTITY columns or GUIDs or Hibernate style nvarchar keys? Has the ORM designed the database for you?
+For example, should you be using SSDs for your transaction log files: the drive hosting the log files determines overall write speed because of write ahead logging.

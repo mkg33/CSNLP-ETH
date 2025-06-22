@@ -1,0 +1,8 @@
+I've been using extended events to capture blocked-process reports, but these show that the blocking-process seems to be idle, with the input buffer being use [_dummy].
+Is there anything else which could cause an idle connection (part of a .NET connection pool) to block other queries?
+The application connecting to this server uses multiple databases, so _dummy is a blank database which connection pools open connections to; the database context is switched as required.
+I have a busy, transactional SQL Server (2012) which is having intermittent problems with blocking (every couple of days or so).
+To try and resolve that I changed the user connection settings so that XACT_ABORT is on by default, thinking that this would cause timed out transaction to rollback automatically, but this doesn't seem to have resolved the problem.
+Note: I'm also monitoring deadlocks and the blocked-processes are sometimes blocked for several minutes but do not become deadlocks.
+Is there any way I can capture more information about the last query run on the blocking-process?
+What I thought was happening was that a query was timing out after obtaining locks, not rolling back the transaction and the connection was being released by the application back to the connection pool, which was resetting the database context before problems occurred due to the open transaction.

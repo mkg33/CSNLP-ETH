@@ -1,0 +1,8 @@
+From your description, these reference tables are possibly slowly changing dimensions and with the correct DWH design, you shouldn't need to update your denormalised data in the warehouse after a change to a dimension, that change should be handled automatically.
+You need to properly define your requirements around performance, data latency (how far behind can the DWH be), historical data (should your fact table records reflect the dimension details at the time of insert or the current state of the dimension), reporting and several other factors which then inform your DWH and ETL design.
+You may also need to re-evaluate the design of your data warehouse.
+When a change is encountered, you can pull in the changed rows only, update your data warehouse and kick off your process for fixing the denormalised data in your data warehouse.
+There isn't really a complete answer to your problem because there are a lot of unknowns that impact design decisions for both your data warehouse and ETL process.
+If you're using a version and edition that supports Change Data Capture or Change Tracking, these mechanisms would be better suited to monitoring for changes to your reference tables because they provide a lightweight solution for identifying only changed rows.
+You could implement CT or CDC on your reference tables and poll them frequently for changes.
+After the requirements are defined, you can start looking at technologies and architectures to meet these requirements.

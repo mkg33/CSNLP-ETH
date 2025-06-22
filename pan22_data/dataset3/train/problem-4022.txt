@@ -1,0 +1,14 @@
+You'd connect to your ssh server like myhost.com on port 221 or whatever port you want to access.
+Alternately, you could ssh into Server1 and from there access servers 2 & 3.
+This won't have anything to do with your web serving though.
+This is a grossly-simplified explanation, but what you want to do cannot be achieved without changing ports on the outside because the firewall that's in front of your 3 servers doesn't "care" what the hostname is; it only cares about IP addresses and ports and as such has no way of knowing what server it is that you want to connect to.
+You could tie each server's sshd to a different port and port forward the different ports to the correct IP.
+If you have one IP but want to SSH into three servers, you will most likely HAVE to have some compromise on the port.
+What I'd normally recommend is using port forwarding on your router to open three ports mapped to your internal server IP's, say port 220 goes to server1, port 221 goes to server2, and port 222 goes to server 3.
+On the server itself you can still keep the port at 22 for sshd as long as your router is mapping externalIP:220->server1:22 and so on.
+if your router's external IP-address is 172.16.45.56
+There might be an SSH daemon or reverse proxy out there that "understands" the SSH protocol enough to do this by hostname, but my guess is not (and perhaps someone well-versed in the SSH v2 protocol can elaborate).
+The simplest solution is to choose three port numbers and arrange port forwarding at your (cable/DSL) router.
+You're saying you have one server in the DMZ but it has an internal address, and you have one public address available and one server currently accessible.
+Now if you can burn a couple of extra public IP addresses, you can do 1:1 NAT (sometimes called "DMZ mode") so that server1, server2, server3 effectively have their own public IP addresses and then you can create server1.example.com to resolve to server1's NAT'ed public IP address and so on.
+From the internet you just SSH to 172.16:45.56 port 17022 say.

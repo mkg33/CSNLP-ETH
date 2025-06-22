@@ -1,0 +1,20 @@
+Otherwise you would have a request suddenly for a lot of memory and then your OS should start swapping before being able to give that memory to your program.
+The pages are not being used so they do not have to be in your RAM, so they get swapped.
+Read the rest of your top output, specifically the difference between the VIRT and RES will tell you how much of each process is currently swapped out.
+Linux will use part of your memory for caching and buffers, even if it's not full of running programs.
+This is partially to avoid to have to swap when it does get full.
+The default is 60, but many of the kernel developers think that on machines over 1GB memory or user desktops it should be zero.
+As for seeing what is swapped, you're theoretically able to tell from the output of top (by subtracting the virtual and resident memory columns, or using the swap column that does the same for you) but my system has 0 swap used and an apache2 process with 248m "Virtual Image", of which 9376k is supposedly "resident", leaving 239m "swapped".
+So if you set it to zero it will eat all your caches and buffers before thinking in swapping.
+Even if there's no application demands on your memory, Linux will swap out unused portions of processes "in advance" of actually needing to so that it can free that memory immediately when the time comes.
+I'm not sure if there's an actual way to identify which specific processes or parts of processes are actually in the swap file.
+You can adjust the tendency to do this by adjusting vm.swappiness (/proc/sys/vm/swappiness) per the instructions here.
+This behavior is controlled by the vm.swappiness sysctl.
+See also: http://www.kernel.org/doc/man-pages/online/pages/man5/proc.5.html
+You can also use this bash function to parse the /proc//stat file:
+This is great on servers (specially file servers or servers with high I/O) and low memory computers but it's bollocks on desktops.
+In Re: why swap is being used, your system will page out any infrequently accessed data to ensure that there is free RAM for new programs, disk caching, etc.
+Swap is used for pages in the memory that are not accessed often, even when you have tons of ram free it still swaps some programs.
+- For all the gory details you would have to read the swapping algorithm in the kernel source (probably not worth it).
+It is a value that the kernel will use to decide how happy it will be swapping programs to disk before destroying caches and buffers.
+Or at least it was supposed to work that way, as I said the only way to keep Linux from swapping completely on my laptop was turning off swap with swapoff.

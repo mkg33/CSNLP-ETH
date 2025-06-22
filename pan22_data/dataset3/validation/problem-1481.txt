@@ -1,0 +1,41 @@
+Merge a squashFS and a initrd into one single file (PXE booting)
+If getting the right kernel build parameters then it might fix their issues ....
+I have tried pxelinux.0 (2/9/2009) pxelinux.0 (10/6/2014) and gpxelinux.0 (10/6/2014) and all show the same issue.
+- After that, there should be a TFTP request for the filesystem.squashfs file.
+- will the bootloader successfully download the kernel and the initrd file from the TFTP server?
+- it may not handle the actual interface set-up after it has received the DHCP parameters: instead, it will pass them to a script, which is expected to use commands like "ifconfig", "ip" and/or "route" to set up the network interface according to the parameters received.
+In the case of booting from network, this includes initialization of the network interfaces.
+That means the kernel is failing to access the root filesystem - and with Clonezilla, the root filesystem is in the filesystem.squashfs file which is supposed to be downloaded by the initrd once the network interface has been configured.
+I am not very familiar with udhcpd, but it appears to be a very minimal DHCP client.
+What happens after that is determined by the combination of the code/scripts built into the initramfs/initrd file, and the boot options given to the kernel by the bootloader (most commonly using the APPEND keyword).
+If not, what is the actual TFTP request sent and which pathname it maps to in the filesystem of the TFTP server?
+But after some reseach I don't think it's the problem.
+Have you tried Clonezilla Live, a version of Clonezilla that is explicitly intended to be PXE netbootable?
+You are referring to https://bugs.busybox.net/show_bug.cgi?id=1963 which is now 7 years old information.
+So I need to build a kernel and so far all my attempts have ended with a panic.
+It is possible to compile a monolithic kernel that will automatically attempt to get itself an IP address using basic BOOTP/DHCP, but this is not the way it is usually done.
+The problem with troubleshooting network boot is that when something goes wrong at boot time, the Linux kernel and the associated utilities often spew out so much information that the first error messages get scrolled off the screen.
+"ifconfig eth0 up" or "ip link set eth0 up", depending on whether the old "ifconfig" configuration command or the newer "ip" is available)
+I was hoping someone could share a base conf that I could try and build from.
+Since there is no IP, then the boot process can not continue because it can not pull the squashfs file.
+You said your attempts have so far ended with a panic.
+No, there is no default kernel configuration for PXE booting.
+By monitoring the network traffic, you can get some hard facts:
+When I asked on Clonezilla and udchpd not working there was suggestion that the issue maybe the kernel, that was when I start to build a new one and saw the DHCP parameters.
+I think the one that comes with the live CD has issues pxe booting.
+Unable to TFTP clonezilla files from WDS' TFTP server during PXE boot
+- it may expect the network interface to be powered up ahead of time (e.g.
+This link https://bugs.busybox.net/show_bug.cgi?id=1963 explains what I am seeing.
+That would be udhcpd getting the network parameters.
+- after bootloader gets the kernel started, can you see another DHCP query?
+Have you monitored the network traffic with Wireshark or similar?
+(In full-featured Linux distributions, "ifup -a" is a common high-level command to initialize all network interfaces; in compact set-ups like Clonezilla the ifup command is usually not present.)
+And usually that first error message is the most important one: it is very likely that all the subsequent errors are consequences of that first failure.
+Is that file present at the correct pathname, and is the TFTP server allowed to send it?
+pxelinux or iPXE) which will download two files: the kernel and an initramfs/initrd file.
+I think these are related to my issue, but not my question.
+I am trying to build a kernel to pxe boot Clonezilla.
+I think you may have got unnecessarily fixated to the idea of building a kernel; it is very unlikely to be the root cause of your problem.
+If I run it from the command line, it say selecting address, but nevers set the interface.
+So do you know exactly what went wrong with your attempts?
+The initramfs/initrd file can contain kernel modules (to be loaded as necessary, on detection of matching hardware) and utilities needed for initialization of critical hardware so that the boot can proceed.

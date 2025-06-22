@@ -1,0 +1,63 @@
+More code use more cache, and as a result cache misses become more frequent.
+It seems to me that you are exercising premature optimization.
+These are all big systems, but you can definitely pull little tidbits that are useful for even small projects.
+You will probably find that your main loops for day/night are very similar and that only some specific systems will change, e.g.
+If you have an if statement that is run 1000 times per game loop, it is probably not worth it either unless you already done all the big things and still need better performance.
+If you don't want something to execute, remove it from the task list/graph, or simply don't add it in the first place if you're building the list/graph each frame.
+A worse consequence of trying to switch in different versions of a function is that it probably increases the code footprint.
+A switch statement, at a very low level, is extremely efficient at this.
+Structuring jobs/tasks in this way can have other maintainability benefits -- you're forced to more carefully consider your API boundaries and how data flows from system to system -- but on the other hand it's likely to be a performance loss for simple code, and the increase in complexity can be a burden on maintenance or introducing new programmers.
+Each of your special loops could be a single state.
+Assuming that the compiler hasn't already decided on a similar optimization (which is reasonably probable, but you never really know with compilers, they behave odd at times) this code will be way faster.
+Note that this will have far more overhead -- both in code size and in execution time -- than a switch or other branch-around mechanism, generally speaking.
+Note that benchmarking this stuff can be really hard, the performance of the exact piece of code that was "optimised" may be better while the performance of the whole application is worse as the extra cache misses may hit anywhere.
+Making multiple loops is likely just going to result in a lot of redundant code for no real gain.
+Function pointers can be a smart tool, but beware that your code when calling a function through a pointer needs to dereference that pointer.
+If it listens for EndDay and EndNight, it can change its active list of monsters to spawn from when it receives the event and doesn't need to check each loop iteration.
+The only way to eliminate checks is to use hardware interrupts.
+When the daytime thread reaches the top of the loop, the breakpoint triggers a software interrupt.
+It can emit a "EndDay" event that interested systems listen to.
+However, it does allow you to do more interesting things later: you can support parallel job execution, or even possibly distributed job execution (across a network, or across CPU and GPU, or other things of this nature); you could record info about what jobs executed for profiling and/or state changes for replay purposes.
+do collision checking -- and schedule them for the subsequent frame.
+Every state has some code that is run each iteration of your game loop, let's call it update.
+There's no reason to be afraid of if-checks at such top-level code (doing an if-check inside some inner loop run 100,000 times per frame is another story).
+In general, though, if you're just checking a few conditions each iteration of you main loop, you're fine.
+Each frame you would build the list of things you'd want to do for next frame, possibly including dependencies between the jobs (a task graph, loosely).
+You can now add new states and transitions much easier than with a bunch of hard-wired conditions everywhere.
+Your only worry should be whether the code is easy to understand and modify.
+That software interrupt then removes the breakpoint and puts the daytime thread to sleep, and makes the nighttime thread runnable.
+Now on each iteration of your loop, the current state's Update is called, then NewState is called, and if it returns a new state, the state is switched.
+The performance hit of a few extra misses may not be much, but if the gain from including the extra code in the first place wasn't a lot either the overall gain may in fact be a loss.
+Split your code up into logical modules to start and see how much flexibility that gains you.
+As a possible alternative, you might consider a job system.
+maybe your MonsterSpawner changes what monsters it spawns.
+Your logic is split into functions that handle a single iteration of loop.
+Code like this is in general harder to both read and write than the equivalent if structure, don't use it in production unless it really makes a difference.
+If you're curious, there are plenty of interesting resources out there, e.g.
+It is not much, but there is a little extra overhead involved.
+Instead of day and night being boolean variables you could make them integers and store 1 or 0 instead of true or false.
+First of all, if you have an if statement that is run once per game loop, don't bother trying to optimise it away, your development time and the extra code complexity is always better spent somewhere else.
+A second approach (which can be combined with the first) is to use events.
+You can organize your code such that these checks are in their own methods on each state object.
+You can also then add method for transitions so special code can run when Day ends or Night begins and so on.
+(Again, the thread is not checking anything: the hardware is).
+The compiled code will include a static lookup table  in the machine code that will require only one step to go to the correct code block, independent of the number of conditions.
+Then you can write an infinite loop which assumes that it's forever daytime: it does not waste a single cycle checking that day has turned into night.
+One of the best things you can do about "small" if statements is to rewrite them into arithmetic expressions.
+Without knowing specifically what you're doing, I would suggest keeping the single loop and just put if-checks where the behavior needs to change.
+You could consider using a Finite State Machine in place of the explicit conditions.
+(Note that in some languages true and false are basically treated as plain numbers, that makes this kind of code a bit more straight forward.)
+Each State also has a way to transition to another state, which is the check you speak of.
+You will never want to write code like that because there are many common parts of your game that must run on each main loop iteration.
+This is probably entirely overkill for your needs at the moment, I just wanted to put an alternative here.
+When day turns to night, a hardware interrupt goes off.
+My java muscles are very atrophied, but I bet it enforces those rules by default.
+If I know all the dependencies in my collision job/task, for example, I suddenly might run it concurrently in parallel with my sound task, or my particle VFX task, or what-have-you.
+If you are really need this degree of performance, and reducing the total number of if statements is your bottleneck, then you need to stop using java.
+You would create jobs/commands/tasks -- essentially, bundles of information that tell you what and how to execute to e.g.
+That said, there are times when if statements make a serious performance impact.
+If you have some other system which is tracking time of day, it will know when day transitions to night.
+Be sure to use best practice with it at all times, (breaks and defaults and yada yada...).
+Especially situations where branch prediction fails (and it often does that a lot) they can be surprisingly costly.
+The interrupt service routine responds by placing a breakpoint into the top of the loop executed by the daytime thread and then returns from the interrupt.
+the GDC Vault Task Graphing in Mortal Kombat (this is behind an expensive paywall, but the talk has been given at a few places, I think including GameFest, so the slides ought to be around somewhere -- I'll try to dig them up and return to edit this post).

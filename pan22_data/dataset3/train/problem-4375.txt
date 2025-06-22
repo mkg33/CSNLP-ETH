@@ -1,0 +1,11 @@
+The existing pam_exec  PAM module allows you to call any external script or command.
+I would like to run an additional command that uses the IP address and the username of the attempt.
+PAM_USER  is the supplied username of the user trying log in.
+Patterns can be quite complex so you could for example use
+You can configure AllowUsers in sshd_config to allow only certain users and you can further restrict their access by specifying a host
+PAM_RHOST  may actually contain the remote hostname instead of the ip-address, depending on the PAM implementation
+Depending on how you stack your pam modules the script can only be called for users that authenticate successfully or all log in attempts.
+PAM will set a number of environment variables including PAM_RHOST and PAM_USER which you can use in your script.
+Is it possible to run an additional script during the login process of the sshd daemon/server?
+The recommended method to add additional requirements to your SSH authentication is to change the PAM configuration.
+If the script returns an exit status 0 it can pass, else the login should be rejected.

@@ -1,0 +1,6 @@
+You're pretty much stuck in this. Changing permissions at the top of a large directory tree of files (we have one such structure with over 3 million files) just plain takes a LONG time on NTFS. Inheritable means you only have to change the right in the one spot, but the system still has to touch every file and directory that inherits from that rights change to make the change effective. Hitting cancel or otherwise terminating this process will give you inconsistent rights in that tree. 
+For large structures this can take hours, and performance can take a big hit. For our big structure, we only change permissions at the top during off-peak hours just because of this. 
+You can try to use inheriting instead of explicitly specifying security settings for each file.
+Right Click on the folder -> Properties -> Security -> Advanced.
+Make sure that "Allow inheritable permissions...." is checked. Add User and specify her permissions.
+Here is a code sample in C# that shows how to set ACL. Programmatic way is more flexible: you can wait periodically before setting security permissions. Hence server perf will not suffer. 

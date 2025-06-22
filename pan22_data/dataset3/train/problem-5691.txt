@@ -1,0 +1,18 @@
+Ideally, you'd like everything to be within a few milliseconds.
+Different timestamp will compeletly mess up the database.
+They're usually added by injecting a second as 23:59:60, this is problematic if you're validating timestamps as 0-59 for the minutes and seconds fields.
+Since you mentioned leap seconds it should be noted that they require particularly difficult handling.
+The alternative of repeating 23:59:59 to make it 2 seconds long isn't much better since that will mess with anything that is timing sensitive down to a per second level.
+Google actually came up with a good solution a while back that seems to have not been widely adopted yet.
+Suppose you have a security incident where someone accesses your database through your web server -- you want the timestamps on your firewall, your load balancer, your web server and your database server to all match up so that you can find the logs on each device that relate to the incident.
+Not only is it important from an administration perspective, but having clocks in sync my be important from application level correlation too.
+They published a blog about it back in 2011, makes for interesting reading and seems relevant to this question.
+And it needs to be in sync with the actual external time, so that you can also correlate your logs with third-party logs if that should become necessary.
+I do not know what any actual tolerances are, because I think it depends a lot on what type of systems there are, but I think generally speaking it is achievable to keep the servers in the datacenter having less than one seconds offset between one another.
+Mainly, it's so that you can correlate incidents from logs on different devices.
+Also if virtualizing on for example VMWare ESXi server, and time of the VM is not in sync with that of the hypervisor, then an action such like vmotion may re-sync the VM clock with the hypervisors and this in turn can lead to unpredictable results if the time difference is big enough.
+This depends on how solution is designed, how the applications running get their timestamp for any transactions they may work with.
+Their solution was to apply a leap "smear" and split the change over a period of time, the whole process being managed by an NTP server.
+Whenever timestamps are involved, de-synchronized devices can create logical incoherences, like: A sends a query to B, and the reply of B comes with a timestamp earlier than that of the query, possibly causing A to ignore it.
+Some database such as Cassendra rely heavily on time stamp.
+I have seen transaction validation fail because of an application running on a server with too much offset (was about 20 seconds in the future) compared to the others it was interacting with.

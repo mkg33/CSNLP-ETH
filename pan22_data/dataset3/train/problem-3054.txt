@@ -1,0 +1,11 @@
+(Or perhaps several groups to several new tables.)
+This is where you pick a group of columns to pull out of the table to put into another table.
+Otherwise, no amount of compression, file_per_table, etc will avoid the battle between 8KB row size limit and 20 bytes per column.
+If any of those text columns comprise array(s), they should really be rows in another table, not columns.
+The tables would JOIN on the PRIMARY KEY of the main table.
+However, if the main id is AUTO_INCREMENT, skip that part of the datatype in the other tables.
+But this is a rather complex task, and may not suffice.
+"Hundreds of LONGTEXT" means hundreds of 20-byte pointers to where the text actually is.
+If you would like to provide a representative sample of the column names, I may think of other tips.
+If some of these text columns are usually empty, then take advantage of that by using NULL, not just 'empty', and not having as many rows in the extra table.
+The 8KB limit can be changed to 16KB, but not further, by changing the block size to 32K or 64K.

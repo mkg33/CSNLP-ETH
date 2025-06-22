@@ -1,0 +1,20 @@
+Now I'm trying to provide a way for users to cache their passwords for a while, without leaving them stored on the filesystem in unencrypted form.
+HTTPS does not support any type of one-way hashing on passwords.
+As @devicenull said, the actual password needs to eventually be available.
+At some point in the process, you need the plain text password available.
+Some context: in this case, we have a development/testing server where one project has been checked out into the Apache htdocs directory.
+There's no kwallet and no gnome-keyring on this system, and the ssh-agent can't help because the repository is accessed via https instead of svn+ssh.
+Development for this project is almost complete, and only minor text/layout changes are performed directly on this server.
+This is no problem for Gnome or KDE users, because they can use gnome-keyring and kwallet, respectively.
+Nevertheless, the changes should be checked into the repository.
+[0] Obviously you'd want ~/.ssh/ to be on the encrypted part.
+As far as I know, that leaves them the choice of entering the password every time they talk to the SVN server, or storing it in an insecure way.
+You would have the users configure SSH agent forwarding to the machine they were connecting to, and auth would be based on that.
+It's not a real solution, but switching to something distributed, like Git, would solve this issue nicely.
+This would still need to be unlocked when they log in (although this can be done with PAM if they're using password authentication), and users would have to ensure that it is unmounted when they're done.
+Even if HTTPS supported one way hashing of passwords, you couldn't do this (It would need to have some protection against replay attacks, otherwise your password hash becomes the password!)
+My Subversion server only provides access via HTTPS; support for svn+ssh has been dropped because we wanted to avoid creating system users on that machine just for SVN access.
+IIRC, TortoiseSVN has a similar caching mechanism, too.
+However, one option would be to use something like encfs or ecryptfs to encrypt entire or part of[0] users' home directories, which would mean that the password would be stored encrypted on the disk.
+Is there any way to get something like what gnome-keyring and kwallet provide in a non-GUI environment?
+It may be possible to encrypt it up to this point, however given that you would need the decryption key on the server as well, there's very little point.

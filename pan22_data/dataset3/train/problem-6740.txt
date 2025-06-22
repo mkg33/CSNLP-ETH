@@ -1,0 +1,13 @@
+listen 127.0.0.1:80) you should get the following:
+How can I make Nginx only act only on the 127.0.0.1 address?
+Note: you must explicitly set the listen directive on all server blocks, otherwise, NginX will still listen on all addresses.
+The second problem is that NginX, by default, binds to all available addresses.
+Per section 1.3.2.3 (Addressing) of RFC 1122, the entire block 127.0.0.0/8 is reserved for loopback; you should avoid using bogon IP addresses, especially special-purpose ones as defined in RFC 5735 for some purpose other than private addressing, as the results may be undefined.
+For some reason, any local IP address in the 127.xxx.xxx.xxx range redirects back to the default 'Welcome to nginx!'
+(Tested with CentOS 6.2, Nginx 1.2, using curl - after making the change, trying to connect to 127.0.0.2 (or any other non 127.0.0.1 address), results in: curl: (7) couldn't connect to host)
+From my experience with Apache, only the 127.0.0.1 IP address would resolve back to the apache web server.
+If you change ALL your server blocks to have a listen directive that explicitly specifies the address to which to bind (e.g.
+You have two separate issues - firstly, multiple addresses (127.0.0.1/8) are reserved for loopback - however, that only explains why an address such as 127.0.0.2 will still point at your computer.
+You can verify that NginX has, in fact bound to all addresses by looking at netstat -pant | grep nginx, which may show something like:
+Note the 0.0.0.0:80 under local address, meaning bind to all addresses.
+when it is omitted) is listen *:80 and NginX will try each available server block and use the 'best match', even if the server_name doesn't match (if you specify a listen ... default then it will use that one).

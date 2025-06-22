@@ -1,0 +1,15 @@
+You also need multi-auth so the switch knows to look for more than one MAC address.
+Modern 802.1x systems are much smarter ("more complicated") and can independently police multiple hosts on a single port.
+This is where multi-auth and multi-domain come in.
+You would need to configure MAB (Mac Auth Bypass) authentication for the ip phone in the multi-vlan interface.
+If the switch sees a phone as a CDP neighbor, it will do CDP bypass and will not attempt to authenticate.
+There is a little-known feature called "CDP bypass" which allows a Cisco switch to detect a specific TLV in the CDP message which allows immediate authentication.
+Because the 7941 won't do 802.1x itself, but will pass EAPOL through, and "fake" a logoff when the PC port is disconnected.
+(Ignoring that it's in terms of NX-OS, this is how MAB works.)
+Be aware however, that newer version of Cisco IOS no longer include this CDP bypass feature.
+That will allow multiple machines in the data vlan, which is disabled by default and will show "Security Violation" in the logs.
+https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3750x_3560x/software/release/12-2_55_se/configuration/guide/3750xscg/sw8021x.html
+As Jaxxs points out, the only compromise is to allow the phone access without authentication (i.e.
+CDP should actually take care of the port authentication for an Cisco IP phone.
+You should configure authentication order dot1x mab to do attempt dot1x first.
+So, in simplest form, the port is either authorized or not; once authorized -- MAC limits aside -- traffic from anything will be allowed.

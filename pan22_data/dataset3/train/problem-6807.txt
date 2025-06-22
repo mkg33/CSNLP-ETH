@@ -1,0 +1,28 @@
+signIn is the public function that the client will see from outside.
+I think these are different layers of responsibility.
+This refresh token is used for getting a new access token when the original one has expired.
+It simply creates the deferred object and calls _fetchTokens.
+I have an endpoint, that when receiving the correct credentials, responds with an access token that will be used in consequent requests.
+I have created the following provider for AngularJS:
+My problem is that consequent requests should send the access token (on the Authorization header).
+You can browse through, I think it's mainly the same procedure every time.
+I suppose such a service is not that uncommon so I hope that many people has experienced this type of situations.
+I have an example repository which I created to follow some rules and principles.
+With short timespan and token refreshing, an user can't authenticate as another user just by stealing the access token (theorically it can, but for a short period of time, i.e.
+The service.get('api.example.com/products'); is called in the controller to the corresponding view.
+With this approach I think there's going to be a lot of replicated code, so I was looking for help on how to better structure my code.
+Along with the access token a request token is also received from the response.
+In the authentication-service.js, you also have a function like this to send your token on every request to the backend:
+Not only for better quality but also for better readability.
+Furthermore, since you are using AngularJS, play around with interceptors:
+You can even think of creating a product-service.js as your model, and inside there, you call the api.js to get new products.
+If a request is sent with an expired token, a 401 Unauthorized is returned, so this service must proceed to try to refresh the token.
+This means that a simple line of code from the client:
+I have a REST web service that uses OAuth 2 for authenticating and authorizing requests.
+This avoids persisting a session and using cookies, which is what we wanted to accomplish when we started designing our web service.
+Then, inside the controller, you just say products.getLatest() or something.
+_fetchTokens makes a POST request to my web service's OAuth endpoint and retrieves the tokens form the response.
+It then proceeds to persist them (For example, localStorage) so they can be used for later requests and continue to live on even if the application is closed.
+As you can see it's a very long code and it's even incomplete, this is only the authenticating function.
+After successfully refreshing the token, it shall retry the original request again but with the new access token.
+You have a common folder, where all your shared services and functions are placed.

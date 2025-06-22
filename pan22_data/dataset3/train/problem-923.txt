@@ -1,0 +1,31 @@
+For this we need to create a sequence for each Account in our system and then use it when a new orders are inserted.
+Here is the code that creates a sequence for AccountID = 1:
+Assuming the AccountID is passed in as a parameter:
+Finally, the question is: Can you think of a better solution to the problem?
+Each seller has a unique AccountID which is a foreign key in the Order table.
+We are working on an ecommerce system where we aggregate orders coming in from different sellers.
+It seems like this should be a pretty common use case where you need an ID that is incremented separately for every value of a foreign key.
+We want to generate an order number for each order that is coming into the system so that for a given seller (and given AccountID) those order numbers are creating a sequence (first order gets 1, then 2, then 3 etc).
+We will also welcome your comments on the 3 solutions detailed above.
+This means we will end up with hundreds of thousands of sequences, which might have a negative impact on performance of the whole DB.
+Disclaimer: This question was asked on SO initially but did not get much traction there, so I am trying here, hoping it will be more interesting to DBAs...
+It wasn't mentioned, but I would put a UNIQUE constraint/index on the AccountID and Order number to help prevent duplicates (may not be possible if dupes already exist and they can't be cleaned up).
+We don't know if it will have any impact, but it is close to impossible to find any testimony on the web from people who have used that many sequences in SQL Server.
+Note that we have we have READ_COMMITTED_SNAPSHOT ON.
+After noticing the duplicates we came up with Solution 2 where we have a separate table to track the next AccountOrderNumber for each Account:
+If you do still get duplicates, the UNIQUE constraint will stop that.
+In systems I have worked with, either the ID would be generated during the INSERT operation by getting the current highest value and adding 1 to it, or the use of a sequence table (like you mentioned).
+Unfortunately, the locking was necessary to avoid duplicates.
+Our latest attempt (Solution 3) is to use sequences.
+It seemed to work well for a while but recently we noticed some duplicate values in the AccountOrderNumber column.
+I think the triggers to try and set the value after it has been inserted are the issue, and if you can move away from there, you'll have better results.
+We have tried a couple of solutions to this but they have drawbacks we would like to avoid.
+I think if you take it out of triggers, you should have less of a problem with duplicates.
+As you can easily imagine we have an Order table that holds the data for orders of all sellers.
+After analysing the code it seems logical that duplicates might appear as the operation is not atomic, so if 2 orders are added at the exact same time they will read the same TOP 1 value from the Order table.
+I personally didn't like the sequence method; it means relying on a completely unrelated table to generate what is essentially just an incremented number, and there's other ways to do that.
+I could see a possible option of using the UNIQUE violation error to drive an automatic retry of the code, with a WHILE loop to check for either a status value (good or failed) and a retry attempt (Stop after retrying 5 times).
+The approach with sequences worries us because we expect to have 100K+ accounts in the system pretty soon and for each of those accounts we currently need that sort of incremented ID in 6 different tables.
+While this solution did not create any duplicates it did cause deadlocks on the newly created @NewOrderNumbers table due to WITH (UPDLOCK).
+For setting the Order # in code, you have to get the current highest value for Order # for the given AccountID, then add to it.
+Maybe one of them is close to being acceptable and just needs some minor tweaking?

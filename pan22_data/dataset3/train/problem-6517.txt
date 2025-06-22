@@ -1,0 +1,11 @@
+I also name all my bridges with meaningful names (which helps because we've got VLANs everywhere, and they're all meaningfully named too).
+I think I am missing something important, but I just don't see it.
+According to the comments in Xen's network-bridge script, the process of starting the bridge with external interface eth0 is thus:
+NOTE: that doesn't actually seem to be what the script does.
+Honestly, I think Xen's bridging stuff is utter balls, and I just use the OS' native bridging configuration setup (/etc/network/interfaces makes this beautifully easy), and then just tell the domU's config which bridge to attach to.
+For the last step, it looks like it actually enslaves peth0 and vif0.0 to the bridge, but I don't know if that is important to my question.
+The goal is to maintain 'eth0' IP/MAC for the host OS but not have the physical interface tied to a particular IP.
+Your renaming scheme wouldn't work because peth0 is "Physical eth0", and your way you'd end up with peth0 being the virtual interface.
+The rename game is to minimize the down time of the network, reduce the number of things that can go wrong at the last minute and provide an easy way to back out should something go wrong.
+Would it not be equivalent to rename veth0 to peth0 and then eth0 to veth0?
+This allows guest to not need NAT for their network.

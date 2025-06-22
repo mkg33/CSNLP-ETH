@@ -1,0 +1,28 @@
+'Deleted' means that the directory entries that the NTFS file system uses to describe the location and length are removed and, as far as the OS is concerned, the space on the disk where those files are becomes free to use for any purpose.
+You'd be right back where you were, without a working database.
+if the transaction that you have deleted accidentally were performed within a Begin transaction and did not committed, can be recovered by using fn_dblog() function.
+This is going to be a little long, in hopes of fleshing the subject out a little more than the other answers.
+The problem with that is that these utilities often will not get the file back 100% intact since data may already have been written into the area on the disk where the file was previously located.
+The MDF and LDF files are deleted (see DROP DATABASE)
+The first thing you should do after bringing a possibly dodgy database online with an attach command is to run DBCC CHECKDB() against it.
+(This is doubly true (triply, actually) true for people who don't administer databases full time.)
+Other files may be written there, which would overwrite the data that you wish to "get back".
+If the files aren't 100% properly restored by an undelete utility, you data and/or the internal structures of the databases files will be corrupted.
+When you drop a database, the files that underlie it are not moved to the Recycle Bin, they are actually deleted.
+Even if SQL Server brings the database online successfully, this is not a guarantee that your data has not been corrupted.
+SQL SERVER – Restore Database Without or With Backup – Everything About Restore and Backup
+The simplest thing to do is to back up your data regularly, by whatever means necessary, and to test your restoration process.
+This is especially true if the system has continued to run for a while after the files were deleted when the database was dropped.
+If that command runs without finding problems, you are probably OK (and you should immediately make a backup).
+It may be possible to 'recover' the data and log files with a third-party undelete utility.
+you can apply the below command for viewing your accidentally deleted data.
+SQL Server might notice this when the files are brought back online (with an attach command) and then flag the database as suspect.
+However, the process is too long and time consuming.
+Disk space only seems expensive until you realize how expensive getting your data back via third-party specialists is.
+This link answers some common questions just related to this:
+It is more likely that it will find corruption that can't be fixed.
+While 'heroics' are an interesting thing to read from a technical perspective, the best thing to do is to avoid situations where you have to go through unusual means to get your data back.
+You could give those a shot, or you might be better off calling a specialist or even Microsoft (who will probably just point you at a partner of theirs).
+this can be done easily by using a free SQL ldf viewer, which will provide you more appropriate result as well as it will recover the deleted database records in few clicks.
+(Your best, but not great, bet would have been to shutdown the system immediately after dropping the database.
+If you absolutely must have the data back, there are articles around the internet talking about various kinds of heroics to try to extract as much non-corrupt data as possible out of a corrupt database.

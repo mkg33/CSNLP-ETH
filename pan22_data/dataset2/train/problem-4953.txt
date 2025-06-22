@@ -1,0 +1,19 @@
+VLANs have their own network interfaces, and they can be treated exactly the same as separate physical interfaces.
+In summary: create an alias interface (e.g., eth0.1) and "tag" it with the ID for your VLAN, and assign it the IP address for your VLAN.  Do this for each VLAN the computer wants to talk to.
+Note that no other VLAN except VLAN10 would have DHCP enabled (DHCP requests do not cross routing boundaries, unless DHCP forwarding is configured on the routing device, and the server is configured to serve multiple subnets).
+As long as you have IP forwarding turned on, and your VLAN concentrator is your default router (both of which are probably true), then it should just work with no changes.
+If you want various Layer 3 Networks (IP) to be able to talk to each other, it needs to be routed.  This can be done by Routers and/or Layer 3 Switches (switches capable of routing)  If your switch ISN'T a L3 switch, then you MUST route with the Router, using multiple interfaces (one per VLAN)
+I've used VLAN 10/20/30/40... Always a good practice NOT to use VLAN 1 as it's normally the Default (unconfigured) VLAN in a switch.
+Lastly, as per your setup, your router isn't part of a VLAN, which means that by default it should be VLAN 1 on the switch.  this means you are having 1.1.1.0/24 & 2.2.2.0/24 on the same VLAN.  Not necessarily bad but still not optimal
+Basically, I understood theoretically how a switch handles VLANs and trunking. Although, I'm confused in several aspects.
+If you want to then move on and do more advanced routing, I can recommend quagga as a routing engine.  It supports all the major routing protocols and is almost identical to working with Cisco routers, so skills would be largely transferable.
+Second.  If you want more than one VLAN on a single router/switch/server port, you must use Tagging (AKA 802.1Q), which will add a header to ethernet frames to identify which VLAN they are (and a few other things, like CoS Priority, etc).
+I'm trying to understand how VLAN works and how to configure VLAN in a switch and Linux box attached to it.
+Once you have the VLAN interfaces configured, and things like the DHCP server listening on them and configured properly, it is then "just" a matter of setting up the routing.
+With R, U1 & U2 being configured normally, U3 (and the switch port facing it) having 802.1Q tagging configured, and the other interfaces (2.2.2.0/24, 3.3.3.0/24 & 4.4.4.0/24) on the switch.
+It is a single Ethernet broadcast domain.  What is originated in one VLAN stays in it (ARP, DHCP requests, etc)  It is more easy to use/troubleshoot than multiple IP networks on the same LAN/VLAN, because IP traffic from one VLAN isn't found on the other
+Switch ports A & D are configured with 802.1Q Tagging, Port A permitting all VLANS and port D permitting at least VLAN 30 & 40
+Configuring VLAN interfaces in Linux is quite simple.  There's a good step-by-step guide on cyberciti.
+First of all, VLANs are Virtual Layer 2 networks (See them as separate Ethernet network) and you can interconnect them by various means, but it's still only Layer 2 (Ethernet)
+A VLAN, as the name implies, is a Virtual network.  It is identical in every respect to a separate physical network, except it is overlaid on top of another physical network.
+  (search google for "debian dhcp multiple subnets" for example, as it's not a one liner explanation

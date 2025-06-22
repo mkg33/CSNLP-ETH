@@ -1,0 +1,8 @@
+I have a virtual machine with Mandriva 2007.0 (yes, old - unfortunately we do not have a choice here). Anyway, the problem:
+Nothing else changed. Any ideas what could be happening, or at least how I can get my IP address back?
+And then remove any matching lines.  Whereby "remove" I mean "remove them from the file but preserve them for posterity in case you remove the wrong things".
+Before reboot: active network interface = eth0. No other interfaces present, and network manager confirms this. Static IP address set to 172.31.2.22. No issues, everything working properly, routing et al.
+And finally, what happens if you try to ping the address and then look it up on the arp table with arp -an?
+If Kudzu is installed on your system, try removing it.  If the MAC address of your interface has changed for some reason, Kudzu will interpret this as a new network card and result in the behavior that you've described.
+Guessing here (been a while since I saw Mandriva) but if this was Redhat I'd check that you do not have a HWADDR= line in the /etc/sysconfig/network-scripts/ifcfg-eth0. If that line exists it will not apply the eth0 configuration to a network adapter with a different MAC address.
+After reboot: active network interface = eth1, with a DHCP address. Network manager shows eth0 as disconnected, and not connectable. When I try to set eth1 up with the static IP address (same one), it says "In Use". I then tried ifconfig eth0 172.31.2.29 just to free it up from the eth0 interface so I could use it with eth1 (since this is connected). 

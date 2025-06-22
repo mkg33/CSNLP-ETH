@@ -1,0 +1,7 @@
+You don't need to use Samba, AD supports Kerberos and LDAP directly. There is no reason for you to use any external software on most distributions. 
+You should not need to edit /etc/krb5.conf assuming your Linux boxes are using DNS servers that know about AD (_msdcs zones with the appropriate SRV records are resolvable)
+Got Windows users auth'ing against AD, but most of our servers (public drive etc.) are linux, and they're part of the domain. From a windows PoV no-one notices. From my side, it feels a bit fruity ssh'ing with my windows username but thats about the size of it.
+Nearly my entire Linux infrastructure has centralized authentication and user management thanks to Likewise Open. It's stunningly simple to install and implement. I cannot possibly say enough good about it. 
+For Debian/Ubuntu you can do it with libnss-ldap and libpam-krb5. There are a few tricks to get it 100%. This assumes you have "unixHomeDirectory" populated for Linux users, your Linux boxes are using NTP common with your Windows systems (required by Kerberos) and that you are OK with plain text NSS lookups (not password but group membership info etc - you can also use TLS but that's more complicated to set up). You should NOT have pam_ldap as a password or auth source in PAM unless you are set up to use TLS.
+Authenticating is absolutely simple using Likewise Open. http://www.likewise.com/products/likewise_open/index.php
+As a note, UIDs and GIDs are assigned according to a hash function, so they are identical across the entire infrastructure, so NFS mounts work perfectly. 

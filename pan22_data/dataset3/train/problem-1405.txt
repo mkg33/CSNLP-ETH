@@ -1,0 +1,16 @@
+For example, if it's 10G and you can get 10G at least (it would be nice to have at least +20-30%) so you can go with virtual server.
+Memory may work if the table locks take less than intended TPS, if not you will also suffer the table locks.
+You seem to be storing in the database a small amount of data for synchronisation, that is very dynamic, a workload that (even it is possible for the load you propose) it is not designed for that.
+It's a good option to use partition by accountId it will reduce amount of blocking inserts/updates.
+And all that, no to talk about the SQL layer overhead.
+Or -if you could not use that-, other kind of data stores that doesn't require such durability/locking like MySQL may work better, like memcached.
+If you really need to use MySQL, which I don't recommend for this pattern, 300 IOPS is something that any dedicated server can do, but a virtual host may be very limited or constrained by the other users (and very variable performance, as it cannot guarantee the service quality).
+MySQL 5.5/5.6 has a nice feature to load/dump buffer_pool to you do need to do warm up after each server restart (look at innodb_buffer_pool_load_at_startup, innodb_buffer_pool_dump_at_shutdown).
+General advice: change settings in my.cnf and benchmark them.
+While MySQL is in-memory database (tables you are querying should be in memory to get quite nice performance) so you have to have enough of RAM to hold accounts table in buffer pool (innodb_buffer_pool_size).
+Your data seems to be very state, session-like, for which application memory (shared memory) is designed.
+If you cant afford 10G RAM (for example you need 700G RAM) you should think about sharding (moving data to different servers by accountId).
+I think you are trying to solve the problem with the wrong tools: MySQL is a relational database, designed to store large collections of data for long term in a durable fashion.
+Real-time data is stored on main memory, not on the disk datastore.
+MyISAM will do table locks, InnoDB will have too much durability overhead.
+Can you calculate the size of your table (query information_schema.tables for this information)?

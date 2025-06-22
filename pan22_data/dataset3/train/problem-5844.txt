@@ -1,0 +1,33 @@
+One way in which many old-skool games solved (or hid) this problem was to animate the sprite.
+Here, the little blocks of black pixels crawling crawling down and right are the gliders.
+This can be difficult to code, however, and I'm not really aware of anything that does this right now.
+Dithering is where the edge of an object's pixels are lighter/darker in color to match the background making for a softer edge.
+some of the digging animations from Lemmings were like that), but it turns out that the "glider" pattern from Conway's Game of Life makes a very nice illustration:
+The only real solution here is to use bilinear filtering.
+That is, if your sprite was going to move less than one pixel per frame (or, especially, if the pixels/frame ratio was going to be something odd like 2 pixels in 3 frames), you could hide the jerkiness by making an n frame animation loop that, over those n frames, ended up moving the sprite by some k < n pixels.
+A 32 bit position value can represent values 0 through 4,294,967,295 even though your screen almost certainly has less than 4k pixels along either axis.
+For example, say you had a 4 pixel square I'll aproximate with:
+Consider O as black and o as gray, so you might do:
+You can then add numbers as normal, you just have to remember to convert by right shifting 16 bits whenever converting to screen space or when you've multiplied two numbers together.
+Animation by Kieff / Wikimedia Commons, used under the CC-By-SA 3.0 license.
+(I wrote a 3D engine in 16-bit fixed point back in the day when I had an Intel 386 with no floating point unit.
+If you maintained the sprite at 3x display resolution,you'd have 9 different
+If you were to move this 1/2 a pixel to the right, nothing would really move.
+actual sprites depending on the subpixel position of the sprite.
+But with some dithering you could make an illusion of movement a bit.
+You can also maintain the sprite at super resolution and downsample the sprite before
+Floating point is the normal way of doing this, especially if you're eventually rendering to a GL target where the hardware is quite happy with a shaded polygon with float coordinates.
+In addition to the other answers here you can use dithering to some extent.
+It achieved the blinding speed of 200 Phong-shaded polygons per frame.)
+This works well but expect to get somewhat blurry results and lose the 8-bit  or 16-bit look if you were aiming for it.
+You simply need to place the sprite on a 2d-plain (a billboard) as a texture; then use the GPU to render these plains.
+The actual "square" with the grayed edges would actually take 3 pixels across, but since they are lighter gray than the black they appear smaller.
+I couldn't find an actual sprite from an old video game to illustrate this (although I think e.g.
+Already implemented, very fast, hardware based solution.
+The point is that, as long as the sprite always moves in some way on each frame, there's never going to be any single frame where the whole sprite would suddenly "jerk" forward.
+If you look carefully, you'll notice that they take four animation frames to crawl one pixel diagonally, but since they move in some way on each of those frames, the movement doesn't look that jerky (well, at least not any more jerky than anything looks at that frame rate, anyway).
+So put a fixed "binary point" (by analogy with decimal point) in the middle and you can represent pixel positions from 0-65536 with another 16 bits of subpixel resolution.
+The sprite's position should be kept as a floating point quantity, and rounded to
+However there is another way of doing what you're currently doing but slightly less jerkily: fixed point.
+About the time they started using dithering for things resolutions quickly became better and there wasn't as much need except in such things as image manipulation.
+The idea is to let the GPU compute the value of each pixel based on the four sprite pixels that are overlapping with it.

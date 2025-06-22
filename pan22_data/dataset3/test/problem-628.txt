@@ -1,0 +1,21 @@
+Although the files are being "deleted", as i mentioned, they are actually being moved to a different location on the file system... ie a Trash directory or something.
+When you delete the file it just removes the listing from the directory but not the file itself.
+I'm not even sure what to google to learn more about it.
+That's a FAQ for Linux/Unix file system operations: "'df' command says partition is full, while 'du' reports free space" (see e.g.
+I've noticed that on non-windows OS.... ie linux/mac i can do things like:
+Note that a consequence of this is that the space occupied by a file can only be reclaimed once the last process using it has closed it.
+As explained by Matt Jenkins, the OS (the filesystem) keeps track of files that are kept open by applications.
+The programs that still have the file open can still access it.
+link above will give you a starting point for more reading - see especially the "Link counter" section.
+Also, with moving the file - if it's within the same filesystem - the file doesn't actually move as such, it just changes the pointer to the directory the file is in.
+So it seems to me like the OS uses a pointer @ the file that is updated when it moves rather than accessing the files directly.
+When the last one is removed, the file's space is freed.
+http://batleth.sapienti-sat.org/projects/FAQs/ext3-faq.html ).
+If you need to free up space, it's not enough to delete big files (e.g.
+- the movie still plays to completion (read from disk, not just buffered in memory)
+As long as a process keeps a file open, its data stays on disk (even though it has been deleted and is no longer visible or accessible to other programs.
+Can anyone shed some light on how this AWESOME capability is actually implemented?
+logfiles), you must also make sure no process keeps them open (typically a problem with logfiles).
+The file is only actually deleted when all the programs that are accessing it close it.
+In unix file systems, a file can have one or more hard links to it.
+The file maintains a list of references - processes that are accessing the file.

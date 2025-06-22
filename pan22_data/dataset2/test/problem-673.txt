@@ -1,0 +1,5 @@
+When looking at the memory tab of the resource monitor, there is no obvious process consuming very much memory.  The sum of the commit column for all processes listed is around 1.5 GB.  So, while the machine is reporting 95% usage (over 5 GB), I can't figure out what's using it.
+If you didn't set a maximum memory value for the SQL Server instance, it will consume as much system RAM as possible for caching. That's likely the source of your problem.
+I have a virtual machine (Windows 2008 Server R2 64 bit running on vmware esxi 4) with 6 GB of installed RAM.  It's reporting 95% memory usage and close to 0% CPU.  This server hosts some WCF services on IIS and has AppFabric installed which installs its own SQL Server 2008 R2 Express. All in all, pretty low usage though.
+Does that high virtual byte count prove sql is the source of the high memory use?  What would cause that spike?  Or should I be looking at something else to isolate the memory hog?
+Looking at perform, I added several counters in the Process object and the biggest anomaly I found was that sqlserver had a virtual bytes count greater than 6 GB, yet it's private bytes count is 125 MB.

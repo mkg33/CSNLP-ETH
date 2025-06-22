@@ -1,0 +1,14 @@
+Is there a way to identify these shells launched from vim vs. regular shells launched by xterm/urxvt/gnome-terminal?
+A recent release of vim introduced the :terminal command, which launches a terminal in a new editor pane.
+Note if there is no process with PID of $pid, the whole command will become ps -o comm= "" which is invalid and will throw an error.
+Within the shell itself the right PID is $$, so the above simplifies to
+Almost, because in general if the parent process dies and the shell survives (this is possible), the orphaned shell will get a new parent.
+This will be reflected by ps -o ppid= "$$" but not by echo "$PPID", I think.
+where ps -o ppid= "$pid" returns the parent process ID.
+Before that, you could only work around it by getting the process tree information or possibly but not fool-proof by testing for the $VIM and $VIMRUNTIME environment variables.
+Therefore I think it's safe to assume the approaches with and without $PPID are equivalent in practice.
+You need to investigate if the parent process of the shell is vim.
+Note depending on your setup and how you started vim, ps -o comm= ... may not return the literal vim string.
+It is set by the shell to the value of its parent process ID during initialization of the shell.
+Since Vim patch 8.1.049, Vim does export the VIM_TERMINAL environment variable with the value of v:version.
+In your case the discrepancy shouldn't matter, because:

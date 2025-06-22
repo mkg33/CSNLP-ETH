@@ -1,0 +1,12 @@
+read reads from standard input. Redirecting it from file ( ./script <someinput ) or through pipe (dosomething | ./script) will not make it work differently. 
+The Bash builtins man page has a pretty concise explanation of read, but I prefer the Bash Hackers page.
+Arguments can be accessed via the variables $1-$n ($0 returns the command used to run the program). Say I have a script that just cats out n number of files with a delimiter between them:
+In this case, we are passing a file name to cat. However, if you wanted to transform the data in the file (without explicitly writing and rewriting it), you could also store the file contents in a variable:
+As far as reading from stdin, most shells have a pretty standard read builtin, though there are differences in how prompts are specified (at the very least).
+You don't mention what shell you plan on using, so I'll assume bash, though these are pretty standard things across shells.
+Basically, if the variable (reply) exists, return itself, but if is's empty, return the following parameter ("N").
+If fewer words are entered than variables, the leftover variables will be empty (even if previously set):
+for an example where the tool being used already behaves this way, we could reimplement this with sed instead:
+read will then place one word from stdin into each variable, dumping all remaining words into the last variable.
+Now the rest of your script can just read from stdin. Of course you can do similarly with more advanced option parsing rather than hard-coding the position of the filename as "$1".
+All you have to do is to loop through all the lines in input (and it doesn't differ from iterating over the lines in file).

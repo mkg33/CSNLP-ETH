@@ -1,0 +1,9 @@
+Because Comcast uses NAT for their entire network (your 10.0.0.0/8 address here) you will need to enable nat_traversal for this connection when using Comcast.
+The reason for this is because IPSEC packets include a hash of the entire packet including the source address.  But NAT changes the source address from 10.232.204.146 to some public IP you don't know, so now the hash no longer matches the packet, and the other end will discard the packet because it has been tampered with (likewise packets from the other end will have the destination address changed from whatever public IP to 10.232.204.146 and get discarded).
+NAT Traversal changes how the packets are sent.  Instead of sending the packet directly, the encrypted packet is wrapped inside a regular UDP packet which is not hashed.  NAT can then change the IP addresses on the UDP packet to ensure it gets to where it needs to go, while the original encrypted packet is unchanged and can still be validated.
+I believe there is additional overhead in wrapping packets like this, so it is best to only turn it on when necessary.
+I need to understand and resolve my issue. I know openswan works because when I connect from home network with an internal ip address of 10.0.0.97 to work's VPN, I'm able to ping but when I use the public xFinity wifi it indicates that the tunnel is up but I can't ping the internal hosts of my VPN.
+When I'm successfully connected to the public Xfinity wifi, my IP is:
+When I"m at this point, I can ping and browse the internet fine.
+But I can't ping my internal servers that have 192.168.1.xxx IPs.
+By the way, even though the tunnel is up and I can't ping internal hosts, I can still ping yahoo.com and google.com

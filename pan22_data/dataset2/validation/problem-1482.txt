@@ -1,0 +1,7 @@
+Hi check whether your disk is full in the installation partition. And if the storage exists manage the logs in the Mariadb server adding following lines to my.conf 
+This means that MariaDB is not running, or was configured to listen to some other socket (or none at all).
+I had the same problem and found out a few things after digging around.  MariaDB is a drop-in replacement for mysql.  On the new system, mysql is the MariaDB client (although I'm not clear on what that means).  Checking to see if the service was running:
+Alternatively, change the parameter for the program and MySQL to use the file socket instead.  Whatever works easiest.
+Based on this comment, and the error message, I'd say you have a problem with the type of connection.  The socket in the error message is stated as /var/lib/mysql/mysql.sock but you are attempting a network connect via localhost, which maps to the network address 127.0.0.1.  Your program looks like it isn't using the correct parameter at runtime.  Double-check that the parameter really is 'localhost' at runtime by having it log/write out the parameter somewhere, and double-check that MySQL is attached to network port 3306, instead of a file socket at /var/lib/mysql/mysql.sock.
+You could also verify that Mariadb is still running on the server when you get this error message and you could verify if you are still able to log in (in case it is running).
+The first step would be to look into the logfile of Mariadb, which is typically located in /var/lib/mysql and named *.err.

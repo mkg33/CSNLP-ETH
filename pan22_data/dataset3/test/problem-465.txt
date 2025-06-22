@@ -1,0 +1,12 @@
+With this solution, you'd use the "user" rwx bits to control normal access to files and directories, and the "world" (aka "other") rwx bits to control access to the ftpnodel files.
+Someone without write access to the file but with write access to the directory can delete the file and create a new file with the same filename.
+If you need to have files that users can't delete in the same directory as files they can, the easiest workaround is to create two users: an ftpuser user which all your virtual users will map to, and an ftpnodel user who will own all of the files you don't want them to delete but which nobody logs in as.
+There are two potential issues with this based on your requirements.
+I'm not sure if the FTP protocol allows for this (resume from an offset of 0 perhaps?).
+Then, you set the sticky bit on all of the directories, chown the undeletable files to ftpnodel.
+The smaller issue is the distinction between "writing" and "overwriting".
+The bigger issue is that creating and deleting files is a single flag.
+Both can use SSL (FTPS) and can either force clients to use SSL or allow both insecure and secure logins.
+Someone with write access to the file can erase all the data in the file (truncate it) and fill the file with completely different data.
+Either pure-ftpd-mysql or vsftpd+libpam-mysql can use (with enough configuring) a MySQL table for "virtual" users, chroot them to their own little directory, and configure incoming files' umask bits.
+The obvious solution would be to use the unix filesystem permissions:

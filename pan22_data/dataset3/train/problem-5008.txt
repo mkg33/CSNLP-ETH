@@ -1,0 +1,21 @@
+I need to find a simple way around the problem if possible.
+You set up one VM with a public IP on it and point all DNS to that.
+I know about Nginx and HAProxy, though I have yet to implement it as it seemed more complicated that it should be.
+When I or someone else is setting up a project, I don't want them to have to wonder if the problem is in the port forwarding or in the iptables of the server.
+You configure IP A port 22 to go to VM1 and then other ports to go to the rest of the VMs.
+Then configure the proxy to forward requests to the correct destination server based on some criteria (in your request you mention using incoming hostname).
+I have looked at this project on and off for months trying to use everything from an F5, PfSense and OpnSense.
+You can have as many internal IPs as you want, so I would recommend the VMs all use IPs in and internal network like 192.168.X.X or 10.X.X.X.
+Here are instructions for those daemons (And a bonus for apache):
+Both of these can be configured to do reverse proxy.
+I have some great servers that are really underutilized and would love to setup about 20 VM servers but my ISP won't give me any more addresses.
+This doesn't seem like that strange of a request to me, with the prominence of virtual servers, it seems there has to be a simple solution at the firewall / gateway level to split the traffic up to a bunch of local ip addresses.
+I don't want to forward just 1 or 2 ports, but ALL ports based off the incoming hostname request.
+Then have your limited external IPs on your gateway device (typically a firewall).
+In each case it seemed the solution was either poorly documented, or limited in scope to a single port at a time.
+This will work for services for which you have control of both ends.
+The reason standard firewalls can't do what you want is because they only operate at Layer 3 and don't have any knowledge of the hostname or URL requested.
+I currently have 5, and while they keep saying they will do it, nobody ever follows through and it has been about 6 months going back and forth.
+This does not work for incoming public connections on standard ports (eg.
+On that firewall you can setup NAT to forward the public address to a private one.
+This of course is a problem in your case because you don't have enough public addresses to do a straight 1 to 1 translation.

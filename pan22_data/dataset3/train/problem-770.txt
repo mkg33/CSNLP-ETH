@@ -1,0 +1,16 @@
+So it has to get all of that empty log to get to the parts where there may be some transactions it needs to recover.
+So assuming you're prepared to suffer some (possibly quite a lot of) data loss, then you could recover it without the log.
+If you don't, then when it gets like this, shrinking should be a one-time operation, and then you should fix the configuration so you're not doing this again next week...
+shrink the log file to something reasonable), take another full backup, and restore that.
+There hadn't been any transaction log backups, to allow the log to be re-used.
+If you need point in time recovery, start backing up your log.
+Note that the backup size does not include empty pages, but when you actually perform the restore, the data and log files will be over 200 GB, because it has to restore exactly what the source system had (including a 200+ GB log file, regardless of how full it was).
+The log file should manage itself if you have it configured correctly.
+Finally, to a few commands that may help in this situation, again not recomended (you will almost certainly suffer data loss) http://blog.sqlauthority.com/2010/04/26/sql-server-attach-mdf-file-without-ldf-file-in-database/.
+You are not alone: http://www.sqlskills.com/blogs/paul/search-engine-qa-23-my-transaction-log-is-full-now-what/.
+Here's a link to the broad topic of SQL Server database recover, http://www.sqlskills.com/blogs/paul/category/disaster-recovery/.
+Your log file is ludicrous because you are in full recovery and never take log backups.
+DBCC TRACEON(3104) will bypass disk space checks for restore processes.
+You should also fix the source database to either (a) be in the right recovery model or (b) take log backups more frequently.
+If you don't want to risk data loss, you need to correct that at the source (e.g.
+I'm not sure I understand why it's difficult to get a backup - this is a pretty standard operation, and should be a service provided by anyone you're paying to host SQL Server.

@@ -1,0 +1,34 @@
+You cannot "Downgrade" or "Upgrade" SBS to Standard.
+What you should be doing is a DCDIAG /C /E /V on the server to ensure AD is healthy.
+AND there are no software restrictions (you can cluster, for example - the only difference between the two higher versions of 2012 (Standard and Datacenter) is in terms of licensing of VMs - Datacenter allows unlimited VMs and Standard just two).
+HIRE a professional who does have experience doing this.
+Otherwise, you may wind up paying even more in later consultant fees or lost productivity or higher licensing costs (or all three) later because you didn't know what you were doing.
+Once Exchange is uninstalled, run DCPROMO and demote it.
+Once AD is healthy, add the new domain controller by joining the system to the domain and running DCPROMO.
+While I would pull off Exchange (especially if you have to leave SBS because you eclipse the 75 CAL limit (it's NOT a user limit - it's a CAL limit), then I'd probably keep WSUS and AD on the same server as both are relatively lightweight in a small environment and potentially costly to run on separate servers.
+Further, there is NO NEED to raise the functional level of the domain or forest UNLESS you have a need to do so (such as to use new features of Active Directory or other software you install requires it.
+Also keep in mind Server 2012 Standard offers TWO virtual licenses for the price of one copy of the server.
+You need to buy a copy (or more) of 2008 R2 Standard and if you use Exchange 2010, you'll need a copy of that as well in order to migrate away from SBS (or wait a month or so and get the license for 2012).
+(If you fail to complete the migration in 21 days, your SBS server starts shutting down every hour or two.
+Once transferred, UNINSTALL Exchange from the SBS system and PAY ATTENTION to the notes and warnings as you do.
+(When raising the functional levels, you CANNOT go back (generally).
+Yes, it's wasted money at this point... but it was a fairly cheap option (by comparison) to use insteda of the full products when you first got it.
+SBS MUST be the FSMO Master DC and cannot exist in a network with more than 75 CALs and without holding the FSMO roles as a DC.
+CALs are backward compatible (downgrade rights permit them to grant access to prior versions of server, so even if you don't move to 2012 right away, you can get the CALs right away to be legal and ensure you don't have to buy them over again.
+Forget about checking the Forest Functional levels - if you're installing 2008 R2 or 2012 it's just not important.
+Because of this, and the timing of your migration, I would wait if you could until the 2012 CALs are released (They may already be released - Server 2012 is RTM and should be available via volume license (meaning the CALs should be as well) within a month or so).
+THERE IS NO WORK AROUND THIS and a call to Microsoft won't help, so MAKE SURE you are ready!
+Not so much a problem in my experience going from 2008 R2 based systems to other 2008 R2 based systems, I HAVE seen repeated issues where the new DC doesn't properly start replicating with the old and you need to reset the BurFlags Registry entry.
+Understand, you have 21 days to complete this migration once you transfer the FSMO roles, so DON'T DO IT until you have done other transfers of data, Exchange, etc to ensure you have the most possible time.
+In conclusion, if you don't have experience doing this, I wouldn't cheap out and do it myself.
+DO Make sure upon completion that the DC is working properly and is also a GC (Global Catalog).
+2012 and I THINK 2008 R2 DO permit certain downgrades of functional levels if you haven't used the newer features of the newer functional levels.
+I would also encourage anyone who has NOT ever done this to NOT try to offer advice on how to do it.
+Instead, Run another DCDIAG check to make sure everything is working well.
+I agree, a FULL backup of the SBS server (ANY system) before a major change should be considered MANDATORY.
+Fix anything you cannot explain and verify is normal.
+Both Exchange and Windows will require ALL NEW CALs.
+(Exchange 2013 isn't due out for a while yet, so either get the CALs with Software Assurance (SA) so you can upgrade at no additional charge (SA costs about 50% more than non-SA versions and is in many ways a "prepaid" upgrade license since upgrades are largely no longer sold by Microsoft)
+Once everything and everyone has been migrated off, you can transfer the FSMO roles.
+You may not have to, but a DCDIAG should confirm the new DC is working appropriately and then you can proceed.
+Separating the services on separate servers is logical and efficient but USUALLY not cost effective.

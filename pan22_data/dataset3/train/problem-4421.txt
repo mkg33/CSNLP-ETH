@@ -1,0 +1,29 @@
+The idea behind my solution was if at each iteration we have the closest triplets we will be able to get the optimal absolute minimum.
+The code will be equivalent, but usable with more types than just vectors and arrays.
+For general code, prefer to think in iterators rather than indexes.
+Could you please suggest how to avoid excessive if-else statements in the solution.
+We create aliases for the minmax_range, which is a pair of iterators to range objects.
+Now let's go back to the algorithm and make it iterate:
+The use of the Solution class appears to be an artefact of your test environment.
+That means we end up storing a range for each input vector.
+Bringing all names in from a namespace is problematic; namespace std particularly so.
+We might make an exception to this general advice in the case of competitive performance-oriented programming; but then code review goes out of the window entirely, as speed trumps style and maintainability there.
+We use the dereference operator, which needs defining in range to give the current first element of the range:
+We have finished when that one reaches the end of its array; that means we also need to remember the end iterator for each array.
+I shouldn't have written it in the first place without a test to exercise it, of course...
+If we keep a collection of iterators (one for each of the arrays), then at each step, we want to advance the one that points to the smallest element (added complication - we need to tie-break by choosing the one that advances the least).
+If that produced a range that has reached the end, then we've considered all the possibilities.
+I  couldn't find a clean way to implement this logic.
+Also, this solution wouldn't be scaleable for more array's so a more general approach would be helpful as well
+We can now use a std::initializer_list to supply an arbitrary number of collections of any kind of (comparable) element.
+The loop control starts by incrementing the lowest range - that needs an implementation:
+For the std::minmax_element() call to work, we'll need a suitable < operator in our range.
+Since the function doesn't need any state, prefer to write it as you normally would:
+Also, it appears the code assumes using namespace std.
+The method is basically sound; it scales well to large vectors, but doesn't scale well to many vectors (as you note in the description).
+We can then call minimum_range from our test program much more simply:
+See Why is “using namespace std” considered bad practice?.
+And then provide Solution as a thin wrapper around it, like:
+I was unable to construct a test that proves the need for the tie-break in operator<, so I removed that code.
+Inside the loop, we find the new min and max (remember that min_range and max_range still alias the members of minmax_range), and update best if required.
+I'll use C++17 for this (so we can write an implicit constructor for range, using a deduction guide).

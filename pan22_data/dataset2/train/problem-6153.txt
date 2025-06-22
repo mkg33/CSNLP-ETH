@@ -1,0 +1,11 @@
+The solution is to delete the partition you created with fdisk and use parted to do the whole thing:
+Why you see the main partition when use fdisk -l? You are most probably seeing the 'protective' MBR partition that protects the GPT partition/s; that is stored on the very first sector of the disk... most SATA controllers that have problems with disck >2TiB and also some that only has problems with >3TiB can see the first 2TiB/3TiB of the disk, and so they see the MBR (first sector) correctly, but not the GPT, since GPT sotres data after the MBR and at the very end of the disk.
+Just try to boot the computer with a Live distro of any modern Linux, also give a try with the GParted live disk, SystemRescueCD, etc.
+It could be that the computer you used do not have compatibility with GPT and/or <2TiB disks, also could be the SATA controller not supporting >2TiB disk (i saw some on my hands, some on motherboards, some on USB enclosures)... and your is 4TiB, that is also worst, some controllers only support upto Three TiB, but not 4TiB or more per disk.
+P.D.: MBR fields structure limits usable zone to first 2TiB, because of fields length (MBR was designed with that limitation).
+Now, granted, I wanted to wipe everything on my drive anyway, so this is not recommended if that is not the case for you. Butmdadm --zero-superblock /dev/sdb did the trick for me in my case.
+Best way to check it: Boot from any LiveLinux, like GParted, SystemRescueCD, etc. and try to list partitions (with fdisk), modern fdisk -l can list GPT partitions.
+I don't know if this is still an up to date problem, but I had the same issue with one of my harddrives. I used testdisk and told it to analyze the disk. It found the missing partition and updated the disks partition table. Then I ran the command partprobe and the partition showed up in /dev/ fully functional.
+Try to ensure both things: You have GPT compativility (use gfisdk instead fo fdisk to check) and have a SATA controller not limited to only <2TiB neither one limited to <3TiB.
+While fdisk - depending on version - will try to create a partition on a 4TB drive, and even mark the partition type as GPT, that partition will not be recognised by parted.
+This is likely not your issue, but I had an issue with similar symptoms that was caused by there being a RAID superblock on the drive. 

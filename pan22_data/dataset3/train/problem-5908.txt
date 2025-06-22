@@ -1,0 +1,13 @@
+For more information read : https://dev.mysql.com/doc/refman/5.7/en/mysql-cluster-nodes-groups.html
+(bearing in mind you will have to clear cache file which gets generated in mysql-cluster/ folder) and ps aux | grep ndb or ps aux | grep sql exit them all before trying it out.
+Your config file looks to be pointing only to 1x SQL node.
+Another way to check is to find by typing all report memory and check if it has replicated the data only then proceed if it has.
+However, when I start everything up and show the nodes, I see this:
+I want the management server and two data nodes to run on mysql1 and two other data nodes to run on mysql2.
+It happens because your data nodes are still starting.
+What do I have to do to get 3 and 4 in one group and 13 and 14 in another?
+With this configuration I would expect, as per the MySQL Cluster documentation, that the two data nodes 3 and 4 would be in nodegroup 0, while the two data nodes 13 and 14 would be in nodegroup 1.
+Start them one by one, this way it will connect two data nodes to each SQL Node.
+Node-group IDs should be shown correctly once they are started completely.
+Wait and be patient till it connects and shows automatically on ndb_mgm > console that node x: has been started only then proceed.
+Put "NodeGroup" value in each data node and it will solve it .

@@ -1,0 +1,7 @@
+Be warned there's a learning curve with kubernetes, but according to your description this sounds the perfect use case.
+Each of your actual instance can be a pod on a kubernetes node, using quite larger instances you can reduce to a dozen of m3 or m4 machines with a single (or two) load balancer in front for the same quality of service.
+From your comment I assume a cpu load under 5% in average considering all instances together.
+I.e: keep both possibilities, k8S and usual ASG/instances based hosting.
+Beware of the 'all in k8s' trap, some things are better handled out of kubernetes, like large database systems or CPU/memory intensive task as they disrupt the load repartition and brings some more complexity.
+The main idea is that you should be able to host on fewer machines with a better average load and thus reduce your cost, the first net gain is the reduction in number of load balancers, but this could be debated with Application Load balancers which allow to route by context or host.
+You'll have machines used at 70% (ideally) and using an autoscaling group with a scaling policy to take care of spinning up a new node in case of burst.

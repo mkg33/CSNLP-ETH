@@ -1,0 +1,17 @@
+This will return your closest Domain Controller in Powershell:
+One can go a step further and query the dhcp for options 6, 15, and 44 to get the domain name, domain name server, and Wins/NetBIOS name server.
+(Get-ADDomainController -DomainName <Domain FQDN> -Discover -NextClosestSite).HostName
+Will return all Environment variables that start with "L" including the name of a DC.
+This is obviously not going to be all DC's in a multi-DC environment but if all you want is a quick way to find the name of a Domain Controller then from a command shell:
+This breaks down into three areas, two are protocol supported DNS-SD records:
+Then using dns to check for the _kerberos._tcp, _kpasswd._tcp, _LDAP._TCP.dc._msdcs, and _ldap._tcp SRV records:
+DNS and DHCP are the best way to check since there can be Unix/Linux machines on the network managed by the AD domain controller or acting as the domain controller.
+How can I find out the name/IP address of the AD domain controller on my network?
+/dsgetdc:domainname has flags for other information
+/dcname:domainname gets the PDC name for the domain
+For a computer that is a member of a domain the Environment Variable LOGONSERVER contains the name of the DC that authenticated the current user.
+This is because the operating system would preform these same requests and the underlining RFC for each protocol actually operates at a OSI level not the "insert favorite tool here" level.
+Plus, considering active directory is nothing more than Microsoft's version of Kerberos, LDAP, dhcp and dns.
+You can also run some other options to find out more:
+It would be better to understand and debug things at lower layers than layer 7+.
+An unmentioned, super easy, and quick option is to run this from a command prompt:

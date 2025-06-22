@@ -1,0 +1,14 @@
+It does have a few drawbacks (in that you need to create the pipes ahead of time), but it eliminates the need for a cron and allows you to used the logging pipe-filter of your choice.
+This may or may not be exactly what cronolog or another log splitter does already but it was quicker to write my own than to find out what others do.
+I'm afraid I don't really understand your question: Since nginx doesn't support any builtin logrotation, you will have to go with something like
+You can achieve this using a simple bash script and cron:
+Using the year and month in the logged request, the line is then written to a file or pipe which includes the YYYYMM computed from the logged data.
+I've written a simple program, datelog, to split common logs based on the logged date, as opposed to current system time when the log line is seen by the program.
+For log analysis it is important that each log really only contains the requests for each respective month, and each log should ideally be complete for correct analysis results.
+It's not enough to determine filename based on current time within the log splitter, because a slow request starting at 23:59:59 will then end up in the log file for the wrong month.
+I use this with nginx by way of a named fifo which is checked to exist before nginx is started.
+Note that there is a tradeoff in the program between error detection and buffered output, where datelog currently prefers buffered output for performance reasons, so please make sure that your setup really works, especially when using shell pipes, in order to not lose any log data.
+somewhere in /etc/cron.daily (you need to qualifiy the filenames above with full pathnames, of course) or install the apache2 utilities to have access to rotatelogs.
+While the world is divided on whether the humble named pipe is friend or foe, it is probably the simplest solution to your problem.
+Yes this is somewhat specific for the common log format.
+Please feel free to send me any feedback and of course patches!

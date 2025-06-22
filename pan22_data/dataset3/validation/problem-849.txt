@@ -1,0 +1,36 @@
+Practically, they can't be removed from the database but I don't want them in with my hot data.
+The overall benefit is the reduction of metadata in the table and performance improvement it brings.
+Similar to what Spredzy suggested, we use a timestamp field for deletion in all of our applications.
+We don't currently garbage collect on any except tables that contain blobs or texts; the space is trivial if the records are well normalized, and indexing the deleted field makes for limited impact on the select speed.
+It would simply need to do the same in reverse order: insert the row from the 'deleted' schema into the main table and then delete the row from 'deleted schema.
+If a copy of the deleted row is kept in a 'deleted' schema, then the main table with the hot data has a higher percentage of hot data (assuming it is archived in a timely fashion) and fewer unnecessary metadata columns.
+The very notion of 'deleted' is that the entry should not have been made in the first place.
+Again some extra logic & error handling is needed to ensure to avoid errors, problems with foreign keys and the like.
+The row in question in the main table can then be deleted.
+Deleting production data, at least in my experience, is something rarely done.
+A regular job can remove widow rows (rows whose primary keys have no references in other tables despite the presence of a foreign key.
+It can lead to more locking than updating a single column otherwise would take.
+Even still, in one of main tables 7.5% of almost 100 million entries have an entry in the 'DeletedDate' column.
+The column 'deletedDate' says that this row shouldn't actually be here but, for the sake of convenience, we are leave it there and let the SQL query handle it.
+There are now two operations instead of one as well as the extra logic and error-handling.
+The transaction holds locks on the table longer and there are two tables involved.
+Extra logic does, however, need to be added in somewhere along the line.
+As an answer to the question, the application would have to be aware of 'undelete's.
+Each user-defined table has an identical equivalent in the 'deleted' schema with an extra field holding metadata — the user which deleted it and when.
+It is bad practice to have a row logically deleted but whose primary/unique has columns in other tables which refer to it.
+When you say that "The latter solution would require additional application logic to ignore the 'deleted' records", the simple solution is to have a view which filters them out.
+While you don't need that exact behavior, it should also work for your case (copy before deleting).
+What I would like to see is a change at the database architecture level and the application level: create a schema called 'deleted'.
+I am used to seeing table rows with columns like 'DeletedDate' in them and I don't like them.
+From db point of view we don't remove objects, we just change the status and keep history for each change in the object table.
+The solution we use internally for this matter is to have a status column with some hard coded values for some specific states of the object: Deleted, Active, Inactive, Open, Closed, Blocked - each status with some meaning used in the application.
+Indexes & queries no longer need to consider this field.
+This way, our PDO always adds AND (deleted IS NULL OR deleted = 0) to the select statements, unless the model explicitly requests deleted records be included.
+Logically deleted rows are, by definition, cold data unless someone specifically wants to see deleted data.
+The Boolean is superfluous, as the timestamp's being set indicates that the record has been deleted.
+The shorter the row size, the more rows can be fitted onto a page, the faster SQL Server can work.
+Ruby on Rails has an acts_as_versioned plugin, which basically saves a row to another table with the postfix _version before it updates it.
+The main disadvantage is the size of the operation.
+Furthermore, every query that is written has to specifically exclude them and indexes need to consider them as well.
+Like @Spredzy I'd also recommend adding a delete_date column to be able to programatically purge records that haven't been restored after X hours/days/whatever.
+First the row to be deleted is inserted into its 'deleted' schema counterpart.

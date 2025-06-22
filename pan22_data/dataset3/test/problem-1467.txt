@@ -1,0 +1,18 @@
+Make sure your web server runs as a user with limited permissions and with a restricted group as its group.
+If this is a problem, you may want to create a dedicated user for your web server.
+You don't want it under your content directory since the web server can then serve it to site users.
+(If you remove execute privileges, then they can't cd to it.)
+So if your web site root is /var/www/html make a parallel /var/www/includes directory.
+If your web server runs as nobody (an unprivileged user that some distributions run multiple server processes under), bear in mind that other processes running as this user may be able to get at the directory as well.
+Consider whether ACLs are appropriate - these would allow you to provide the web server group with read access to the files, the maintenance group with read and write access, and still deny the general public access.
+Then make sure the files are accessible only by the user and/or group, by removing public read and execute access (public write access should almost never be granted).
+Assuming that you want web server processes to be able to read and write files in (but not serve up content from) the directory, you want to
+This will entail changing the web server config and/or startup scripts in addition to creating the user and group.
+A dedicated group will ensure that such files are not inadvertently opened up to writes by other members of a shared group that you might stick the web server user in.
+You could restrict access using .htaccess but that is an inferior solution to simply moving your includes directory out of the content area.
+Since I'm recommending mode 0700, the group is technically not important, but you have to remember that the web server may create files with wider permissions (664 or 775) inside of this directory if the umask of the web server user is set to 002 instead of the more-common 022.
+If you remove read privileges they won't be able to see what files are there.
+Put the includes directory outside of your web site root directory.
+Those who maintain the site also need access to the material - preferably not by wielding superuser privileges.
+chmod won't do what you want since the httpd process is what will be accessing all of your files, not actual shell accounts.
+Without ACLs, you can only have one set of group privileges.

@@ -1,0 +1,16 @@
+Archived logs are used to do a point in time recovery.
+Archive logs are mainly used to recover changes that occurs since the last backup.
+Instead of a cold backup, I suggest you to do an hot backup and delete the old archive logs right after.
+Or do I need to tell Oracle something before I delete them?
+On 10g, this can be done by using the following command at an RMAN prompt:
+Since the database itself is operation during the time of the backup, then additional information is written to the log files during the course of the backup, so you want to (at least) keep log files generated from when the backup started.
+Say you have backups on Jan 1st, Jan 8th and Jan 15th.
+delete noprompt archivelog all completed before 'sysdate - (${KEEPTIME}/24)';
+I have an Oracle 9i which creates Archive Logs since the year 2007.
+where ${KEEPTIME} is the amount of hours before 'NOW' you'd like to keep
+(Since you're doing cold backups, you could say like 2 or so, I'd use 24)
+I'd say, use RMAN to purge all your archivelogs after every succesfull cold backup.
+Deleting the archived logs with RMAN informs oracle that the files are deleted, whereas when you delete them manually, the files are still 'registered' in the controlfile (v$archived log etc. )
+If you never want to go earlier than your last cold backup, you could delete all archived log files from prior to when that cold backup was taken.
+If you wanted to restore your database to the point it was on Jan 10th, you'd reload the Jan 8th backup, and use the archived logs from between the 8th and the 10th to bring the database up to that point in time.
+(From time to time I do a cold backup of the database.)

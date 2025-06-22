@@ -1,0 +1,10 @@
+To solve all three issues, this function should use an existing mysqli connection object.
+Get rid of the conditional call to addslashes(), because it redundantly tries to do the same thing as real_escape_string(), but inaccurately.
+If at all possible, I suggest that you consider replacing it all with a standard solution such as PDO.
+Magic quotes was an ill-conceived idea that in fact has been deprecated in PHP 5.3 and will be removed altogether in 5.4.
+PHP is not my area of expretise, so just some generic notes:
+It's good that your application is using some kind of database abstraction layer, but I get the feeling that you are reinventing the wheel, poorly.
+(Include the stripslashes() routine early in your script so that your entire program benefits.)
+The only good reason for calling get_magic_quotes_gpc() would be to detect whether you are running on a server that has this unfortunate feature enabled, and undo its ill effects with stripslashes() if it is.
+Your motivation is justified, but the revised code isn't quite right either.
+Revising the function to use $conn->real_escape_string() protects you from SQL injection problems.

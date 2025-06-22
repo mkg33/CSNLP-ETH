@@ -1,0 +1,12 @@
+I'm trying to create a restful API using mod_rewrite.
+PHP gets $_REQUEST['request'] as cards/9VwQLli f0ogFl19AVRFLuztbp8cP0rYCgXBu3H9 Dc=Be'.
+I suppose as a hack I could just convert all + characters to _ and all / to -, or maybe even double url encoding it, but I was wondering if there was a better way.
+The web server is allowed to decode percent-encoded characters which don't decode to special characters before applying rewrite rules, and is allowed to decode the remainder of percent-encoded characters before passing the data to your web application.
+Note: I tried the B and NE flags but they didn't have any effect.
+What you should be doing is applying the front controller pattern in your web application, and handling all the percent decoding (and request routing) yourself.
+9VwQLli%2Bf0ogFl19AVRFLuztbp8c%2FP0rYCgXBu3H9%2BDc%3DBe - the %2F is the slash) I get a 404.
+And to make things worse, if I add a slash in there (e.g.
+In this case you will simply redirect all requests that don't match a file or directory to /index.php and then read the URL out of $_SERVER['REQUEST_URI'].
+can have + or /) and they are being decoded before it gets to PHP.
+However the path could contain base64 encoded strings (i.e.
+This is how major PHP-based web apps like WordPress and MediaWiki handle this.

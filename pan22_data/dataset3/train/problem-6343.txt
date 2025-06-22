@@ -1,0 +1,12 @@
+You really don't have much to say about the path incoming traffic takes in the Internet, and you need the cooperation of the peer ASes.
+BGP features will only allow you to tweak the actual prefix advertisements/preference, not anything at layer 7.
+This usually works because your prefixes will be advertised with a longer AS_PATH by your least preferred peer AS.
+You can't route based on layer 7 application using only BGP.
+For active application inspection and policy routing you would need an external service provider to act as a reverse proxy for your public subnet.
+I haven't heard of anyone offering this type of application load balancing service, but it doesn't seem unrealistic since there are security services that operate in this same manner in order to "scrub" malicious traffic before sending it to your site.
+Your communities mean nothing to any other AS unless you have an agreement with that AS for what they mean.
+This becomes exponentially more complex if you are trying to do this with multiple peer ASes because you need to convince one AS to not send some of your traffic to your AS, but to a completely different AS.
+You could also simply not advertise prefixes out some peer AS connections, but this doesn't really give you a failover option.
+If you only have one other peer AS, you can probably negotiate with it to use MED, but that is not something you can use with multiple ASes.
+A typical way to do this is to advertise your prefixes with your AS tacked on multiple times in the AS_PATH toward the least preferred AS.
+Then you would build a GRE tunnel from each of your ISP connections to this provider and they forward you the traffic down these tunnels.

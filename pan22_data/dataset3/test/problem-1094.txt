@@ -1,0 +1,10 @@
+Vlans to your firewall cluster should not cross the VPC peer-link.
+Not too sure on the multicast front as we don't use it in our environment and I haven't really looked into its behaviour on the 7K's.
+The loop prevention only states that a packet cannot ingress on the peer link if it is destined to go out another vPC enabled port.
+Have a look at this : http://bradhedlund.com/2010/12/16/routing-over-nexus-7000-vpc-peer-link-yes-and-no/
+As the firewalls aren't part of a vPC they won't be part of the normal vPC loop prevention.
+There may be some hair-pinning happening within the interconnect architecture on the N7K if you are using F series cards that is being detrimental to routed traffic.
+Also, make sure you have a port-channel between N7K for non-vpc vlans.
+What model of line cards are you using in your N7K chassis?
+If you do not have a second port-channel between N7K's, then this could be your problem.
+Usually if you are running a routing protocol down on the switch stack the recommended design would be to not have it as a member of a vPC and just use OSPF to give you the same advantages that vPC gives you at L2.

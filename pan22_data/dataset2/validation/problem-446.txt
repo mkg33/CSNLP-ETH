@@ -1,0 +1,8 @@
+Since all the stuff mentioned is related to sending and clients, but we had similar issues at work, some further searching reveled that one could specify the linger option for listeners as shown in the example over here: http://msdn.microsoft.com/library/system.net.sockets.tcplistener.server.aspx
+Try throwing a '-b' flag on your netstat command.  It will tell you the name of the executable that is using the port.  Then find that proc in task manager and kill it there.  If that doesn't work post what the executable is that is holding the port open.
+To avoid endless waits on the socket, your program should use the setsockopt function with the SO_REUSEADDR and SO_RCVTIMEO parameters :
+In brief: There's an option that tells the socket system to keep a socket open even after it has been closed if unsent data is present.
+If yes than you can kill it from there, but only after you investigate what it actually is (you can see all the dlls loaded into the process)
+Some colleagues talked about ports being held by the OS after application termination/closing for about two minutes. Given that, it would be interesting to hear whether the port is still held after a certain amount of time.
+In your C# app you may specify any related options via Socket.SetSocketOption: http://msdn.microsoft.com/en-us/library/1011kecd.aspx
+Interesting to note that netstat can sometimes return a pid but not the corresponding executable name !

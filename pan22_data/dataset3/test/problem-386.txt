@@ -1,0 +1,27 @@
+You say you have the SSD's configured in RAID 5 with 4K Blocks - if that 4K is your stripe size then that's way off.
+That makes sense for the type of use case you describe.
+That's what makes them handle the higher loads better.
+The 50Meg/sec random read rate depends on IO size - for small reads (in the 4K range) on a decent SSD (Intel X-25E, 35k random read IOPs) you should see 140Meg/sec.
+The stripe size should be a multiple of the SSD read chunk size which will be much larger than 4K depending on the SSD the read chunk will be 64k/128k or maybe more.
+With a decent controller there should be very little overhead reading from a RAID 5 pack - there is data on all disks (the distributed parity thing) so reads should be able to be sent to all disks in parallel provided you have enough requests for the controller to do its thing.
+Try experimenting with the stripe size, without knowing the model of SSD and your controller I can't give you any recommendations on what might be a good size but remember to check whether your controller can actually scale past the IO rate and throughput numbers you are already seeing, if the controller is maxed out then that's the first bottleneck you need to fix.
+SSDs have very low access times, so they are very good at random I/O, which I believe is what you're trying to get at when you ask if they "scale linearly".
+You are correct that TRIM can't be used with RAID at the moment - to do it right would require a mapping between what the OS sees as deleted data blocks and how that translates into blocks on the physical disks.
+The 15K spinning discs also scale linearly, they just are scaling from a much smaller position.
+If you're certain that writes aren't confusing the issue then you can discount that though.
+If the SAS drives are a decent indicator of your IO patterns then it seems that your read IO size is about 64k - assuming the drives are OK and the pattern is mostly random.
+If your IO pattern is mostly reads and you are not repeatedly filling and deleting data then TRIM support is less of a concern for you.
+Make sure you have these spread out across an appropriate number of SATA/SAS buses and that the host adapters also have enough bus bandwidth on the motherboard/backplane.
+I've also heard the same about TRIM and RAID, but I haven't had experience with it in practice.
+Cheaper consumer grade drives will be a bit slower but your RAID pack is seriously underachieving no matter what drives it's using.
+Stripe sizing and partition alignment might be taking a sizeable chunk out of this if you haven't factored those in.
+Also, if your application is read-mostly, it will be less of an issue because the drives will have time to "catch up" erasing blocks after you write data.
+Be aware of bus limitations though; if you are pushing 300MB/sec with 8 drives, 12 drives will get you closer to 500MB/sec.
+The problem might be that your controller can't handle either the overall IO loads or is maxing out at the data rate you are trying to push - what type of controller is it?
+The other thing is that if there are any writes going on at all then they will dramatically impact things - with RAID 5 your write IO capacity is a quarter of the read rate (with a good controller, worse with a bad one) and SSD writes are generally slower than reads so the write penalty for RAID 5 with SSD's is generally closer to 6x.
+The 15K spinning discs can only do 45MB/sec and then the load goes up because their average access time is 25 times higher than the SSDs (5ms versus 0.2ms).
+Particularly, enterprise drives are less of an issue with that.
+RAID-5's overhead is mostly on writes, so if your load is read-heavy there will be little if any overhead compared to RAID-0.
+It really depends on the SSDs though, whether they need it.
+That isn't available right now and I wouldn't hold my breath for it any time soon, it's a concern only if you are writing a lot to the drives and repeatedly filling then deleting the data.
+If the same applies to your SSD's then your only getting about 600IOPs per drive which is pretty poor for an SSD IMO.

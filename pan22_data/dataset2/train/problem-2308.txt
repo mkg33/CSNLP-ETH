@@ -1,0 +1,7 @@
+You may have missed an opportunity during your previous experience to fully understand what went wrong, and why.  
+You should also be able to SHOW SLAVE STATUS; on each machine, and see data that matches SHOW MASTER STATUS when run on the opposite machine.
+In master/master, both servers are each other's master and slave and there is no real distinction between them -- only an administrative distinction, as you seem to understand.
+However ... if your servers are set up correctly, then you should be able to make a "test" change directly to the data on the machine you call the slave, using any account with the SUPER privilege (which is immune to the global READ_ONLY setting) and it should replicate to the master.  If that isn't what happens, then your setup is not correct and you need to understand why.  
+If set up correctly, then yes, SET GLOBAL READ_ONLY = 0; on the former functional slave will allow direct writes by nonprivileged users.
+Once you can see replication events going both directions and being executed no matter which direction they originate from, then yes, disconnecting the clients from the former functional master and connecting them the the former functional slave should be a relatively painless transition.
+Until these things are true, then the answer to the question is no, it absolutely is not safe, because your system isn't working the way you believe it is.

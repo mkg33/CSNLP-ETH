@@ -1,0 +1,19 @@
+Looks like global /etc/procmailrc file is the best place to do it.
+Procmail can extract the Subject: header into MATCH and then you just need a single formail invocation for the entire recipe to succeed.
+* is superfluous in the first regex; Procmail is satisfied if a match is found anywhere in a line.)
+You can test from the command line (but this of course requires that your recipe file doesn't override DEFAULT):
+Anyway, you want to avoid external processes as far as possible.
+Once you are satisfied that your code works, maybe you'll want to prefer formail -I over formail -i which leaves the now rather useless Old-Subject: in the headers.
+(Your prose description says BULK but the code says BULKMAIL.
+I want to change subject for all subscription list emails by adding [BULK] to its.
+It is obviously easy to change if your code was wrong.)
+Somebody should supply the Webmin folks with a hint that Procmail contains a regex engine, so calling /bin/test to compare two strings is really, really inefficient and generally horrendous.
+The convention to hard-code the path to formail seems clunky (and you fail to do that in one of the places where you call it) but if Procmail gets invoked with a really wonky PATH that could be a reason you see failure when you don't specify fully the path /usr/bin/formail.
+I am unable to reproduce your problem, and you are not posting any diagnostics, but I can suggest a different recipe which might avoid a couple of possible error conditions.
+But this filter also drops all headers for some emails (my changes separated by dashes):
+There is no reason to repeat the List-Unsubscribe: conditions inside the braces -- if you are inside the braces, you know it matched.
+If you still can't get this to work, updating your question with a similar transcript whould be most helpful.
+This is hardly a crucial change, but should be more efficient, as well as easier to read and debug.
+The Webmin stuff is truly atrocious but apparently it's not your own code.
+Individual .procmailrc in user home dir rules with this code works perfect but its hard to manage.
+The special operator \/ causes Procmail to collect the matching string into the variable MATCH, and we then use that instead of the external formail -xSubject: you were running.

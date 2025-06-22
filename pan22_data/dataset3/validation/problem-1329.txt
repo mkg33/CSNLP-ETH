@@ -1,0 +1,13 @@
+The complaints you're seeing from the slave servers should just be warnings, and can be ignored.
+All DNS is done on a standalone machine, but is configured to send-notifies to the local master, which is set to 'also notify' the local and remove slaves, this way they updates can only come from 1 IP Address in my local IP Space.
+I'm wondering about the proper way to set up a master and slave DNS.
+This allows them to perform all zone maintenance on that hidden server without the risk of it being inundated by client queries.
+I read somewhere that your master DNS server should not have an NS record in your zone file - that's sort of secret and then your slave nameservers have NS records and are listed in the whois record.
+This came up because my slave nameserver complains that my master nameserver is not authority for a domain it definitely is master for a domain where the slave nameserver has an NS record, but it doesn't complain for a domain which does not have an NS record for the slave.
+If however the configuration isn't actually working, please update your question with more detail.
+Also, I run Bind9, but also run DBJDNS (using scripts to retransfer from master on update) which allows me to use a simple, webui and still have a secure slave backend.
+It's not uncommon for large operators to run a "hidden master" configuration.
+Can someone confirm the right way to set up the zone file and whois for master and slave nameservers?
+I do it another way, in SOA my master is ns1 (slave zone), I have 3 local slaves ns2, ns3, and ns4, and then 2 external nameservers.
+I also layer added TSIG as my external slaves are using public internet to communicate.
+This is all personal preference, but the thing to remember is you do not want your published Name servers to do any sort of updates from unsecured networks, only those you maintain, trust and secure, and then layer application security (TSIG) on top.

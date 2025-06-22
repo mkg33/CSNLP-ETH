@@ -1,0 +1,8 @@
+What you want is a memory profiler, Which Unity does have. Here: http://docs.unity3d.com/Manual/ProfilerMemory.html
+But your assumption is mostly right, if a gameObject is not visible to the camera it is not drawn, and it uses less resources, but it still must consume some. The gameObject still exists in memory, including all the textures, models scripts etc.. it also still consumes CPU time through the Update and FixedUpdate methods (and various others described here).
+In short, they consume negligible resources on their own. But why would you want a bunch of game objects just sitting in your game doing nothing? At the end of the day, what you actually make those game objects 'do', is what is going to cause any sort of overhead- and how much resources that requires is very much on a case by case basis.
+The question should be how much resources does a game object consume, and to that end I think this is a pretty solid answer: http://answers.unity3d.com/questions/280455/how-much-memory-a-gameobject-consume.html
+Anything that is in a program consumes resources; You don't think programs run on simply hopes and dreams, do you?
+This is an important bit of optimising a game, because even if your objects are not inside the frustrum at a given frame (i.e. visible), some draw calls (shaders) are still launched for them, therefore decreasing performance.
+But usually the major slowdown is the drawing, a small amount of CPU time is used to determine that the object is outside the camera frustum (bounds), but no drawing is done.
+I think you should also know about Frustrum Culling, or hiden surface removal: http://en.wikipedia.org/wiki/Hidden_surface_determination

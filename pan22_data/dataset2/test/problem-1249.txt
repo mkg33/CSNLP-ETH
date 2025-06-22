@@ -1,0 +1,8 @@
+Now, what happens is that when more than one user selects the same available hour, I need to be able to guarantee 100% that only the first will be able to schedule an appointment, and the other will be faced with an error.
+Two (or more) users can select the same service and staff to perform that service, and when that happens, all the users will be presented the same available hours.
+I've been banging my head against the wall trying to solve this problem and I couldn't come up with a solution that absolutely guarantees two users can't book an appointment for the same time.
+However, the performance of this solution is a big concern, and I read that the order of sql commands is not guaranteed, which means if two sqls hit the server with a microsecond of difference, there is no guarantee the first will have precedence. Furthermore, something tells me this doesn't really solve my problem.
+Then, before proceeding to process the user request, check this table to see if nobody else is currently scheduling for the same date, time, and staff.
+The closest I've come to a solution is to create an extra table, such as "AppointmentsInProgress", and add the starting date and time and the staff to the table, and make both columns unique.
+2 - Upon clicking "Book", the server receives the date and time and the staff the user selected to perform the haircut. Based on this information, the available hours the selected staff has are calculated on the fly and sent to the user, who will see something like: 10:00, 12:00, 13:00, 15:00, for example.
+Note that this is a bit different from transport and theather domains, because I do not have a table with all the available hours to simply flag them.

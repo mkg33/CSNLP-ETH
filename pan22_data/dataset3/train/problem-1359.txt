@@ -1,0 +1,19 @@
+For the sake of simplicity, let's assume this is occurring on a touch screen.
+I have a series of 'images' described by a mixture of connected lines and curves.
+Important that your error calculations need to be compared against the original line shape, NOT the progressively optimised shape, or else you can end up with the optimised line devolving away from the drawn shape.
+This simplified representation is compared against a database using the Levenshtein distance.
+You have a series of points which represent samples of a continuous (but not necessarily straight) line, and you want to represent that line using fewer samples.
+Look inside vpDrawable::OptimiseOutOneIndex() for my implementation of this process.
+I have sample code (from years ago) available here:  http://www.vectorstorm.org/svn/repos/VectorStorm/trunk/Games/VectorPhysics/VP_Drawable.cpp
+You continue finding "what's the least bad point to remove" and removing it, as long as the total error induced in the line is less than some maximum "error" threshold.
+You then repeat this process, for each remaining point.
+It works by decomposing the input stroke into a set of vectors which are multiples of 45 degrees.
+* Note: the Levenshtein distance can also be applied to the other algorithm I posted here.
+Here's an implementation of another algorithm: http://www.bytearray.org/?p=91
+I'm having trouble figuring out a good way to break the user's drawing down into lines.
+The drawing is considered complete and analyzed when the user's finger leaves the screen.
+Basically what you're trying to find is samples which don't contribute much to the overall shape of the line.
+Each time the user's finger moves, the dx and dy is recorded.
+Is there any well known approach to this problem, a C++ library that solves it, or any good articles/technical papers on how to achieve this?
+The fastest way to do this, in my experience, is to, one at a time, calculate how much "error" would be introduced by removing each sample, and then actually remove the one which results in the least total error.
+Users will draw on the screen, free hand, and my goal is to break their drawing down into a series of lines and curves that can be matched with the 'images' in my set.

@@ -1,0 +1,14 @@
+After you do so, run sestatus again and you should see the following output:
+type=AVC msg=audit(xxxxxxxxx.xxx:xxxx): avc:  denied  { search } for  pid=xxxxx comm="sshd" name="xxxxxx" dev=xxxx ino=xxxxxx scontext=unconfined_u:system_r:sshd_t:s0-s0:c0.c1023 tcontext=system_u:object_r:default_t:s0 tclass=dir
+The errors will be logged in /var/log/audit/audit.log and you can use the audit2why tool to have the system explain any SELinux denials that may have occurred.
+What this means is that your sshd process is confined by the loaded selinux policy and is not able to accessing the file system path in which your authorized keys file is sitting.
+Moving forward, you should probably create custom rules which allow access to the path you're after, but that is beyond the scope of this help.
+To verify that the selinux policy is active, run the sestatus command and you'll see the following output:
+'PubkeyAuthentication yes' in /etc/ssh/sshd_config ?
+The first thing to point out is that the /var/log/audit.log is logging SELinux activity.
+The easiest way to fix this is with restorecon -R /home/user/.ssh/.
+I'm guessing if you look a little further back in that log, you'll see another entry that looks something like this:
+Try your ssh connection again, and given that all of your other configuration is correct, it should work.
+To quickly test whether this is the problem or not, you can temporarily set SELinux into permissive mode by issues the setenforce permissive command.
+If you've already set the user/group permissions properly, you may be running into SELinux issues.
+To make this change persistent (survive reboots), you need to modify the /etc/selinux/config file and change:

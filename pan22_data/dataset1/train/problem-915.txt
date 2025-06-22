@@ -1,0 +1,11 @@
+If you define a keybinding which consists of multiple characters, e.g.
+zsh has to wait until it is clear that you don't want to key in this key binding. In the above example the key stroke f will be delayed for some time. The delay will continue if you press o, but will be aborted if you press a key other than o.
+So, to narrow down this issue start with a clean shell, i.e. without loading the usual config files by issuing zsh -f. The issue should vanish now (as you confirmed in the comments).
+Next, check especially your ~/.zshrc file, but also some system-wide configs in /etc, for offending bindkey  statements.
+And finally, as you write in the comments that you want to bind to CTRL + &leftarrow;, construct the correct line. To do that you need the code your terminal sends on pressing this key combination. You can use e.g. CTRL + vCTRL + &leftarrow;, because CTRL + v switches zsh to some kind of literal mode for the next key press.+
+On xterm you get ^[[1;5D, so the correct bindkey command will be
+Please note that these key combinations are really different for different terminals!
++If it is not working, issue bindkey -e beforehand.
+When inputting specific characters in zsh shell (in my case e and ;) they don't show up immediately after pressing the key. Instead they only show up a short time after releasing the key. When these keys are held down they do not show up while holding the key, but again only show up a short time after releasing. All other keys do show up immediately after pressing the key, and also show up  continuously while holding it down.
+If I instead run bash in my terminal emulator, the problem is gone. 
+I can't find anything on this, and thought I might be missing something obvious. Any help is appreciated.

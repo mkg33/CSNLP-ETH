@@ -1,0 +1,24 @@
+AES is faster than 3DES because of the algorithm design (number of rounds, etc.
+It should give you a much better idea what is happening.
+I don't know much about SonicWall products, but I'd assume that the firewall product should be able to pass traffic at line speed for a T1, so there may be some issues there.
+This mismatch would cause significant fragmentation which would translate into lower speeds.
+The difference should be rather minimal (10% at most I'd say).
+Anyways, I am pretty sure that it's not meant to be used like that.
+Did you check so you don't usually run with IPComp?
+This is even more true in the case of 3DES which is DES done three times.
+Disabling it will give you a little performance boost by deleting all the overhead headers and encryption.
+If you want to have a tunnel without encryption, you shouldn't be using IPSec but PPTP or L2TP.
+The speeds we are speaking about here are so slow that almost any hardware can do the encryption without noticeable delay, so I would guess the encryption overhead is a red herring.
+I don't know your exact setup, but one common explanation for worse performance turning off encryption behaviour is that you don't only use encryption, but also compression.
+I'm not familiar with the Sonicwall VPN, so I'm just guessing but it looks to me like it may be a QOS thing.
+), not because of the key size/encryption strength.
+Encryption is a tedious process that requires CPU time.
+I'm not sure why you'd see performance that's worse when you turn off encryption, but if you don't need encryption, as Antoine Benkemoun said, you don't really need IPSec, especially not ESP (tunnel mode).
+when there is no encryption you may have to manually set the MTU value for the interface to match the network it's on.
+Just maybe the unencrypted traffic is falling into the "all others" category, which often has a low setting.
+MTU shouldn't be a problem in this situation, but you should take a look anyways.
+Turning off both encryption and compression significantly reduces performance, especially if your packets start going over the MTU and getting fragmented frequently.
+You should also check if there is anything weird on the line when you turn off the encryption.
+It surprises me that you can disable encryption in IPSec.
+I recommend sticking a sniffer such as wireshark in there and having a look both with and without encryption turned on.
+My first guess would be MTU mismatch, when no encryption is present.

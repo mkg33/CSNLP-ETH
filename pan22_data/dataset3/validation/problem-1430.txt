@@ -1,0 +1,22 @@
+Here are two that I found helpful but there are others.
+Once you get the boxes online with an administrative user, you should be able to do all your administration remotely with a little scripting.
+Any system that assumes I'm perfect is, itself, not.
+For some sets of systems I have a config script which tests against a "default install" and systematically sets up everything the way I want it modified, removing some packages, installing others, setting permissions, synchronizing user files, etc.
+Cobbler is just used to manage the network pxeboot deployment of the install media and preseed/kickstart files.
+I suggest you remaster a CD with the preseed option as explained on the linked guide, and automatically configure the rest using puppet.
+I know that Linux Mint (an Ubuntu derivative) has an OEM mode that allows you to save a package set and any other customization to use on multiple installs.
+This is used in addition to preseed which is still required to automate the install process.
+http://www.ubuntugeek.com/ubuntu-linux-provisioning-automation-with-cobbler.html
+You will find the world a little more fragmented than MDT, but it can all be done.
+http://terrarum.net/administration/deploying-ubuntu-with-cobbler.html
+Then puppet can take over from there for configuration and change management.
+Some desktop environments like Gnome also have their own config deployment system where you can control permissions and things like the contents of menus across a mass deployment.
+If you have a puppet recipe of any complexity you'll want to test your work.
+d-i preseed/late_command string sed -i 's/START=no/START=yes/' /target/etc/default/puppet
+You can use a preseed schema to do the initial install.
+Puppet will re-order the configuration steps on each run.
+When you do and it succeeds you'll assume that it works on all of your other hosts.
+EDIT: I forgot to mention FAI, Fully Automatic Installation.
+There are a few blog posts out there that outline using Cobbler with Ubuntu.
+Proponents will tell you that you can setup your requires appropriately so that it works well.
+I would recommend any other configuration management system over puppet.

@@ -1,0 +1,22 @@
+It's prudent instead to have a range checking function wrapper so that bad values (which might more plausibly be a result of a program error somewhere) will not cause the system to crash.
+Which you choose will depend on details of the real state machine.
+Here's a range checking function that could be used:
+Note that this construction makes this line unnecessary:
+In this case, there is no need to repeat the name Event or the name State in the typedef.
+Note that it also assumes that each function is of this form:
+That makes it a little easier to maintain the tables.
+The s and e variables are both declared int but they're really not.
+Instead, it would make more sense to me to have each function return the new (end) state, or even better, have the state_transition contain the transitions implicitly.
+The event enum is called Event (singular) but the state enum is called States (plural) which is confusing.
+The problem with that is that anyone reading the code might easily overlook those two possibilities because they're not in the state table.
+I see some things that may help you improve your code.
+I'd recommend using the singular form for both names.
+The STATE_END and EVENT_END are not represented within the state table.
+Thanks for the comments from @Edward, I have re-written the code ..I have posted the code here , I will later post a simple code with proper state diagrams ,
+Since C99, the compiler automatically generates the code corresponding to return 0 at the end of main so there is no need to explicitly write it.
+What happens if some energetic gamma ray flips a bit in your embedded device's RAM and the value for the state goes from 1 to 129?
+The answer is that the code will use whatever arbitrary code is that far off the end of the state table.
+For example, if it's a state machine for a communications protocol, the event might be "received a message header" and the next state may depend on whether the message header is valid or not.
+Using this, there are no longer any global variables and the main function can look like this:
+On the other hand, the EventId and StateId members are never used and should be omitted.
+While you might only currently have a need for a single instance of your state machine, a better approach would eliminate the global variables.

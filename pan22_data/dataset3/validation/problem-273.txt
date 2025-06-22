@@ -1,0 +1,24 @@
+CACert allows you to submit CSR's with many SAN's.
+I think your best/only real option here is to have a separate SSL certificate for every unique domain name but this poses another issue.
+So Microsoft and at least three CA's invented a new way to take your money by reusing exploiting existing technology with new rules.
+What I want to know is can I build a certificate request or find a certificate provider that will issue a certificate with multiple CNs (Common Names) such that secure access to https://www.abcde.com -or- https://www.qwert.com doesn't appear to the browser to be mismatched to the CN in the SSL certificate?
+Looking here may help you start down the road you want to go: http://rrr.thetruth.de/2008/04/openssl-certificates-with-multiple-domains-common-names/
+This is a very normal setup, with the exception of using a SSL wildcard certificate (*.abcde.com) because the sub-domain may vary depending on business use of this app.
+Usually, multiple domains are added to the same Certificate under subjectAlternativeName headers, not common name.
+According to Ken Schaefer, it's possible to generate a CSR with multiple CNs.
+This poses a problem because my certificate has been issued for *.abcde.com.
+We now have a desired business use of the exact same application where by it would be accessed via the URL http://www.qwert.com, and of course, have a secure portion accessed as https://www.qwert.com.
+We have a e-commerce application that runs a under the URL http://www.abcde.com.
+I currently don't know of any SSL issuer that does this type of thing.
+Every SSL certificate is going to require a separate IP address (assuming you want to run default port for these).
+You might be able to get away with self-signed certs... but then your browser is going to start complaining... so that's no good.
+Ultimately, it is up to the policy of the CA to decide which fields to consume from your CSR.
+This sub-domain/domain name variance of the application has to do with customizing it's look-and-feel and transaction-cut percentage for selected partners of ours.
+And will any certificate vendor fulfill a request like this?
+Depending on how many domains we're talking about...
+First off, this isn't a question about sub-domains or host headers and SSL.
+These are the UC Certificates linked to by IceMage.
+The application also has a secured portion, accessed as https://www.abcde.com.
+As I was reading your question my initial thought was to "wildcard SSL certificates" but that's not what you're trying to do... you're trying to use MULTIPLE DOMAINS under the same SSL.
+You should check out something called Unified Communications Certificates.
+Personally, if you can get away with it, I'd be in favor of option #2 as its WAY easier to maintain a single wildcard cert than it is to mess around with lots of multiple certs.

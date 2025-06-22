@@ -1,0 +1,10 @@
+Have you tried adding a call to the script in your /etc/init.d/boot.local? Try it and see if that works better. There are several other boot.* files that are run at different parts of the startup.
+There should definitely be a way to do what you want from the /etc/rc*. Another alternative you might want to look into is cron. With vixie-cron it's possible to specify tasks to run on reboot with the @reboot keyword in your crontab:
+As mentioned in the article, it's a great way to allows users to run commands at startup without granting them root access.
+The above table is from a blog post by Jeremy Zawodny which I'm not allowed to post a link to as a new user. Search for "vixie-cron specify tasks on boot" on Google, and it's the first result.
+It's also worth checking /etc/inittab to ensire that you're booting into runlevel five by default, look for a line like:
+initscripts must have a certain syntax. You can check one of them for an example, but what you need is /etc/rc.local
+That's from my debian laptop and shows that I boot into runlevel two by default (which is debian's default).
+On RedHat derivatives (like openSuSE) runlevel five is the default when running X11, runlevel three is the default to boot to the console.
+Besides: you may want to rework the script to honour start / stop arguments, and add a K99something symlink to make sure the services are properly stop when leaving this run level.
+you should have your link named S99something, where S stands for starting, and 99 stands for the order in which the scripts in that directory are started. see the other link in that directory...

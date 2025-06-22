@@ -1,0 +1,15 @@
+FWIW, this can be fixed by adding -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 -D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 to the compiler flags.
+According to documentation, this toolchain is compatible with current Ubuntu, both 32-bit and 64-bit.
+It's essential to use this toolchain if you want to build the kernel and drivers, as kernel objects require perfect ABI compatibility, but having perfect compatibility won't hurt if you're building userspace binaries as well.
+As @JeremyBarnes pointed out, to ensure ABI compatibility of your application with the installed stdc++, they both need to be compiled with the same SYNC flags.
+Without the fix on dockcross/linux-armv6 and dockcross/linux-armv7:
+This is sensible for the Pi 1, but is a big shame for the Pi 3 which can quite happily use atomic shared pointers.
+The command line flags above reset them to how they are by default on the Pi.
+The easiest way to a binary compatible cross-compilation is to install the toolchain used by Raspbian developers.
+Cross compiling is worth it; Tensorflow is already slow to build on a beefy server; must take an incredibly long time to build on the Pi!
+The ABI of a shared pointer depends upon how these flags are defined, as it inherits from a base class which uses a default template argument for the locking policy.
+With the fix on dockcross/linux-armv6 and dockcross/linux-armv7:
+{8,9}/bits/concurrency.h, the default lock policy depends upon these defines:
+Hence, changing these flags changes the layout (because it changes the base class layout) of the std::shared_ptr<...> objects in the standard C++ library.
+In the compiler that comes with the Pi, with which Raspbian was built, they are set as follows:
+I was getting a pure virtual method called exception when cross-compiling.

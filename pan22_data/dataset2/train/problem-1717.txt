@@ -1,0 +1,5 @@
+An easy way to make memory bitmaps that does not mess the allegro flags state is to use this helper function:
+A possible speed-up could be obtained if you copy the buffer to a memory bitmap and write in it all the pixels of the filter and then send that result to the graphics card, which is less work than making drawing calls pixel by pixel.
+Allegro is very slow and unoptimized when drawing single pixels to a bitmap. even slower when that bitmap is the backbuffer of the screen: it is stored in video memory and the CPU is the one responsible to do that operation. The bitmap has to be copied to main memory to work on it, then it is sent back to the GPU, all this operations are I/O bound and are very VERY slow.
+That way you have less draw calls that need to call the GPU and the CPU (Only three this time I think), however, don't expect too much speed from this as it is still a very unoptimized function to have direct pixel access.
+A fragment shader could be useful in this case, but your current version of allegro does not have support for them as they are part of the 5.1 branch.

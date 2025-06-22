@@ -1,0 +1,6 @@
+git-shell can and does accept inbound git-related communications, but because the paramaters from git-upload-pack got squashed to null, the former is assuming that someone is trying to open an ordinary terminal, and cuts it off. This is explained in man git-shell:
+If git-shell is installed some place other than /usr/local/bin, which git-shell will tell you the exact path to follow.
+My advice would be (assuming you haven't done so already) to create a seperate user account for git alone, and have that account carry the appropriate public keys in <git-home>/.ssh/authorized_keys. Also, don't forget to remove the forced command from the public key(s) in question.
+I think the problem lies in the fact that you've set up a command in the authorized_keys file, but man sshd's section on the authorized_keys file format clearly states:
+In addition, I recommend you set up git's user account to use git-shell as it's default shell by modifying /etc/passwd like so:
+This means that whenever git-upload-pack attempts to contact git-receive-pack (by way of an ssh command including the call for git-receive-pack, it will be squashed in favour of the command specified in .ssh/authorized_keys.

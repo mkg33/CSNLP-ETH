@@ -1,0 +1,11 @@
+Assuming such events are reasonably rare, it is probably safe to carry on.
+SO, the drive has, with the help of the raid system, just repaired itself!
+There is a limit to how many replacement blocks can be vectored to spare blocks and that is a function of the drive.
+Linux software raid will, on getting a read error from a device, get the correct data from other elements in the array and then it tries to WRITE the bad block again.
+The drive cannot do this re-mapping when it fails to READ a block because it cannot supply the correct data.
+If the OS ever WRITES to a block that is in a "vector out pending" state then the block is vectored out and the data written to the replacement block.
+The drive has a pool of spare blocks and the firmware uses these to replace any blocks that are known to the drive to be bad.
+SO, if the write works OK then the data is safe, if not, the drive just does the above, vectors the block and then perform the write.
+If too many replacement blocks are being used then the drive may have a problem.
+It does MARK the block as bad, so if the block ever does read correctly then the block is vectored out and the correct data written to the replacement block.
+Most modern drives will "vector out" a block that has gone bad.

@@ -1,0 +1,27 @@
+As you seem to expect, one of the key issues with your code is that it's not very C++y.
+std::string is better in almost every way. It takes care of its own memory and grows when needed. The speed is usually comparable to C-style strings (sometimes faster, sometimes slower). The code written using string is often more readable. For example, compare your code:
+The C++ library for IO is typesafe, extensible, object-oriented and should be preferred. Use an ifstream to read from a file and ofstream to write, or fstream for both.
+3. Consider throwing exceptions derived from std::runtime_error and std::logic_error
+By having an exception hierarchy, you can have fine grained control over which errors to catch where. Your code will also play nice with others, who might expect your exceptions to behave like the standard ones. Want to catch everything? Catch std::exception. Want to catch only your own? Do so. Want to get the error message? Call .what().
+Remember that exceptions should always be thrown by value, and catched (caught) by reference(-to-const).
+For your path name #defines, use const std::string instead. (And consider moving them into class scope as static, or into a namespace.)
+You get type safety, easier debugging, normal scope rules; the works.
+While your _id and similar variables are technically correct, don't rely on yourself or others memorizing these rules. Play it safe and move the underscore to the other side: id_, or drop it altogether.
+These are mostly nitpicking, but you asked for a "very critical review" :-)
+I'm guessing you already are, and that maybe they were removed when posting the code for review. I'm mentioning it just in case. It's nice to include #includes in the review code, too.
+7. Let the build system take care of include paths.
+Instead of: #include "../src/gpio.h", prefer to just use #include "gpio.h" and let the preprocessor and build system take care of finding the right header for you. This makes it a lot easier to move files at a later point.
+The C library function is called fclose(). (This is a moot point, however, since you should prefer C++ IO anyway.)
+Your public interface functions have names that imply that they don't change the state of the class. If they don't, make the functions const. (Your Exists() function should at least be const. The same may apply to functions that are only reading.) Consider separating the state changing functionality from the non-state-changing functionality, and putting the latter into const functions.
+Rename functions that do change state to reflect that.
+Finally, data is a classic, horrible variable name. I'm sure you can do better!
+Firstly I'm puzzled about the underlying GPIO devices - why use character
+And quite fundamentally, you don't seem to have compiled your code. 
+In GPIO::Exists() the result++ gets it wrong in two ways:
+You use asprintf everywhere.  I had to look that up and find it is a
+non-standard function that allocates the necessary string.  Using it to create
+paths on-demand seems unnecessary.  You could create the base path just once
+in the constructor.  But I'm a C-guy and all that allocation/deallocation is
+foreign to me.  I guess C++ strings will be doing that in the background if
+You should use brackets, even when not strictly needed:
+Your Value and Direction functions have various issues.  

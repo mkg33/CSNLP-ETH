@@ -1,0 +1,12 @@
+mysqld_multi stop 1 followed by (repeatedly, a few moments later)
+For example, to shutdown mysql running on port 3307
+Once you ran that make sure, mysql on that port is indeed down like this:
+Whenever this happens, I usually try to shutdown mysql using mysqladmin
+120619 11:12:39 mysqld_safe A mysqld process already exists after trying to run start after.
+The instances work fine and when I reboot, I have to start the instances to get them to come back up (a separate issue I need to resolve), but the stop command doesn't seem to do anything.
+It sounds funny but the work around is to use pass instead of password in my.cnf for [multi_admin] group user.
+To stop any instance of mysqld_multi privileges should be granted to multi_admin user.
+It truly doesn't stop the instance because in the instance log file I see this:
+@RolandoMySQLDBA 's solution works, just because mysqld_multi will finally rely on mysqladmin to admin mysqld instance
+Whymysqld_multi start 1 and mysqld_multi report 1 working, but mysqld_multi stop 1 not, lies in my_print_defaults.
+In MySQL5.6+， password will be shown in "" by defaults, mysqld_multi start, report doesn't need authorization, so password is of no use, and it workers, but when stoping, user & password is needed for authorization, and "" breaks down mysqld_multi stop.

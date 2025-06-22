@@ -1,0 +1,15 @@
+After you logout/login, you will need to issue ssh-add to ask gpg-agent to handle your SSH key.
+This is needed only the first time you use gpg-agent, not after each login.
+Add these modules to the respective sections of your PAM configuration in /etc/pam.d/system-login (or, for GDM, gdm-password).
+And I'd rather ssh remembered on subsequent accesses.
+Is there some feature in either of those tools or some other tool that would remember the ssh passphrase, but maybe grab it when I type it in for ssh instead of when the session opens?
+Here's what I used to solve this problem for ssh shells.
+ssh-agent/keychain seem to just about fit the bill, except they bother me for the passphrase when I log in (when I might not be sure I need to use my ssh keys), not when I'm trying to use ssh.
+If you run ssh-agent without providing it with a key, you can later run ssh-add the first time you need the key.
+This should be enough if you use GNOME (which starts the keyring daemon from XDG Autostart).
+I somehow got this working on a Fedora 16 box a while ago, but can't remember what I did.
+I alias the ssh command to first check if the keys have been loaded and if not, load them first, then perform the ssh command:
+I put that in my .alias and source it from .bashrc
+This is the default behavior of GNOME Keyring's internal SSH agent.
+It can handle SSH keys in addition to PGP keys, asks for your passphrase once only when you need it and uses pinentry for the input.
+If you're using any other environment, add this to your .xinitrc (for startx) or .xprofile (for gdm/lxdm/kdm):

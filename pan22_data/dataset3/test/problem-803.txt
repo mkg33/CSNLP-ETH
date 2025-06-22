@@ -1,0 +1,26 @@
+When reading papers I commonly find Oct tree implementations of geometry representations to sort the data.
+It also was easier to add a temporal component to it so I could incrementally update a set of potential collisions.
+So the property binary trees have (being memory efficient) doesn't seem very relevant for GPU applications.
+It's far from perfect, but it was faster than the spatial hash in the average case with no tuning.
+Basic AABB trees are nearly as simple, and way more effective.
+However whenever I think about the problem hash tables seem better overall.
+Hash tables are easier to generate in the GPU, as they do not require any logical position in memory other than their hash position.
+So you will end up jumping around pointers anyway.
+Basic quad/octrees don't rarely real data as well as the plethora of other BVHs you can use.
+With all of that in place, the only test I had that ran faster with the spatial hash were the ones with thousands of particles and no static geometry.
+I've since replaced the spatial hash with a binary AABB tree as the the default structure.
+My 2 cents from writting the Chipmunk2D physics engine is that spatial hashing is great when you have a lot of objects that are all the same size.
+It is also much easier to enforce certain GPU friendly heuristics in a hash table than in a tree.
+In graphics we don't like re-allocating memory so we usually over allocate memory in VRAM just to be able to reuse a data structure.
+I had a demo 10 years ago that ran with 20k interacting particles on a Core 2 Duo in real time.
+In a tree the traversal through the data structure is a lot more dependent on the data itself and less on the data structure.
+Hash tables have a better average and worse case scenarios for most applications:
+There are lots of other things I could say, but let me cut to the chase here.
+in essence you can always check the 20 potential collisions and just interpolate the result with the cell containing the key.
+The spatial hash worked great for that if you tuned it.
+So why are oct trees used so much more than hash tables?
+For example limiting the number of hash lookups to a fixed number, say 20 and using the same logic to prevent warps from executing different branch code.
+For a GPU generated tree, asynchronicity makes it very difficult to guarantee that logically close values also get stored close to one another in the underlying memory.
+For example for ray tracing an oct tree, near misses will cause you to iterate through a binary tree substructure, which is O(nlogn) whereas the hash table is O(n).
+Most advantages tree structures have over hash tables do not seem to hold on the GPU either.
+Data coherence for caching doesn't seem to hold either.

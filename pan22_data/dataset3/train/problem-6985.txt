@@ -1,0 +1,12 @@
+This is why log_bin_trust_function_creators was invented.
+With regard to SUPER and TRIGGER privileges, you need the TRIGGER privilege to create triggers on tables you have rights for.
+Yes, they fudged their way around downstream replication issues.
+Even if a DB Connection 1 completes an INSERT before DB Connection 2, it is possible for DB Connection 2 to write its event in the Master's Binary Logs before DB Connection 1.
+This is particularly true in a write-intensive, heavy OLAP environment.
+This alleviates mysqld of the responsibility of figuring out if data operations are synchronized in terms of replication.
+If you play binlogs, there is the possibility of seeing commands to create triggers on tables you do not have rights for.
+For example, let's say you ran this query on a a MASTER
+Stored Functions can also have this headache if it the code within it is not DETERMINISTIC.
+This would make a Slave's copy of tbl physically out-of-sync with its Master.
+If you have a several hundred INSERTs commands occur on a Master, they get serialized in the Binary Logs.
+There are occasions when certain SELECTs on a Master may yield different results on a Slave.

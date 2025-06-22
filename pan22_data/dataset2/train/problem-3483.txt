@@ -1,0 +1,10 @@
+Notice that I wrote '0' + x where you'd written (char)((int)'0' + x). C isn't Pascal or Python; there's no need to jump through hoops like chr(ord('0') + x) here. Characters in C are small integers, and you can do math on them just as you can on any other integer type.
+Then the only missing piece is the <some magic>. But that's easy — we just need to write some code to count the digits of number. And we already have some code to print the digits of number! So I'd just repeat that code again.
+Well, the code works. It's definitely not as efficient as it could be, though; you're using floating-point math to accomplish something that could be done entirely in integer operations.
+(I'd special-case 0 and INT_MIN at the top of the function so that we don't have to worry about them down here.)
+Kudos for using '\0' instead of 0; that's a nice way to indicate to the reader what this particular zero semantically represents. But kill the cast! In this case, you think you need the cast because ret is a void*. However, the only places you refer to ret, you cast it to char*. This is a huge honking sign that ret really wants to be char*.
+There — the only headers we needed were <stdlib.h> (for malloc) and possibly <limits.h> (for INT_MIN).
+Moreover, you should do math on character types, if it eliminates the need for a cast operation. Type-casting in C and C++ is a code smell; if you really need a cast, something is horribly wrong with your code. In this case, fortunately, you don't need one.
+No comment on the theoretical correctness of the floating-point stuff; because, as I said, I wouldn't have used floating-point to print integers in the first place. I have tested your code on all 4 billion 32-bit integers, though, and can report that it works fine in practice.
+Plus wherever print_error_msg comes from; that's an undefined symbol in the code you posted. I'm guessing it does something similar to perror(NULL)?
+If I were writing itoa, I'd start by assuming that I already had the memory allocation taken care of. Then filling the buffer is as easy as what you wrote:

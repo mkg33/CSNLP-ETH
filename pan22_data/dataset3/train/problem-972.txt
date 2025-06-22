@@ -1,0 +1,33 @@
+The connection stall means that late data subsequently arrive.
+If you have the option of using UDP, you really should, but with Flash you sadly don't get that option.
+As Flash doesn't support UDP, by looking at multiplayer Flash games you can get a pretty good idea of what's possible with TCP/IP and what isn't.
+You obviously won't code your server and client to work that way and the message sizes are very likely to be a lot bigger and probably a bit less frequent than 1 byte per frame in most situations so it's hard to say without seeing a real world "this is the data I need to send" example.
+However, TCP is perfectly acceptable for non-realtime things, such as multiplayer negotiation, chat messages, score updates, etc.
+Even on modern connections, UDP is still slow enough that you have to make some special considerations for interpolation and such.
+It can (and for a game such as FPS, usually does) ignore old data and just take the latest ones.
+The real problem with TCP is that if you get packet loss - even a small amount - then the connection "stalls" until retransmission happens.
+Even just in terms of the amount of data transferred, TCP would add significant overhead to this.
+Build something first a technical base of the data you want to be sending and test it then do the math to scale it up, worst case load test it by deploying to a cloud and have 50 computers run a test client to see if it can handle your limit of 32 players per game (or whatever limits you may have).
+Take your situation where you need client server interaction, estimate the number of clients then do the math based on the data you actually send between the 2.
+If a delayed packet eventually arrives, it can be ignored by the game.
+Again, we ask the questions, how vital are those messages, how frequent are they, and can they be batched up in some way to reduce the overheads?
+Well, if you have a typical fps, and position is important (to avoid cheating or incorrect decisions), you need to know that your network stream is realiable, but 32 players each streaming that 24k + message bytes back and forth (so 768KB/s + messages) ... that's about a 10mb/s broadband line just for individual headers based on sending at least 1 message per frame from each client to all the other clients via a server.
+That's just based on a bunch of single byte messages, typically you would do something very different but without knowing the raw data being sent its hard to prove either way if TCP is a better fit to your situation than UDP.
+If however it's vitally important that every message be sent on its own the very instant its ready to be sent, I have 600 messages (also 600 bytes) + 40 * 600 = 24k worth of TCP overhead or ~14k of UDP overhead per second + 600 bytes of message data.
+I have made the call in my case that its a reasonable overhead but that's based on how I build my message streams so I don't have huge overheads compared to some designs.
+Don't just accept a straight "yes or no cuz I said so" type answer here as you may be opening up yourself to having to fight a bunch of problems with UDP that actually you don't need to face.
+With UDP, the application gets to choose what it does with late or out-of-order data.
+Lets say I send 10 messages that are 1 byte each per update in my game and i'm updating around 60 fps so I need to send 60 * 10 = 600 bytes per second of actual message data + the relevant headers.
+Spacial information of game objects need to be as fast as possible, and for that it's better to use UDP, because reliability is not 100% crutial.
+So each time you send a message of 1 byte down the line you have actually sent either 25 or 41 bytes depending on protocol assuming an IP header is also needed.
+An occasional lost packet doesn't delay subsequent packets at all.
+TCP just won't do, and they can only use UDP but have to accept that it won't give them assurances about what they get (ordering / arrival guarantee).
+The OS can't deliver out-of-order data to the application (this breaks TCP's guarantees, but also, TCP does not show the application frame boundaries).
+Many poorly coded game engines handle everything on the main thread on the cpu so the cpu is often only given a very small amount of time to handle networking code, a decent implementation of both the serve and the client would be entirely async and possibly push and pull messages in batches.
+Some games such as RTS, play much better over TCP and typically use TCP all the time.
+Games where data transfer is very frequent (on mouse-move or key-down), should use UDP.
+There are some good networking libraries out there but as seen here, many seem to have an opinion that UDP is "just better", well factor in your own needs first and that may not be the case, and finding a library that doesn't factor in things the way you do may result in a poorly coded TCP setup in comparison to the UDP variant in the same lib (i'm just saying i've seen this, and load tests have proven it).
+None of the other answers here state the obvious way to prove this.
+Basically you can create real time games, as long as they don't rely on lightning-fast response times.
+TCP works fine and I have a scaleable MMO server and client framework but I don't need to stream lots of data ever frame or lots of small packets because I can batch my calls.
+Now depending on the game I could send that all as a single message so my overhead from the TCP layer is just 40 bytes (effectively a cost over UDP of 20 bytes per second), not having that overhead is a potential cost of 600 bytes (because I may have to resend the whole message stream).

@@ -1,0 +1,10 @@
+On the hypervisor run kpartx which will scan the LVM for a partition table and create device entries for each partition found (where I assume have a Volume Group Guests and a LVM guestname-diskname which is the virtual hard disk for your domU)
+With the losetup command you can mount a file, or a part of a file as if it were a normal partition. It is practically the same as daemon tool for the windowsers' tribe. This time we use this losetup to map a part of /dev/d0_vg to a new block device, to /dev/loop0.
+If I read your question correctly you have a Linux hypervisor (a Xen dom0) with Linux LVM volumes which are used as virtual disks for your Xen guests (domU). And you want to access the data in that LVM directly from the hypervisor, bypassing the Xen guest. 
+After the losetup command, you can check if you found a real filesystem with the command file -szL /dev/loop0.
+It becomes a little bit more complex if you used LVM inside the domU as well; then the partitions are of the type 8e Linux LVM and formatted as physical volumes which you can't simply mount yet and LVM trickery is needed. Instead of the mount command the steps become:
+If you are mounting something so, the mount command first calls a losetup, and finally mounts this losetup device. It is normally /dev/loop0 (or bigger).
+Shut the guest domU down. (accessing a filesystem from two different locations is asking for data corruption) 
+If you had three partitions in your Xen guest this should result in 3 new device entries: /dev/Guests/guestname-diskname[1-3] 
+And a lvscan should show the logical volumes that were created in your domU and the device mapper entries are typically created now as well, allowing you to do something like:
+IIRC it wasn't possible in Xen but can happen with KVM, the inconvenient case where the name of a volume group used in the hypervisor is the same as one assigned in the guest. 

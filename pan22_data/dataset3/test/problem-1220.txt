@@ -1,0 +1,13 @@
+I thought perhaps my self-signed SSL cert had expired, so I created a new one for mysite.com, but not for the server hostname itself, and the problem persisted.
+For reasons unknown, as of yesterday, it stopped working.
+It shows the full SSL transaction with the LDAP server, and it appears to complete without errors until the very end when I get the "Can't contact LDAP server" message.
+I have two sites running on that server, both of which use LDAP to auth against my AD server when a user logs in to either site.
+They might be helpful in troubleshooting this problem.
+Do you have access to the logs from your LDAP server?
+Googling for an answer has turned up nothing, so I'm asking here.
+Also, ensure that your bind user has the necessary permissions to lookup other users (has to be a member of Domain Users in our case)
+I can run ldapsearch from the commandline on this server, and I can login to it, which also uses LDAP, so I know that the server can connect to and query the LDAP/AD server.
+According to your error message, it sounds like the process is unable to connect to AD as your bind user  (AuthLDAPBindDN).
+The way this works is that your website needs to connect to AD using the credentials of your bind user first, and then, once this connection is made, it uses this access to validate the credentials of the user attempting to access your website.
+Suddenly, yesterday, one of my apache servers became unable to connect to my LDAP (AD) server.
+Ensure that the bind user account is not disabled in Active Directory, and that the password you have specified as (AuthLDAPBindPassword) is correct.

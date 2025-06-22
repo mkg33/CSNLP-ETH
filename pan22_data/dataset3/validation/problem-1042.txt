@@ -1,0 +1,25 @@
+Without that type of insight, the transport method (FC, FCoE, iSCSI, NFS) may not matter.
+Note that infiniband can be used with nfs and nothing comes closed to it in terms of performance\price.
+Here's a good link describing this http://www.zfsbuild.com/2010/04/15/why-we-chose-infiniband-instead-of-10gige
+That means dual-port 10GbE HBA's in the servers, as well as the storage head.
+The key features of ZFS-based storage in this context would be the ARC/L2ARC caching functionality, allowing you to tier storage.
+This is another case of profiling and understanding your workload.
+You mention IOPS, but does that mean that you're positively identified the disks themselves as being the bottleneck, or merely that the SAN ports aren't running at capacity, or that the VMs are in far more iowait than you'd like?
+Try to tune it away and/or try to put the whole DB into the filesystem cache (for read access)...
+but if the bladecenter can support qdr infiniband and you can afford native infiniband then thats the solution you should pick.
+The most active data would find its way in RAM and SSD storage as a second tier.
+Running your main storage pool off of 10k or 15k SAS drives would also be beneficial.
+The key to a good VMWare storage platform is understanding what kind of load VMWare generates.
+Do you have any monitoring of your existing infrastructure?
+Aside from that I am quite sure that mySQL is your performance problem (I never saw a worse DB).
+Currently you can get 40gbe switchs far cheaper (thats a strange thought) then 10gbe switches but I doubt you're blade center will support that.
+In my case it's wrapped around commercial NexentaStor, but some choose to roll their own.
+I am quite happy with the write throughput on my local RAID 5s - mirrored with DRBD8 to the cluster-partner of my XEN-machine... (but this is "not supported", of course).
+If you've definitely identified that the disks are the limiting factor, then switching to NFS or infiniband or whatever isn't going to do squat for your performance -- you need SSDs (or at least tiered storage with SSDs in the mix) or a whole bundle more spindles (a solution which has itself gotten a whole lot more expensive recently since the world's stepper motor production got washed into the ocean).
+Work with someone who can analyze your storage patterns and help you plan.
+The issue will be the module for the bladecenter what are its options, usually 8gb fc or 10\1gbe and maybe infiniband.
+If you want iscsi or nfs then minimally you'll want a few 10/40gb ports or infiniband which is the cheapest option by far but native storage solutions for infiniband seem to be limited.
+My big VMWare deployments are NFS and iSCSI over 10GbE.
+If you're not 100% sure where the bottleneck actually is, though, you need to find that first -- swapping out parts of your storage infrastructure more-or-less at random based on other people's guesses here isn't going to be very effective (especially given how expensive any changes are going to be to implement).
+if the blade center supports qdr infiniband i'd do that with a linux host of some kind with an qdr infiniband tca via nfs.
+The best way to approach building storage for a VMWare platform is to start with the fundamentals.

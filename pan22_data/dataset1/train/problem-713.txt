@@ -1,0 +1,10 @@
+I would like to setup system socket activation for x11vnc on a server but I'm not getting the proper configuration to achieve my requirements.
+It seems I can't use a simple x11vnc.socket+x11vnc.service files combination because x11vnc will map to the next TCP port (5901) if it detects the standard port (5900) is already used (by the systemd socket). 
+So I use a systemd "proxy" (see https://www.freedesktop.org/software/systemd/man/systemd-socket-proxyd.html) so that systemd listen to 5900 and x11vnc on 5901. So I have:
+Unfortunately there is no a complete solution for your problem. Your third point is not possible with the current systemd-socket-proxyd, there is a feature request on GitHub to address this issue.
+For your first point, the problem is that x11vnc take quite a long time to start and does not accept connection until it is completely started. The solution, as proposed by atlassian here is to add a sleep after starting the vnc server. The systemd-socket-proxyd will then wait before forwarding the communications.
+For the second point, there is the -share option for x11vnc to allow it to accept more than one connection.
+The third point is unfortunatly not doable. But you can stop the vnc server by hand with systemctl stop x11vnc.
+Even if you can not stop x11vnc automatically, the forth point will work when the server is stopped manually.
+Please note the -forever option to keep the vnc server running when all clients are disconnected. It's the only way I found to be able to reconnect until the feature request is done. The ExecStartPost is the part that wait until the vnc server is up and running before letting the proxy to forward the connection.
+With all this scripts setup, you can then enable the x11vnc-proxy.socket with systemctl enable x11vnc-proxy.socket and start it systemctl start x11vnc-proxy.socket.

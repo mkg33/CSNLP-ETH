@@ -1,0 +1,17 @@
+Restart will stop and start the server, reload just reloads the configuration.
+this works but seams to require a restart with different settings to change the direction.
+I have an app that does not need to be in a cluster, but I want to have a static version of the webpage display in the event the main app server crashes.
+I've also tried mod_balencer which works great for the failover but requires an apache restart to set it back to serving up the main app server when it's backup.
+which defeats the purpose of using it on a live server.
+Is there a way I can set what the current app server is without restarting apache?
+How can I setup an apache mod-proxy server to server content from a seperate designated server, in a way that I can change which server to serve content from without restarting apache?
+You can use one of several RewriteMap types with different performance impacts: database files, randomized text-file maps, even external programs -- in short, you can perform all kinds of arcane magic with them.
+As soon as mod_rewrite detects that you've changed this value it will automatically proxy the requests to the new server.
+That way if you need to switch out the server being proxied to, you can reassign the virtual IP or change the alias to point to the new server.
+You could use a mod_rewrite using a RewriteMap with a single value:
+However, if you expect the proxy server to change why not proxy to a virtual IP or a DNS alias.
+Read all about it in the mod_rewrite docs and decide for yourself what would be the best option.
+Then just touch the dynamic-server-is-down file to switch over to the static server.
+I also want the option to update the codebase on the server test it and then switch out the old live server.
+The content server will change periodically, either for maintenance, or because of failure.
+Then create /path/to/file/map.txt with this content

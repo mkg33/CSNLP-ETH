@@ -1,0 +1,31 @@
+I have no doubt that you'll evaluate your solutions on reasonable intervals and act accordingly.
+As far as I'm aware you can't create folders to organize the jobs, so a large number would be cumbersome.
+You will not only need to backup the filesystem, but also the msdb database to allow for recovery of the jobs (or use something to script the tasks to a text file).
+I'm not 100% sure of this, though, since none of my servers has more than a dozen or so jobs.
+Other systems would query the message queue table through either a SQL connection or a web API layer as JSON.
+I could see all of our scheduled tasks in one place instead of having to go check command line stuff on a bunch of servers.
+If you can code at all, or have people that can code, you can do quite a bit with console apps and wrapping them into a service creator like TopShelf (http://topshelf-project.com/ )  This can be a cheap/easy hack to get a little decoupling from SQL Agent for everything and start to also give you a layer for queueing if you are at that point.
+Then the SQL Server Agent would call the stored procedure every so often to create messages and update the task status.
+This adds a layer of complexity to disaster recovery.
+Server 2008 and later's Task Scheduler allows for much easier organization, IMO, and in general has much better functionality than previous versions.
+The Agent is a small program, but running a long or complex task could easily consume a lot of resources.
+From my perspective, the SQL Agent has a number of advantages over the native Windows Task Scheduler:
+Since I'm a DBA (and in many cases, the de-facto sysadmin), SQL Server is installed on pretty much every server I have to work with regularly.
+Another option is to create a table for scheduled tasks with a stored procedure to update a message queue table from it.
+However, I can't escape the feeling that this is bad practice - the SQL Agent should be reserved for just database-related tasks, and I should leave OS level tasks running in the Windows Task Scheduler, despite my dislike of its usability.
+If the database gets decommissioned, you'll need to develop a plan for migrating off the SQL Server Agent.
+At my previous job I did exactly this, mostly because the jobs were all run from our central, primary cluster, which was the most visible server.
+Personally, you seem to care enough about this as well as knowing enough of your gotchas that I think you'll be fine.
+I realized recently that I've been using the SQL Agent as the job scheduler in pretty much every case, rather than the native Windows Task Scheduler.
+I would ~likely~ take SQL Agent over windows task manager... obviously for database related tasks.
+Those resources would not be available for the SQL engine.
+It is the people that don't care/know that I really worry about.
+While this is largely subjective (and it's going to be hard to derive a "correct" answer in this format), I don't think there's anything inherently wrong with this approach other than it becomes a single point of failure.
+Since the SQL engine is programmed to take about 80% of available system memory, this could be a problem.
+Oh, and you need to add in error handling for cases where the server where the task tries to run is not up - something you wouldn't have to do if the task were set up on that server.
+If not, should I consider a third-party Windows task scheduler to get some of the functionality I'm looking for?
+That might not be relevant if all of the tasks interact with, or depend on, the database server being up and the SQL Server services running (in our case, it did).
+Finally, you wouldn't want to be in a position where you're paying for an SQL Server license just to run SQL Server Agent.
+I would cry if I had to use Server 2003's task scheduler or at.exe.
+The second caveat I can think of would be potentially putting too much load on the SQL server.
+Personally I think the biggest caveat would be the difficulty in keeping the list of jobs organized.

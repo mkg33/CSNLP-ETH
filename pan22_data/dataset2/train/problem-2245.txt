@@ -1,0 +1,5 @@
+Since data consistency is extremely important, we our planning to setup redo log shipping to be in SYNC mode.
+The main idea behind doing the above is to stop large number of redo logs bring shipped to the secondary site via the WAN. Our application already has the ability to sync the inputs to the system. And since one input generates several DB inputs (and redo logs), we thought of writing to the databases independently will be the better option. 
+Our application which also runs on the Secondary site (redundant processes) requires the DB to be in write mode, hence the Logical standby option was chosen. Application on the Primary site DB with write to one tablespace (Say A). And on the secondary site it will write to a separate tablespace (Say B). 
+Our client's application writes to a tablespace (Say C) and needs it to be in sync across both sites.
+My Question is, can we configure the primary site to send selective redo logs to the logical standby. From what I know, all redo logs are shipped on-the-fly to the secondary site in SYNC mode and we can configure the logical standby to omit sqls for tablespace A.

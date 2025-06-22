@@ -1,0 +1,35 @@
+You should configure ulimit and/or pam_limits to bump up the hard and soft limits for open files for your daemon's role account to something higher, set the max_connections variable for the database user that is opening so many connections, and fix your app to throw a whale when that happens...
+In particular, you want to see if there are a bunch of "sleeping" connections.
+), then you should turn something down (possibly the settings you're talking about, in Apache).
+You can also use the -f /var/log/sa/sa## flag to specify a sar log from a previous day.
+If so, you need to raise the variable thread_cache_size.
+It would be good to look at status threads_created and see if it is rising rapidly over time.
+If mysqld dies (what do you see in the mysql error log?
+If your server is having to go into swap, it's a sign that you need to speed up the execution of the database queries and your application, add more memory, or split up MySQL and Apache on separate servers (if you haven't already).
+Finally, when the database connections get maxed out, you should log in to MySQL and see what's going on.
+Both of these are basic performance improvements in MySQL for a busy database.
+MaxClients and MaxRequestsPerChild are Apache settings, not MySQL.
+I'm just guessing here, but are you running a 32-bit OS with far too many connections?
+If you do, then your application is likely not closing connections properly.
+It's easy to overcommit the memory resources with Apache and MySQL settings.
+If you see a lot of queries that say "locked" or "waiting for table", you need to see if converting the table from MyISAM to InnoDB is an option.
+You probably have sar logs available to give you some information about the resource utilization of the server.
+Check out mysqltuner and apachebuddy to get an idea of whether or not you're possibly running out of memory.
+If it is rising constantly, you should raise variable Table_cache.
+You should also setup Munin or Cacti or some other performance monitoring tool on both Apache and MySQL.
+If you have a busy site making lots of connections, you need to keep an eye on the number of threads and connections in MySQL.
+Apache also has an Extended Status monitoring page which will help you see how to adjust it's child/thread settings.
+MySQL has max_connections, which resembles MaxClients, but no equivalent to MaxRequestsPerChild.
+Running out of address space will crash MySQL in your 32-bit box.
+If mysqld is just refusing connections because it has too many, you can try turning up max_connections (it defaults to a mere 100; if you're at the default, maybe try 200).
+You'll need to determine why the database is hitting max connections.
+The 2nd one is what I'd recommend if possible for anything except a mickey-mouse situation.
+Generally, the issue isn't that the MySQL is hitting max connections, but a symptom of other problems.
+Finally, if you just have some queries that are running for more than a few seconds, you need to look into optimizing those (a whole different question) and ensure you have adequate indexes for your queries.
+That will give you a listing of all of the processes MySQL is handling at a given time.
+If running SHOW PROCESSLIST shows lots and lots of 'sleeping' threads with times of many seconds, you need to lower variable wait_timeout, probably by quite a long way as it defaults to many minutes and most web pages are over in seconds.
+A good way to spot where you need an index is to look at your WHERE conditions and run SELECT queries with EXPLAIN.
+Each thread uses some memory for its stack and various other buffers (which are numerous and mostly tunable).
+If mysqld is actually dying, then you may be running into the 1024 file descriptor limit... "Too Many Open Files" is the typical message for that errno.
+MySQL is multi-threaded and uses one thread per connection.
+Do not deploy any new application on a 32-bit OS if you can help it.

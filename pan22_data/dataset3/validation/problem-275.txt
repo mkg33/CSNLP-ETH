@@ -1,0 +1,17 @@
+On a Linux (Centos) server, if a process monitoring script run by cron is set to close with exit 1; rather than exit 0; on finding that everything is okay and that no action is needed, is that a mistake?
+Or maybe there's a convention in process monitoring scripts that 'failure' means 'this script failed to need to fix a problem' (rather than what I would expect which is that exit 1; would mean 'the process being monitored has failed'?)
+The process being monitored by this script is Apache Tomcat.
+Here's the (generalised) structure of their script, for a service running on port 8080 (in this case, Apache Tomcat):
+The script is being called by Cron via Plesk's "Scheduled tasks" Cron manager.
+By process monitoring script, I mean a script executed by Cron on a regular basis that checks if an important system process is running, and if it isn't running, takes actions such as mailing an administrator or restarting the process.
+Seems simple enough even for someone with limited knowledge like me, except the exit 1; part seems odd.
+As I understand it, exit 0; closes a program and signifies to the parent that executed the program that everything is fine, exit n; where  n>0 and n<127 signifies that there has been some kind of error or problem.
+Or are there legitimate reasons for calling exit 1; instead of exit 0; on the "Everything's fine, no action needed" condition?
+To me, this looks like a mistake - but my experience in this area is limited.
+exit 0; on finding no problems seems to me to be more appropriate.
+For example, maybe there's something specific to Cron?
+It's a fairly average, almost out-of-the box Plesk-managed Centos VPS (in so far as there is such a thing).
+There's no custom layer between Cron and this script that would respond in an unusual way to the exit call.
+Here, their script seems to go against that rule - it calls exit 1; in the condition where everything is fine, and doesn't exit after taking remedial action in the problem condition.
+Are there cases where calling exit 1; in the "Everything's fine, no action needed" condition is more appropriate than calling exit 0;?
+I'm looking at a process monitoring script written by my web hosting company.

@@ -1,0 +1,32 @@
+You can set up, locally, authoritative reverse zones for your in-addr.arpa domains and your nameserver will answer clients that query it with the answers you want it to give.
+The client has very little a priori knowledge about the Domain Name System.
+hierarchy use the same NS records for delegation that all other zones do, but delegations in that hierarchy are assigned to the entities that own (by assignment) a block of IP address space.
+and say "hey, root server, tell me what I want to know about "w.x.y.z."
+Typically the DNS library on the client knows only enough to ask a local nameserver to handle the query for it (the very limited resolver that runs on the client is called a stub resolver.)
+The stub resolver asks its query of the nameserver it has been configured to ask, and sets a flag in the DNS header (the "recursion desired" or "RD" flag) saying "if you do not know the answer, please find it for me."
+As part of that assignment they received a delegation in the Domain Name System for the part of in-addr.arpa that corresponds to their assignment.
+Since it works for all record types it obviously also works for PTRs, too.
+I've got an NS record (a delegation) saying he knows all about .z."
+When it gets a query it checks its local authoritative data (if it has any) and data that it has built up in its cache to see whether it already knows the answer, and presuming it does not, it starts working its way down from the root.
+It's going to start at the top level of the DNS (that trailing ".")
+So..  the issue here is whether you want just your hosts to see the names you set up or whether you want everybody else's hosts to see them as well.
+Your client is typically going to ask your local resolver to resolve the query for "w.x.y.z."
+go talk to so and so, I've got an NS record saying she knows all about ".y.z."
+Contact your provider and ask the question, there's nothing else you can do.
+Who is responsible for answering that, and how does your resolver know how to find them?
+Otherwise nobody else will ever see the answers you have configured your server to give.
+Typically is is primed only with a list of servers that answer queries for the topmost (root) level of the DNS.
+At some point in the past your ISP went to a Regional Internet Registry and requested a block of IP addresses, which were assigned to it as its own address space.
+This is why the respondents above are telling you you have to deal with your ISP:  if you want your reverse IP mappings to be visible to anybody except for clients who are configured to ask your nameservers for an answer first, you must either (a) get the ISP to make the changes you want, or (b) delegate authority to you.
+Step back for a moment and think about how a DNS client gets an answer to a DNS query.
+So your resolver goes back, not quite to square one, and says "hey, resolver that knows all about ".z.
+As Dennis mentioned, Your provider will maintain the reverse DNS records.
+And so a client works its way down the chain of delegation from the root, following the NS records which delegate responsibility for answering records for the delegated zones.
+And the root server will say "hell, man, I don't know the answer to that.
+Let's assume that your resolver doesn't have anything in its cache already and has to go through the whole thing..
+Let's say that you want to ask the DNS a query (of any type) for w.x.y.z.
+This works the same way for all record types, whether you're asking about A records, CNAMES, MX, or what have you.
+The point here is that anybody following a chain of delegation from the root of the DNS is going to get to your ISP, and not to you, unless you can convince your ISP to further delegate responsibility for just your IP address(es) to you.
+Some providers will change the records for you upon your request, but some will not.
+The recursing resolver that is in charge of satisfying the query usually doesn't have much initial knowledge of the DNS tree, either.
+The problem, and the reason other people are telling you you need to get your ISP to make the change, is that while you can configure your own clients to ask your nameserver for the PTR records for your reverse zones, you cannot get other people's clients to ask your nameserver without having authority for those zones delegated to you.

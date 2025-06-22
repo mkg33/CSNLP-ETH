@@ -1,0 +1,7 @@
+The next transaction log was 4x bigger than the backup would have been, filled out all the remaining space on the server and threw our whole log shipping off course for a day.
+Last week, the maintenance plan that rebuilds indexes failed to run correctly and so the backup didn't occur.
+Am I correct in assuming that this breaks the transaction log chain, and causes the first full backup after that starts transaction logs from itself - and that any database backup through the week (we backup every morning) can be ignored in favour of just applying transaction logs to this weekly backup instead?
+Once a week, indexes are rebuilt, and then a backup is taken.
+Looking into transaction logs in more detail (I am a developer, not a DBA), I've discovered that I was wrong in my belief that the backup stopped the transaction log being huge after an index rebuild.
+I've been nominated to maintain a SQL Server with log shipping on it.
+What it turned out to be was a SQL script at the end of the maintenance plan that makes the database recovery mode simple, shrinks it, then changes it back to full.

@@ -1,0 +1,8 @@
+I have a list of files I need to copy on a Linux system - each file ranges from 10 to 100GB in size.
+There is no low-level mechanism for this for a very simple reason: doing this will destroy your system performance. With platter drives each write will contend for placement of the head, leading to massive I/O wait. With SSDs, this will end up saturating one or more of your system buses, causing other problems.
+The asterisk can be replaced with a regular expression of your files, or $(cat <listfile>) if you've got them all in a text document.  The ampersand kicks off a command in the background, so the loop will continue, spawning off more copies.
+As mentioned, this is a terrible idea.  But I believe everyone should be able to implement their own horrible plans, sooo...
+The only answer that will not trash your machine's responsiveneess isn't exactly a 'copy', but it is very fast.  If you won't be editing the files in the new or old location, then a hard link is effectively like a copy, and (only) if you're on the same filesystem, they are created very very very fast.
+I can easily write a multithreaded program to do this, but I'm interested in finding out if there's a low level Linux method for doing this.
+I only want to copy to the local filesystem. Is there a way to do this in parallel - with multiple processes each responsible for copying a file - in a simple manner?
+Here's a distributed/parallel and decentralized file copy tool that will chunk up the file and copy all of the chunks in parallel. It'll probably only help you if you have an SSD that supports multiple streams or some sort of setup with multiple disk heads.

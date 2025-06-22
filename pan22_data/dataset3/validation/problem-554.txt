@@ -1,0 +1,16 @@
+I own/manage about 20 domains, each domain has 1-8 subdomains.
+Depending on your server setup (both in the same place/network and access to system configuration on each) you might want to consider assigning the broken server's IP to the working server.
+Is it possible (and is it a good idea if it is possible), to define a single DNS record as "MyMainServer" and give it the actual IP address, and then for every other DNS record, instead of keying in the IP address, I give it a domain name?
+about 1/2 of the domains are on one dedicated server, the rest on another.
+I am trying to plan for the possibility that someday a server will go down, and I need to quickly redirect my DNS to a backup server.
+To do that now, I would need to manually go into my dns control panel and change the IP in about 30-40 places.
+People will have the old IP address cached for up to that length of time, so you'll probably want something less than a day.
+A question with regards to DNS for my 20 or so websites I support...
+My thought is that then if a server goes down, I only have to point one "main" dns record, and everthing else will flow from that.
+If you have access to the router and are using NAT to map external IP addresses to internal IP addresses, then it's even easier: just remap that IP to the working server at the router.
+Then when you boot the dead server back up it won't have IP address conflicts, and you'll be able to access it from the working server using the internal IP to get everything ready before setting the NAT mapping back to normal.
+SvenW's CNAME answer is a good one, but there's one other thing to keep in mind when using DNS for failover, and that's the cache TTL you have set.
+Will this resolve properly, and if so, is there any performance impact that matters?
+This would be pretty much instantaneous (especially if you use gratuitous ARP to update your router's arp cache).
+However, if it's too short, then users will have to wait for a DNS resolution round trip repeatedly.
+It makes it a little more difficult to get the broken server back online since its IP will be in use, but if users are making changes to the websites, you'll want to leave it offline until you can copy any changes made back over to the other server (having extra "maintenance" IPs on both servers will help here).

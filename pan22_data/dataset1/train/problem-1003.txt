@@ -1,0 +1,10 @@
+I know this is in Apache & JBoss Configuration 101 but I just can't work it out.
+I am configuring Apache 2.2.3 to use mod_proxy_http to forward requests to JBoss 5.1.0 GA. The idea being that there will be multiple JBoss instances fronted by a single Apache. 
+Both JBoss and Apache are on the same physical box.
+I have a configuration file in conf.d which reads as follows:
+And I have JBoss listening on port 8080 bound to 127.0.0.1.
+If I visit http://myServer:8087/admin-console I get the login prompt but the images are missing. If I then enter the username and password the browser gets redirected to:
+So, obviously JBoss is sending URLs for images/CSS/etc and the login.seam page which are localhost.
+How do I change this? Is it a configuration in Apache, or should I change JBoss somewhere? If this is a change in JBoss, I would like it to be a global change as we will be installing many apps on each JBoss instance. Crucially I don't want JBoss to bind to the server's hostname so that it can be accessed directly at http://myServer:8080/admin-console.
+I needed to put the ProxyPass and ProxyPassReverse directives inside the Location directive.
+Have you tried putting trailing slashes on the URLs?

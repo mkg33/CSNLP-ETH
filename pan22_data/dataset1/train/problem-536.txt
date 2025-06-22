@@ -1,0 +1,5 @@
+try pinging the ip you are setting, you can also set ksdevice=eth0 (if that's where the appropriate network cable is plugged) try switching them, they might be coming up in a different order. 
+As far as I know you can't explicitly disable DHCP, DHCP will fallback if for some reason the static setup fails. If it can't reach the kickstart file, it  will assume the interface isn't up, it'll fallback. 
+Based on my experience there are two common issues that cause this.
+1) You may find in the console output that your boot device has not been released by the installer prior to the second phase of the install where a second DHCP request is initiated.  Some hardware vendors have released BIOS updates to address this.  You will see a message in the console output that explicitly states it could not use that interface if this is the case.
+2) If your interface is auto-duplex and the switch is not set for "portfast" (Cisco specific term), then kickstart may not be waiting long enough before attempting to send the DHCP request.  Even if portfast is enabled, the server/switch combination may just be taking too long to negotiate.

@@ -1,0 +1,19 @@
+For lazy people, there's all kind of tutorials like this Enable SSL for Apache server in 5 minutes.
+You need to tell it to use SSL for that virtual host, and to supply the necessary SSL parameters.
+use of HSTS) and customise the site as well if you wish, but you can look those up for yourself if necessary.
+You should start by reading SSL/TLS Strong Encryption: How-To.
+There are other things you can do to enhance the security (e.g.
+For example, for a web site called "www.mysite.org", with the web site root at /var/www/vhost/www.mysite.org/ and certificate keys stored under "/etc/pki/tls/", you would create a configuration file like this:
+You are using a distribution where configuration is split to different files on different folders, so it is not wise to add this all to httpd.confor apache2.conf, but to destinations where they are included from.
+I've also given you two choices for the encryption strengths, with the weaker set commented out.
+I want to allow https only on my Apache server on Raspbian, but every time I try to edit the ports.conf in /ect/apache2/ to listen to Port 443 and the sites-available/000-default.conf to:
+You were modifying default non-ssl site from sites-available/, but they are actually included from sites-enabled/ where they get symlinked with a2ensite (or ln -s).
+Like sites-available/default is linked to sites-enabled/000-default, sample configuration in sites-available/default-ssl should be modified and then linked in sites-enabled/000-default-ssl.
+(If you're interested, a good reference for SSL security can be found at https://wiki.mozilla.org/Security/Server_Side_TLS.)
+Probably the manual of your distribution of choice has an own page for this, too, which would be more precise.
+TLS also needs the certificate and key, and they are not just lines in a configuration file, but needs to be created and signed.
+Just running port 443 doesn't implement HTTPS; it just tells Apache to listen on that port.
+The error message is very self-describing: you have only configured port, not TLS.
+Similarly, LoadModule comes from modules-enabled/ after creating a symlink to modules-available/ with command a2enmod ssl.
+You might not need the first line if your Apache configuration loads the ssl module by default (as it probably would).
+the server doesn't restart anymore and the log tells me this:

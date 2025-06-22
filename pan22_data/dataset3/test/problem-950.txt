@@ -1,0 +1,26 @@
+There are between 60 and 100 databases per instance with 3-5 TB of datafiles in  per instance.
+Checking the VLF count of the databases helps too.
+This allows SQL to handle memory allocation much better and to both free up and take memory faster.
+1) Indirect checkpoints which helped the SQL Server shutdown more quickly.
+2) Enabling Lock Pages in Memory for the SQL Engine accounts.
+Both instances are running SQL 2014, on Windows Server 2008R2.
+I’m having some issues with failover times that I’m trying to resolve.
+You're shutting it down nicely on one node, moving resources, and starting it up on another node.
+You are correct, because that's exactly what is happening.
+The issue we faced here became much larger as we migrated to larger hardware with 3TB of memory, the fail over times were over 10 minutes.
+The nodes each have 3/4 TB of memory and 32 cores (64 with HT).
+After reducing the vlf count ,it went noticeably fast.
+Additionally, no matter what you use, indirect checkpoints are much more effective than traditional.
+I support a multi-instance, two node failover cluster (active-active).
+SQL is configured with a Max memory of 350GB for each instance.
+First, this is only really the case when you are cleanly shutting down - which most likely won't happen during a real failure.
+I’m looking for resources and ideas to help reduce the time it takes for this failover to happen.
+Secondly, you don't let SQL Server shut down - I would look into using Availability Groups and testing your manual failover times to compare and contrast the differences.
+When SQL Server cleanly shuts down, it flushes all of the buffers and asks internal systems to shut themselves down.
+If the SQL instance has only limited data in memory the failover happens much more quickly.
+The issue appears to be centered around shutting down the SQL instance prior to the failover.
+The fail overs went from 10+ minutes per instance to around 30 seconds.
+The question actually doesn't have anything to do with clustering but with speeding up a clean SQL Server shutdown.
+I faced the same issues and the reason was high VLF count >15K.
+When a manual failover is performed, we do the following to speed things up to this point.
+We looked at I/O and CPU metrics and don’t see any significant issues.

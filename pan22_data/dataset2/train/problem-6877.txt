@@ -1,0 +1,6 @@
+Every partition resize program (gparted, Partition Magic, etc) I have ever used performs health checks on the file system before committing any changes. Unless anybody knows of an app that does not and still supports reiserfs, your best bet is to start from scratch. Any other avenue I can think of would be much more work and take much longer.
+with healthy disks, the drill to remove one from a VG is like this: (i'm guessing that you have a single LV spanning both disks)
+I agree that the disk seems a lost cause.  Your approach (shrink filesystem, shrink LV, move off bad disk) also seems ok.
+in the past, the only way I've recovered data from a reiserfs volume with bad sectors has been ddrescue.  all the 'risky' reiserfs tools err on the safe side: at the first disk error, the whole operation is cancelled.  with ddrescue i could simply copy to a good device and go on with the reiserfsck.
+This will work at the PE/block level, bypassing the filesystem.  But you're getting read errors, so I don't know if it will work or fail.
+Otherwise, you can try remapping all bad blocks through the filesystem tools, but if the drive is really going fast they may appear faster than you can remap them.

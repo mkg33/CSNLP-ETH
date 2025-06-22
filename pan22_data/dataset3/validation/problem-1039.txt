@@ -1,0 +1,12 @@
+Example: CPU usage can be low, but CPU load high - in this case it can be symptom for "slow" IO disk operations (you will need to check metrics CPU iowait usage, disk queue length, ...).
+I recommend article about utilization/saturation from Senior Performance Architect at Netflix: http://www.brendangregg.com/usemethod.html
+Often a burst of activity that clears after 5 or 10 minutes isn't really much of a problem, might be perfectly normal depending on what you are doing there.
+Your new combined trigger expression doesn't catch this case.
+Tweak that threshold 1.8 up or down a bit depending on what your typical workload would look like.
+Finally, yes you can use boolean expressions, and there's a documentation page to help you.
+I would not recommend using the max() function in this context because it will be sensitive to even a momentary burst of high activity... unless that's what you really want, but then don't complain about getting many alerts.
+https://www.zabbix.com/documentation/3.2/manual/config/triggers/expression#operators
+Why is "Processor load is too high" false alarm in your case?
+The purpose being that you want a slower response time on your alarms rather than raising to a higher threshold.
+However, if the heavy load persists for a significant length of time that's when you want to know about it.
+but threshold depends on your server - what and how is it doing.

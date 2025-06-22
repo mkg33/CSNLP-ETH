@@ -1,0 +1,16 @@
+If the local server would be making a request every few seconds to a public intermediary (EC2) to see if a remote client is waiting to speak with it, then the fact that it doesn't have a public IP wouldn't matter.
+Since it's prone to change, set a dynamic DNS, and you're set.
+You could try n2n from ntop to establish the connectivity without modifying the firewall.
+Assuming that box A is your desktop, box P is the server with the private IP, and box C is the cloud server:
+I'm working on a network where I can't obtain a public IP address or set up VPN access.
+Also, depending on what you mean by "no VPN", you may be able to set up an OpenVPN client on the machine with the private IP, and OpenVPN server on the intermediary.
+The ssh solution posted by MadHatter is the easiest one, I think.
+At that point, I could also make a request from a client at a remote location and somehow ssh into the server through the public intermediary.
+This way both the client and server are initiating with an outbound request, which can originate from a private IP, without any modifications to either local network.
+I've done the "tunnel through an accessible server" plenty of times; but recently found much easier to just use IPv6.
+For that matter, with the right OpenVPN server configuration on the intermediary, your remote workstation can be configured as another OpenVPN client, and you can just connect to the server and see the private machine transparently.
+This only works as long as noone interrupts that first ssh session from P to C, but as long as they don't, it does work.
+OpenVPN client will present with just outgoing UDP traffic to the intermediary, but you should be able to go to the intermediary and have full access to the private machine across the tunnel.
+You could leave a reverse ssh tunnel open to this "cloud" endpoint.
+Just install Miredo, (or activate Teredo on windows), and you got your own globally-accessible IPv6 address.
+Is there a way that I can communicate with a local server remotely by using an intermediary in the cloud that both local server and remote client make an outbound requests to?

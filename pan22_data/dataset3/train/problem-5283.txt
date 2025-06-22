@@ -1,0 +1,33 @@
+Edit: You can take a look at the SI script that creates partitions/logical volumes and modify it according to the disk size of the target machines.
+This snapshot can then easily be restored to any number of new or existing virtual machines.
+/usr/local - special software not installed via the package manager
+It is just a bunch of wrapper scripts around PXE and Rsync.
+The OS and software can trivially be rebuilt at any time: only your own content is valuable.
+You can boot into a live session and image your machine without having to install anything.
+You can chroot into your backed up server and run yum or apt to install software before you push the image out.
+In general, you should only back up data and configurations (however you define these).
+If you image to multiple machines, be aware that you will need to update any machine-specific settings on the other devices (hostname, static IP address, etc...) such that they do not conflict with one another.
+Your procedure can cause numerous problems, and should be avoided.
+You then have the option to store the copy of the image on a network share or remote machine and so on.
+If you're switching hardware, I've had some success creating a tarball or complete rsync backup of the file system root.
+Therefore the "backup" that it creates is just a complete directory structure of your backed-up Linux server.
+I've always thought that the Gentoo way of installing a new system (from backup or otherwise) was the best due to its simplicity.
+There are two primary recommended ways to go about this, and a third if you are purely trying to build a development environment.
+If this setup is for development, and you need to ensure an identical environment (as opposed to simply getting things working again), then snapshots in a virtual machine are really your best bet.
+When restoring, re-install the OS on the machines in question, and then copy each of these (or the relevant files only) to its proper location.
+/opt - special software not installed via the package manager
+If it's the exact same machine, I would just use dd to create a disk image, then reimage it as necessary (possibly changing some configurations afterwards if appropriate).
+On your primary machine, regularly back up (with whatever method you like) whichever of the following directories (or others) you require:
+If you can, just back up your data, and don't worry about the OS itself.
+If you can clarify what your final intent is here, I can provide a more detailed solution.
+Trying to restore it entirely is asking for trouble.
+To do the actual imaging, I would recommend any tool or product that can clone hard drives.
+Since you say "hardware will be different", SystemImager can come very handy.
+I'm not sure why you'd need a complete install first - as long as you take a full backup, the base Fedora install shouldn't be a prerequisite.
+/home - All user personal settings, documents, and files
+When you wish to restore, simply re-image the machines in question with this image.
+Create a virtual machine in VMWare (or whatever else you prefer).
+(SystemImager manages changing Network settings on its own when you push the image out.)
+If the hardware that you will be restoring TO will be the same, or similar enough, use a disk imaging tool to make a copy of the entire hard drive or array.
+You can "cd" into this dir and change stuff around as you feed.
+When it is configured as you wish it to be, create a snapshot.

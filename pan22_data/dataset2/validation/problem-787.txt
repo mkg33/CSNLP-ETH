@@ -1,0 +1,13 @@
+Will OpenVPN play nicely with other vpn clients? Would we be able to use multiple (different vendor) vpn clients simultanouesly?
+The great advantage of openvpn is that it works through all routers as it doesn't use an unusual IP packet type. IPsec and pptp suffer from this. I don't have experience of Cisco's vpn.
+Is OpenVPN the right tool for the job? It seems as though using open vpn in "bridged" mode will give us all we want.
+OpenVPN has been a breeze to set up most of times and can be set up to work on port 80 tcp for extra connectivity, but requires installation and maintenance of another app. Also, if You will want to bridge some subnets over VPN and You want hardware routers to do that, they will not support OpenVPN, but will support IPSec.
+We would like full name resolution (wins/netbios and dns) as if we were attached to the office network.
+Nobody else has mentioned it yet -- unlike commercial VPN products, you don't have "different vendor VPN clients" with OpenVPN.  All of OpenVPN is open source, so people just port OpenVPN to whatever platform needs support.  So you only have one OpenVPN client -- THE OpenVPN client.  No vendor games to make your live unpleasant.
+The nice thing about PPTP is that every major commercial OS supports it out-of-the-box, with nearly zero config.
+I'd reccomend OpenVPN in bridged mode for the clients. Use routed mode to connect two networks. You still need to ship keys etc. to the clients, but we built a shell script that makes a .zip that you just give to the user.
+To cut it short, use VPN if You are an SMB and just want Your end-users to connect from home. Use IPSec if You are a blooming enterprise (and switch to IPv6) :)
+If You plan to deploy any serious VPN in enterprise You'll have to deploy a CA infrastructure. OpenVPN and IPSec both require it. It is not complex, but its security should not be overlooked.
+I use PPTP to a monowall box to connect to our "server private vlan."  We played with OpenVPN but getting work done was more important than twiddling with making the vpn work.
+Currently we do this with a lot of ssh tunnels. We are looking into switching to a vpn solution, which hopefully should have less client side setup needed like setting up host files etc.
+Also, ask Yourself what sort of firewalls You expect in the middle? IPsec works over UDP which may not be available from certain locations, like home networks with nat. But it is supported at OS level by Windows.

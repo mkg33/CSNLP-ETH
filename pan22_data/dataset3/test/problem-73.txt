@@ -1,0 +1,20 @@
+My believe is if there would have been any solution, MS would have provided it with SharePoint as this prompt is very annoying.
+Internet Explorer will send Kerberos info without prompting if within the intranet zone.
+The site is running on Windows Server 2003 R2 with IIS 6.0.
+The only solution I can think of is to have a special logon page for domain users that automatically redirects.
+Unfortunately, even if valid, it is not possible for majority of the developers facing this issue (including me) to go for this .
+Now, I am expecting to face the similar requirement in the near future and I have not seen any working sample for this requirement since the days of past scenario.
+I am updating an old ASP .NET 3.5 webforms application which uses forms authentication.
+If Windows authentication is enabled (any Anonymous is disabled) IIS will send the Kerberos / NTLM challenge and only then (after prompting) will the browser send credentials.
+Previously, there was a similar requirement for one project which was later diverted to Form Authentication (based on revised business rules).
+What happens is that anyone who is not recognised will receive a login prompt to log in to the domain, but I don't want this as some users do not have user accounts within the domain.
+To be clear: I need to find out the name of the currently logged in user if they are on the same domain as the server and use this information to bypass the old login system.
+Other than asking users to use IE (for this stuff), the immediate solution that comes to my mind is to have a browser plugin that will communicate with active directory and handle this issue at the backend.
+But it would be nicer if they could just visit any page directly.
+The requirement is that it needs to automatically log in authenticated domain users whilst still allowing external users to log in manually as before.
+The problem I am having is that although I can get the logged in user from .NET's Request.LogonUserIdentity, I have to disable anonymous access on the relevant page(s) before it will work.
+We have SharePoint 2010 in our environment and when opening via IE it does not ask for the credentials.
+Unless you have Windows Authentication exlcusively turned on (and all other authentication methods disabled) users won't be authenticated against the domain or the local machine... and you won't have access to this information programmatically.
+Anonymous Authentication will override Windows Authentication if they are both enabled... IIS will skip other methods of authentication if Anonymous is enabled.
+probably this solution is not available OOTB (out of the box).
+All other places it ask for the domain user name and password every time you visit.

@@ -1,0 +1,19 @@
+The choice between Virtual and Physical mode depends on use case, and as you indicated Virtual Mode is the most flexible.
+Since virtual mode seems the most flexible, and gives you the most potential to use VMFS features on the LUN, I'd suspect that you'll want to try using virtual mode first.
+Obviously, you being Matt Simmons, you're already doing that... >smile<
+As to your other question about the files involved, an RDM is made up of two parts; a stub\mapping file (ending in xxx-rdm.vmdk) that contains meta data for the volume, and the actual raw LUN that the stub points to.
+RDM's are definitely what you want to use and what you have outlined will work the way you intend.
+Physical compatibility mode has no effect on standard vMotion but it does prevent Storage vMotion, Snapshotting, cloning or Conversion of a VM into a template.
+An RDM in Virtual mode behaves exactly like a disk presented via a VMDK - Storage VMotion \ cloning \ Snapshots etc all work.
+Snapshot delta files will end up in the same place if you choose to use those and have selected Virtual Compatibility Mode so you should factor in capacity for those if you are going to do that.
+I don't have direct experience using RDMs in vSphere 4 ESXi (only in ESX 3.5), but everything you're saying re: what you want to accomplish with presenting your data LUN via RDM jibes with my knowledge.
+It's also required for mixed physical\virtual clustering like MSCS, probably for the same reason - I suspect (but I'm not certain) that all nodes in the cluster need to be able to talk directly to the same shared hardware in the same way.
+I would suspect that, since you're looking for the capability to mount the RDM LUN "cold" on another machine (i.e.
+My recommendation would be "test it out and see how you like it".
+Physical compatibility mode is only required when you need to use software within the Guest that requires direct access to the disk hardware - SAN management software for example.
+The mapping file can be stored on any VMDK (or NFS share) visible to the ESXi host(s) but the most sensible place to put it is with the main  VM files because it is really just a small text file (a few kB).
+The mapping file is typically stored in the datastore with the virtual machine using it, as you surmise.
+All of those restrictions stem from the fact that a physical mode RDM can't support VMware snapshotting techniques.
+re: virtual RDM mode versus physical RDM mode - The background I'm finding seems to indicate that in a virtual/physical cluster you'll want to use physical mode.
+not a true cluster application) that virtual mode will work fine for you.
+Having said that, I'm also finding documentation that indicates that nothing is written to the LUN other than the guest filesystem information even in virtual mode (see http://www.virtuallifestyle.nl/2010/01/recommended-detailed-material-on-rdms/).

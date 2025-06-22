@@ -1,0 +1,14 @@
+You can enable sticky session or session affinity.
+sticky cookie srv_id expires=1h domain=.example.com path=/;
+Having nginx responding to the root context of the VHost, and proxying the requests towards an instance of Tomcat in a context /application
+I am using nginx for proxy so i can achieve acceding the application from a subdomain
+http://nginx.org/en/docs/http/ngx_http_upstream_module.html#sticky
+Cesar has mentioned that he has resolved the issue with apache but I am getting the same even with apache.
+This will ensure that the requests from same client are passed to the same tomcat every time
+Try adding the proxy_cookie_path directive as mentioned below:
+The only directive I added was [ proxy_cookie_path ~^/.
+I noticed the issue occurs when the Proxy location path does not match the Tomcat application context name and there is a cookie path mismatch which causes a new JSESSIONID for every request.
+I have another appliction in jetty that runs without problem behind the ngix.
+Also if i acces the application directly i can operate it without problem.
+For me, the answer provided by Diwakar Timilsina has been the exact one which solved my problem..
+I am also facing the same issue that is unable to keep session.

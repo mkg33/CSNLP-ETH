@@ -1,0 +1,8 @@
+The streams inside pack() are not wrapped in a try-with-resources, but should be, to prevent from leaving an unclosed stream in case of exception.
+First of all, the readability of this code is OK. Entities are quite well structured and an effort to respect the SRP principle is seen.
+To check whether a file is hidden or not, path.getFileName().toString().startsWith(".") is not reliable, because a file name may begin with a dot without the file being hidden. A better way to check is Files.isHidden(Path).
+However, I would suggest a few renaming and design changes. The PackerUpacker class resembles a factory, because it instantiates the business logic entities (Packer or Unpacker). But also it chooses which one to use and triggers the main action: this is too much for it, so let's separate the roles.
+It may also be seen as an abstract class, because both the implementors might share some similarities (ex. path validation).
+PathProcessorFactory (former PackerUnpacker) will decide, depending on the user's input arg, which entity to instantiate:
+Since this object is instantiated only in PackFile collecting sequence and is placed in the same package, I'd suggest to reduce its visibility (and of its methods also) to package level, but this is a very minor issue.
+The idea to separate it into a dedicated class is not clear. (BTW, it's not a good practice to include much logic into constuctors, neither to throw checked exceptions from them). Its only role is to wrap packedFileMetas, so why not producing them in a utility method, ex. public static List<PackedFileMeta> collectFilesToPack(Path folderToPack)?

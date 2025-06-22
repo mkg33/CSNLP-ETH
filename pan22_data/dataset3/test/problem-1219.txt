@@ -1,0 +1,19 @@
+Suspecting transaction log/disk performance issues, I enabled various PerfMon counters and established baseline averages over a couple of days.
+If I need to tell the client we need another disk, then so be it - I just want to be certain before spending money.
+-Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz, 2500 Mhz, 6 Core(s), 12 Logical Processor(s)
+The disk is partitioned into two local drives: C and D. The OS files are all on C. SQL Server is installed on D, and the database files (.mdf and .ldf) are also on D. In addition, we're writing our nightly backups to the D drive!
+This server is a Dell PowerEdge R720 running Windows Server 2008 R2 and SQL Server 2012 Standard (11.0.2100.60) (x64).
+What else could I look at to figure out why this server in particular is slower with regards to disk read/write response time and backups?
+When I first logged onto the machine, the transaction log had grown to 5GB across 256 VLFs suggesting some fragmentation.
+Paul Randall's query against sys.dm_io_virtual_file_stats reveals some serious write latency with both the data and log files - although contrary to the WRITELOG wait type, the data file write latency is quite a bit more:
+Could index fragmentation/fill factor settings cause this poor of performance?
+A quick look at the wait types revealed that the WRITELOG wait type was the most prevalent - consuming 69%:
+I realize that the data and log files (and backups) should all be on a different drives for parallel reads/writes and maximum throughput.
+This seemed to decrease the WRITELOG wait type percentage some (now at ~61%) as well as the \SQLServer:Databases\Log Flush Wait Time (now at ~48ms).
+-DELL PERC S110 SCSI Disk Device running as a software RAID 5.
+I've been asked to look at a database/application server that's "performing slow".
+The transaction log was originally configured with an initial size of 100MB and set to grow at 10%.
+The PerfMon counters include, but are not limited to:
+Best practices aside, we have other production systems configured the same way as this one, but that are running better, e.g.
+Based on the article by Kimberly Tripp, I "rebuilt" the transaction log and assigned it a size of 2GB (somewhat arbitrarily), yielding 24VLFs.
+No one could really tell me what was performing slow (except for the database backups) so this has been a discovery process.

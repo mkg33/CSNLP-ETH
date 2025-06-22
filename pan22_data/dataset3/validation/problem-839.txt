@@ -1,0 +1,14 @@
+You may also be able to set the group and change the permissions to 770, which could be more secure.
+You can get around this by setting $SSH_AUTH_SOCK and the directory it is in to have the permissions 777.
+As others have noted, this won't work if the user you are switching to doesn't have read permissions on $SSH_AUTH_SOCK (which is pretty much any user besides root).
+This will the environment for otheruser regardless of the env variables where you run su.
+However, when I tried changing the group, I got "Operation not permitted".
+Then without the dash, su will use that environment directly.
+Simply put, the dash will undermine anything you passed from sudo.
+I think there is a problem with the - (dash) option after su in your command:
+You are basically giving every other user on the system permission to use your SSH Agent (until you log out).
+If you are authorized to sudo su - $USER, then you would probably have a good argument for being permitted to do a ssh -AY $USER@localhost instead, with your valid public key in $USER's home directory.
+If you read the man page of su, you may find that the option -, -l, --login starts the shell environment as login shell.
+As @joao-costa pointed out, -E will preserve all variables in the environment where you ran sudo.
+Don't use sudo su - USER, but rather sudo -i -u USER.
+Then your authentication forwarding would be carried through with you.

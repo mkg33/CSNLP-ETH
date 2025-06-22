@@ -1,0 +1,21 @@
+Above all, I recommend a meticulous plan of steps that you are going to take when it's "go-time".
+We are running out of IP addresses on our expanding network.
+By default on many DHCP providers, the lease is 7 days.
+I'm guessing you should be able to redo all your static devices in one day - when I last had to do this, I started when everyone left on a Friday at 17:00 and was finished by 23:00 - even if you got double time for overtime I'm guessing this is massively cheaper than a L3 switch.
+The only downside I observed with changing the subnet mask was on the Monday morning when everyone came back in, for some reason Windows was often reporting printers offline when they weren't but this seemed to quickly settle down.
+The other answers here all provide good solutions.
+We use an ISA server as a proxy for all web traffic, this is our current default gateway
+seldom provide you with a good way to remotely change the IP, unfortunately.
+I would manage this change via DHCP, but in the weeks before you make the change, decrease the lease length.
+A couple of weeks before you make the cutover, shorten the lease to no more than a day (even 4 or 8 hours.)
+They will need access to all the internal networks
+I agree that you should consider avoiding 192.168.x.0, especially 0 or 1 for the third octet.
+Not having to think about "what's next" is a huge time-saver.
+Layer 3 switches aren't cheap, and in my opinion one is not needed in this setup seeing as you could accomplish the same thing by changing subnet mask.
+What's the best method of gaining some extra IP addresses?
+We have remote site2site vpns connecting into our network from 192.168.102.0,192.168.103.0 etc.
+Take a good audit of what devices are configured manually well in advance, and consider scripting the change for the servers that you can do this to.
+Also the switch will be an additional single point of failure, and adding devices such as these will never improve bandwidth/latency/reliability so in my opinion should be avoided unless actually needed.
+Be aware that your DHCP server will see increased load.
+Our current backbone is 4 x L2 dell switches connected by LAGs to effectively create 168 port backbone
+Using a different subnet is sound; 255.255.252 is fine.

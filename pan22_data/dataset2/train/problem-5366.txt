@@ -1,0 +1,5 @@
+The OR will most likely affect the index usage, because it hinders index seeking. Generally speaking "OR" is 'bad' for index usage in where clauses.
+I think the problem stopping an index on time being used for filtering is the use of a function with a reference to the row: COALESCE(?, time).
+Try having separate prepared queries for each case (both times know, the start NULL, the end NULL, and both NULL) instead of trying to do it all in one to give the query planner an easier time over that part.
+The time field, it would be sensible to have it in an index sorted in the DESC order when you use it DESC;
+I suspect that mysql's query planner isn't being bright enough to simplify time BETWEEN COALESCE(?, time) and COALESCE(?, time) to time BETWEEN <?1> AND <?1> when both relevant parameters are not NULL and when one is NULL to simiplify COALESCE(?, time) to time when the appropriate param is NULL and then further simplify time BETWEEN time AND <something> to time < <something> or time BETWEEN <something> AND time to time < <something>

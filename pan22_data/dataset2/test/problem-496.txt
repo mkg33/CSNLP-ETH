@@ -1,0 +1,8 @@
+After that you will have the disk image /path/to/the/image accessible as /dev/sdb including partitions.
+I gather that the SCSI debug host simulator is backed by RAM, so it is volatile.  With the method that I propose here, the data will actually be written to a partition or file.
+If you want to use a raw disk image file you can use loopback devices to access it as a block device (like /dev/sdb).
+Why do you specifically need it to be /dev/sdb? I think you need to explain why you want something to occupy that block device node, because you can't simply have something use it. If you have some software that wants to read /dev/sdb, you could just change the software.
+In the worst case, you can use the SCSI debug host simulator. Simply do modprobe scsi_debug, and the defaults should provide a single SCSI device. Note that it won't explicitly be on /dev/sdb, but always the next available SCSI device.
+The solutions based on losetup given above don't create a SCSI block device, hence they don't create a /dev/sd* device node and some renaming or linking is required to create one, and some software may not find the device suitable since it's not using the SCSI subsystem.
+I want to insert a virtual hard drive (or anything) to occupy the system block /dev/sdb, how could I do that in Linux (Ubuntu and Debian)?
+It is possible to create a SCSI disk device that is backed by a partition or file using targetcli.  See http://linux-iscsi.org/wiki/Tcm_loop, and https://stackoverflow.com/questions/30972176/creating-a-loopback-device-in-lio-scsi-target which covers an issue with those instructions.  As with the SCSI debug host simulator suggested by @robbat2, this device will be assigned the next available identifier.

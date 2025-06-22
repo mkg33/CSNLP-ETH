@@ -1,0 +1,8 @@
+Note also that allow from all is Apache 2.2 syntax. This is deprecated on Apache 2.4 and should be replaced with the equivalent Require directive. See Apache docs - Upgrading to 2.4 from 2.2
+The other answer already gives the solution, I thought I'd add why your code might not work as intended.
+This is way overcomplicated. You only need two (or three) directives to redirect everything to HTTPS, e.g.
+Note that this is purely theoretical. You don't need mod_rewrite at all here, use Esa Jokinen's solution instead.
+However, if you moved the mod_rewrite directives out of the <Directory> container and directly into the <VirtualHost> container then this might work OK. mod_rewrite directives in a virtual host (or server config) context will execute before .htaccess. For example:
+The redirect never seems to fire and just serves files from http. I've tried all sorts of combinations, but nothing seems to work.
+So, if you had a .htaccess file in the /public_html directory that uses mod_rewrite (eg. a default WordPress installation perhaps) then this will completely override the mod_rewrite directives in the parent <Directory> container in the server config. So, your redirect will never happen.
+However, mod_rewrite directives in a directory (or .htaccess) context are not inherited by default. (mod_rewrite behaves somewhat differently to other modules in this respect.)

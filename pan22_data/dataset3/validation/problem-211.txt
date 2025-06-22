@@ -1,0 +1,30 @@
+To roll back a DROP COLUMN, the only option I see is to rename the column first and then later when everything was successful drop all renamed columns.
+The default value for a guaranteed flashback time is 15 minutes.
+3) Querying: You'll have to build this dynamically.
+"Flashback Database" uses a different mechanism but will take the whole database back to before the change, which you may not be allowed to do.
+We have a tool (written in Java) that should modify a schema by:
+In Oracle (and probably elsewhere), executing an ALTER TABLE statement will do an implicit commit on the current transaction.
+Oracle added a feature Edition-Based Redefinition for upgrading application schema mostly online in 11gR2.
+Using Flashback is probably not very reliable as you cannot rely on the availability of the flashback data.
+"Rolling back" an ADD COLUMN is quite easy as you only need to drop the column.
+What options do we have to "roll back" to the initial state if something goes wrong while applying the changes?
+Oracle's "FlashBack Table" can rewind a table to an earlier point in time ...
+Another alternative could be to create a copy of the tables before modifying them e.g.
+With this method, your clients could add any column they want, and could do this in 1 transaction.
+To rollback the "virtual drop", you just need to rename the column back to it's original name.
+Please note: The basic schema layout, and the fact that you need to ALTER TABLE to change some things, is predefined by a standard and cannot be changed by us, as other tools wouldn't work anymore.
+It's big and it's complicated but it might be worth the investment in getting to grips with it.
+Note: Someone here proposed RESTORE POINT + FLASHBACK -- is it a good idea to call this from this (Java) tool?
+The only way I can think of (short of migrating to a DBMS that does support transactional DDL) is to write your own "DDL transaction" handling where you create the corresponding statement that rolls back the actual change you did.
+(We do not fully control the database instance at some sites where the tool should be used.)
+You could probably use this to accomplish your goal.
+(Basically adding or removing custom "attribute" columns to some tables) Once he's satisfied, he can apply his changes.
+The tool as written will display the current schema layout to the user and allow him to modify it.
+Looping through all the "Table_Column_DEF" records and adding them with a "select (select Value_Int from LinkTable where ...) Value_Int, ... from ..."
+Then you only need a link table between your default Table and "Table_Column_DEF", where you also store the values.
+Another option that no-one else has mentioned is the monolith that is DBMS_REDEFINITION.
+using CREATE TABLE backup_table AS SELECT * FROM original_table (but apparently this is not a good solution if the tables are really big)
+You have benefits from rollback, flashback etc... You have of course some tradeoff's to consider:
+It's a huge, Oracle-supplied, package that is supposed to manage all of this for you, making your table changes transparent, seamless and avoiding [almost] any interruption to service.
+The problem now is that we cannot run these changes in a single transaction since, AFAIK, it's not possible to do multiple ALTER TABLE statements within a transaction.
+I think you should better add a structure where your clients think they are adding columns, but in fact they are only adding records in a table eg:"Table_Column_DEF".

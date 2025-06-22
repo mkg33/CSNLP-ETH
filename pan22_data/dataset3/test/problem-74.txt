@@ -1,0 +1,14 @@
+You have to have the column as a plain INTEGER column when you insert the row; then you alter the table so the column is a SERIAL column.
+If there is no unique constraint, it will succeed.
+This leads to an answer for the first part of the question:
+In a programming language such as ESQL/C, you can retrieve the value inserted from the SQLCA record.
+Note that this table was created without a unique constraint or primary key on the serial column; this is not what I'd normally do.
+1 You can get a row where there is a zero in the SERIAL column, but only through a back-door cheat.
+So, as I said, you can't insert a row with zero in the SERIAL column, but you can find a row with zero in the SERIAL column if someone is devious enough.
+In Informix, a SERIAL column is a 4-byte signed integer with some auto-increment properties.
+If you insert a value into a SERIAL column, that is the value that will be use.
+There are also, I think, functions to retrieve the last serial value inserted.
+If the newly inserted value, N, is larger than any previously inserted, then the internal counter will be incremented so that the next row inserted with 0 will be assigned N+1.
+Clearly, if there is a unique constraint on the column (there isn't one automatically, though the DB-Access Schema Editor will add one for you) and you insert a duplicate record, then the insertion will fail.
+If you insert the value 0 into a SERIAL column, or fail to provide a value for the serial column, the next number in ascending order will automatically be assigned for this row.
+SQL commands prefixed with a + and a blank; output from the DBMS without that prefix.

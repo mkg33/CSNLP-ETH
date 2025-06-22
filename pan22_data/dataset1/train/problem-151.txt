@@ -1,0 +1,8 @@
+The VPN should be supplying DNS servers to use to see this different "view" of internal DNS versus external (or public) DNS when the VPN is up, and those internal DNS servers need to be configured to pass-through anything else to resolve publicly.  If you are using the native VPNC plugin for NetworkManager (NM), this is all transparent and NM reconfigures dnsmasq for you (if it's using it), or just reconfigures /etc/resolv.conf. 
+Consider company compx has the domain compx.com and without special configuration, dnsmasq can resolve computers in this domain just fine.
+Now I log into the VPN of compx.com with vpnc. Instead of having a private subdomain for internal computers they place each and every server into their public domain like srv001testblorg.compx.com. Yet, these internal server names are not resolvable outside the VPN, only inside.
+To be able to resolve these inside the VPN I would add a line to my dnsmasq configuration like
+where the IP address 10.1.0.11 is their internal DNS server.
+Alas, in the same moment I cannot even resolve their public servers like wwww.compx.com anymore as soon as I leave their VPN, because the internal DNS server is no longer available then.
+Restarting dnsmasq when entering the VPN is not my preferred option, because dnsmasq is managed by NetworkManager, while I use vpnc to enter the VPN.
+Any ideas how this default/fallback lookup could be configured with dnsmasq?

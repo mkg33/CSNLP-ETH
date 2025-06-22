@@ -1,0 +1,9 @@
+Whenever you connect through a listener, the listener may forward your request to another address that a participant does not understand => ORA-12545.
+The above is a very common mistake when using Oracle RAC. But ORA-12545 is not specific to RAC, that can happen in single instance environments as well. All you need is a shared server configuration, and name resolution problems on the database server. Same story short:
+And that is the mistake people usually make, based on a false assumption. Just because you can ping, let's say, even tnsping the database server, does not mean at all you will be able to connect or name resolution works properly. Ping and tnsping checks work only up to the first entry point in a database connection, and they stop there, these tools alone are not enough for testing database connections.
+Notice in the above output, the mindb service has 2 instances/handlers, with different addresses. Whenever I connect to o6ca-scan.balazs.vm, my requests will be forwarded to o6ca1-vip.balazs.vm or o6ca2-vip.balazs.vm. My client can't understand those addresses, but if I fix it:
+I can ping the host in my TNS entry, even tnsping works, so I will be able to connect, right? Well, no:
+Based on my experience, ORA-12545/TNS-12545 is a result of indirect name resolution problems. Even the official description suggests trying IP addresses instead of host names:
+I have a dispatcher listening on o61.balazs.vm. If I request a shared server connection, and the listener tries to forward the request to o61.balazs.vm, but can not resolve that address, that will result an ORA-12545 as well.
+Make sure your client and server can resolve all addresses specified in the connection string, especially the addresses that appear in the output of lsnrctl services on the database server.
+There is no trcroute for the instant client, but even if you had the full administrator client, trcroute may not return anything useful.

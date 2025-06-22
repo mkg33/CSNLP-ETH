@@ -1,0 +1,27 @@
+In my case, I got the error message while running an SSRS report using a shared data source.
+This shared data source did not specify a default database (the Default Catalog= parameter), and I couldn't add it to the connection string because I don't have the password (and when you change something in an SSRS data source it tends to want you to re-enter the password).
+But then I remembered that this server is set up to be case-sensitive.
+To solve this, I changed the default database for the login in the SQL Server instance from master to the database containing the stored procedure the report wanted to execute.
+I created a stored procedure testtable_pricesmaller as follows
+For the editor, look in the lower right corner to see which instance and database you're connected to.
+After renaming it, when I tried to call dbo.MyProcCaller, I'd get this error message:
+The MS SQL Server Management Studio require one to restart it after creating a stored procedure in it.
+which I used the Microsoft SQL Server 2008 Management Studio.
+Here's a simple way to check if you have this problem.
+After restarting the MS SQL Server Management Studio, there is no such error anymore.
+My solution was to alter my second stored procedure to use the new name:
+Some time later, I renamed dbo.MyProc to dbo.MyProc2.
+I know this is old; I came across this question while I was searching for a solution to this very same problem, and I'm posting this answer in the hope that it helps others who also find this question.
+I have created a table testtable inside the database testbase that have the following structure:
+I then created another stored procedure that executed the first one
+I find it very strange when I receive the following error:
+(It is listed in the following tree structure of the Object Explorer)
+and are able to view the Stored Procedures on the Object Explorer of the Microsoft SQL Server Management Studio.
+TL;DR: You may have a stored procedure that's calling another stored procedure that doesn't exist.
+At last I know why the message appear in the MS SQL Server Management Studio.
+When running things from SSMS, keep in mind the Object Explorer pane is one connection while whatever editor you have is an entirely different connection.
+(Strange, does that mean that every time I create a stored procedure, I have to restart it?)
+So you may see the objects for SQL01 in Object Explorer, but the code you're running in an editor will run against SQL02 - I've run into this problem a few times over the years and after much cussing and "Why won't it work?"
+This question is a few years old, but I just want to throw in another possibility for anyone like me who found it later.
+Click to modify the text of the stored procedure and then execute that text.
+If you get a warning like this, you need to rename your stored procedure:

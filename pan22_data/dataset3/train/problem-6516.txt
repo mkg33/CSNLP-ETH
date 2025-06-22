@@ -1,0 +1,10 @@
+You need to create a Cache Subnet Group before you create your Cache Cluster in a VPC.
+Unfortunately, the error is not very well defined in the Elastic Beanstalk Events.
+A Cache Subnet Group is a collection of VPC subnets.
+I discovered the events are also listed in Cloudformation and that is where I discovered the permissions were the issue.
+Make sure one of those security groups is allowing connections on port 11211 from either your EB application's EC2 instance's security groups, or a CIDR that includes your EB application's EC2 instances.
+The VpcSecurityGroupIds property is a list of one or more VPC security groups that will be assigned to the cache cluster.
+You can create the Cache Subnet Group resource in your .ebextensions file:
+Come to find out, the error was that the IAM account that was managing the deployment didn't have the necessary policies to create Elasticache services.
+Once I gave the IAM user the appropriate permissions.
+http://docs.aws.amazon.com/AmazonElastiCache/latest/UserGuide/SubnetGroups.html

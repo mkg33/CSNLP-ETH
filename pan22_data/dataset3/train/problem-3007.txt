@@ -1,0 +1,12 @@
+The instance is running this kernel: 2.6.21.7-2.ec2.v1.2.fc8xen
+Recently Amazon added EBS based images and I decided to give it a try.
+Well I'm missing /dev/random on the FC12 instance now and there're some other obscure things.
+I'm having problems with an upgraded fedora system.
+https://bugs.launchpad.net/ubuntu-on-ec2/+bug/397187
+Fixing the problem is always a better idea than trying to fix the symptoms and likely missing something important.
+Comparing the contents of your /etc/udev directory to a working system or looking at /var/log/udev might give you some insight.
+For example: /dev/null has 600 permissions and /dev/urandom is not a block device.
+I launched a basic FC8 instance and upgraded it with yum.
+I read here http://markus.revti.com/2007/12/creating-devrandom/ , how to "fix" the above problems, however on every start of the system everything is the same.
+The Fedora wiki has an article: Upgrading Fedora using yum -- in particular, I'd check for .rpmsave files in /etc as described in the "Clean Stuff" section.
+In fact when I've upgraded to a newer Udev it uses signalfd(2) , which is not available in my EC2 kernel.

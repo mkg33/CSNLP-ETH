@@ -1,0 +1,14 @@
+These take advantage of the Routers2 additional features to give you combination graphs.
+I am trying to monitor Disk usage over SNMP using MRTG on CentOS5.2.
+To be able to use the dskPercent OID nickname in MRTG, you need to load the UCD-SNMP-MIB, which you are doing.
+To make sure the snmp tree does contain the dskPercent table after such a configuration, check with a CLI snmp tool, for example:
+This table is only populated if you have one or multiple disk configuration lines in your snmpd.conf configuration file (provided you use net-snmp).
+Rather it is your snmp agent on the machine you're trying to monitor which doesn't have any entry in the dskTable.
+Give the command snmpwalk -v1 -c <communityname> localhost hrStorage, and you will get list of values you are looking for.
+So essentially I'm wondering where can I find a mib file compatible with mrtg for it's reference or a working config file.
+I'm open to any suggestions as to the best way to achieve this (I would also like to do other metrics like CPU).
+Since you are using MRTG with Routers2, there is a generic cfgmaker host template available at http://www.steveshipway.org/forum/viewtopic.php?f=34&t=1616 which will automatically generate MRTG configurations for many things, including the storage OIDs.
+You can use it with standard MRTG cfgmaker like this:
+From forum surfing etc the suggestion is to use the fully qualified OIDs, I'd like to avoid this (for readability).
+(or, if your snmpwalk is not configured to used OID nicknames)
+So the error you see has nothing to do with the MIB not being loaded into MRTG.

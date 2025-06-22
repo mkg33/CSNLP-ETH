@@ -1,0 +1,9 @@
+In addition to being a pipeline visualization tool, stages also identify portions of the pipeline that could be executed more or less independently from each other, potentially on different workers. Do not underestimate the importance of choosing the right pipeline structure.
+Stages can be re-executed if/when needed, for example in case of failures caused by environment issues, without having to re-run the already completed upstream stages.
+Stages provide ability for pipeline branching. For example a single build stage can produce artifacts that could be used by multiple downstream test stages than can be executed in parallel, for shorter overall pipeline execution time.
+Each stage operation can be supported by pools of workers of different types and sizes.
+Stages can be conditionally executed. For example an expensive integration test stage (lengthy and/or with a smaller resource pool than the build stage)  could be executed only once in a while rather than for every commit, or only on a release branch and not on the primary development branch.
+Since generally the intent is to have the pipeline triggered by each and every commit in the respective branch the size of the pipeline - i.e. the number of stages, their duration and the structure of the pipeline graph (it doesn't necessarily have to be linear) - has a potentially complex relationship with:
+In smaller scale projects things are usually simple, but in larger scale ones  these aspects require serious thinking as they can have a huge impact on the overall development process.
+Whatever makes sense, in your particular project context.
+Yes, in my perspective stages are mostly meant for a visualisation purpose, and we need to maintain the clear demarcation between stages. My suggestion to go with all the SCM related checkouts in a single stage itself . 

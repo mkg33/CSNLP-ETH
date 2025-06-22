@@ -1,0 +1,19 @@
+So as long as you manipulate the Sprites through the Group interface, they'll be bound together.
+sprites inside other sprites, where transforming the parent also transforms the children).
+Where that Matrix is calculated with the origin of the transformation taken into account, i.e.
+As for the Group class, it keeps a list of all the Sprites in the group and provides methods to manipulate the group as a whole.
+Basically you need to create a hierarchy of Parent and Children sprites, and each sprite will keep a transformation matrix that is not defined in World Space but rather in relation to its parent.
+Note: To apply the matrix to Position you use the Vector2.Transform() method of XNA.
+Each Sprite object will hold its Position/Rotation/Scale/Origin in world space and when calling Draw those values are fed to a SpriteBatch instance and drawn.
+grouped but on the same level) or if you want to have an hierarchy (i.e.
+Old topic but I'd like to talk a bit about the subject.
+About grouping sprites together there are two nice ways to handle that, depending on whether you want all the sprites to be siblings (i.e.
+On the other hand if you can have sprites inside each other, the strategy is different.
+Using this strategy you could have the turret be a child of the tank, and whenever you rotated and moved the tank, the turret would follow automatically.
+Something like (not 100% accurate, just to give an idea):
+And when drawing the sprite you need to get the global transform by multiplying the current sprite's transform by its parents' (which I'm passing as a parameter), then decompose that transform into values that SpriteBatch can understand, and finally draw the children.
+What this does is basically move the Sprite temporarily into a new space where the origin is at (0,0), then it applies the transformation, and reverts the original displacement back to normal.
+Let's say you have a Sprite class and a Group class with this interface (pseudocode)...
+Scenario 1) All the sprites in the group are siblings:
+And here's my implementation of DecomposeMatrix (the one I use on my project):
+Those methods take an origin parameter which is the "center" of the group (e.g.

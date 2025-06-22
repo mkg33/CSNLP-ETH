@@ -1,0 +1,13 @@
+The second will work with any VoIP phone configured to process (and strip) the VLAN -- how it gets configured depends on the phone.
+I have seen both of the following methods of switch interface configuration for supporting IP Phones.
+This naturally allows the use of CDP for QoS (auto-qos).
+The first method also works for Avaya phones - only they must have the proper DHCP option strings on the data vlan to know which voice vlan it should try and tag its traffic to afterwards.
+The first is the Cisco Way™ -- only works with cisco switches and cisco phones, and requires CDP (as that's how the phone gets the voice-vlan information.)
+However the former is needed, if you want to use CDP to communicate the voice VLAN to the phone.
+Can anyone provide a good pro or con of standardizing on either method or does it just come down to a matter of personal preference which one you should choose to implement?
+[They're functionally identical at the ethernet level.]
+(which adds spanning-tree portfast and sw mode access automatically when configuring ports)
+I prefer the latter, as it allows easy addition of new VLAN and does not introduce new concepts.
+Portfast allows the port to go directly into forwarding state when the interface is up - otherwise you're going to be waiting 45 seconds per port!
+Otherwise normal behavior is that phone will first boot in data VLAN, then get instruction from DHCP to change VLAN, and then it'll boot again in voice VLAN.
+I prefer the first method when using Cisco phones on Cisco switches.

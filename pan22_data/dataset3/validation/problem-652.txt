@@ -1,0 +1,24 @@
+    confine activities to the DB under development
+Eventually, if there's abuse, the logs on this account can be used as evidence to take it away.
+You should be encouraging that sort of behavior, not discouraging it.
+This helps ensure that everything is done through scripts and that they have scripts ready when it's time for deployment.
+You've given the developers the access they asked for, but in a way that's a little more controllable.
+If it's the DEVELOPMENT server, what's the problem with the DEVELOPERS being able to have full access?
+The catch is that we, the DB support group are still responsible for maintaining this box.
+In spite of our vehement protests, our management has decided that the development team must be granted 'sa' rights on the development server.
+Telling developers that you can't add/remove/change database objects (eg: tables, columns, indexes) is like telling them "You can have a compiler, but you aren't allowed to run it".
+Some might suggest that developers work with local instances of SQL Express, but while SQL Express for each developer can solve certain problems, it has different limitations and performance characteristics than full SQL Server on a separate server.
+We have now been entrusted the task of coming up with a list of Dos and Don'ts for the development teams with these enhanced privileges.
+SQL Server Auditing is what you want, but, if you will do all the database object creation for them, why do devs need sa?
+We require all database structure changes to be done with scripts (even on dev) and saved in subversion.
+So normally they work under individual "restricted" accounts (which I use loosely because these restricted accounts still need some hefty permissions — ie create, drop, alter for tables).
+Then on a set schedule we refresh dev from prod and they have to rerun their scripts to get back to where they were in the development cycle.
+It would seem to me that the developers want/need access to their own database instance specifically to allow them to test different methods of solving problems WITHOUT having to muck with the PRODUCTION or TEST databases.
+Any pointers to tools available for tracking these users activities will be greatly appreciated.
+But for that rare occasion when they think they need sa, they can log in using this account.
+What you SHOULD do is institute a regular backup schedule (at least nightly) and work with the developers to ensure that they know how to initiate unscheduled backups, and restore from backups, so that downtime is minimized in the event of problems.
+Then you can flag the account in your logs and do extra monitoring on it.
+If it's not too late, one compromise option that I've seen work well is rather than upgrade the permissions or replacing the developers' existing accounts, create a separate account that is only used when they need the elevated permissions.
+I know in 2008 you can set up DDL Triggers to track database structural changes, can you do this in 2005?
+http://msdn.microsoft.com/en-us/library/cc280526.aspx
+This way at least you can find out when someone changes a setting who did it and find out why.

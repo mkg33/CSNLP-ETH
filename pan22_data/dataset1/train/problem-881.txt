@@ -1,0 +1,12 @@
+Let me just express the first thing that came to mind when I read this question's title:
+Let's ignore in the following that Singletons are an anti-pattern in Object-Oriented Programming.
+Everything about them makes things easier to think about.
+The whole point of a singleton is that only one instance of it ever exists.
+What your code does is subtly, but completely undermine that assumption.
+Those don't need to be in the same thread, the same class or the same anything. As long as they run in the same JVM, authSingleton == anotherSingleton will be false. And this is a complete and utter breakage of the semantics of a Singleton.
+What you tried to do with that class is not something that you want. You're centrally controlling the lifetime of singletons. But you're not correctly enforcing the semantics of these singletons.
+This code is something like an ObjectPool. Implying that it has anything to do with singletons is incorrect though.
+^^ This is a complete, threadsafe and lazily initialized Singleton. In 99.9999% of the use-cases of a singleton, this is enough. But 90% of all Singleton uses are just flat out wrong. 
+There is no useful reason for an "AuthManager" to be a Singleton. Don't cargo-cult.
+I agree with Vogel612 - Singleton is an anti-pattern because of nomerous reasons. Just don't.
+However I want to mention the pattern "ServiceLocator" because it is very similar to your question. Maybe you want to read about it. But - just like the Singleton - the ServiceLocator is widely known as an anti-pattern.

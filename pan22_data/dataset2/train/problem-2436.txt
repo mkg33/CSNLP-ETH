@@ -1,0 +1,11 @@
+So, if you will use the full dump you created you will overwrite all the data you inserted after the last backup you performed.
+BackupPC hard-links between non-changed files within different backups to minimise disk space usage.
+2) You should keep a checkout around, place the dump into the working directory, and run svn update and svn add as appropriate before committing.
+I much prefer rolling backups with something like the last 7 days of zipped up sql then snapshots one week apart going back a month or two.  I don't see the need to version control the database for all eternity.
+Dumping your database to a file and the committing that file to svn is a fine approach.  There are a couple of things I recommend changing though... You should overwrite the same file every time you dump (remove the date from the filename) and remove the zip.
+Just like editing your source code, you are essentially modifying the database dump file.  Also, as someone else mentioned, if you don't zip it, in the long run it will compress much better on the server because the diffs will be much smaller.
+Regarding the mysqldump, keep in mind that in this way you are also including these options (--opt is the default that is a shorthand of the below):
+Hows about doing an automated dump of the backup with automysqlbackup and then creating auto-managed full/diffs with BackupPC?
+Also note that compressing the mysql output will create vastly different binaries and cause your repository disk requirements to balloon.  It may take more initial space with the uncompressed sql but the text diffs will be stored much more efficiently in the repository.  Also there is no need to store each one as a separate file with the date in the name.  Might as well be the same file since version control will let you turn back the clock.
+The great part about this approach is that it ties together the database with the code at a particular time.  For example, you need to run revision 1428.  No problem... update your local repo to rev 1428 and you have all of the code and the database dump that runs with 1428.  Load that dump, compile your code, and you're in business.
+1) If you insist on storing backups in subversion, then there is nothing wrong with this approach.  It is strange, though.

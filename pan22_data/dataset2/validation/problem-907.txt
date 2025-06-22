@@ -1,0 +1,9 @@
+From my (limited) experience with GAE, while database reads are trivial, database writes are expensive. We've got a database of around 20,000 GAE entities; when measured, writes are taking around 0.3 - 0.5 billable seconds. Updating our entire datastore takes ~2.5 billable CPU hours.
+It's perfectly possible to use GAE to run an authoritative server, but given the cost, I wouldn't want to -- a cloud-hosted VM server would be more flexible and would likely cost less.
+Running the update on GAE would consist of a cron job launched every minute.  This would update all of the entities and save the results to the datastore.  This would be more CPU intensive for GAE.
+I am looking for an answer that persuades me to either perform the world update on the google servers OR an authoritative server that syncs with the datastore.  The main goal here would be to minimize GAE daily quotas.
+Running the update on an authoritative server would consist of fetching entity data from the GAE datastore, calculating the new entity states and pushing the new state variables  back to the datastore.  This would be more bandwidth intensive for the datastore.
+Clients of the game would authenticate and set state directly against GAE as well as pull the latest world state from GAE.
+For some rough numbers, I am assuming 10,000 entities requiring updates.  Each entity update would require:
+I am new to developing Games and this may sound naive, but somehow having 10,000 entities or more to describe a world sounds like a lot. I would rethink the database and the patterns that place those entities in your world. The Text and Blob datatypes are saved as binary by default although they are retrieved as a string. 
+I am considering different game server architectures that use GAE.  The types of games I am considering are turn-based where the world status would need to be updated about once per minute.

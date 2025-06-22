@@ -1,0 +1,11 @@
+Each SYN packet received by that server will allocate some memory, which will stay allocated until the connection times out.
+You could reduce the impact on that server by ensuring that your firewall responds to the unrecognized packet with a RST packet.
+That way instead of having memory allocated until the connection times out, it will only be allocated for the few milliseconds it takes to send the SYN-ACK and get a RST back.
+If that is indeed what is going on, it will be easy for the administrator to fend off this particular SYN flood, because they could just reject all SYN packets using 1 as ephemeral port.
+The only part of the packet, which looks wrong, is the ephemeral port number.
+That IP is being attacked, and the attacker is spoofing your source IP address in the attack (the attacker is likely spoofing thousands of other addresses simultaneously).
+A SYN flood is attempting to exhaust memory on the server.
+The ephemeral ports are supposed to be from 49152 and up, but in your packet, it is 1.
+The packet looks almost like a legitimate SYN-ACK packet.
+And the ephemeral port number is chosen by the attacker as well.
+It looks like a possible SYN flood attack against 195.39.196.50.

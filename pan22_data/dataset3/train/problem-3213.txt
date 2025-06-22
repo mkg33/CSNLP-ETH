@@ -1,0 +1,13 @@
+How can I tell the virtual host not to serve requests for URLs other than the top-level one?
+If you want a catch-all for * or a specific IP, create it as the first virtual host in a set of matching ip:port combinations.
+Apache always find the best ip:port based in the first pass, when only connection level details are available, then looks at hostnames in a 2nd pass from what remains (if in 2.2, a NameVirtualHost directive has to be present to allow the 2nd step)
+I have an SSL-enabled virtual host for my sites at example.com:10443
+However, also browsing to https://subdomain.example.com:10443/ (with DNS set) shows me the same pages (after SSL certificate warning).
+Check out http://httpd.apache.org/docs/2.2/vhosts/details.html for the full semantics of virtual host matching, including the results of using NameVirtualHost.
+You seem not to use the NameVirtualHost option so Apache will not bother to check the hostname of the server in the request sent by the client.
+Whatever hostname you use, does not matter, you'll get exactly the same website.
+I would have expected the directive ServerName example.com:10443 to reject all connection attempts to other server names.
+Browsing to https://example.com:10443/ works as expected.
+You have not enabled NameVirtualHost so the _default_ would send any connection to your server to the config.
+If you've only got one virtual host for a port, it will be used regardless of whether there is a name-based vhost match.
+The request will be directed to the first VirtualHost section, where the IP:port matches, and that's it.

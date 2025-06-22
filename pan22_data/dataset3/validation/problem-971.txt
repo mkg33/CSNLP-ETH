@@ -1,0 +1,23 @@
+I had similar experience with Windows XP with a DUN set to dial *99****3# using the same username and password as above, and setting 'AT+CGDCONT=3,"IP","vzwinternet","0.0.0.0",0,0' as the extra init parameter to be sent to the modem.
+This was true regardless of whether I had first tried to connect the modem using pppd with the technique above.
+I have been able to get it to connect, but it always disconnects after 10 secs to 2.5 minutes, then it cannot connect again without a power cycle or reconnecting the stick.
+There was additional non-textual communication after this that I could not read, some of it may have been CHAP or PAP authentication providing credentials I could not see.
+I can't find anybody online who has been successful with this on Linux.
+I did the following with a Raspberry Pi with Debian GNU/Linux wheezy 3.2.27+.
+I played with the above parameters, but could never get anything to connect for more than 2.5 minutes.
+So if your driver is not present in main repo, it probably is in AUR.
+Try installing wvdial, and edit /etc/wvdial.conf to look like below.
+I know it is not a signal strength issue because I do not have the same problem under Windows, where the Verizon client shows 4 bars.
+It's a repository where everybody can add his package in the database, and then you can download it and build it.
+I have been trying to get a Verizon USB551L 4G USB Stick working on Debian Linux.
+With the same stick on Windows XP, I could establish a stable connection using Verizon's VzAccessManager, but using a manually configured DUN over the serial port, I experienced the same disconnect symptoms as on Linux.
+In order to set up the connection on Linux, I gleemed some info from the VZAccessManager and from sniffing the Windows COM port using a program called HHD Free Serial Port Monitor to show me the commands that Verizon is sending over the serial port to the modem:
+I also tried it with a Ubuntu Linux VirtualBox VM on my Mac, but I never got very far because the drivers did not recognize the card properly.
+I think your problem is a lack of kernel support for the drivers and everything else around your Verizon 4G USB key.
+With the Raspberry Pi, the stick was recognized and the "cdc_ether" driver created a wwan0 interface for it, and the "option" driver created a /dev/ttyUSB0, /dev/ttyUSB1, /dev/ttyUSB2, and /dev/ttyUSB3.
+From the above and from the info I could get from the VZAccessManager screens, I cobbled together the following /etc/pppd/verizon-gprs and /etc/pppd/verizon-gprs-connect chat scripts that enabled me to connect on Linux.
+And after it disconnected, it would never connect again -- I had to disconnect and reconnect the stick before it the above connect scripts would work.
+Debian is a cool OS, but it is very late when supporting cutting-edge devices.
+On my Rasbpery Pi, I also tried making the wwan0 connect directly by configuring it in /etc/networking/interfaces and then calling sudo ifup wwan0.
+Btw, here is Arch Linux page about USB 3G Modem : https://wiki.archlinux.org/index.php/USB_3G_Modem.
+Does anybody have an idea about what the problem can be?

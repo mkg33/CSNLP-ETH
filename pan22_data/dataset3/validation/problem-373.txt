@@ -1,0 +1,18 @@
+These days, a clean install of MySQL might well come with --secure-file-priv turned on.
+ACL's in the file system can cause confusion, sneakily "tweaking" permissions without you realising it.
+I didn't find anything specific regarding this sort of configuration but I thought I'd mention it.
+I will note this is my first master/master replication server.
+I've tried various permissions including 1777 to give it a sticky bit just in case and it still fails.
+I'd done quite a bit of searching and reading of the man pages and everyone pretty much blames it on ownership or directory permissions but as noted above, I believe I've done it correctly, especially since it's a script and is working on every other server.
+chown -R mysql:mysql /var/tmp/mysql/mysql.20190808
+Ownership is confirmed as mysql:mysql and the database owner is mysql.
+mysqldump: Got error: 1: "Can't create/write to file '/var/tmp/mysql/mysql.20190808/wikidb/back_archive.txt' (Errcode: 2)" when executing 'SELECT INTO OUTFILE'
+I'm using the same mysqldump command across Linux versions without issue except for this new Red Hat 7.6 server.
+mysqldump --tab=/var/tmp/mysql/mysql.20190808/wikidb --opt --user=root --password=[password] wikidb
+I get a list of all the tables and .txt files for the database in the directory.
+On all the older servers, and especially the older wiki servers this server is replacing, the command works successfully.
+If that doesn't match where you're trying to put the file, you'll hit another wall.
+Is it possible that the MySQL configuration is different?
+On the new server, I get the very first table, back_archive.sql, and then an error:
+SELinux can cause all sorts of problems, making really basic things fail for no apparent [or announced] reason.
+I have various mysql databases on different servers and at different versions.

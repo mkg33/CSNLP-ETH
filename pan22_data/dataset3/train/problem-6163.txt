@@ -1,0 +1,13 @@
+I have come up with another solution that yields much simpler results.
+With all the advantages of the multi-match query such as giving more weight to a single field.
+This is where the multi-match query can simplify the whole writing: each clause A, B, C, D, E, and F would be converted to
+The following rewrite extend the supported syntax to allow double quotes to mean "perfect match":
+Would be equivalent to "(A and B and C) or (D and E) or F".
+It uses query_string searching and the builtin boolean expressions over a set of defined fields:
+An other use-case to consider is the use of "and" or "or" as words to search for rather than operators (as "Tom and Jerry", I don't want to search for documents containing "Tom" and "Jerry" separately, but for documents containing the phrase "Tom and Jerry").
+Here I suggest producing a list of lists, since you don't (yet) consider priorisation of clauses using parenthesis.
+The catch, however is that each clause can be complete sentences and must apply to two fields: "Review.Text" and "Review.Title".
+Which is equivalent to: "(the empty string AND heart) OR doct" rather than "doctor AND heart".
+Usually, for these kind of problems, an intermediate representation produced by an ad-hoc parser is way better and simpler to convert to the end result.
+Which can then easily be converted to the elasticsearch query DSL using simple list comprehensions.
+Your usage of split makes your function rather fragile:

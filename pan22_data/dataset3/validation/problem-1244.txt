@@ -1,0 +1,27 @@
+Then you can let your static site interact with the API with an API Gateway CORS configuration and some JavaScript:
+I go with API gateway which already uses CloudFront and exposes some of its functionalities such as caching.
+API Gateway uses CloudFront internally (without giving you the chance to actually configure anything on the CloudFront level) - that means there is no way to run CloudFront and API Gateway side-by-side as in the end this would mean you run CloudFront with CloudFront side-by-side.
+From the connection point of view "something" needs to answer your requests (GET, POST, PUT, everything).
+These essentially holds the content users would need for any GET request on my site, to existing paths that is, with a catchall for errors.
+I run multiple web apps exactly with your proposed design, and I extracted gofaas, an educational Go and Lambda app, to share the techniques.
+/rest/*) to API gateway, and serve everything else from a S3 bucket.
+How can I set up Lambda (or API Gateway) side by side with CloudFront for the same domain so that CloudFront handles GET requests, and API Gateway handles requests with a body or POST requests.
+ALB/ELB can only use EC2 instances as a backend - no Lambda or S3 here.
+CloudFront gives you the chance to select different origins based on patterns - but you can only select S3 or ELB/ALBs as an origin - not Lambda functions (besides the Lambda@Edge functionality).
+Static assets on S3, Lambda functions served through API gateway, and they share the same domain name.
+Only at this point it is possible to handle GET requests differently than POST requests or one URL than another URL.
+API Security with Lambda, API Gateway, CORS and JWT
+The only ways I can think of which might do what you want to do are these:
+So in the end you need a service which is capable of understanding and routing HTTP.
+First of all you have a TCP connection and "something" needs to make sure it is understanding layer 7 and making sense out of the bytes the client is sending.
+In API Gateway, a resource can be a Lambda function, an AWS function, a mock, or another URL.
+With this approach you're running a real API which is handling all the "dynamic" requests with an API Gateway and delivering the application itself from S3 as an static asset.
+Maybe looking at those might help you to find your way - even if you don't use them, the architectural pattern on how to build things like this is what you're asking for imho.
+Form submissions, sending emails, notifications, interacting with the database.
+I'm putting that static assets of my website on S3, and setting up CloudFront to distribute them.
+Here is a complete walk through showing how to do this: https://www.codeengine.com/articles/process-form-aws-api-gateway-lambda/
+The URIs can be set to glob up subpaths as well e.g.
+It sounds like you want to have a look at technologies like AngularJS or React to build a truly API-driven application in the browser.
+You can create a lambda function, setup API gateway, and then configure CloudFront to forward certain paths (e.g.
+www.gofaas.net for S3 + CloudFront and api.gofaas.net for API Gateway + Lambda.
+So my call would be the last option - but that means you need to point the clients/browsers to a separate subdomain for all static assets (or for all POST requests).

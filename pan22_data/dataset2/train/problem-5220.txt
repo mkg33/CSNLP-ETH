@@ -1,0 +1,18 @@
+As for the perceived requirement to be "during world generation", that is a multi-step process which most games do not want the player to see happening (unless one is doing a SimEarth style), your use of a pre-gen 3d terrain instead of a generated 2.5d heightmap adds only the complication of allowing underfolds.
+Within the field of computational geometry there is quite a bit of research on the topic of drainage networks on a terrain. An overview can be found in section 3.5 of this article: Digital Elevation  Models: overview and selected algorithms.
+From the set of neighbors, choose the one with lowest elevation. Save the "steepest descent vector" from the current vertex to this one.
+You can use any foo you like instead of sqrt. You may want to use the original y - W as a base value to calculate the height of the vertices in the river. In that case it would be:
+3) Apply a valley modification function to the positions of the nearest neighbors such that the current vertex is the one being shifted downwards most strongly,
+and the previous descent vector (I'm calling this flow vector now). This introduces a bit of inertia since it means the river will have a tendency to stick to it's flow direction.
+Now proceed with 2) - 4) again until some stopping criteria is met (having reached the ocean or something similar).
+A useful starting point about drainage networks on triangulated irregular networks (TINs) - which sound like your existing vertex structure - is Yu et al., Drainage queries in TINs: from local to global and back again.
+i.e. all vertices in the same triangle as a given vertex. You should be able to create such a structure easily from the mesh data itself.
+I should note that the methods used in that article only provide you with realistic drainage or waterflow networks. Subsequent effects of erosion of the terrain is not covered.
+whereas vertices left and right to the current one are shifted less and those ahead and behind are not affected. Can be done by some vector projections / dot and cross products.
+May I suggest that any reasonable 3d terrain can have a (set of) 2d heightfields draped over it.  This was required for my project to form NPC path maps, unfortunately, I have found no references to the procedure - possibly because it amounts to 
+1) Find an appropriate starting vertex. You could pick this one randomly, but it probably needs to fulfill some restriction, being above water level and/or within a mountain range.
+I would recommend considering a technique inspired by seam carving. Look for the least expansive path through the terrain from any side to the opposite side (for instance north to south). The way you'll calculate price in this case is by the y value of the vertices you pass through (their height). Once you have a list of these vertices, lower them slightly deeper by N units. Pick a W that will be the width of your new river in units and now find all vertices that are less than W/2 units away from the path you found. Now using their distance d from the path, lower each of these vertices by:
+For the additional part of erosion by rain, every cliff edge must be mapped to the location where it falls (in a different sheet of the surface).
+Here is an algorithm off the top of my head. It requires a graph structure for the terrain mesh vertices that allows speedy access to the neighbors of a given vertex,
+Your question is quite broad and underspecified, so in this answer I'll focus on finding river flows.
+4) Pick the next vertex for the algorithm based on a mix of the steepest descent vector (this will make the valley follow the gradient of the terrain)

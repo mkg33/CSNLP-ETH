@@ -1,0 +1,23 @@
+For example, your ISP's routers would drop any such packet.
+In this case static routing is probably the best option.
+Also You probably want to use rip v2 because rip v1 doesn't support VLSM
+But what other steps do I need to take so that packets from computer A to computer B would go through router B?
+can establish a TCP connection by running nc 192.168.2.101 <port>) by means of routing, rather than merging the two networks into one (which can be easily accomplished using router B as a switch).
+Now I want computer A to communicate with computer B seamlessly (e.g.
+I could manually add a routing table entry in computer A so that all packets targeted to 192.168.2.0/24 go through gateway 192.168.1.102, but I would prefer an automatic way if it exist.
+If You looking for more general solution it think this could be good starting point: http://en.wikipedia.org/wiki/Routing_Information_Protocol.
+For a small network like this, the RIP protocol is most appropriate to make this happen.
+If RIP is properly enabled on both routers, router B will send an advertisement periodically saying that it knows how to reach the 192.168.2.0/24 network.
+Router A needs to be configured to accept RIP on its LAN interface, while Router B needs to be configured to send advertisements on its WAN interface.
+Based on the OP's spec, the Repeater bridge offers wired and wireless connectivity at the remote router and maintain all devices on the same LAN https://www.dd-wrt.com/wiki/index.php/Repeater_Bridge
+So in the Router A, you could enter a route that would say something like:
+For 100% automatic configuration You should have two routers with some routing protocol enabled by default but I think You should configure them anyway fore example fore security reasons.
+192.168.2.0 net mask 255.255.255.0 gateway 192.168.1.102.
+Most routers are shipped with NAT turned on, of which I definitely need to turn off in router B.
+The first answer is also covering this, and although the automatic way of doing this might work, I would rather check this, and hope there is a possible manual routing table entry feature in your router.
+You said you want the route to be discovered automatically.
+Some routers will allow you to enter supplemental routes in the routing table.
+This assumes that both routers support RIP, and can be configured properly.
+One possible issue: the 192.168.0.0/16 network is defined as "non-routeable", meaning that packets addressed to that network should never be routed on the general internet.
+But, they may be smart enough to allow routing of such packets as long as they are still within a private network.
+Routers may be configured by default to not route that network.

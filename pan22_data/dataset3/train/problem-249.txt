@@ -1,0 +1,22 @@
+With this model, it doesn't matter how slow your application becomes, as the input will be put into the queue and the app will eventually see it.
+I notice in some games though when the framerate is low some games are still able to capture input.
+If you're doing polling, consider offloading that to an input thread.
+This would be how XInput works in Win32 or SDL_GetKeyState in SDL2, for instance.
+The first - and most common in general applications - is to use the OS event queue.
+Don't render or do game logic on the same thread that reads input.
+The second method - common in games - is to poll input devices directly.
+There are two options for receiving input, generally.
+The OS messages often don't have precise timing information nor do they support high-resolution devices or low-latency devices, but they work well enough for quite a few games.
+The polling methods are more difficult to use correctly but if used right are more accurate.
+This is PeekMessage/WaitMessage in Win32, or SDL_PollEvent/SDL_WaitEvent in SDL2, and so on.
+read the OS event queue or poll input devices more than just once per game loop.
+Is there any implementation of how this might work?
+Assuming the input logic is in the same thread as the rendering in the main thread.
+In these APIs, you only see input in its current state, so if you don't poll frequently enough you might miss the user pressing a key or the like.
+So if pressing Esc while the game is lagging eventually the key press will be registered.
+So i was wondering how games handle input so that the input is still handled even in cases of the frame rate being really low.
+The game should be run in a separate thread from your main thread (the one reading OS events), which is a good idea anyway (the main thread should poll the OS queue and call the Present function for your graphics API and that's about it).
+Alternatively, just sample input more often in a frame, e.g.
+If the input is handled by some popular API (SDL/SFML/etc) the code will look something like this as a simple example:
+If the game is lagging then the above solution won't be able to catch the input cause the code won't be reached cause it is running behind.
+In either case, your application's frametime shouldn't affect input.

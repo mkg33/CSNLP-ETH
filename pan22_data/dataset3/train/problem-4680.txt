@@ -1,0 +1,25 @@
+In general, it takes the following form: we have a function $f$, which is expensive to compute.
+The Wikipedia article I linked to has a few references to get you started.
+The complexity of the machine was then based on the worst-case time gap ("delay") between the enumeration of consecutive outputs.
+This model can be used to study the problem of taking an input $1^n$ and producing on output the $2^n$-sized truth table of a language on all inputs of length $n$ , while trying to minimize the average computation time required per input (so $2^n poly(n)$ is considered "efficient" in this model).
+When it does it's computations, it does so on cubits which can be 1, 0, or a superposition of 1 and 0.
+One note about this model is that for some NP problems, including SAT, you can print their truth table in polynomial time per bit by exploiting the self-reducibility of the problem.
+Unfortunately you can't (or they don't know how) to clone the result in the unobserved state, so you can't get access to all permutations, only one of them.
+You might also be interested in strength reduction from the compiler optimization literature.
+The particular method to use will depend on the nature of the function $f$.
+Here is a blog post that is only somewhat related, but includes some references that you might find interesting.
+(Actually, frequently it is a combination of running time and the space needed for the data structure that is considered, but for the purposes of this question that's just a detail.)
+It's only when the result is "observed" that it collapses into an actual value.
+If you use superpositional bits, it means that it does the computations on all possible bit value permutations.
+If you want more details, you'll probably need to pick a single function $f$ and ask about that one, or a narrowly-defined class of functions $f$.
+There are many methods for incremental computation: too many to list here.
+For example, with SAT, you can always efficiently find the next bit of the truth table by fixing one of the variables, computing the reduced version of the problem under this variable fix, and then looking up the solution to the reduced version of the problem in the truth table that you have computed so far.
+You seem to be asking about incremental computation.
+This is the sort of problem that incremental computation helps with.
+It'd be nice if we could take advantage of the fact that we already know $f(x)$ to compute $f(x')$ more quickly than computing it from scratch.
+Some of the very early work on complexity theory used a sequential time model -- that is, rather than studying the worst-case runtime of the TM that can produce the correct output on an arbitrary input, they studied machines that would run infinitely and enumerate the correct output for each input in lexicographic order.
+For what it's worth, it turns out that this is how quantum computing works.
+This seems pretty similar to the question you're asking.
+This is basically what dynamic data structures and streaming algorithms are about.
+Now we want to compute $f(x')$, for a second input $x'$ where $x'$ is somehow "similar" to $x$.
+For example, a dynamic data structure for shortest paths in a graph computes all shortest paths in a graph, and then when you add or remove edges to the graph should do the least amount of work needed to update all of the shortest path information.

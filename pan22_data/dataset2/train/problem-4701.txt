@@ -1,0 +1,9 @@
+Perhaps you were trying to use the DB or filesystem to store the player position at runtime? You should not do this at all.
+This is not that different from what you would do with a database, however -- a database should not be "slow" at this operation, it should be very fast (probably faster than files, because you have more disk IO overhead or IO locking contention -- if you stored multiple positions per file -- in a filesystem-based approach).
+I have a separate thread I queue to to save to files every 500 or so game ticks. Otherwise, you should store everything in RAM.
+But writing every players position to storage every update is unnecessary and extremely inefficient; it will never be fast enough to handle anything resembling "massive" player scales.
+The client has its own position position of course and sends it new direction (vector) to the server.
+At runtime, in your server, player positions should be kept in-memory and updated there, as you would do with any other kind of game. Periodically they can be saved to disk or other persistent storage -- for example, when the player rests, saves, or logs out.
+The server is authoritative about the position and sends a position packet if the client moved a certain distance since last check (this may lead to rubber band effect is client is out of sync).
+What I do in my server, is to store the players direction (vector) and last position, if the player has a speed, I do calculate the players new position every 2 seconds.
+You write the player position to the file. For example, if you identify every player with a unique number (or a GUID), you could use that as the file name. In the file, simply write the position data out in a format you can parse later. For example, 467239.txt might contain 20, 3, 19 if player #467239 is at that (x, y, z) location.

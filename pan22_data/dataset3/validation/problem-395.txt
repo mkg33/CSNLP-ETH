@@ -1,0 +1,13 @@
+Here is a short BASH script I used to make restarting CUPS conditional upon detecting a failure state.
+If the problem is down to the fact that the GUI requires a login to resume the printer then another solution is to allow printer resume via the GUI without a login.
+I saw this on macworld but it applies to any cups install.
+And remove the Resume-Printer directive, then restart cups.
+Replace "DS40" with whatever printer you're looking for the status of, and "disabled" with whatever lpstat -p outputs in your language.
+You should now be able to resume the printer without a login from the GUI.
+If the directive appears on more than one <Limit> section then you can removal it from the relevant <Policy> section or remove from all.
+A related issue is IIRC that by default CUPS configures the printer such that if printing a job fails somehow, the printer is disabled.
+As others have already said, 'cupsenable' or 'lpadmin -E' should do the trick.
+That's because the cups restart clause is not paired with the &&.
+... will cause CUPS to be restarted every minute, regardless of what state any printer is in.
+Solution for me was a systemd script that runs every n minutes.
+To do so shutdown cups and edit this line sudo vi /etc/cups/cupsd.conf:

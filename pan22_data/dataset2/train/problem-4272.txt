@@ -1,0 +1,7 @@
+The rule then becomes more of a real object.  Instead of an AdminRule you would have an InvoiceRule.  This makes more sense as an object:
+First off I'll answer your main question which was about unit testing, but the review of the code under test will follow.
+This is a good structure.  You have a rule manager which can be configured by adding rules.  This should allow the rule manager to accept generic rules and apply them to obtain the list of payment methods.
+The logic for each payment method is now within its rule.  Each rule stands alone without any dependency on the PaymentMethodRuleManager.
+I think the key thing you want for your rule is to determine whether a payment method should be usable and then what the payment method is:
+The unit test for the InvoiceRule is quite easy.  You don't have to worry about any dependencies.  When unit testing the PaymentMethodRuleManager be sure to use mocks so as not to inject another class which could cause side effects:
+This rule is telling the $paymentMethodRuleManager what to do.  Also, it is breaking the Law of Demeter.  You know you are breaking the law when you are talking to a stranger.  $paymentMethodRuleManager is a friend, but what it returns with $paymentMethodRuleManager->getList() is a stranger.  Calling add on that stranger is too trusting and it is hard to tell what the stranger will do with it.

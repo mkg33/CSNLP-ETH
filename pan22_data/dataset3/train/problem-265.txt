@@ -1,0 +1,11 @@
+Perl could send the data to cat immediately, but unless cat manages to read it in and write it back out faster than Perl can move to the next line and print to STDERR, you'd still see the STDERR output first.
+Point is, even with buffering out of the equation, the piping introduces race conditions due to the process level parallelism.
+The only other way to get (mostly) reliable ordering is to sleep between prints (allowing cat to win the race with perl).
+because all the data is sent to cat immediately before the next print executes.
+The only way around that is to make sure both streams go to cat:
+Per the man perlrun docs, it should be possible to run set PERLIO=:unix before running the command, or for raw native Windows handle based I/O, which may still be experimental/buggy, set PERLIO=:win32.
+Either one should bypass the normal buffering behavior by going straight to the raw system calls.
+In local tests (on Linux, but it should be pretty similar) with PERLIO=:unix, piping to cat, I saw the following outputs:
+Perl's default I/O layers buffer, and don't use stdio to do so by default, which is why unbuffer and stdbuf (which modify the default stdio buffering) don't work.
+Assuming cat itself is unbuffered (I believe it uses raw reads and writes without buffering, so it should be), this still doesn't guarantee the behavior you want though.
+Perl provides its own way to control the I/O layers used though: The PERLIO environment variable.

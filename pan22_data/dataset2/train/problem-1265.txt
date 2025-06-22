@@ -1,0 +1,14 @@
+I logged into the network attached drive and attempted to "check" the "foreign disk" but the check failed. But now I was able to delete the original file--in Finder, without using sudo or rm -f or anything like that. It was no longer "busy."
+I had a similar problem when the main.css file got locked when changing from one branch to another in Git.  The repo was on a file server and I was connected with SMB. My client is a Mac running OSX 10.10.5 (Yosemite).  
+My 2 cents. I had the same problem -- I was using the terminal to copy some files to a temporary location in a Drobo share. It was taking too long so I decided to process them in other way, and ^C the cp command and erased the temporary files.
+Then I realized that I could access the server directly.  There, I was able to rm the file and then checkout a new version.  Back on my client, everything was instantly fine.
+Read on, because I had a unique situation in which none of the previously suggested solutions worked, but I did manage to solve my problem.
+Rebooting the client didn't help.  I couldn't switch branches.  I couldn't git stash.  I couldn't just rm the file.  I was stuck.
+I copied the file with a new name, because in my case I wanted to rename it, not delete it. After copying I couldn't delete the original because it was still "busy."
+Try lsof filename to see if it's really busy.  One of the most common causes of this is that you're trying to remove a directory that you have a shell open in.
+The only way I was able to get rid of this evil zombie file was unmounting the share and remounting it. 
+One of the files remained. When I try to erase it, either via command line or Finder, I get the The operation can’t be completed because the item “123.mp4” is in use. message from Finder or Resource busy from the terminal.
+Disk Utility couldn't do anything with the drive, because it wasn't just a removable device, it was a remote device, not attached directly to the Mac.
+In my case the "busy" file was a .ttf TrueType font file on a "foreign disk" on a network attached drive, and therefore not likely to be opened by the system on startup. The lsof command showed nothing. A reboot of the mac did not change anything. Shutting down the only other computer on the network that might conceivably be using the file did not change anything.
+The funny part is that I am able to clobber the file. I can copy other file to it, and cat > 123.mp4 with any nonsense works. The file size even reflects the changes I did.
+Fire up disk utility and check whether there is an image mounted which corresponds to that directory name.

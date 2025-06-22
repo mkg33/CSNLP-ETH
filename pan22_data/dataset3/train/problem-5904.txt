@@ -1,0 +1,24 @@
+A common default nowadays is Ext4: run mkfs.ext4 /dev/sdb1 to reformat (after making sure the partition is unmounted).
+Hey I just bought a new server and it's running debian
+As long as /var/www2 already exists, it should be as simple as sudo mount /dev/sdb1 /var/www2
+First of all, fdisk tells you nothing about whether or not your disks are mounted.
+There are a couple things that can get in the way here.
+To mount something to something, just do mount /dev/sdb1 /var/www2.
+If /var/www2 doesn't already exist, you have to create the directory.
+Additionally, if you want this mount to happen automatically upon reboot, then you should add an entry in your /etc/fstab.
+Your filesystem is formatted as NTFS, which typically means you'll need a package for ntfs utlities (ntfs-3g on fedora, don't know about debian).
+gdisk is very similar to fdisk; apt-get install gdisk to use it.
+If it does exist, you don't want any content in there, because once you mount a filesystem at that location, the original contents won't be accessible any more.
+This is not the best choice for a Linux system since NTFS supports few Linux filesystem features and integrates poorly.
+And if the second one isn't how can I mount it to a var/www2 folder?
+Ideally, you should reformat it as a Linux filesystem.
+Permanent mounts are specified in /etc/fstab, which you should be able to figure out based on a short Google search or looking at existing entries.
+it has 2 2tb hard drives in it, and I'm looking to mount the second one to a specific folder.
+If this drive is only going to be used on this box, I'd recommend formatting it w/ EXT, because using windows filesystems on linux is going to be a pain as the permissions are completely different.
+The second drive's main and only partition is formatted using NTFS.
+To look where something is mounted, just issue mount.
+This is an alternative disklabel format which is the better choice for 2 TB+ disks, since MBR is only capable of handling disks up to that size.
+mount or df will show you the filesystems that are mounted.
+parted is also capable of handling GPT disks; you may use it instead if you prefer.
+The /dev/sdb1 is an NTFS file system (not a "native" Linux file system)
+fdisk is just showing that the devices are physically attached (which is of course, a good first step :))

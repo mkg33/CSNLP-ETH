@@ -1,0 +1,20 @@
+What would make sense me is the the common field between them, the id, is hashed -- but if this is the case, why hash a number?
+"The hash join is one of the more expensive join operations, as it requires the creation of a hash table to do the join.
+I'd consider an index on the Posts table on OwnerUserId, including Title.
+The hash join first reads one of the inputs and hashes the join column and puts the resulting hash and the column values into a hash table built up in memory.
+Then it reads all the rows in the second input, hashes those and checks the rows in the resulting hash bucket for the joining rows."
+http://blogs.msdn.com/b/craigfr/archive/2006/08/10/687630.aspx
+You may then find that the Users.DisplayName index won't be used and it will scan the PK instead.
+From http://sqlinthewild.co.za/index.php/2007/12/30/execution-plan-operations-joins/
+"A hash table, on the other hand, is a data structure that divides all of the elements into equal-sized categories, or buckets, to allow quick access to the elements.
+This will add some order on one side of the input to the JOIN + it will be covering index
+For example, you can take a row from a table, hash it into a hash value, then store the hash value into a hash table."
+As I understand it the results of the Top index scan become the hash able and each row in the bottom Index clustered scan is looked up.
+I understand how hash tables work to at least some degree, but I am confused about which values exactly get hashed in an example like this.
+I am starting to learn execution plans and am confused about how exactly a hash match works and why it would be used in a simple join:
+Source: http://www.simple-talk.com/sql/performance/graphical-execution-plans-for-simple-sql-queries/
+The hashing function determines which bucket an element goes into.
+It is the most memory-intensive of any of the joins
+That said, it’s the join that’s best for large, unsorted inputs.
+The advantage of hashing a numeric field is that you're taking a bigger value and breaking it down into smaller pieces so that it can fit into a hash table.
+You can also get a free copy of his ebook "Dissecting SQL Server Execution Plans" from a link from the following article:

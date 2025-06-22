@@ -1,0 +1,19 @@
+If you change the order of these parameters, the results are dramatically different.
+The solution I found to make YouTube happy: add more frames.
+As you discovered, the infile options must come before the infile to which they apply.
+-shortest should not be used without -loop 1 since then the video will be one frame long.
+This is not a bug, however, just a mechanism by which you can specify which infile arguments apply to.
+(It stops at the end of the shortest stream, which is the audio, because the image loop is infinite.)
+ffmpeg -r 1 -loop 1 -i ep1.jpg -i ep1.wav -acodec copy -r 1 -shortest -vf scale=1280:720 ep1.flv
+I found vcodec libx264 created much smaller files than mpjeg (10 MB rather than 100 MB).
+If you do this correctly, there should only be one frame per second of video, which means it encodes relatively fast.
+Update: I noticed YouTube has difficulty processing the video (gets stuck at 95%) I think because there's only one frame.
+Option shortest (finish encoding within shortest input) cannot be applied to input file pic.jpg -- you are trying to apply an input option to an output file or vice versa.
+Also notice that I set the frame rate twice, that's not an accident--the first frame rate is for the input, second is for the output.
+Also, I added-acodec copy to preserve the audio quality.
+The order of your options is very important for speed, as filters (and such) are processed in the order you specify.
+However YouTube does not like videos with one frame (see PJ Brunet's answer) so then both options should be used.
+-loop 1 drastically slows down the encoding and creates a larger file.
+Checkout the the option -shortest must to be in front of the output file if not I get the below error:
+Also I set the resolution to 720p here, which means you should get HD audio on YouTube :-)
+FFmpeg will try to pick the best codec automatically, depending on the extension of your output file.

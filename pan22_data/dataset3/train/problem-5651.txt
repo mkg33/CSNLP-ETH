@@ -1,0 +1,14 @@
+.Net SqlClient Data Provider: Msg 0, Level 20, State 0, Line 0
+.Net SqlClient Data Provider: Msg 596, Level 21, State 1, Line 0
+Just a pointer re: SQL Server 2017 (where I was hitting this error) and some versions of 2016 to potentially save others some time:
+In a database configured for Always On Availability Groups, you may also encounter this behavior if the Availability Group is in SYNCHRONOUS mode and secondaries have gone offline or are suspended.
+And than Run the query in questions, it should work fine if all records are unique.
+Cannot continue the execution because the session is in the kill state.
+This is a side-effect experienced by application servers.
+The Best way to manage this is Drop the Old Index which is corrupt.
+https://support.microsoft.com/en-us/help/4163478/fix-access-violation-when-incremental-statistics-automatically-updated
+Installing a later CU than those listed above fixes the issue.
+Something I've unwittingly found: When you are disabling / rebuilding indexes on an indexed view, you will get this same error if you try to rebuild one ore more of the non-clustered indexes prior to building the clustered or use REBUILD ALL.
+Before SQL Server 2017 CU8 (also 2016 SP1 CU9 and 2016 SP2 CU1), there was an issue where partitioned tables with incremental stats would generate this error if the DML operation caused an automatic stats update.
+Of course, there might be other reasons but this is the one particular instance I am getting this type of error...
+I always get this error when I have a running query, using an Always On AG Listener, using one of the AG databases and there is a failover:

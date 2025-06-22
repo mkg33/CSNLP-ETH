@@ -1,0 +1,22 @@
+I work in a Microsoft shop, so the source databases are on Microsoft SQL Server.
+If you have SQL Enterprise however CDC is would be the best option in terms of maintainability.
+It seems that the right tool would be able to read the database transaction log and send those changes over to the data warehouse, while allowing to do some data transformations in-flight.
+If your records are datetime stamped then the only thing that should slow this process down over the months and years would be a big increase in transactions.
+If Enterprise is not an option then log shipping can do the job but it will put your datawarehouse further behind and your ETL would need to be able to deal with the restores to the log shipped replicas.
+I have done a lot of reading and it seems that getting close to real-time has been a trend in DW over the last few years.
+I now face a challenge of creating a system, where the data in the data warehouse needs to be maintained close to real-time (a few minutes delay is OK, but no more than that).
+Check out Attunity Replicate and Golden Gate from Oracle.
+http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=37&cad=rja&uact=8&ved=0CGQQFjAGOB4&url=http%3A%2F%2Fwww.researchgate.net%2Fpublication%2F226219087_Near_Real_Time_ETL%2Ffile%2F79e4150b23b3aca5aa.pdf&ei=G_dOU8HXI4iy2wW954GoDw&usg=AFQjCNHZVJuxfmuqwjrdi10oxM8v51WcNA&sig2=6OI-xoIz9b0mH_hzITBVrQ
+I had to build something like this recently and I eneded up using an AlwaysOn Availability Group to create read-only replicas on the databases that I needed.
+You could have this run at smaller intervals depending on the amount of data you have to process.
+Depending on the volume, if you use an affordable high-speed tool for data integration like IRI CoSort (which can use either bulk-extracted/loaded flat-file data or ODBC connections), you'll be near real-time anyway (with its speed, and without in-DB transforms).
+I do have a good handle on SSIS, but it doesn't seem to fit here.
+the data is refreshed nightly or, at most, every few hours.
+All ETLs will suffer like this in some way if the transactions increase but there are many improvements that can made to scale-out the deployment.
+From these replicas I had a custom ETL process that made heavy use of MERGE statements that ran every 5 minutes as a SQL Agent job to pump data new data into the datawarehouse.
+To be closer to real time per the article, you can 'regulate flow' via CDC in a data- (rather than log-)centric way using the same tool to select rows after a certain date, join to find inserts/updates/deletes, perform multiple kinds of mappings, and feed table, file and report targets at once.
+I have done a fair number of traditional data warehouse implementations where the loads were done in a batch-oriented manner, i.e.
+It's a 4GL and Eclipse approach that's faster than SSIS and cheaper than Informatica et al.
+However, I am having trouble finding specific examples and concrete information about the available tools, which support this kind of "trickle-feed" ETL.
+Other native options include using service broker or SSIS with WMI polling.
+Does anybody has experience with real-time data warehousing and can recommend a good tool or point out a good reading on this subject.

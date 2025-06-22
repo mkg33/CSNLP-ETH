@@ -1,0 +1,7 @@
+I've got a django app running through mod_wsgi on Apache 2 (Worker) behind an Nginx reverse proxy (also serving static content).  When the app starts to get a bunch of hits concurrently, memory usage will spike from <20% to >96% and the whole application grinds to a halt.
+I've tried loadbalancing with a second Apache server behind Nginx, but that didn't seem to help much.
+The server is Ubuntu 10.04 with apache/mod_wsgi/nginx all installed from the ubuntu repos.  Django app is running on Django 1.2.
+I actually have my doubts that mod_wsgi is leaking. My guess is that your Django app is leaking. I have personally never found any evidence of mod_wsgi leaking memory and I run half a dozen mod_wsgi servers.
+Django however is a different story. It's a huge project and in some modules there will be some memory leaked. But most (all?) of the known problems have been fixed in Django 1.1+.
+So... I am guessing that something in your script is leaking. Are you running any specific code that could cause problems? What kind of test are you running exactly? A full site test with something like siege? Or a simple test on 1 page with ab?
+Regardless, please show the code you are running and/or test if you still have memory leaks with something as simple as this:

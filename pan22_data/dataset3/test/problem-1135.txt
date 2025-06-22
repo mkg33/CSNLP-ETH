@@ -1,0 +1,18 @@
+After doing a discovery and a login to the 2nd iSCSI target server (without logging out of the iSCSI target server), doing an ls -l /dev/disk/by-id shows something like this:
+I Googled this problem and searched for relevant tags here but I didn't see any answers.
+When you mount the iSCSI targets from both iSCSI servers, the symlinks under /dev/disk/by-id will be unique for every iSCSI target.
+In the file 1.conf, the configuration information is stored in an HTML format.
+Don't use backticks when you edit your 1.tgt file.
+Is it possible to have all the iSCSI targets, from both iSCSI target servers, have separate symlinks and be listed under /dev/disk/by-id?
+For example, doing an ls -l /dev/disk/by-id after logging in to the first iSCSI target server might show the following:
+1) I checked that all the iSCSI targets are mounted on the Ubuntu initiator by issuing an fdisk -l command.
+For each iSCSI target, you need to specify a "scsi_id" value for each iSCSI target
+I am using Ubuntu's open-iscsi to mount the iSCSI targets from both iSCSI targets servers to my Initiator.
+A workaround would be for me to write a script that ccreates individual, unique symlinks for all the iSCSI targets but I'd first like to see if I am misconfiguring something.
+2) But the symlinks point to targets from the 2nd server now.
+For iSCSI targets that are on an Ubuntu, you have to edit the target's configuration file at: /etc/tgt/conf.d/1.conf
+It looks like the symlinks to the targets from the 1st server were overwritten by symlinks to the 2nd server.
+When I do the iscsiadm discovery and the iscsiadm -m node -l command to the first iSCSI target server, the targets are mounted and there are symlinks under /dev/disk/by-id.
+NOTE: I used backticks ("`") in front of the < or > characters because this website's editor was not displaying them correctly.
+The problem is that the symlinks in /dev/disk/by-id are "overwritten".
+The iSCSI Initiator is an Ubuntu host (Ubuntu 14.04).

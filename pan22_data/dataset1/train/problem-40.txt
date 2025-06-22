@@ -1,0 +1,10 @@
+Let's start with the correct solution for hashing passwords: use bcrypt; PHP offers it with password_hash.
+It's secure, and it's really easy to use (it's just a simple function call, and it manages salts etc for you).
+Apart from these minor issues and the very weak hashing, your code looks good to me. 
+IMHO it's a pretty good code except one thing. Currently you have a fixed salt, for every user the same. You should consider to change it. I would recommend to generate a random salt for every user, you already have a salt field in the user table. 
+You could also consider the "new" way with http://php.net/manual/de/function.password-hash.php
+Generate a unique salted password for each user with this.
+So that a possible attacker need to brute force the passwords seperatly for each user. 
+In the login check first get the salt for the entered username, something like this: SELECT salt FROM users WHERE username = ?. 
+With this salt you verify the password with something like this.
+Hope this give you some idea of improving password logins. For sure this is not a "Just do it so" guide with the top-best security available but for most of applications this should be good. Security always also depends on the application and use-case.

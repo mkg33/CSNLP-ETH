@@ -1,0 +1,16 @@
+So, change only the model type, and don't change anything else.
+This is the vmware paravirtualized NIC model, which QEMU also supports.
+Is there a way to make Virtual Interfaces work with ESXi on KVM?
+It's a cinch with other hosts as two bridged Virtual Interfaces with vNIC model set to Virtio device would do the trick.
+I tried to go along with E1000 as NIC but couldn't connect ESXi to external network.
+Of course, you can (and probably should) also just use the vmxnet3 NIC type, which has been supported in libvirt and qemu just fine for many years now.
+All of the other settings you have tried have the correct NIC model, but other broken or inappropriate settings.
+The following blog post suggests trying the 'vmxnet3' NIC model with QEMU
+https://xrsa.net/2014/08/25/running-vmware-esxi-under-ovirt/
+I need to run two ESXi hosts on KVM and assign them distinct, external IPs visible to the external network.
+The e1000 is a standard NIC type though, so I would fully expect that to work.
+But, for whatever reason, you don't appear to have ever simply changed the NIC model type to e1000 and made no other changes.
+You started out with this configuration, which is otherwise correct but ESXi can't use a virtio NIC:
+But Virtio as NIC model is not supported by ESXi and it won't boot complaining about no network adapter detected.
+There's always the possibility that some bug in QEMU's emulation makes it incompatible with ESXi.
+It is understandable that virtio-net doesn't work with ESXi as they're unlikely to care about providing drivers for a NIC that's only relevant in nested-virt.

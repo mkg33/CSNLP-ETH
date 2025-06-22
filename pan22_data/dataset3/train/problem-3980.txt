@@ -1,0 +1,28 @@
+ssh dies@dies.com -o PubkeyAuthentication=no -p 22
+Just keep both in the .ssh directory in your home directory on your computer (normally, you'd create them after cd-ing into that directory).
+Every tutorial or explanation says I need to generate keys for my computer system and keep them in a file that doesn't exist.
+Can somebody please explain what I am supposed to do?
+Assumption, same user login name on both serverA and serverB.
+This file is read by sshd to find out who is allowed to connect to this account.
+You always generate a pair of keys: A private key, which you should keep secret, and a public key, which other people are allowed to see.
+It seems like it should be simple, but WHERE do I put WHICH key, and how do I initiate the connection?
+That not only doesn't make any sense, but doesn't seem to have anything to do with accessing the remote server from my computer with the keys to the website that have already been generated for that purpose.
+So for keys that allow you to remotely access a website, these keys identify you (they prove your identity).
+Obviously some piece of information is getting lost.
+On serverA, if you have not already done so, generate the ssh key pair:
+You would think I would know this in my sleep, but I don't.
+I am trying to create a website hosted on a remote server.
+Now I need to access the website from my computer.
+The id_rsa key will be automatically used by ssh as your identity, while the id_rsa.pub key will be ignored, but you'll know where it is if you need it.
+ssh [username]@[server] -i ~/.ssh/id_rsa -p [port-number-of-ssh]
+By default your ssh keys is saved on folder /home/[youruser]/.ssh/.
+Which means the private key should stay on your computer, while the public key should be on the remote computer.
+On serverA, run the following command so set up permissions so that when ssh-ing from serverA to serverB you are not prompted for a password:
+or you can ignore key and type password of connection using parameter to ignore key verification, see example:
+So I have these keys and can't figure out what to do with them to make them work.
+Every SSH tutorial or explanation I find seems to forget right in the middle that there are two computers or servers involved.
+So, concretely, you'll generate an id_rsa (private) and an id_rsa.pub (public).
+Either edit that file and add the contents of your local id_rsa.pub in a new line, or, if the file wasn't there, or should only contain one key, just copy your local id_rsa.pub to authorized_keys.
+If the ssh-copy-id command was successful, validate you can ssh from serverA to serverB without being prompted for a password.
+Of course you can use scripts that automate this process, but this is what it boils down to.
+On the remote side, in the .ssh directory of the account you want to log into, there's an authorized_keys file, which contains a list of public keys, one per line.

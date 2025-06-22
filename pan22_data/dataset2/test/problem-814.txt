@@ -1,0 +1,10 @@
+However when I restart icinga2 and check the status, I get all sorts of errors from syntax errors, compilation errors etc which only go away after I roll back ALL changes Ive made. I cant figure out for the life of me how to pass arguments with check_nrpe. 
+Now I am trying to use check_nrpe to run a small script on my remote machine which is placed in /usr/local/lib/ called check_remote_server.py. For this I did the following:
+Provided your script actually outputs data which is recognized by Nagios (which I'm skeptical of if Nagios complains of syntax errors, make sure the number of semicolons et al match up!) 
+Somewhat related, but since you're using icinga2 why not just ditch nrpe and use the icinga2 native client? It's pretty flexible and arguably more secure than using nrpe.
+I am trying to monitor a small service on a dummy server via Icinga2 the check_nrpe plugin. I have setup both correctly as I can do the following:  
+Chances are the reason your command-line test with check_disk is returning "Received 0 bytes from daemon" is because you don't have: 
+You shouldn't need to enable that though to test your custom check script, since you already have it defined in the host's nrpe.cfg. What happens when you test your custom check command from your icinga server via
+set in your nrpe.cfg file, as that's required to allow the nrpe client to pass any arguments. Since there's a security implication to allowing arbitrary args to nrpe tests, its disallowed by default. 
+Rule out any issues with nrpe and your check script, but also take a second look at your service and command definitions. Looking at your config snippet, the first issue I see is the "Object Service" line -- this should read "apply Service" instead. Also, make sure you have a command definition defined for NRPE. Try something like this to start:
+/usr/lib/nagios/plugins/check_nrpe -H remote-ip -c check_disk -a "-w 20% -c 10% adn got the error CHECK_NRPE: Received 0 bytes from daemon.  Check the remote server logs for error messages.

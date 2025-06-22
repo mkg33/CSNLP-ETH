@@ -1,0 +1,25 @@
+If you have them in code replace them with joins or joins to derived tables.
+Table variables are better than temp tables in some instances and temp tables perform better in others, If you need to use them, try both and see which works better in that particular case.
+I'm looking at educating a team on writing better SQL Server queries and was wondering what people's best hints were for improving performance.
+Also, profiles with 'deadlock graph' events (if you have queries deadlocking) and lock related events can be useful to troubleshoot lock issues.
+Get a good internals book like the third Guru's Guide book.
+The first thing to do is to understand what's actually going on behind the scenes.
+What simple things should I be telling the team to try and always use or avoid?
+There is no magic silver bullet to query tuning, although I can give you some hints and tips.
+Note the queries that take longest / have the most I/O, etc.
+These steps will help you generate your own "best hints".
+Since they are used in joins they almost always should have an index.
+For instance I once had a DBA who insisted that count(*) would perform worse than count(1) (I have no idea whether she was right or whether it's still valid against the latest query optimisers).
+If your system is performing badly under load, look at the profiler and perfmon counters related to locks and check whether there is any significant contention.
+Make sure the office has a couple of good books on performance tuning.
+Closely examine all cursors to see if they can be replaced by set-based code instead.
+I'm ideally looking for things which (a) might make a reasonable difference and (b) are straight forward, 1 - 2 lines to state.
+On most occasions a poorly performing transactional query is one of a few things:
+Right-click those queries to view the query and/or the execution plan.
+Many people dont realize that foreign keys do not automatically get indexes.
+One good sign of a query with something wrong with it is a single item in the query plan taking 99% of the time.
+I have changed code that ran for hours to seconds by doing this.
+Batch queries are more complicated and have different tuning issues.
+sp_who2 has a 'BlkBy' column in the result set that will show if a query is blocked and what is blocking it.
+Best hint: Use SQL Server 2008 and run the Activity Monitor while your tests are running.
+Poorly performing queries tend to come in two basic flavours: Transactional queries that take too long, and grinding batch jobs (or reports) that take too long.

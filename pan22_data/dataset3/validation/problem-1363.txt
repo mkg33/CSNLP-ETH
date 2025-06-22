@@ -1,0 +1,22 @@
+You have to change this in your db host's sqlnet.ora and listener.ora files:
+Make sure to test all network groups private/office/public.
+To check what you're running now, invoke LSNRCTL on the database host and issue the command:
+- The LOCAL_LISTENER parametyer in SPFILE was NULL -- that is it was never set
+Although this is treating the symptom rather than whatever network stack disease you have, you could try increasing the
+inbound_connect_timeout to see if the problem goes away.
+- JDBC Client was running on a machine with IP ZZ.ZZ.ZZ.ZZ
+- Added an entry in TNSNAMES.ORA to set the local listener (LISTENER = (...)), essentially a copy of the entry used in LISTENER.ORA)
+SQLNET.INBOUND_CONNECT_TIMEOUT = 100  (assuming 100 is greater than your current timeout)
+- The default "LISTENER" was listening on YY.YY.YY.YY port 1521, (hostname resolves to this IP)
+Inbound port 1521 on the database server should be open (if you are connecting to the DB server from another server) .
+- Using routing table, the client ZZ.ZZ.ZZ.ZZ was able to reach XX.XX.XX.XX
+I had this issue when the following conditions were true:
+The particular error and the fact that it happens to all applications running against the database would strongly point to a network hiccup as the source of the problem.
+- Added a parameter LOCAL_LISTENER = LISTENER in spfile (ALTER SYSTEM SET ... SCOPE=SPFILE)
+- Database Server had two NICs - one with IP XX.XX.XX.XX and another with YY.YY.YY.YY
+On some windows operating system such as Vista/Win7/Win Server; firewall is enable for SOHO network computers.
+- JDBC client URL was pointing to IP XX.XX.XX.XX, port 1521
+Additional Tips: Please check your server/PC firewall settings.
+INBOUND_CONNECT_TIMEOUT_yourLIstenerNameGoesHere = 100
+- Changed LISTENER.ORA to listen on XX.XX.XX.XX (instead of the hostname default of YY.YY.YY.YY)
+Then stop the firewall service and test for the connection.

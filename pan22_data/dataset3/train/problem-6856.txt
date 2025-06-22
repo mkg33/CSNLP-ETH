@@ -1,0 +1,24 @@
+Below test was done from me to the nearest server possible, no proxy involved
+I will now remove proxy from my browser settings and will select direct connection to somewhere in California.
+This is likely because every time SSH needs to setup a connection to the host it needs to go all the way to AWS then back out to the server you are trying to contact.
+Add the two together and that is the theoretical maximum latency that you can achieve over that link.
+Speed test now will detect that my traffic exit point is somewhere in California (since I'm running my AWS in California availability zone)
+However while speed test was running I was able to browse other sites just fine.
+I have tried forwarding a dynamic port (ssh -D) or a single port (ssh -L with dante running as a remote socks server).
+Concurrent TCP connections pretty much do not work.
+That proves that 99% of latency is added by ssh tunnel.
+For example, I can go to speedtest.net and start a test (which is fairly fast, probably maxes out my line speed) and if I try and do anything (i.e.
+load google.com) while the test is still running, all the additional connections seem to hang until the speed test is over.
+I use ssh's port forwarding capabilities to do this.
+Is there anyway to bump ssh performance or should I step up to OpenVPN or something better suited for this?
+OpenVPN and SSH cannot beat this limit, however if your traffic is mostly HTTP then you could setup a caching squid server on the AWS machine, or your local machine to decrease the amount of requests that have to travel over this link.
+Let's say I'm not using proxy right now and I'm in Chicago area
+Try ping the AWS machine from your workstation and record the latency, then ping the host your contacting from the AWS machine and record that latency.
+Same goes for sshd on the remote server -- no processor hit.
+First of all my traffic needs to go from me to California, and then exit on another side of the ssh tunnel and hit speedtest server, then come back.
+On top of this since it's running inside ssh tunnel - there is also added latency since ssh needs to encrypt / decrypt every packet.
+As others suggested - you can setup squid and test your speed with squid.
+Basically this adds the latency from your machine to the AWS machine and the AWS machine to the server your contacting.
+So obviously it's faster now, it's actually practically same speed as direct connection to Chicago.
+Followed by setting in the browser your socks 5 proxy as localhost:1080
+Now let's set up ssh -D proxy and set my browser to use proxy.

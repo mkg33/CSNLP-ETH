@@ -1,0 +1,9 @@
+You could then re-roll the key+certificate pair for all the existing clients using that new CA and deploy them — with the necessary tweaks in their configuration files to account for a different server port — on the existing clients, effectively switching them over to the new server.
+You should create a completely different CA setup (PKI) for that istance.
+If you didn't that would explain why the clients are able to connect: the server has read the files you deleted at its startup and so it's able to verify the certificates presented by the clients (the server only needs to have the contents of the CA certificate to verify them).
+So you can then iterate over your clients once again — this time changing the configured ports back to target the original instance.
+After that update you can reconfigure the original OpenVPN instance to use
+After that switchover you'll end up with two identical OpenVPN instances
+Well, one way is to create another OpenVPN instance listening on a separate port (say, on Debian and its derivatives this works out of the box — by creating another configuration file with a different port(s) configured).
+the new CA setup — basically just making its configuration identical to
+After that sequence is completed, you'll have all the clients updated.

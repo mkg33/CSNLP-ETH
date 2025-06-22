@@ -1,0 +1,13 @@
+I honestly dont know what the reasoning behind Tomcat doing this is but try adding the following XML attribute to your context element
+I also have the same problem, tomcat deleting the context.xml( meapp.xml ) from conf/Catalina/localhost
+deployXML attribute documentation attribute documentation is worth reading (§ Standard Implementation).
+To solve I use context.xml.default, in the same path I create a file called context.xml.default and inside a put config I want to held:
+There is an acknowledged distinction between re-deploy which does not delete the context, and deploy after un-deploy where the un-deploy deletes the context. The documentation was out of date, and the manager GUI still does not support re-deploy.
+The problem was due to the fact that I was making changes to this file directly on the filesystem. What fixed the problem was to edit the context.xml file via my Eclipse editor. Inside of
+autoDeploy="false" may not work alone because application context.xml (in META-INF) can override server.xml settings of autoDeploy.
+Exhaustive autoDeploy user case, and when context is removed : i.e. application undeployed, user case is documented can be found here. 
+If you don't want autoDeploy feature, in production environments for instance, you may consider the following attributes in the conf/Catalina/localhost context file :
+The general issue as described by the title is covered by Re-deploy from war without deleting context which is still an open issue at this time.
+I had been having the exact same issue with my context.xml file for my desktop version of tomcat getting clobbered every time that I would deploy a new copy of the war file for my application.
+Sometimes it is necesary have different values for app in the server, for example a path to store uploaded files.
+my Eclipse, there's a "servers" project that once you expand it, you can see a handful of files, such as context.xml and server.xml. It appears that if you modify the files from here

@@ -1,0 +1,6 @@
+This is mistaken. The build root is only used when building, and erased afterward, and only files/directories/etc. listed in the %files section will be created.a
+The %install and %post sections of the specfile are executed in completely different environments. The %install script is only run on your build machine as part of the package build process. The %post script is run on whichever machine you are trying to install the RPM to (the "target machine").
+It is not possible or even desired for the target machine to know anything about the build environment that you used on your build machine to create the package. That is why you do not see /tmp/MY_RPM_TESTS being created on the target machine; that folder was created on the build machine during the %install process.
+That said, from the looks of that specfile you do not need to create the /tmp/MY_RPM_TESTS folder on the target machine. When you install your RPM, the files should exist in...
+...as defined by your %files section. If you need the scripts to be installed in /tmp/MY_RPM_TESTS, your spec file should look like this:
+By comparing the above with your original spec file, you should be able to see the difference and hopefully better understand how %{buildroot} should be used.

@@ -1,0 +1,8 @@
+Converting tables from MyISAM to InnoDB will really benefit concurrent writes and also atomic lockings.
+However, they are often joined together with some tables that almost don't get any writes. Is there a performance penalty when joining together MyISAM and InnoDB tables or should everything work fine?
+Second question: During backups at night, I am copying data from the InnoDB tables to MyISAM tables for archiving purposes. In these backups, a lot of write-requests happen, however there is almost no read from these archive tables. Would these tables also benefit from using InnoDB or is this just a waste of space and RAM?
+I am thinking about converting some tables from MyISAM to InnoDB in my mysql server. The tables will certainly benefit from the change because a lot of write requests come to these tables, while there are also quite a lot of read request at the same time.
+The mix of InnoDB and MyISAM tables should in no case affect the join performance unless those joins try to lock the full MyISAM table (highly unlikely), doing an EXPLAIN will always help diagnose the queries.
+About the second question, since they're backup tables and almost never used these will definitely take advantage of being MyISAM to be as write performant as possible.
+MyISAM : Very light, awesome at serial writing, not so good at concurrent writing, smaller memory footprint
+InnoDB : Awesome at concurrent writing, granular locking but not so good at serial writing and also uses more memory

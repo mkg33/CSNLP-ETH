@@ -1,0 +1,8 @@
+NetBIOS doesn't act at layer 2, it acts at layer 3. It is not a network protocol, it's a programming API. NetBIOS requires a network layer protocol to transport it, such as TCP or NetBEUI.
+Have you configured your DHCP options to assign the WINS servers to the DHCP clients? If not, then that's your problem.
+Have you configured the WINS servers as push/pull partners? If not, you should do so.
+As the NetBIOS protocol acts on Layer 2 and so is not routable, In order to enable network browsing of remote networks, WINS has been installed and configured on two domain controllers, both of which are on different networks.
+The WINS servers seem to be replicating with eachother, and each has 127.0.0.1 set as the Primary WINS Server in each of their LAN interface properties, with nothing entered for Secondary WINS Server.
+The DC which holds the PDC Emulator FSMO role has the Computer Browser service running and set to Auto start, and it has the WINS/NBT node type network setting at 0x8 (H-node - Hybrid node).
+Is the WINS/NBT node type correct for this scenario?  The reason why I think it may not be the right one is because I set the DHCP Server's 046 WINS/NBT node type option to 0x8 as well, after which the DHCP clients started to disappear from the Network folders.  When that option is not set, does it default to B-node (Broadcast node)?
+Or could it be a problem with the WINS servers setup?

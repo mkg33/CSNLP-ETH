@@ -1,0 +1,14 @@
+Assuming a 500kB image size (4000 kbits), that's about 46 images/s.
+Assuming you can saturate that instance (which a large scale image sharing service presumably could), that's about 165k requests/hour.
+On top of that, you can't offload processes such as resizing images to S3 and you may also want to run a WAF or DDoS protection layer to reduce bandwidth costs due to attacks.
+GET requests on S3 cost $0.004 per 10,000 requests.
+S3 mainly offers exceptionally high durability and very low administration overhead.
+However, at very large scales the savings start to outweigh the management overhead.
+In practice you might hit other bottlenecks on a T2.micro so S3 would probably end up slightly ahead at this scale.
+With that you could serve about 2620 images/s, or around 9.4m/hour.
+Having said that, a common architecture is to store the originals in S3 (where they will rarely be accessed, but where durability is important) and to cache resized versions on the front end servers.
+I believe Netflix did or does use this technique (except they stored the cached files on their own colo hardware).
+A T2.micro can do about 180 Mbits/s and costs $0.013/h.
+So for a T2.micro it would cost you $0.013/h vs. $0.066 on S3.
+However, if you take a c4.8xlarge (with 10Gbit networking) it would cost $1.763/h.
+The service itself is not really that cheap (especially when it comes to serving requests), but at most scales the labour cost of managing alternatives blow any savings out of the water.

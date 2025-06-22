@@ -1,0 +1,7 @@
+I have an RSA public/private keypair on my laptop; on a remote machine I have two accounts A and B which each have the public key in /home/{A,B}/.ssh/authorized_keys. With the private key loaded in ssh-agent on my laptop, I can ssh to A@remote without a password, but B@remote prompts for a password.
+I have no ~/.ssh/ssh_config on my laptop. User A has no password yet; B does. Switching /etc/ssh/ssdh_config to "PasswordAuthentication no" just results in "ssh publickey denied" for user B.
+The server is on Ubuntu 9.10 Karmic, with OpenSSH_5.1p1 Debian-6ubuntu2, OpenSSL 0.9.8g 19 Oct 2007. Laptop is Ubuntu 10.04 with OpenSSH_5.3p1.
+It turned out the broken user's $HOME/.ssh folder had the "write" permission enabled for group. chmod go-rwx $HOME/.ssh fixed the issue.
+In my case, in addition to permissions to the .ssh/authorized_keys file (s. answer by @tobym), the problem cause was a locked account.
+Debugging on the server with sudo tail -f /var/log/auth.log showed
+Account was locked because I have not set any password since I wanted just passwordless, key-based authentication. Solution was to

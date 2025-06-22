@@ -1,0 +1,21 @@
+Your line of thinking is excellent, and all the options you're considering are great.
+If you make much queries to small amount of addresses (e.g.
+I am on AWC EC2, as my server is going to make a lot of query for third party domains, I am thinking the following options
+Indeed, that would be a can of worms, and you wouldn't want to do it.
+For performance, I would install a pair of recursors in each availability zone, and configure them to be the first two nameservers in /etc/resolv.conf, then append the EC2 recursor.
+You can set up the Google DNS (8.8.8.8 and 8.8.4.4) as backups for the Amazon DNS if you like, but it's very unlikely that they'll be down when the rest of the zone is working.
+If you requests spread to much amount of addresses (one query to 1000 domains per second), I'll recommend to use local DNS recursor to speed up query process and reduce DNS traffic.Don't forget to setup cache, if you plan to use local recusor.
+If you trust either EC2's or Google's recursor, by no means go ahead.
+For a modern, well-maintained, lightweight and high performance recursor, I would highly recommend Unbound (see independent recommendation here: http://info.menandmice.com/blog/bid/37244/10-Reasons-to-use-Unbound-DNS)
+Never install a local DNS cache resolver, it will cause more trouble then the benefit it bring.
+The GoDaddy article you linked to is outlining the problems of running an open recursing nameserver.
+nscd does more than just caching DNS requests; it also caches lookups for usernames and groups along with some other less common uses.
+As long as your recursor is listening only on loopback or within your internal interface and/or firewalled so no one else can access it, the article doesn't apply.
+Installing your own recursor ensures minimal latency (as opposed to going to 8.8.8.8), and that your cache is not shared with others (which has both pros and cons.)
+Ubuntu did not come with the local DNS cache resolver by default proved my point.
+Since EC2 charges for external traffic, and traffic to 8.8.8.8 (the Google resolver) is going to be much slower than traffic internal to the datacenter, you should prefer EC2 DNS unless you have a very specific reason not to.
+It will provide good caching behavior without needing any further configuration.
+It's standard on Linux systems (it's packaged as part of glibc) and is probably already installed, and it uses very little memory, so there's no reason not to run it.
+1000rps to 10 domains), local cache daemon is good enough for you.
+I am hesitate to install centralized recursor so it is single point of failure, and subject to attack like: http://support.godaddy.com/help/article/1184/what-risks-are-associated-with-recursive-dns-queries
+Indeed it is quite common for many mid-to-large sized organizations to run their own recursors.

@@ -1,0 +1,6 @@
+There is a function DIALSTATUS we can use after the Dial() to check if the call was answered succefully. So use this after the Dial() and if it's not answered also do the forward. (It worked in a test i did. Denying the call gave BUSY in the log and went to the next peer)
+I didn't test this last bit (with DIALSTATUS) extensively so you should do some test but here it seems to work.
+This checks the status before we're going to Dial() and goes to n(forward) if the peer is unavailable, busy or otherwise not OK.
+Executing a shell of asterisk on an incoming call just doesn't feel right to me. It probably works ok but shouldn't the status of a peer be already known to asterisk?
+I use the function SIPPEER() with which you can request the status of a peer. If the first 3 characters (of OK (44 ms)) is OK then you can call the peer. All other situations you can forward to another peer.
+There is however a small problem with this. When the peer denies the call (or is for another reason unavailable, e.g. he went online before our next online-check) the call doesn't get through.

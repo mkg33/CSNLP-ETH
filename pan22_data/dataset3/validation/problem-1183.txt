@@ -1,0 +1,19 @@
+This occurs when a GPO has changed on the local computer but a replication event has not completed to the other participating Domain Controllers.
+In my test domain with only a handful of GPOs (my real domain has manay), I get the same error when I Detect Now; however, when I close and reopen GPMC, everything is fine again.
+This is by design and will typically resolve itself on the next replication cycle.
+In my case, it seems, that it is taking a long time to replicate the permissions, but a new GPO replicates instantly when it is created.
+… Everything says that I shouldn't move from FRS to DFSR without replication working 'perfectly' ….
+My question is, is there any way to fix this without migrating to DFSR or should I move to DFSR first?
+Then when I came to work the next day, everything was fine.
+I simply removed them, as they were not in use any longer and now all servers show in sync.
+I have recently installed a second domain controller and all replication seems to be working fine except for group policy - In windows 2012r2, through the new Group Policy Management, when I click on "Detect Now", results show ACLs not in sync with the baseline domain...
+I was having the same issue when using Detect Now.
+On one DC, the policy in sysvol had the permission change, but on the other it did not.
+You can force replication to the other DCs in the Forest "Get-ADDomainController -Filter * | %{repadmin /syncall /edjQSA $_.hostname}" or simply wait for 15-20 minutes and refresh the GPMC.
+I have run dcdiag, looked at event logs, repadmin /showrepl etc and everything seems fine but group policies won't sync… I've checked the sysvol ACL's in both DC's and they seem to have the same permissions… Also the group policy central store has replicated correctly (which is sysvol)…
+Update: I managed to fix this by manually applying the sysvol ACL's for the policies at both servers... for some reason I had to add the domain\administrators group as full control for each policy under sysvol\policies and then it synced fine.... everythings working now and I'll look at migrating to DFRS later when we can upgrade the DFL, Cheers
+Makes me think that this will not help with my problem of having machine GPO's fail to apply to machines, but we'll see!
+I had a similar problem with our environment and simply found that the ACL's were showing bad on only VERY OLD GPO's (over 10 yrs).
+Anyone else seeing this problem - if you only have one or two policies it might be quicker to back up the settings, delete them all out and then add them back in again which would have the same effect.
+Any time I changed the security filtering on a GPO, the ACLs for sysvol would show as having a problem.
+I found someone else has this problem here http://sysadminconcombre.blogspot.com.au/2014/06/microsoft-dfs-r-problem-sysvol.html and a resolution which involved restarting DFSR … but I have FRS since the DFL is 2003 :(

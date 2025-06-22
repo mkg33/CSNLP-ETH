@@ -1,0 +1,6 @@
+It isn't shocking to want an x access for a shared library. The executable mode is a convention that gives the OS another level of access rights control. The executable loader controls that access, to ensure the user can execute it, but also to prevent errors (some scripts or programs should not be executed by some people).
+Actually it depends on the ldd implementation. ldd is usually a script, you can edit it to see where and why you get that error.
+The key is the file format, Executable and Linkable Format.  Since the same exact file format is used to identify both an executable and a shared library, both must have the appropriate executable permissions for the OS loader.  This allows for a single loader and for executables to be used as a DSO if they include a symbol table.
+You can actually execute a lot of libraries, see for example what happens when you type /lib/libc.so.6 at your shell on a recent GNU/Linux system.
+On Ubuntu 10.04, ldd checks for the read permission only. It may give the error not a dynamic executable if the file is not a ELF (Executable and Linkable Format). The libs here are all -rw-r--r--, for instance
+This could be extended to the shared libraries for the same reason - but shared libraries cannot run by themselves, and are less error prone to be used by accident). Thus the need is less obvious (the r access suffices).

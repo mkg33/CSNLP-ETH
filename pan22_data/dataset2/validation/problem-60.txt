@@ -1,0 +1,9 @@
+In the usage message, what does input mean?  Is it a filename?  I think that string would be clearer.  Similarly, maxwidth would be clearer than [n].  Note that by convention, the square brackets mean that it's an optional parameter, which it isn't.
+You have a //print remaining characters epilogue loop, which is not only ugly and repetitive, but also makes it hard to handle degenerate cases correctly (such as when the input is an empty string).
+You can parse argv[2] as an integer using atoi().  COL_BOUND is not a compile-time constant, so it should be named with lowercase.  Note that if COL_BOUND is 0, then you'll get an infinite loop, so some validation would be nice.
+I'd define a nextline() function to find the start and end of the next line.  Its design is vaguely inspired by the strsep(3) function in BSD's C library.  Then, main() would just be responsible for handling the command-line parameters and printing the output.
+Your length() function is just a reimplementation of the standard strlen() function.  You call it every time you go through the main while loop, which is very inefficient.  Ideally, you should perform this task without measuring the length at all — it's possible to analyze the string in one single forward pass, stopping when you reach the NUL terminator.
+What exactly is the specification of this program?  Here are three sample runs (with space (␣) and NUL (␀) characters made visible):
+Don't contaminate stdout, which should be solely for the string-processing result.  Error messages and status reports should go to stderr.
+Other than the useless length() function, all of the code is in main(), which makes it one very complex function.  One of the causes of your buggy behavior is that you try to do whitespace analysis (with printed) while printing, when it's clearly too late.
+By convention, main() should be defined after the helper functions, so that you don't have to write forward declarations.

@@ -1,0 +1,28 @@
+The reason for that is Nginx master process cannot guarantee even distribution of connections between the workers -- some of them can process requests faster than others and thus the limit can be exceeded finally.
+Now, regarding your nginx question, there is no real answer.
+Initially this limit is set to the very low value (e.g.
+Nginx will use descriptors not only for incoming requests, but for outgoing connections to backends as well.
+Actually the more workers you have, the more possiblity you can hit worker_connections of one particular worker.
+If you are proxying connections to some backend through Nginx, you should take into account that it creates temporary files to store the backend's answer and in the case of high traffic this can result in substantial load on the filessystem.
+Some very good optimized applications utilize 100% bandwidth.
+MySQL), it will affect static files serving as well.
+You shall likely hit OS (Linux or FreeBSD) limit on the number of per-process open file descriptors.
+Use nginx's status module to watch the number of sockets it uses.
+The racyclist's description is pretty good, I'll just add few cents to it.
+Watch for messages in Nginx's error.log and tune proxy_buffers (or fastcgi_buffers) accordingly.
+the best way to keep track of them is by checking /proc/net/ip_conntrack.
+It's hard to give recipes here, as they vary a lot depending on the number and size of files, type of load, available memory, etc.
+However you will have to increase the number of workers if you have IO (see later).
+Currently you have pretty low load according to the bandwidth utilization.
+Thus if your site is serving static content, you will need to increase the number of Nginx workers to account for IO blocking.
+Conversely, a small number of connections using lots of bandwidth could fill your pipe without reaching the maximum number of connections.
+You just need to benchmark your setup (using tools like httperf) and see what's the load you can handle.
+As the number of connections grows, you can hit worker_connections limit of an Nginx worker process.
+There is a lot of possible bottlenecks, to name few:
+Nginx has a maximum number of connections it can handle.
+Nginx will complain in its error.log on this event.
+If you have many connections using low bandwidth you are more likely to run out of connections before you fill your pipe.
+My advice is to use as few workers as possible with large number of worker_connections.
+My bet is that you shall face previous problem(s) before.
+If you are using iptables and its conntrack module (Linux), you shall exceed the size of conntrack table as well.
+The max connections can be figured by a simple formula: "worker_processes" * "worker_connections".

@@ -1,0 +1,18 @@
+Assuming you have your frames in r1.png, ... g2.png etc.
+will give 3 red1 frames, then 3 green1 frames (20.8333..*3=62.5)
+Due to how the fps filter works, we need to reset the stream timebase to get enough resolution for the next steps.
+The fps triples each frame so 0 3 0 3 0 3 outputs six frames using the first copy of R1 and G1.
+The fps filter is used to triple the count of each frame.
+We will ingest each image sequence at 1 fps as this makes calculations simpler.
+Then the frames are renumbered at 1/48th seconds intervals.
+This can be carried out within ffmpeg using a series of filters.
+Then the shuffleframes filter to achieve the sequence rearrangement required.
+Here we quadruple each frame, then use shuffle to keep 7 out of each 8 frames, dropping the last one.
+The filter will perform regular duplication to do this.
+Double frame count and keep 3 frames, drawing black on 3rd and dropping 4th.
+shguffleframes only needs to applied to each alternate set of 6 frames.
+With these kinds of fragments you can build whatever sequence you need, then run
+Not only is it possible, it is alsoe easy and efficient: Use a concat file
+We'll also need drawbox filter to generate black frames, if needed.
+and 48 Hz (so a 20.8333.. ms timebase) a concat file fragment of
+Then use drawbox with enable to make each 7th frame black (t=fill draws a solid box.

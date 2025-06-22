@@ -1,0 +1,13 @@
+Booting 2 Windows partitions on Single HDD; One via UEFI vs One via CSM BIOS - Possible?
+I'd like to be able to copy/ clone a Win 8.1 BIOS-MBR booting partition from a Hard drive 1 to the HDD 2 of a GPT formatted Win 8.1 UEFI booting drive.  
+The target machine is a Dell with UEFI as well as CSM BIOS so it's easy to switch the boot mode via F2 (Setup) or quickly switch via Boot Menu (F12) - Allows both UEFI / Legacy BIOS booting.   
+I have just used the above switching between HDD 1 and HDD 2. But, I am wondering how it would be possible to boot OS 1 from HDD2.  
+Would I have to change something in the final BCD Boot Menu of HDD 2 and/ or OS 1 partition once / after it has been cloned from HDD 1 on to HDD 2? 
+Technically, you can't boot GPT disk in BIOS mode. So you have to convert that GPT disk to MBR disk to be able to boot in BIOS.
+The problem is, MBR disk is limited up to 4 primary partition. So you have to sacrifice unnecessary partition and left only 3 important partitions before converting it from GPT to MBR. 
+Assuming you are willing to do so, you can delete reserved partition (usually about 125MB others partition type, an EFI System backup) and recovery partition (could reach about 5GB NTFS partition type, usually a WINPE recovery system), and left the FAT32 EFI System partition, the NTFS Windows System partition and the Data partition. Now you can convert the GPT disk to MBR disk. You should do this in Windows other than in this GPT disk one.
+After GPT to MBR disk convertion, you should assign drive letter for windows partition and FAT32 EFI System partition (in the new MBR disk) as let say drive D: and E:. Then run command as Administrator:
+That is enabling UEFI boot from Windows in the new MBR disk.
+Now you can copy WINDOWS partition from HDD1 (old MBR) to empty space of HDD2.
+After that, let say your new partition assign as drive F:, then you should enable that partition to boot from BIOS, by run command as Administrator:
+then set the f: partition as active partition (BIOS only boot from active partition in MBR disk, while UEFI can boot from inactive FAT32 partition in MBR disk (almost new PC/laptop can do that).

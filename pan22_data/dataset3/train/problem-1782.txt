@@ -1,0 +1,12 @@
+If you ever need find and rm to work faster for tons of files, check out the find ... | xargs ... rm UNIX idiom.
+This will run rm only once at the end instead of each time a file is found.
+As in previous answers (+1 for both) the trick is to use -type f predicate.
+Has features like test, which checks the directories recursively and lists them.
+Which restricts the results to be of the type file
+Using -delete is faster (no extra fork() and execve() for each file), but this is risky because -delete works also as a condition, so:
+Finally stumbled on tmpreaper and it has been worked pretty well for us so far.
+(rm may be run several times if your have really tons of files because of the command line length limitation, but this is still almost as fast as using -delete)
+Note, that instead of -exec rm '{}' you can also use -delete predicate.
+Ability to delete symlinks, files or directories and also the protection mode for a certain pattern while deleting
+I was struggling to get this right using the scripts provided above and some other scripts especially when files and folder names had newline or spaces.
+With -exec rm '{}' you can (and should) first do -exec echo rm '{}' to verify that this is really what do you want.

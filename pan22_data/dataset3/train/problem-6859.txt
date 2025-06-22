@@ -1,0 +1,13 @@
+You can open the development tools yourself by pressing control+shift+I, selecting network and observing what happens when you reload the page in the different ways.
+The server  will then either respond with a 200 OK status code followed by the data, or a 304 Not Modified status code.
+In Firefox, resources loaded directly from cache are not even shown in the network view.
+While w3d's statement that both F5 and enter will use the cache is technically mostly true, it is misleading.
+In Chrome, you will see that when pressing enter, resources loaded directly from cache will have status 200 OK and size (from cache).
+Pressing F5, on the other hand, will always send a request to the server with an If-Modified-Since request header with the timestamp of the currently cached version of the resource.
+For a static resource, this will most likely be a 304 status and the browser will load the resource from cache.
+When pressing enter, the browser may load any resources from cache without rechecking them depending on the expiration time (http Expires header) and other http headers.
+In other words, the browser is not allowed to load the resource from cache until it's gotten a response from the server.
+This means that most resources can be loaded as quickly as the disk or RAM can respond, potentially less than 1 ms if the resource is in RAM.
+This behavior can be observed with the network function of the browsers' built-in development tools.
+So when pressing F5, even though the resource might not be fully retransmitted, the load time of the resource is still subject to network latency and the server's response time.
+When pressing F5 on the other hand, requests are sent to the server for all resources, which will mostly respond with a 304 status.

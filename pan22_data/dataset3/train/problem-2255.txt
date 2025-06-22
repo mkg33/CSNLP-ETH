@@ -1,0 +1,16 @@
+You'd need to affect about one million rows to get 30% fragmentation since there are about three million page in the index.
+If recordID is your PK and it is not fragmenting then you should flop and make recordID the clustered index.
+Do you have processes which write at this magnitude?
+http://www.sqlskills.com/blogs/paul/why-you-should-not-shrink-your-data-files/
+Transaction (INSERT,UPDATE & DELETE) on a tables with 100% FILLFACTOR cause to page split which finally cause to index fragmentation.
+Since it is a big table don't go crazy bet even 90% will slow down fragmentation.
+There are many reasons which leads you to fragmentation.
+And just schedule a rebuild of that index every night.
+So any insert in the middle of the key range, and likely any update too, will cause a page split and fragmentation.
+With IX_AmtoteAccountActivity as a non clustered index give it a fill factor of less then 100%.
+This means there is only 140-ish byte free per page.
+Just like @KookieMonster noticed, You have Auto Shrink turned on.
+You should set FILLFACTOR=90 or less, when rebuilding your indexes.
+https://www.mssqltips.com/sqlservertip/2261/sql-server-fragmentation-storage-basics-and-access-methods-part-1-of-9/
+And one of disadvantages of shrink commands is fragmenting Your indexes once again:
+I can details you all, so please go through given link it's described here.

@@ -1,0 +1,19 @@
+The approach of using id_provider=proxy and auth_provider=ldap is absolutely correct.
+Just setup sssd normally, but for users lookup it won't be used.
+Order of authentication sources is in pam files (next one is common-auth):
+As a summary, if I can use SSSD or, as a backup, libpam-ldapd, to authenticate the following way:
+Also, all local and service accounts shouldn't be impacted, and ldap authenticated users can be determined with simple regex.
+so it is up to you to ensure the local /etc/shadow file does not contain valid passwords for users meant to be authenticated on LDAP.
+You're hitting bug https://fedorahosted.org/sssd/ticket/2620 that we only fixed in the 1.13 release.
+Due to limitations on what information is provided via LDAP (it's not AD), only authentication of users can be done.
+I'll be very grateful for any good suggestions on how to handle this.
+Every guide to using SSSD for LDAP authentication I've found thus far shows you how to do more than just authenticate a user, such as provide their shell, groups, etc.
+It was a really simple fix, ask Ubuntu to cherry-pick it from upstream.
+There isn't even a uid available because the only id provided via LDAP are consistently formatted alpha-numeric strings (won't work on linux).
+I don't know how to remove those features without things breaking because there are several moving parts like SSSD, PAM, and NSS.
+Basically, how can SSSD be configured on Ubuntu to treat ldap as the "shadow" database, but get the uid, groups, and shell from your local system databases (passwd, group).
+This is currently done with libpam-ldap, but my understanding is there are better alternatives like libpam-ldapd and sssd, the latter of which RHEL has moved to.
+If I had to guess, it can be done similarly to how we currently do it, which is nss will check local databases first, and if the user doesn't have a shadow file entry, check ldap.
+passwd means users lookup, group means groups lookup, shadow means auth informations.
+The file which controls which datasource contact for each search is nsswitch.conf.
+Even better if it's possible to stop users from creating passwords locally that would end up in /etc/shadow thus causing it to check ldap at all in future login attempts.

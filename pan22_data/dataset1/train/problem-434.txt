@@ -1,0 +1,11 @@
+I want to copy a linux system from a computer to mine. That linux system is using two partitions. ("/" and an other one)
+I used clonezilla to copy thoses two partitions and put them in an image. But when I clonned them, they kept their partitions names wich are sda5 and sda7. When I use Gparted on my computer I already have an sda5 partition so if I use clonezilla it will erease that partition to copy the other one.
+Is there any way to avoid that? Maybe renaming the partition inside the img?
+I would recommend using dd on both computers, like this:
+First, get rid of old data and deleted files by writing zeros all over the unoccupied space in that partition:
+This command will stop, when there is no space left on the partition. After that, remove the zerofile:
+Now you only have your desired data on the partition on binary level, therefore compression will be easier. Now, make a binary image of your partition. Use fdisk -l to see what is the partition identifier (let's make it /dev/sdb5 in this example) and use that identifier in the next command. Note that in this example i'm using pigz instead of gzip. Pigz is parallel implementation of gzip and makes operations faster by using all cores of the system:
+Now you have a compressed binary image of the partition. Transfer that to the other machine. Now you have to prepare your partition using fdisk (fdisk is very straight-forward to use). Make the partition as big as necessary and write changes to disk. Lets say, you have just created partition /dev/sdb3.
+Now, use the following command to decompress your binary image and write it to the new partition:
+After this command is done, you should be able to mount the copied partition using mount command:
+Please mind the partition size - it must be at least as big as the original one.

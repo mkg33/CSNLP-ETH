@@ -1,0 +1,17 @@
+I have a small team of ~15 users who exclusively use Chrome to work, Chrome is pretty essential at this point due to an extension.
+In Chrome they have 3 pages that they use. One is an off the shelf wordpress we host on a Windows IIS box the second is an in house developed site running on an apache box the third is a remotely hosted instance of vicidial, an open source call centre management system based around asterisk.
+We are seeing 'black boxes' popping up over the interface like this: 
+The box size and location changes seemingly at random.
+I have highlighted Chrome warning of mixed content. This was my first avenue of investigation which we have since resolved, removing the HTTP element from the HTTPS site and we no longer see that warning. The black boxes continue to manifest.
+I am certain that the issue is independent of the site being visited, we see these boxes on any site accessed on these systems (although usually blocked at the proxy for any sites other than those authorised). 
+If we use IE we don't get the black boxes (but cannot use the Chrome extension so not a solution).
+Disabling the extension (an in house thing) still leaves us with the boxes (thanks to @duskwuff for the suggestion).
+The black boxes are usually extremely brief, not more than a few seconds, but have been seen, very occasionally, to last for upwards of 30s.
+The Chrome console is blank now we have resolved the mixed content. The rest of the computer appears to be running normally.
+These machines are heavily locked down at the OS by restrictive group policies, although I have observed the boxes on a test machine with much less restrictive policies applied. Chrome has a number of policies applied to it, but nothing extraordinary, just setting home pages and a few other basic settings.
+Other chrome users in the business don't suffer these issues.
+I'm hoping someone can point me to a known bug or something similar as my next step is to start with a fresh PC with a minimal set of policies and restrictions and iterate through applying each setting until we find the culprit which is an effort that I would prefer to avoid.
+Edit : just pulled some stats off our proxy, we've blocked clients2.google.com 180000 times in 4 days. There is some suggestion that this is related to Chrome's autofill, we don't use it but potentially it's trying to do something there. I've set half my users to allow this domain and we'll see how it goes from there.
+To answer the question, we unblocked 'clients2.google.com' on the proxy and these black boxes disappeared. 
+Start by checking if the black boxes are a result of HTML (perhaps injected into your page by an add-on).  Right click a black box and select INSPECT.  Add the resultant HTML to your question.
+As well, consider disabling all other add-ins for testing.

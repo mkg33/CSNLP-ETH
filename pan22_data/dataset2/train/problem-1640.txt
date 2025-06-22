@@ -1,0 +1,15 @@
+where again the first term is the error in the previous layer and $f$ the nonlinear activation function.
+I am able to compute the gradient of c2, which connects into a regular layer. I just multiply the weights of h1 with it's delta. Then I reshape that matrix into the form of the output of c2, multiply it with the gradient of the activation function and am done.
+Now I have a the delta term of c2 - Which is a 4D matrix of size (featureMapSize, featureMapSize, filterNum, patternNum). Furthermore I have the weights of c2, which are a 3D matrix of size (filterSize, filterSize, filterNum). 
+We assume here that the $y^{l-1}$ of length $N$ are the inputs of the $l-1$-th conv. layer, $m$ is the kernel-size of weights $w$ denoting each weight by $w_i$ and the output is $x^l$.
+I am first deriving the error for a convolutional layer below for simplicity for a one dimensional array (input) which can easily be transferred to a multidimensional then:  
+Hence we can write (note the summation from zero): $$x_i^l = \sum\limits_{a=0}^{m-1} w_a y_{a+i}^{l-1}$$ 
+\begin{equation} \frac{\partial E}{\partial w_a} = \sum\limits_{a=0}^{N-m} \frac{\partial E}{\partial x_i^l} \frac{\partial x_i^l}{\partial w_a} = \sum\limits_{a=0}^{N-m}\frac{\partial E}{\partial w_a} y_{i+a}^{l-1} \end{equation}
+where we have the sum over all expression in which $w_a$ occurs, which are $N-m$. Note also that we know the last term arises from the fact that $\frac{\partial x_i^l}{\partial w_a}= y_{i+a}^{l-1}$ which you can see from the first equation.
+$$ \frac{\partial E}{\partial x_i^l} = \frac{\partial E}{\partial y_i^l} \frac{\partial y_i^l}{\partial x_i^l} = \frac{\partial E}{\partial y_i^l} \frac{\partial}{\partial x_i^l} f(x_i^{l})$$ 
+Note that the last step can be understood easy when writing down the $x_i^l$-s w.r.t. the $y_i^{l-1}$-s. The $flipped$ refers to a transposed weight maxtrix ($T$).
+$$ \delta^{l-1}_a = \frac{\partial E}{\partial y_i^{l-1} } = \sum\limits_{a=0}^{m-1} \frac{\partial E}{\partial x_{i-a}^l} \frac{\partial x_{i-a}^l}{\partial y_i^{l-1}} = \sum\limits_{a=0}^{m-1} \frac{\partial E}{\partial x^l_{i-a}} w_a^{flipped}$$
+Given the delta term of a previous convolutional layer and the weights of that layer, how do I compute the delta term of a convolutional layer?
+I am trying to train an artificial neural network with two convolutional layers (c1, c2) and two hidden layers (c1, c2). I am using the standard backpropagation approach. In the backward pass I calculate the error term of a layer (delta) based on the error of the previous layer, the weights of the previous layer and the gradient of the activation in respect to the activation function of the current layer. More specifically the delta of layer l looks like this:
+Having all necessary entities we are now able to calculate the error and propagate it back efficiently to the precious layer:
+With this at hand we can now consider some error function $E$ and the error function at the convolutional layer (the one of your previous layer) given by $\partial E / \partial y_i^l $. We now want to find out the dependency of the error in one the weights in the previous layer(s): 

@@ -1,0 +1,22 @@
+Failsafe load balancing requires 3 servers at least.
+It simply randomly sends a request to the an IP on your DNS record.
+5 minutes, and update your dns record appropriately to point to the "active" server.
+This will probably not be offered by your provider in mind, but is the only solution I know that works with only two servers.
+At the same time, you can configure it to avoid sending request to a server that's busy.
+To keep both servers synced you may use a network file system like drbd and/or db replication.
+Depends on your need and the type of site your running.
+Option #2 - Implement HA Proxy or Nginx to Load Balancers
+So it will not send a request to a server that is down.
+This means that it is still possible that a request would be sent to a down Server.
+What you have to decide first is how to implement it and where will your Load Balancers be hosted.
+Technically not Load Balancing in the most real sense of the term.
+When the primary server goes down, you can automatically reroute the domains ip address to the secondary server.
+The cache is not 100% the best on the Free package but works great.
+CloudFlare can cache your files and show the cached copy if your site is down.
+If a short downtime would be acceptable, you may instead set a very short ttl to the a-record of your domain(s), e.g.
+Some rootserver provider offer routable ip adresses (failover ip); that way you can set up two servers prepared to use the same routable ip address (additional to their static primary ip).
+You can achieve this by adding 2 or more A records in your DNS, pointing to the same domain with different IPs for each entry.
+So use your current Static IP and use GoDaddy's IP on the second record (if GoDaddy gives you an IP).
+The limitation with this one is that it does not systematically check the most available server and send the request there.
+What you might want to achieve is a LOAD BALANCING/CACHE infrastructure.
+With this kind of system, your Load Balancer can check what is the most available server and send the request there.

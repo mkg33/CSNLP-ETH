@@ -1,0 +1,9 @@
+For one thing you might want to be a bit more forgiving with non-digits.
+The original atoi just returns 0 if there are non-digits, terminating the program due to a non-digit is a bit harsh.
+underscores in front of your function name is not recommended, my_atoi would do.
+check the parameter if it is null before dereferencing it to avoid error, just return 0 - optionally print a message to stderr.
+other than that i find it was quite clever way of calculating atoi, it took me a moment to understand it -- sometimes it is better to let the compiler optimize the code for you than try to write too clever code.
+ret = ret * 10 + (*buffer - '0');  incurs signed integer overflow and undefined behavior (UB) when the final return value is expected to be LONG_MIN.
+Use ret = ret * 10 - (*buffer - '0'); and then at the end negate when the sign was not '-'. This approach is a bit off-putting to read, yet is very well specified.
+Use unsigned long ret as the unsigned complement to long can accommodate -LONG_MIN.  This works for all but the most esoteric platforms.
+atoi() works with the compiler encoding of '0' which is not specified to be ASCII.  Code can continue to use something IS_ASCII_DIGIT(c) if the goal is to convert input as if it was ASCII even if on a rare non-ASCII platform.  To be closer to atoi(), test as follows.

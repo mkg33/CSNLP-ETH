@@ -1,0 +1,10 @@
+In other words, when the client that has been modifying the file closes the file, the client will flush the written data to the server.
+If you need more fine-grained control over caching than that, you need to use byte-range locks.
+Specific daemons (rpc.statd and rpc.lockd) help with OS-level locking, but in general, you don't want to rely on it, and as Josip writes, many Unix applications implement their own application-level locking.
+In that case, a NFS client will flush data when releasing a write lock, and revalidate its cache when acquiring a lock.
+If some other client opens the file after that, it will see the new content.
+If you're going to have write contention on files, standard practice is not to serve such files over NFS in the first place.
+Or if the other "client" is a local process on the server, it will see it immediately, no need to reopen.
+These conflicts are usually resolved through locks.
+NFS implements something called close-to-open consistency, which is a weak cache coherency model.
+That said, it needs to be noted that most of applications do tend to lock files, especially during writes.

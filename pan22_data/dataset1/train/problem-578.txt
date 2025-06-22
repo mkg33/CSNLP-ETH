@@ -1,0 +1,6 @@
+My customer has quite a large (the total "data" folder size is 200G) PostgreSQL database and we are working on a disaster recovery plan. We have identified three different types of disasters so far: hardware outage, too much load and unintentional data loss due to erroneously executed bad migration (like DELETE or ALTER TABLE DROP COLUMN).
+First two types seem to be easy to mitigate but we can't elaborate a good mitigation plan for the third type. I proposed to use ZFS and frequent (hourly) snapshots but "ZFS" means "OpenIndiana" these days and our Ops engineers do not have much expertise in it, so using OpenIndiana imposes another risk. Colleagues try to convince me that restoring from PostgreSQL PITR backup can be as fast as restoring from a ZFS snapshot but I highly doubt that replaying, say, 50G of archived WALs can be considered "fast".
+What other options are we missing? Is ZFS an only viable alternative? Can we get a fast Pg DB restore time in the Linux environment?
+I suggest you take a look at Barman, Backup and Recovery Manager for PostgreSQL, which has been written by us and is available as open-source under GNU GPL 3 terms.
+To give you an idea, we use it in production on databases larger than yours (7 Terabytes).
+There is an RPM version already, Debian package is on the way (Barman will be included in Ubuntu 12.10).

@@ -1,0 +1,8 @@
+We have a java application running on two RHEL5.5 systems.  We recently got into a situation where we needed to add more memory for both systems.
+Compare the process lists with ps aux, top or whatever method you like. In addition to that see a breakdown of kernel memory usage with slabtop and compare the output of those. 
+OK, with RHEL 5.5 you're most likely using ext3 as your file system, but for example XFS is heavily utilizing free memory and that becomes very evident with slabtop, but can leave you confused if you are just staring free and other memory reports.
+I realize that they stems are not in a bad state, however, I'm being asked to provide a reason or explanation as to why one system is bringing so much into cache and the other is not.
+While I would expect a difference in the memory currently being used for cache, the extreme difference seems rather disconcerting.  Is there any method to see which files currently have blocks in cache or any other way to determine why such a large difference would be evident in two systems that are mirror clones of each other, in a load-balanced setup with relatively close reboot times?
+Each system was rebooted within 5 minutes of each other.  We confirmed that the systems were even in connections through the our load balance device. The free output looked like the following:
+Also it would be nice idea to verify on the system where used memory and corresponding cached memory is more that the memory being used/cached is actually by your java program and not some other program.
+You can use lsof to look for files being used by both Java process on both machine, that might help in pointing towards problem. 

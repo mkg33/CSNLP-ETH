@@ -1,0 +1,29 @@
+His primary mailbox is visible to his assistant but he belongs to an external organization that requires that only he can see email among its members.
+I know you can use RMS on 2003 but I don't know if you can auto apply it like you can with 2007+.
+It sounds, to me, like the best scenario would be to have the CEO start a second instance of Outlook with a MAPI profile that only has his personal account configured.
+If anyone has any helpful suggestions I would be grateful to hear them.
+If this was exchange 2007 or better, I'd use ad rms and a transport rule to only allow access the the CEO and just add another alias.
+With Outlook 2007, at least, the unsupported ExtraOutlook utility (described in this blog post) will allow you to run two different instances of Outlook with different MAPI profiles simultaneously.
+With Outlook 2010, and 2003 exchange or higher there's an easy solution.
+I don't see a rule that allows me to divert the mail stored in the Sent folder of the primary account.
+OWA is another possibility but again not sure how to alert user to check secondary mailbox with OWA.
+Once you've got the "Personal" MAPI profile configured you can hide the account from the GAL.
+I have put a delivery restriction on the second mailbox for all internal users so at least they get a message if they inadvertently send mail to his secondary mailbox, which is similarly named.
+$ct = [System.DirectoryServices.AccountManagement.ContextType]::Domain
+So it looks grim and I haven't even tackled the BES config.
+Or maybe you could convince him to rely on his Blackberry to tell him when he has new mail on the external account?
+Here's some Powershell for how I lookup the legacy name...
+It's cumbersome, but I think your best bet is the second idea you described: set him up with alternate profiles, he can look at one or the other mailbox but not both simultaneously.
+Because the CEO will be sending personal email from the Outlook instance that's connected to the personal mailbox the items should end up in the proper "Sent Items" folder, which takes care of your second problem.
+He also wants the second mailbox to be associated with our corporate domain (i.e.
+Our CEO has requested a second mailbox for his personal email.
+Then, since you're still on Ex2003, use an Event Sink to notify his "real" account when a message arrives in his "external" mailbox.
+I granted Send As permission (not Send on Behalf) to his primary AD account.
+$user = [System.DirectoryServices.AccountManagement.UserPrincipal]::FindByIdentity($ct,"____namehere____")
+My solution so far has been to create a second AD account with its own mailbox.
+(Of course, it's easy to throw out the phrase Event Sink, I'd be lost if I had to set one up.)
+Naturally he also has a BlackBerry with which he would like to read mail send to both mailboxes.
+I also gave his primary account full access to the second mailbox and added the second mailbox to his Outlook profile as an additional mailbox and made the From field visible.
+Creating alternate profiles is possible but not sure how to alert user that he has mail in secondary mailbox.
+Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+BTW, for the right price I'll entertain job offers.

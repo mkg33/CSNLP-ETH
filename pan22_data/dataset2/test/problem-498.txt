@@ -1,0 +1,5 @@
+If you are an instructor wishing to demonstrate this situation for a class, a 4GB disk image with an old copy of Red Hat Linux 7.0 is sufficient.
+In general, the techniques in the answers previously given are valid; HOWEVER, there is a very important special case.
+For a period of some years-- perhaps 1997-2007 or so-- 32-bit operating systems were still the norm, but hard disks larger than 2GB were already in use.  As a result, when attempting to consume all free space by writing a file of zeroes (which should always be done as root, to include root's privileged free space, which no one else can touch), you may see:
+If this occurs, you have most likely hit a 2GB file size limitation.  This was common at the time because many file operations returned results in signed 32-bit integers, so that negative values could report error codes.  This effectively meant that offset results were limited to 2^31 bytes without special measures.
+The workaround is straightforward: keep creating separate, differently-named zeroing files until the disk actually runs out of space.

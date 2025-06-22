@@ -1,0 +1,23 @@
+Posting here, as I found a less kludge-y way to do this.
+The most recently updated one is ProxyChains, and it's quite straightforward to configure.
+I don't know about tunnelling with ssh -D but using something like
+You can then do tunnelling by adding a new protocol to subversion with the particular port that the tunnel is on.
+if your subversion repository host(s) are named proj1.svn.domain.tld, proj2.svn.domain.tld, etc., then add following to [groups] section:
+And then in $HOME/.subversion/servers create a group for subversion hosts you want to check out from, e.g.
+You are using SSH to set up a local SOCKS server that tunnels to your SSH server.
+After this you should be able to operate on repository normally, as you used to work without SSH tunnel.
+to switch the address the working copy is linked with without having to do a new checkout.
+In the above example, the svn application was none the wiser that its TCP connects to the Subversion server were redirected down your SOCKS proxy."
+To configure ProxyChains you just need to edit $(HOME)/.proxychains/proxychains.conf to have only the following lines:
+You can use Polipo to use your SSH SOCKS tunnel over HTTP proxy, by adding following lines to its configuration:
+Most socksifiers work in a similar fashion so these instructions should be a reasonable general case.
+Or in a nutshell mostly cut'n'pasted from Oliver's page :
+Instead of paraphrasing those who have done it before, I'll point you to their detailed explanations :
+And finally specify a proxy configuration for the group of the hosts you just added by adding a block for the group:
+in the [tunnels] section and then instead of svn+ssh://user@original.com use svn+pssh://user@localhost
+Anyway, your problem is that Subversion can connect through a HTTP proxy or an SSH tunnel, but it has no idea about SOCKS.
+So you need to SOCKSify Subversion by capturing all its TCP connects and redirecting them to the SOCKS proxy.
+With tsocks, you configure it to use the SOCKS proxy SSH sets up then run svn like so:
+All you then need to do is 'wrap' svn in ProxyChains.
+Debian contains two socksifiers that are also available on sourceforge.
+You mention that your reason for doing that is that "local connection is slow" but I fail to see how tunneling to a SSH server will make it faster.

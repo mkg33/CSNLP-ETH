@@ -1,0 +1,16 @@
+After making some changes (added mender) the serial 1 device stopped working on first boot.
+It is a little weird because it is only on the first boot, and so we can't edit the systemd-udevd.service file and reboot because the problem will no longer manifest.
+Set it to a value a that is acceptable to you, but still reasonable.
+Our company is attempting to use a raspberry pi 0 wifi for an IOT product that we are booting with a custom yocto image.
+The error that we are getting is dev-serial1.device: Job dev-serial1.device/start timed out.
+We have the following udev rule set up at /etc/udev/rules.d/99-com.rules:
+Why not just try waiting a little longer for the service to boot up since it's a timeout issue?
+This then causes bcrm43438 to fail which breaks bluetooth.
+Is there a good way to debug the udev startup process to see what is going on?
+Since your hardware is relatively underpowered as an IoT device, running into a timeout seems more likely.
+Try setting this to 60 to 100 seconds to see if that helps.
+Check related directives in man systemd.unit, like JobTimeoutSec= and JobRunningTimeoutSec=.
+After rebooting it works perfectly every time, but the very first time it boots after a fresh installation it fails consistently.
+If this simple solution doesn't solve it, then I would consider digging deeper to the issue.
+The first boot may be slower than the reboot (cold boot vs warm boot).
+if we run udevadm control --reload-rules && udevadm trigger after booting it will load up serial1 and then if we run btuart it will start working properly.

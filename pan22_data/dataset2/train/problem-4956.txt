@@ -1,0 +1,12 @@
+I tried a solution like ufw delete $(ufw status numbered | grep 1234 | <get all the numbers of the rules> ), but it got really ugly, really fast.
+My goal is to remove all UFW rules allowing connections to the local MySQL server on port 3306. Here's what I used:
+When a server that used to have access is taken out of the pool, it might be forgotten to remove the access rule for that server.
+To workaround the new numbering after each deletion, we need to rerun the command and pick the first number then delete that rule and loop like this:
+I know this is very old question but google brought me here and the answers so far were helpful, so I wanted to share my full solution. The answer from @Seth got me most of the way there.
+My solution: When setting up the rules, I want to delete all rules for port 1234, and then recreate them with the servers from the current pool.
+The key to automating this is to delete rules in reverse order. When you delete from the end, the numbers above don't change.
+As long it is not possible to force-delete each item without a confirmation, I haven't found a better solution... yet ....
+Unfortunately ufw delete requires to precisely specify the rule to be deleted (port,protocol, scr IP,...).
+I am using ansible to configure ufw on my DB servers to only let accept connections from certain servers connection to a specific port (lets say 1234).
+Most of the solutions here will delete the wrong rules because of UFW renumbering rules after deletion.
+Maybe needless to say: after each removal of a numbered ufw-item, all items following that item get renumbered. Therefore, this oneliner will delete the wrong items after the first deleted item:

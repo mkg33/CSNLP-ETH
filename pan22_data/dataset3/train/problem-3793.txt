@@ -1,0 +1,30 @@
+Finally, split your servers up as well, I've gone for location/role which seems to have worked quite well.
+I tend to design AD structures with 'making it easy to manage' in mind, rather than reflect physical company structure, however both are often the same.
+Users - Split theses into departments, but also with an area/s for temp or agency staff.
+If you did it the other way, it would mean you would have to link your policies at multiple OUs, which involves unnecessary work.
+by Department, as it would generate extra admin overhead without really giving much in return.
+Here are the core tenets of Microsoft's recommendation for AD logical design:
+(Don't forget about group policy application on the site objects, either.
+Think about each of these considerations as you design, prioritizing them as recommended.
+You have to be careful about cross-domain GPO application when you link GPOs at sites, but if you're a single domain environment you can get a lot of great functionality out of linking GPOs to sites.
+I'd always split users, computers and groups into separate OUs, for the simple reason that it makes it easier to manage.
+Computers - Split these into location and sub locations.
+Nesting groups is perfectly fine, and again, make management of AD much easier.
+Work through some sample scenarios with it-- I find that it's great for loading software that has "site-specific" settings in it or providing specific logon scripts to users when logging-on to computers in certain physical locations, by way of loopback group policy processing.)
+It's a great way to shake out problems in a design.
+This means that you can apply settings to one location or office - for example a different proxy server, or different anti virus settings (of course only if the AV management program uses AD)- without reorganising, and hopefully won't have to open the can of worms that is loopback processing.
+If you are applying most of your policies at department level, use Department\Location\Object
+Computers; organize according to geographic location
+I've also found it useful not to use the built in users or computers groups, not any technical issues, but just so that you can easily see where things shouldn't be.
+Before I even DCPROMO my first domain controller I typically draw out the proposed structure on paper or a whiteboard and walk through potential usage scenarios to see if my design "holds up".
+If you are applying most of your policies at location level, use Location\Department\Object
+If you have no compelling reason for a specific AD structure, then design your AD from an administrative point of view.
+The other answers in this thread are very good too though.
+I think, if I had to redesign my AD again there are a few things that I would do differently, but I have found that :
+It's easy to change things later (comparatively), and you'll never "get it right" on the first try.
+Location for these won't be as important as no doubt people will move about.
+The resulting OU structure would look something like this:
+I don't really see any need for further divisions here, e.g.
+Splitting by location however would enable you to implement delegation at each site.
+Think about where you are going to be applying policies.
+Ie OfficeComputers/LondonOffice/Room103 (Finance).

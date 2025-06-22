@@ -1,0 +1,18 @@
+NUMA nodes specifies which part of system memory is local to which CPU.
+This depends on the CPU architecture, mainly its memory bus design.
+You can configure the NUMA in your system to behave such as to give the best possible performance for your workload.
+You can use commands such as numastat or numactl --hardware to check NUMA status on your system.
+The whole NUMA (non-uniform memory access) defines how can each logical CPU access each part of memory.
+Interesting document about NUMA is also at RedHat portal.
+The last section shows the NUMA topology - it shows the "distances" between individual nodes in terms of memory access latencies (the numbers are relative only, they don't represent time in ms or anything).
+Although this system is consisting of 4 individual blades, the latency is the same for different socket on the same blade or other blade.
+You can have more layers of topology, for example in case of HP Superdome system (which uses Intel Itanium2 CPUs), you have local CPU socket memory, then memory on different socket inside the same cell and then memory in other cells (which have the highest latency).
+Here you can see the latency to local memory (node 0 accessing memory in 0, node 1 in 1, ...) is 10 while remote latency (node accessing memory on other node) is 21.
+I have checked few systems including 8-socket (10-core CPUs) system consisting of 4 interconnected 2-socket blades (Hitachi Compute Node 2000).
+The important part is NUMA topology, which says how are those "nodes" connected.
+You can for example allow all CPUs to access all memory, or to only access local memory, which then changes how the linux scheduler will distribute processes among the available logical CPUs.
+When you have 2 socket system, each CPU (socket) has its own memory, which it can directly access.
+There you can see the amount of memory present in each NUMA node (CPU socket) and how much of it is used and free.
+If you have many processes requiring not much memory, using only local memory can be benefit, but if you have large processes (Oracle database with its shared memory), using all memory among all cpus might be better.
+But it must also be able to access memory in the other socket - and this of course takes more CPU cycles than accessing local memory.
+Also here the number of NUMA nodes is equal to number of CPU sockets (8).

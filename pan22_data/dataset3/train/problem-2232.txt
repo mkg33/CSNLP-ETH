@@ -1,0 +1,18 @@
+That's an interesting problem, thanks for bring out here on stack.
+And cosine distance is just a good way to measure this similarity.
+It's pretty likely that you find phrases like "lead data scientist" and "professional knowledge of Matlab and R" in a same profile, but it's very unlikely to also see "junior Java developer" in it.
+Normally, they contain 4-10 sentences describing person's skills and qualifications.
+Basically, @Emre's answer is correct: simple correlation matrix and cosine distance should work well*.
+* - in fact, it's already worked for me on a similar project.
+There's one subtlety, though - job titles are too short to carry important context.
+http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance
+Not sure if this is exactly what you're looking for, but r-base has a function called "adist" which creates a distance matrix of approximate string distances (according to the Levenshtein distance).
+Normally they are much shorter and don't actually create enough context to catch similarities.
+The more 2 words occur in same context, the more similar their vectors in the matrix will look like.
+Luckily, you don't need source data to be titles themselves - you need to find similarities between skills in general, not specifically in titles.
+So, according to me LSA is your best approach to begin with in this situation as it learns the underlying relation between the words from the corpus and probably that's what you are looking for.
+Also, if R isn't an option, the Levenshtein distance algorithm is implemented in many languages here:
+So you can simply build co-occurrence matrix from (long) profiles and then use it to measure similarity of titles.
+So we may say that "lead" and "professional" (as well as "data scientist" and "Matlab" and "R") often occur in same contexts, but they are rarely found together with "junior" and "Java".
+I think this problem is similar to when we apply LSA(Latent Semantic Analysis) in sentiment analysis to find list of positive and negative words with polarity with respect to some predefined positive and negative words.
+Imagine LinkedIn profiles (which is pretty good source for data).

@@ -1,0 +1,7 @@
+I have had some success by sending the GNU/screen process a SIGCHLD (which it normally receives when a window is closed), this forces it to touch (and possibly recreate) the socket file.
+I have cleared this behavior up in the past by killing the shell that started the screen session. Basically, killing all bash instances for my user that were not owned by screen. 
+Also note that there are two ways to invoke the screen executable that only differ in case: SCREEN is the server-side component you are attempting to reconnect to, while screen is the client-side that shuffles data between your terminal and the server-side. So you might want to try killing the lower-case version...
+It worked for me. I had 3 different screens, and I've lost 3 different ssh connections. After reconnect, the screens were still attached, I issued the command above... of course I've lost my current connection, but it was a fresh one. On next reconnect, every screen were detached.
+screen is known for not being backwards-compatible between versions. If the version of screen was updated on the server, it might be possible that you cannot reattach to older screen sessions anymore.
+In that case, you can either use the old SCREEN binary to reattach (provided your distribution package manager saved it somewhere), or kill the session altogether.
+For instance in the following you can see that my screen and SCREEN processes are not considered to be parent and child, indicating that I have attached to an existing session.

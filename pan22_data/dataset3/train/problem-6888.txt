@@ -1,0 +1,12 @@
+Which you can not do when using BGP to peer with other ASes.
+If you (for some odd reason) had a network where only some devices were IPv6 only you might want to offset the manual numbers so they won't be confused with real IPv4 addresses.
+Most notably this makes IS-IS much nicer to use than hand-padding an IPv4 address.
+Autonomous-System-Wide Unique BGP Identifier for BGP-4 answers your question.
+As the router ID is still a 32 bits number, it can not be copied from a loopback's address.
+Usually, when using BGP, you can choose (or your device chooses four you) a router ID from one of your assigned public IP addresses.
+PS : the issue also concerns OSPF, but then you only have to design a coherent RID allocation scheme.
+If so, how would devices react in case of collision (both ends of a BGP session use the same RID) ?
+The draft-dupont-durand-idr-ipv6-bgp-routerid-01 brings a start of an answer, suggesting to use your AS number suffixed with a locally allocated part.
+Basically BGP Identifier need only to be unique within your AS since 2011.
+Assuming you really aren't running v4 at all, not even a loopback then the method I'd suggest would be to simply allocate a sequential number per router and use that, no need to segment it at all, and you might have an existing inventory number that might work (although consider how that might work in the context of an RMA).
+Using 240/8 is one idea (I'd suggest against 255/8 or even 254/8 to help avoid a tired ops brain paged at 3am from wondering why a router id is set to a broadcast address).

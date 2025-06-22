@@ -1,0 +1,9 @@
+I included this in my local.cf, and gave it a low score as it's not really a great indicator of spam on its own, but in conjunction with other rules I have, it works well.
+The problem is, even long emails seem to trigger this rule. Why? I'm pretty sure my regex above is correct (a body of 2-120 chars).
+says that any line in the email has 2-120 characters in it.  Almost all mail will match this.
+Because whitespace is specially treated, I'd also steer you away from the "right" regex solution of /^.{2,120}$/s but instead I would recommend:
+if can(Mail::SpamAssassin::Plugin::BodyEval::has_check_body_length)
+body __LOCAL_BODY_LT_2     eval:check_body_length('2')
+body __LOCAL_BODY_LT_120   eval:check_body_length('120')
+meta LOCAL_SHORT_BODY      !__LOCAL_BODY_LT_2 && __LOCAL_BODY_LT_120
+I don't recall when check_body_length() was added, but when it comes to stuff like SpamAssassin, you always want the latest version.  The above conditionals ensure that you don't break anything if you're stuck on an older version.

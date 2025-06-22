@@ -1,0 +1,11 @@
+I think lvresize with resize2fs will actually work without a guest restart, but I haven't tried it yet
+(This may sound like a lot of work, but there are provisioning scripts, such as the awesome xen-tools, that automated pretty much everything).
+This provides some really useful capabilities, two of which I'm especially interested in figuring out for KVM:
+However, you can use kpartx to expose the partitions within an LV that contains a whole-disk image as block devices on the host, which you can then mount, etc.
+Sorry for the long post, just wanted to make sure it was clear.  Please let me know if I can provide any other info that would be helpful.  Looking forward to the discussion.  :-)
+I'm currently setting up a KVM host that will replace the Xen host.  Similar to the Xen setup I'm leveraging LVM to provide direct filesystem access, but KVM/qemu behaves differently in that it always creates a image file for the guests, even on the LVM volume.  From the guest's perspective, it sees this as an unpartitioned disk, and it's up to the guest to apply a partition label, then create the partitions and filesystems.
+I'm not quite sure how to phrase this question (hence the poor title), so let me provide an example of what I'm trying to do.
+From a guest perspective that's fine, but from a server/management perspective it seems to be far less flexible than the Xen setup I described.  I'm still new to KVM, so I may be (hopefully) missing something.
+I ran into this problem when trying to re-implement my former backup solution on the KVM host and the mount command chocked when I tried to mount one of the guest's filesystems.  So, addressing that is my current concern, but it also made me concerned about the resizing thing, because I'm sure that issue will come up at some point as well.
+On my (old) Xen host, I'm able to present LVM filesystems directly to each guest.  These filesystems are actually created and formatted on the host, and passed directly through.  Eg., for one of my hosts using a separate tmp and swap partitions, I define the storage like this:
+So, guest1-swap is formatted as a swap partition, guest1-disk and guest1-tmp are formatted with ext4, and from the guest's perspective it simply sees them as three formatted partitions under /dev/sda.

@@ -1,0 +1,14 @@
+I went with that method and downgraded/upgraded Java to test it out, and it looks like it works well.
+One solution I found was to use OpenJDK instead, which supposedly comes with unlimited strength JCE included:
+I think this has to do with how linux handles file read handles.
+Every time my Java web application launches, the JCE jars are re-copied.
+https://gist.github.com/bmaupin/4396be4bb29c5ad440b6
+In my testing, I found that if I change my java installation back to the default JCEs while my application is running, my application seems entirely unaffected.
+For what it's worth, you're going to have the same problem if you use CentOS.
+I still have a handle on the old file even after it's been replaced in the file system, pre-existing handles still work until they're closed.
+Failing this, we'll have to change the source of our application to use what seem to me to be very self-defeating work-arounds in the java source itself.
+It's the best of the bad options I've found so far.
+I added a script stanza to my upstart job that copies in the JCE jars before launching jetty.
+Which suggests pointing to the JCE jars using the alternatives command.
+My "Answer" ended up being extremely application-specific.
+That wasn't an option for me, but I also ran across this:

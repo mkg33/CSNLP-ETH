@@ -1,0 +1,9 @@
+I believe your particular problem may be solved just by doing the pam.d edit above to the appropriate files.
+However in order for tools such as ssh and su to obey the limits.conf file you need to add the following to the corresponding pam.d files if it's not yet there, i.e.
+If the changes in /etc/security/limits.conf seems to have no effect, check if /etc/security/limits.d/ contains files with limit settings that override yours.
+If everything else fails, would your script allow to do as myuser the following:
+The system reads the files in alphanumerical order, and if there are multiple configurations for the same limit, the later settings will override earlier ones.
+for su add to /etc/pam.d/su and for ssh add to /etc/pam.d/sshd:
+And add something like this to /etc/profile and it should apply system wide to all accounts:
+It is important that this comes into effect without the user having to log in first, i.e.
+If you need to override a limit that is configured in a file located in /etc/security/limits.d/, it's probably better to create your own file in that directory, with a name that sorts alphanumerically later than the existing file.

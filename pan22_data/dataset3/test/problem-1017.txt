@@ -1,0 +1,26 @@
+In both cases you describe, Windows Installer tried to execute a custom action located in a DLL.
+While the error message is on screen, go to your temp directory and see if the temp DLL file still exists.
+https://www.microsoft.com/en-us/download/details.aspx?id=25 and
+Those .tmp files: C:\Users\x\AppData\Local\Temp\MSI570C.tmp and C:\Users\x\AppData\Local\Temp\MSIA32E.tmp are really DLL files extracted from the MSI.
+In my case, the DLL wasn't missing--the installer didn't have permissions to access the folder.
+Also tried this Fixit: http://support.microsoft.com/mats/Program_Install_and_Uninstall
+I'm guessing its a problem with Windows Installer.
+Alexey Ivanov's response didn't quite help me, but it did, however, inspire me to investigate C:\Users\x\AppData\Local\Temp.
+http://www.howtogeek.com/howto/windows-vista/add-take-ownership-to-explorer-right-click-menu-in-vista/
+I have two most probable possible candidates: Visual C++ runtime is missing or .Net runtime is missing.
+Searching on error 1723: This error can occur if you have an out-of-date version of Windows Installer
+I tried what Dimadima suggested but I still had a little access issue.
+Nevertheless, after going to Properties > Security on the C:\Users\x\AppData\Local\Temp folder and giving that Everyone the Full control permission, installers that previous had been failing now worked!
+I dug up a tool for Win 7 / Vista called take ownership.
+I got a couple of links for Windows Installer but neither of them has Windows 7 on the list of supported operating systems.
+Then to find out which DLL of the required ones is missing, you can use depends.exe utility from Visual Studio.
+Since Everyone already had Read and Write access, I suspect that Full control also added a necessary Execute permission.
+The most important thing is to find out which DLL is missing.
+I've tried restarting the service but to no effect.
+What I wonder, now, is how this happened in the first place, and what the correct permissions on this directory are supposed to be.
+It adds a contextual menu to right click and you can 'Take Ownership'.
+If the temp file is already removed, the only way to get the DLL is to extract it from the package, from Binary table.
+Anyway, like many things in Windows, this whole thing is a bit of a mystery to me.
+I'm not able to install anything that ends with .msi.
+https://www.microsoft.com/en-us/download/details.aspx?id=8483&WT.mc_id=MSCOM_EN_US_DLC_DETAILS_131Z4ENUS22007
+I didn't try running the installer as an administrator--this didn't make sense to me considering I was already using an admin account and would have expected UAC to handle privileges elevation.

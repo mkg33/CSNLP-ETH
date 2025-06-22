@@ -1,0 +1,8 @@
+401.2 with substatus 5 might just be an incomplete authentication dance; certainly fits with an unsuccessful authentication attempt.
+Also check out the Security event log for failed logon attempts - that might be a better bet at understanding what's happening.
+Assuming IIS 7.x, you can go Server Manager -> IIS Role -> Add Role Services, and install the Tracing feature.
+I'm running a Confluence instance behind an IIS proxy. Now we have some issues with user authentication. Right now the only thing I can see is the request and a 401 response. However I can not see which login module caused this or if it is caused by Confluence behind IIS. 
+401s are going to happen any time HTTP auth is used, so it might be hard to capture a "bad" one if it doesn't happen consistently - you can trace based on the page and status code if it's consistent.
+Finally, there was a hotfix for sites using AppPoolIdentity to prevent them stopping working when the computer account password changes (see this).
+At the Site level, you need to use the Actions pane to Enable Failed Request Tracing and configure the number of logs to keep, and then you can configure a Failed Request Tracing Rule to capture what you're interested in.
+And if a domain is involved, don't forget to look at the System and App log for events that might reveal a problem talking to the DC.

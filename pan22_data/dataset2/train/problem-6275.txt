@@ -1,0 +1,9 @@
+Obviously, the reason why I need the restart script is for deployment of new python code in my python application (running on either gunicorn or cherrypy).
+This is great; but is there a way to "perfect" this process such that I do not get 502 Bad gateway at all?  502 gateway happens when a user so happens to be on the site and using a webserver process that gets temporarily killed and revived.
+A user connected to the restarting webserver should be rebalanced to a working one after he refreshes the page or initiates another request.
+In order to minimize downtime, I have a webserver restart script that kills a specific webserver process (out of say 8 processes) and then starts it up immediately again; and then goes on to the next webserver process (kill it, then start it up again) so at any moment in time, there will always be at least 7 processes available for my reverse proxy to point to.
+nginx should do this out of the box.  proxy_next_upstream's default error timeout setting will pass a request on to the next member of an upstream block if the initial server chosen is unreachable.
+Why are you killing gunicorn? Just send it a SIGHUP like any other well-behaved Unix process and it will happily reload without losing any connections.
+It has an ultra-configurable reverse-proxying loadbalancer that supports member drain and weighted preferences, not to mention online reconfiguration through the balancer-manager interface.
+If you use haproxy and configure a backend for each webserver process and also use health checks on those backends, it will detect when one is down and mark it as offline, balancing requests to the healthy ones instead.
+I have a load balancer/reverse proxy (either nginx or cherokee, does not matter which) deployed on my server and it points to multiple background webserver processes (either gunicorn or cherrypy, does not matter which) in a round-robin set-up.

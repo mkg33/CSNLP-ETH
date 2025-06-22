@@ -1,0 +1,7 @@
+I haven't used ucarp on Linux, but in BSD land, it's as simple as bringing down the carp interface on the Primary, and the Backup will promote the carp interface to master.
+"... to work out the time until a CARP node thinks it's the master, calculate 3 * (advbase + (advskew / 255))" - http://kerneltrap.org/node/5607
+I have got ucarp working on my two ubuntu servers. Apache, Postfix, Dovecot are working in HA mode so if one host goes down the other automatically takes over. 
+The second is what does ucarp-advskew do? The problem is that I don't know where I could read something more about ucarp. I've only read the guide on how to configure it, but I don't know how to control it, what are the advanced settings.
+"advskew: This optional parameter specifies how much to skew the advbase when sending CARP advertisements. By manipulating advskew, the master CARP host can be chosen. The higher the number, the less preferred the host will be when choosing a master. The default is 0. Acceptable values are from 0 to 254." - http://www.openbsd.org/faq/pf/carp.html
+Then slave1 will always become master before slave2 since it advertises more often. If for some reason slave1 is down, slave2 will become master.
+I use keepalived and don't know much about ucarp but I've always just disabled the master interfaces. That forces the slave to take over. If I want to make the slave the master, I reconfigure it and restart the service. I then reconfigure the old master to be slave, restart the service and enable the interfaces.

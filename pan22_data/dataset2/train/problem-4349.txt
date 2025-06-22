@@ -1,0 +1,11 @@
+3) Can the SNAT target modify the source port (without explicitly telling to translate to a specific port(s))? 
+iptables NAT works on "connections"*, only the first packet of each "connection" goes through the user-controlled nat tables.
+If a new connection is coming from the outside to your container, it will match the DNAT rule instead.
+If I do a ping 8.8.8.8 from the lxc container everything is working (the source IP gets translated to 10.9.63.173 when leaving the linux machine). But the second rule is never matched by the ping echo replies. I have watched the incoming packets on eth0 (10.9.63.173) using tcpdump and the output is as follows:
+When a reply is coming, conntrack knows (with source and destination ip and port, and TCP sequence if the connection is TCP) that the packet belongs to the connection, and will address it to the right NAT correspondance.
+Take a read for TCP and connection tracking I guess: http://www.iptables.info/en/connection-state.html
+The machine network configuration is as follows: eth0 interface which connects the machine to the internet (it's IPv4 address is 10.9.63.173) and a veth-1 interface (192.168.2.1) for lxc container.
+* "connection" here refers to a set of criteria that can be used to match requests to their corresponding responses. e.g. the source ip/source port/destination ip/destination port tuple for TCP/UDP or the source ip/type/id/code/destination ip for ICMP queries.
+Per connection, only the first packet will match a NAT rule, then every other will just follow the same path (or reverse path).
+This way, if your container initiate the connection, it will match the SNAT rule, write in the NAT table, and fill the conntrack one.
+When the first packet of a "connection" passes through the NAT it establishes an entry in an internal connection tracking table. This is used to translate later packets of the connection.

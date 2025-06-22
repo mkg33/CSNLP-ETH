@@ -1,0 +1,9 @@
+You can avoid a lot of overhead if you first insert into a "staging" table, then copy into the 'real' table.  This discusses such.
+I am running a sql script on mysql 5.7.18 ubuntu server 16.04 that does a large number of updates in one table. Each one of the 50k updates takes under a second but the total run time is very long (>20m).
+EDIT: You have already made a comment that you can't change your query. I'm afraid that you may be stuck in a single threaded world. I think that Oracle does this on purpose to get you interested in their software and ready to upgrade. 
+I hope that your 50K is just a burst.  If you have that continually, your disk will quickly fill up.
+more information and a Shard tool can be found here: https://www.percona.com/blog/2014/01/07/increasing-slow-query-performance-with-parallel-query-execution/
+Make sure you have defined proper index. To define them, read the beautiful answer posted by Gordon Linoff here a SO answer
+I don't think that MySQL natively supports any kind of multi-threading. There is  concept called sharding that may help you. This requires that you install a plugin for running.
+Because you wrote "each one of the..." it sounds like you are updating individual rows. Rather than doing a row at a time, have you explored writing the SQL so you are letting the DB update many rows in one SQL statement? That will likely get you much better performance than trying to multi-thread manually.
+I can see from PROCESSLIST that only one thread is running and is processing the updates one-by-one.

@@ -1,0 +1,21 @@
+If it's RHEL 5 or 6, then don't use any of the two LSI controllers in virtual machine definition.
+See this VMware KB article for the supported configurations and migration procedure.
+In my case I needed to change the controller for the root disk from Paravirtual to LSI Logic SAS.
+Second step - Shut down your VM, Attach a 1 GB disk using the SCSI controller type you'd like to change your root disk to and bring the system back up to modprobe discover it.
+To resolve this, you'll need to rebuilt the initrd file using the following procedure:
+Can anyone help with this as I am unable to find much information on it and really dont want to rebuild the machine.
+Third step - run the following command to add the correct driver to the RamDisk (Remember in my case I was moving from the VMWare Paravirtual to the LSI Logic SAS driver.
+If you need to revert for any reason, simply boot back into rescue mode and revert /etc/modprobe.conf and the initrd-*.img file, then reboot.
+The problem is that, when the system boots up, an initial ram disk is created from the contents of a file which contains certain drivers the system needs to continue booting.
+I have a VMWare Redhat machine that I need to change the SCSI controller on the machine from a  LSI Logic Parallel to LSI Logic SAS.
+You may not need to do this second step, I did it in the theory that the disk controller would initialize itself if introduced to the system through an additional disk, just like you'd do for Windows:
+The LSI Logic SAS virtual controller is really only there for Windows 2008 to allow for clustering.
+If that initial ram disk file doesn't contain the drivers for your system, the system will not able to boot.
+It's likely you are going the opposite way, but you just need to change the driver type:
+Whenever you are working with disks, it's best not to involve snapshots.
+Change the controller for the root disk to whatever driver you just added to the ramdisk, and boot up the system.
+I have done this through vmware, but now when the box tries to boot it kernel panics saying that it cant mount /dev/root
+First, if possible, clone your machine, don't snapshot it.
+After doing this, shut down and remove the 1 GB temporary disk.
+In RHEL 7.x this is a bit different as modprobe.conf doesn't exist.
+As the previous posts suggest, this needs to be done in two places, the regular disk and the RamDisk as both will need to boot with the new driver.

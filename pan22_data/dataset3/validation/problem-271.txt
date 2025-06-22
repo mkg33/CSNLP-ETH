@@ -1,0 +1,12 @@
+in my ${APACHE_RUN_DIR} I see no files at all, no ssl_mutex and no ssl_cache file.
+I run a debian squeeze standard Apache installation (2.2) and make use of SSLClientCertificates to authorize users.
+I tried to set KeepAlive Off, to let every request establish a new SSL connection, but still I see no numbers counting up in my SSLSessionCache Status.
+I've got an "unexpected message" error when it tries to reconnect.
+But we noticed a slow down of some parallel requests and tried to check if my SSLSessionCache is working.
+Seems to be running but whatever SSL request I make, all counters stay at 0, so no sessions are cached.
+(removed date an loglevel for readability, replaced IP for privacy)
+I can see a file in this directory, but all status numbers are still zero.
+But when running on the server this command work correctly, the session are reused.
+Mounting tmpfs on /dev/shm and replacing ${APACHE_RUN_DIR} with /dev/shm/apache in fixed it for me:
+So I checked my localhost/server-status and it reads like this:
+This is my SSLSessionCache Configuration from standard debian mods-enabled/ssl.conf:

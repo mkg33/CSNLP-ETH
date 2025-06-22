@@ -1,0 +1,14 @@
+Heck, around 2000 is when PATA UDMA-66 came out, which, at 66Mbytes/sec, matches USB 2.0.
+I think the theoretical limit of a USB 2.0 bus is something like 480 Mbps (60 MBps), but experience tells me that you won't achieve anything like this.
+I average about 45 GBytes/hour on a similar setup, so I don't think USB is the bottleneck.
+The speed of the USB device will of course affect the duration of the backup.
+Add to the mix that USB controllers need the CPU to do a lot of the work of transferring data, and yeah, things can be slow.
+I've used rsync to keep large chunks of data backed up over relatively slow ADSL links for years now (so if you could arrange something like that there would be no need for your COO to manually transport drives to/from home) and found it to be reliable and efficient, and there are similar tools like rdiffbackup that operate in a similar way.
+If you can change tools you might want to look at rsync or similar tools that only copy updated content (with rsync the --checksum option essentially forces a full update which you should do occasionally to protect against corruption of old data in the backups).
+If you run rsync via its own protocol rather than just backing up from an SMB share to a local drive then even this full scan will be a lot faster as you are limit to how fast the drives at either end can read+write (though if you are using a USB drive that will still be the bottleneck when using --checksum or when lots of content needs updating).
+One thing to note though is that if you keep an on-line off-site backup like this, you should still keep a off-line backup too like the external drives.
+If you are only copying file data, why not use robocopy, and just copy the changes (i.e.
+You could also use the volume shadow copy feature of windows to give you day-to-day restores of files (requires additional storage).
+Divide that by 8 to get 60Mbytes/sec, but you'll never see that in real practice due to bus contention, driver overhead, etc.
+If it is files that lend themselves to incremental/differential backups then that would make each run much quicker (with the occasional full backup to be sure).
+SATA1.0 is 1.5Gpbs (187.5Mbytes/sec), and since it's a dedicated point-to-point link you get to use all that bandwidth.

@@ -1,0 +1,9 @@
+I'd like to get a better understanding of what requests are and how to describe them. For example, when I go to a homepage for a django project, I get the following five requests:
+You can see more information about HTTP response codes here.   I suspect Kyle's pointer to Wikipedia is a good place to start w/r/t understanding the basic protocol.
+The length on the images requests is zero because the webserver is not actually sending any data.  The 304 response code means "not modified", and is the result of the client checking to see if it's cached version of the image is current.
+You can't really tell from the logs whether the requests are concurrent or serialized.  You would have to be watching a network trace to make that determination, and it probably varies depending on the client.
+If you really want to see how it works, write a simple client and server in the programming language of your choice. As you've mentioned Django, perhaps Python would suit you.
+The difference in length is probably based on the headers sent. The reason you see 0 for the images is because your server is sending a status 304 (Content not modified) status. Learn more here:
+You mention that you are not looking for something like RFC2616, but that is precisely where you should be looking. The RFC describes exactly how it works. 
+What accounts for the difference in length? Finally, where would be a good reference to learn more about requests/responses and see how they work? (I'm not looking for something like http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html, but to see for myself how they work and learn about them).
+Also, why is the length for the images always 0 here? When I do tail -f on my apache logs, I see a different content length - 

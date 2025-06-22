@@ -1,0 +1,29 @@
+I am by no means authoritative on this subject, however, in our environment we use Riverbeds for WAN optimization, and although we're not over satellite, we see a 68% improvement in speed for TCP communication as a minimum, and the Steelheads we have report an almost 3x bandwidth increase based on data it serves from its datastore vs. actually transferring things over the WAN.
+http://www.networkinv.com/blog/faster-satellite-internet-with-filtering-optimization-packet-shaping-solutions/
+While caching is a major help, just the pre-ack'ing of packets over a satellite link will go a long way to making them usable, so that even if your data isn't cacheable for whatever reason (encrypted, compressed, zipped, always changing drastically, etc) if you have a slow enough RTT the pre-ack'ing will partially eliminate the bandwidth delay product and help you get closer to your nominal bandwidth.
+https://www.sandvine.com/downloads/general/products/tcp-accelerator/tcp-accelerator.pdf
+All of these devices use some combination of compression and caching to reduce the overall traffic to be transmitted, TCP pre ack'ing to reduce the effects of bandwidth delay product (this is the TCP window effect that you alluded to above) and ganging of undersized packets to insure that packets traversing the links are as full as possible reducing the effect of overhead.
+This is important since the packet stuffing means that more than one LAN packet could be lost for each WAN packet that gets lost and because of the pre-ack'ing those packets have already been acknowledged to the servers.
+This is why it typically takes an external box since it is memory and processor intensive.
+http://www.idirect.net/Products/Hardware/Optimization-Solutions/Network-Accelerators.aspx
+Despite I have no experience with satellite links, Riverbed's website looks like they have optimization solutions for satellite links too:  http://www.riverbed.com/products-solutions/solutions/satellite/
+Make sure that you know which devices in your path are performing FEC so that you don't create more overhead than necessary since this will of course reduce your effective throughput.
+I used to deploy WAN acceleration devices for a hardware vendor about 6 years ago.
+The more lies you tell, the more you have to remember.
+Some modems like the Paradise Datacom Q-flex have a built-in accelerator.
+Since the whole goal is to drive up network efficiency and allow higher utilization of your bandwidth, it's very important that underlying network problems that may pop up with high utilization are fixed before deploying a solution.
+Not much has really changed since then except I won't make hardware recommendations because of consolidation and changing product lines.
+http://www.comtechefdata.com/files/articles_papers/Horizon-Satellite-Services-Testimonial.pdf
+http://www.viasat.com/government-communications/network-acceleration-and-optimization
+Many of these devices also offer Forward Error Correction (which your modems probably offer as well) which you can use to overcome some of the effect of packet loss on your links.
+If you have duplex mismatches or are running on half-duplex connections you'll often find that performance is worse than before you deployed wan optimization devices.
+The various vendors will throw in their own patented technologies as well, but they mostly boil down to different flavors of these.
+I did a look online for you as well and came up with some that looked angled in your direction, hope this helps or that others could give some real life feedback on them!
+Both xiplink and stampede have good equipment, these units are largely just adjusting the TCP Window size.
+Often I would find that customers didn't realize that they had some links that had auto-negotiated down to the lowest common denominator of 10 Mbps half duplex.
+Sandvine has a new product called TCP Accelerator.
+For one year now, I have been using Riverbed Steelhead to perform traffic optimization over regular WAN connections.
+I wouldn't choose to use the resulting flow, but if that's what you have it'l work.
+The ViaSat company looked like it had government grade solutions, and comtech ef data has a pretty good testimonial from an ISP utilizing their service that may be of use to you.
+You are basically lying about the acknowledgement.
+Speaking from experience, I saw customers without significant caching able to do 'acceptable' (mostly one way) video conferencing over a double satellite hope whose latency ranged from 900 ms to 2 seconds and might have 15-25% packet loss for extended periods.

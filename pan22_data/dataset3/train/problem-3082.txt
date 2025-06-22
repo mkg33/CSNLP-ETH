@@ -1,0 +1,17 @@
+Basically, your disks will be monitored via the clustering software.
+In the event of cluster connectivity loss, the nodes of the cluster race for control of the quorum disks.
+If you're intending to share storage between hosts in an active-passive failover scenario, this is the way to do it.
+When one initiator does discovery and login, it can access all those devices (sda,sdb,sdc) and format and mount them.
+The danger situation is "what happens when my heartbeat interconnects go down?"
+See Shoot The Other Node In The Head for more information and why it's not an overreaction!
+What I want is: when a drive or an iscsi target is access by one initiator, it should deny the access of the second initiator.
+I also tried "demo mode"(no authentication), and "ACL authentication" (auth per initiator), but none of them will disable the second initiator access.
+If you're on SLES, Symantec SFHA ships with the vxfen solution.
+I have setup iscsi target using targetcli to have some hard drives(block devices), and in "TPG authentication"(a unique useid and passwd for all initiator).
+sda) is used by more then one initiator, it will cause conflict in the drive.
+I'm not sure of any solutions for Debian / Ubuntu off the top of my head.
+This involves configuring fencing with quorum disks (which are presented to each node in the cluster).
+You'll be able to import and mount them on one node of the cluster (and will prevent you from doing so on other nodes).
+But when the second initiator does discovery and login, it can also use (format and mount) all those devices.
+Sounds like you effectively want some form of clustering configured with I/O fencing to prevent disks from being mounted on more than one node at a time.
+Anyways, in terms of practical advice -- I've had a flick through this guide and it seems to describe what you want to do well enough, if you're using a Red Hat based distro.

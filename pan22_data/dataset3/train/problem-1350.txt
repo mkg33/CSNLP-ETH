@@ -1,0 +1,14 @@
+I'd go with an option that allows you to test the performance of different cluster sizes so you're only paying for what you really need (especially with the 10x increase as an unknown right now).
+Either way, Hadoop is open source so the majority of operations and activity should be the same regardless of your platform provider.
+With the EXTERNAL definition you can have multiple files and the table will include them all, so just drop them in the appropriate directory.
+RDS services are relational databases, so the retrieval method I require is a good match, but it isn't designed for the huge amount of data being inserted without constraints.
+The most important thing here is speed of inserts, although I would like to be able to retrieve by date or pid within 5 minutes.
+Are SimpleDB or DynamoDB designed for logging records more so than MySQL or Aurora?
+We are using MySQL RDS for most of our databases, so my initial reaction is to continue using so (or experimenting with Aurora RDS), but RDS requires InnoDB for snapshots and I would have preferred MyISAM for speed.
+The following link, despite its Azure focus, gives you a good tutorial of how to query log4j records with Hive.
+With the table defined you can then query similar to SQL:
+My experience is exclusively with Microsoft Azure - if you're not attached to Amazon you might check it out.
+I prefer to keep 30 days of records, at 135M records a day.
+I have been using the file system for log4j and log4perl records and want to start using a database to store the information, especially to lookup records organized by pid.
+Since you're looking at storing and querying 135,000,000 * 30 * 10 records that likely wouldn't benefit from traditional RDBMS features, I think Hadoop would be the way to go.
+If you're keeping 30 days worth you may want to get fancier and separate days into different folder structures/partition your Hive table.

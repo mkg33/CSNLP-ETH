@@ -1,0 +1,6 @@
+I'd suggest using some custom udev rules to trigger copying images/video files from the SD to a connected USB drive when it's attached.
+Examples of similar udev rules are discussed here, here and here.
+The rules can be triggered to match on a host of identifiers for the USB disk you've chosen but I'd be cautious about being too restrictive in case you ever need to change to another device in the future and have to re-write the rule -- it'd be neat if you could get the rule to trigger on the partition label (really simple to set on a new drive if you need to) but I'm not sure that's supported out-of-the-box.
+The basics are to create a rule using the RUN+= directive to run a script that will mount the drive; copy the files and finally unmount the drive.
+You could also have the rule create an extra symlink for the drive in /dev/ so your script can find it at the same location regardless of the underlying device name, this would be with the SYMLINK+= directive, although you can also pass the kernel selected name to your script as a command line option.
+You may want to consider also adding some extra LEDs to your Pi so your script can give your some visual feedback on the script progress such as  "working" and "safe to remove", but that's up to you.

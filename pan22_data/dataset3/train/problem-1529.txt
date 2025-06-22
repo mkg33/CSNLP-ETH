@@ -1,0 +1,11 @@
+It breaks out the 4 permutations so that SQL Server can have simple, concise queries instead of one do-everything query with a bunch of ORs that often complicate query plans.
+Why is this happening and how can I optimize the query performance?
+But, if it truly is a DATE column, then try the following query.
+This also won't bring back dates matching the higher bound of 9999-12-31 - but in the real world this is unlikely to cause a problem.
+If you were to change to datetime2 and actually store dates before 1753 you would need to change the lower bound condition to 00010101.
+Assuming the answers are datetime, Yes, and No respectively you might consider
+Just to play devils advocate (in some circles this is frowned upon), if you a SURE you want it to use that index and it will improve things, add an index hint... just remember you put it there if you make changes to indexes or queries in the future.
+If it is a DATETIME, then step 1 is to use the proper datatype for the variable.
+Seems an odd column name for a datatype that has no time component ;-).
+It's extremely slow (90s for < 2000 records), because the execution plan uses the clustered index of the PK column for 'my_table':
+Is my_table.itemTimestamp an actual DATE datatype or DATETIME?

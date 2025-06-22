@@ -1,0 +1,10 @@
+It looks like you have your raid device configured properly under the main Linux file system, but not inside the initramfs filesystem.
+This is just a ram disk with a simple root file system.
+When Linux boots up, it first boots a minimal Linux distribution from inside the initramfs.
+The initramfs does some initialization, loads all the necessary block device and filesystem drivers, and then mounts the real root file system, pivots into it, and boots from it.
+Its possible to crack open your initramfs (its just a gzip'd cpio archive, make modifications to it and re-archive it.
+One thing that you need to bear in mind is that Grub doesn't recognise RAID arrays, so you must install grub onto both drives.
+You're initramfs should have been created at the same time as the kernel was built, and usually contains everything needed to bootstrap the system.
+When Grub starts, it usually boots off the first one, but if something changes to the array, it will try to boot off the second HDD that you won't have grub installed onto.
+I've often troubleshooted problems like this by changing the initramfs init scripts to just drop to a shell and figure out whats not working.
+But especially if the sw raid was added after the system was already running, the build may not have added it properly.

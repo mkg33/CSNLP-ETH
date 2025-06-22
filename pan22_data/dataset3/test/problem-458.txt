@@ -1,0 +1,21 @@
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Startup\#\#, where # is numbers, it shows the real ErrorCode 0xfffd0000 (4294770688).
+I ran get-help about_signing and it tells me i have to sign the script with a digital certificate from a CA or self-signed cert.
+I ran get-executionpolicy and it's set to "Restricted".
+"\\SERVERNAME\Scripts\Install KBs\Install KBs.ps1"
+This is an old topic but the answer most likely is there are SPACES in the filename and/or path of the PowerShell script in the Startup Properties of the GPO.
+To fix simply put double quotes around the full path of the PowerShell Script Name that is not running in the Startup Properties of the GPO.
+Now I have to figure out how to install WMF5.0 on each workstation without WSUS or suck it up and sign the stupid script.
+A lot of work just to write a Windows 7 powershell logon script.
+When I attempted to run the script from the \domain.local\netlogon folder, it gives me an error that the execution policy doesn't allow running remote scripts.
+This is due to the script not being found - due to the space(s).
+However, it runs without a problem on systems with a higher version of Powershell (Server 2012 R2, Windows 7 with PS5).
+Late reply, but your problem is probably the default of 2012 to delay logon scripts.
+The EventLog is no help it shows ErrorCode 0 ScriptElaspedTimeInSeconds 0.
+If its a computer policy, authenticated users isn't what you want.
+Now in GPResults the Last Run for the script shows it ran.
+The registry, at the key above, shows ErrorCode 0x0, which is normal.
+Computer Configuration\Policies\Administrative Templates\System\Group Policy\Configure Logon Script Delay
+I think PowerShell scripts run remotely from a Windows share are considered part of the Internet, so you have a few options:
+This solved and fixed solution is tested on Windows 7 Enterprise.
+I did not need to change permissions but AUTHENTICATED USERS with Read permission was present which allows the Computer Object to Read the PowerShell script.
+I ran set-executionpolicy remotesigned but that didn't help because it's not digitally signed.

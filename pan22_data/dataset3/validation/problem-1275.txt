@@ -1,0 +1,13 @@
+Please see Kalen Delaney's post on more specifics surrounding this.
+but does this filtering (where Status = 0) is also inside the lock ?
+The first is an update lock (U) and the second, provided there is data that needs to be modified, is an exclusive lock (X).
+The reason behind this locking mechanism is to prevent deadlocking from the updating data scenario.
+You can see this by looking at the sys.dm_tran_locks DMV:
+It's a two stage operation in the sense that there is data that needs to be searched in order to determine what/if data needs to be modified.
+What we have here is an update lock that is waiting because there is already an exclusive lock on the resource that the update lock is trying to get (an update lock is not compatible with an exclusive lock).
+You should have similar results for the output of the above query:
+of course- the where is calculated before the actual update.
+Then in another session, attempt the following update:
+The above scenario is used to "halt" the update lock conversion to exclusive lock.
+The update lock will exist for that (or attempt to be attained for the duration of the operation).
+Then when data needs to be modified, the update lock will convert into an exclusive lock.

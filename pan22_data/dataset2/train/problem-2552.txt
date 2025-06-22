@@ -1,0 +1,8 @@
+In theory, I would send a packet with gradually increasing intervals until the connection is lost. Any tools that might help (free or open source would be best, but I'm open to other suggestions)?
+Network admins reported the timeout is set to 60 minutes, but this is clearly not the case. The remote side gets a connection closed much sooner, but outbound connections will just hang on my side.  This is very frustrating for outbound connections for which the remote side has to think for a bit before responding (svn update, ftp with large remote directories, etc.)
+Assuming I have machines on both sides of the firewall between which I can make a connection, is there a way to measure what the time limit on TCP connections might be for this firewall?  
+A new (NAT) firewall appliance was recently installed at $WORK. Since then, I'm getting many network timeouts and interruptions, especially for operations which would require the server to think for a bit without a response (svn update, rsync, etc.). Inbound SSH sessions over VPN also timeout frequently.
+I probably should have used likely intervals plus a few seconds, but I'm pretty sure the timeout is between 240 and 300 seconds.
+That clearly suggests I need to adjust the TCP (and ssh) keepalive time on the servers in question in order to reduce these errors. 
+The appliance is not under my control, so I can't just get the value, though I am attempting to ask what it currently is and if I can get it increased.
+I tried making an ssh outbound connection, but I had to do more than just let it sit there. Without interaction, it will appear valid indefinitely, but it will stop accepting input after a certain idle time.

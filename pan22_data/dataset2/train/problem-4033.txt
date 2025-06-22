@@ -1,0 +1,9 @@
+anyone who has access to that directory (e.g. via ftp) can read, write and execute them. you, as the developer, have to go through the scenarios of the intention of use and close potential security holes...
+777 is especially bad.  It means anyone can delete files as well as create them.  I create a file, you delete that file.
+PHP scripts run on the webserver. Leaving the permissions that way will make your web server user (www-data or apache) able to write on those files. In case of your script has some bug or vulnerability, those permissions will allow the web server (and thus, external agents) to change the contents of the files and filesystem. Things that can happen:
+If you must use 777, then use 1777 -- this tells the OS to only allow the owner of the file to delete it.
+I'm writing installer for my PHP web app. It requires user to change permissions of a few files and directories (config.php, cache, uploads, .htaccess) to 777 (so that it's writable). I've seen in many applications that installer requires user to revert permissions (for config.php and such) back to 644.
+Ideally the web server process can't write to the directories it reads from to avoid such problems.  
+Otherwise it is exactly as coredump said -- a bug in a script that allows me to write out new files or overwrite existing files allows me to do anything I want to your web server because I overwrite / create files as apache / nobody / www-data then the web server will be serving my malicious content instead of the original content.  
+Other users in that server/workstation can modify the file.  Example, using desktop Ubuntu, make /home 777 and it can be deleted or modified by any user.  
+Why is it so important? Why can't I just leave it with 777? I guess it's some kind of security concern, but what exactly can happen if I leave those files writable?

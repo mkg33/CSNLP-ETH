@@ -1,0 +1,17 @@
+ - [customersomething.com]: domains for our premium customers
+We even could put every *.ourdomain stuff including the dyanamic PHP free sites behind CF by putting "*.ourdomain" into the CF params.
+As a reminder: these are CNAME-d to router.ourdomain.
+And now we want to put this whole stuff behind a CloudFront.
+The system works in a way, where most of the domains are CNAME-d to router.ourdomain (because that was the easiest way for our customers with their different domain-registrars and such) and the router.ourdomain is A-aliased to our ELB, and then the PHP on our EC2-s are handling the sites based on the HTTP_HOST values, whilehe images coming from S3.
+Any thoughts and ideas would be appreciated, thanks.
+We have a webs/wix/etc-like website management system we are trying to use with CloudFront.
+It is a joy that we can use *.images.ourdomain to shard between subdomains on the fly decreasing clientside loadtime etc etc.
+ - admin.ourdomain: the administration interface for every website, available through https
+So our thought was that we should put router.ourdomain into the CF configuration as alternate domain name, point the router.ourdomain to the CF in route 53, and point the CF to our ELB as origin.
+(js|css) behind CF through an asset.ourdomain subdomain.
+Actually not every time, as the www.ourdomain works as it should (it is CNAMEd to router.ourdomain), but every other subdomain gives the error above (*.ourdomain is CNAMEd to router.ourdomain, but it goes the same for even those subdomains that are CNAMEd to router.ourdomain one by one, except the www, and of course the router).
+So right now we not just don't have any idea how should we solve this, we don't even understand, why does it work for the www if it doesn't work for every other or vice versa.
+But the one thing we can't figure out is how to put the all the dynamically created PHP sites with custom domains behind CF.
+Putting each domain into the CF params is not an option, as we need to be able to handle tens of thousands domain names, and we need to do that without manual configuration for each of them.
+Which we found out is a nice way to get this message every time: "ERROR The request could not be satisfied.
+ - [customersomething].ourdomain: the subdomains for our free users

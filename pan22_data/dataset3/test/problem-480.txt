@@ -1,0 +1,25 @@
+Also, do look at the bundle path updates which are targeted for OLTP & DW performance improvements.
+For example:  Tables with higher compression levels will incur more overhead than tables with lower compression levels.
+Our plan is to have a few read-performance critical tables in memory and the rest in disk.
+Change the inmemory priority to "high" then "low".
+When there is an insert operation on a table enabled for Inmemory, these new features get updated to bring the consistency in Transaction.
+2) Make table in-memory using "alter table test_table inmemory priority critical"
+So, all these combined decide the runtime for an insert.
+But when the table is made a no inmemory table the insert rates were fine.
+So, keeping the table priority to high or more has an impact when the expectation is to immediately see the updated version of table after an insert.
+Following are some of the factors which affect the performance:
+Following are few other deciding factors which can be fine-tuned:
+For this, the IMCO duration needs to be fine-tuned.
+alter table test_table inmemory priority critical memcompress for dml duplicate all
+We are also tried the following, but the results were the same.
+Stopping one instance doesn't affect the performance as RAC nodes are mainly used for Inmemory Fault Tolerance through the DUPLICATE/DISTRIBUTE clause used for the inmeomory table.
+Sometimes, there are overheads involved in keeping Inmemory Column Unit (IMCU) transactionally consistent.
+Changing the priority clause is mainly used while populating/repopulating the table into inmemory.
+When there are many tables enabled for inmemory, the IMCO picks up the tables based on the priority setting (CRITICAL, HIGH, MEDIUM, LOW & NONE) and loads them into inmemory area.
+We started testing with one table and observed slow insert rates straightaway.
+The insert tool basically reads records from a file and then inserts records to the DB in blocks and commits.
+2) Change the inmemory priority to "high" then "low".
+The test was to first populate the tables using our insert tool and then run queries on it using JMeter (web application benchmark tool).
+We are running some tests to check the in-memory performance on a 12c (12.1.0.2.4 EE) RAC.
+The DML in Inmemory involves new features like Journal & Inmemory Transaction Manager.
+To improve performance in your case you can try changing the compression level used for the table to memcompress for dml:

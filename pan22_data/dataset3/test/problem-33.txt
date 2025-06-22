@@ -1,0 +1,12 @@
+(you may want to use something like Shorewall or some other firewall management tool instead of manipulating iptables directly)
+While Apache mod_proxy can do this, it has some limitations, and Apache can be heavyweight.
+Basically you redirect the packet to a different port based on source IP, something like:
+Here tomcat listens on port 8080 and sinatra listens on port 8081.
+You can also use iptables to get a result similar to using mod_proxy (as ErikA is showing you).
+I would like to open another website on same machine using a sinatra (ruby) server and be able to reach it from domain2.com.
+What you are looking for is called 'Virtual Hosting'.
+I suppose first move tomcat6 from 80 to another port and then place something local on 80 that tunnels to different webserver by using which domain the request came from.
+I would suggest a purpose-built proxy like nginx or lighthttpd.
+Much smaller footprint in terms of memory, and faster under high load if that is your need.
+Only one process can typically own a port, so you'll need some form of HTTP proxy to actually listen on port 80, which has the smarts to forward requests to Tomcat or sinatra based on host name (or whatever other criteria, like URL path).
+I have a webserver  tha actually has a tomcat6 server on port 80 and that is reachable from domain1.com.

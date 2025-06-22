@@ -1,0 +1,33 @@
+This can cause the GC to kick in more frequently, causing things like jerky scrolling, UI freezing, animation hitching.
+While Object.keys() is a really handy function to get the object keys, you're effectively creating an array with it.
+A holds a reference to itself, a very common and accepted practice, though the reference is not usually direct.
+In general code review is for code you have written, but the presented code looks like it has two authors.
+The reason is that in JS null is an object  eg typeof null === "object"
+const flatten = (source, parentPath = '', target = {}) => {
+The array pathStack replaces the call stack, and the while continues until the stack is empty.
+Thus in my book recursive functions are inherently buggy
+For instance, your code could have been as simple as this (ignoring the .
+To the outside world, the function is still pure even if its implementation isn't.
+I would advise against using for in loops (as Joseph's answer suggests) as they will also iterate over all enumerable inherited properties and will require that you check if the property belongs to the object and not from higher up the prototype chain.
+I would also avoid using recursion for objects that are unknown.
+Thus a probable solution, ignoring the cyclic recursion but free of call stack overflow problems and null is an object error.
+The call flattenDictionary({a : null}) will throw the error TypeError : Cannot convert undefined or null to object
+Recursion is just the lazy mans stack and it can be quicker and safer to implement your own stack, storing only what you need rather than a whole function's context for each step.
+This is the third bug, related to the previous one.
+Not everyone will agree this is a bug but the fact remains that you can not know how long the call stack is when your function is called.
+As the object being passed is considered a dictionary this may not apply as a dictionary would general not have a cyclic reference, but it is worth a note.
+At every node, your function is generating a flat object, and its return is merged to the parent node's flat object.
+Theoretically, this is how things are done in a "functional" manner - create, never mutate.
+// To the outside world, you pass in dict, and you get a new object.
+You have at least one bug, Maybe two or three in my book.
+Same goes for forEach's callback, you're creating the callback function.
+Then as you traverse through the tree, just append to it.
+However recursive functions will have an unknown call depth and you can not guarantee an unknown quantity with fit a fixed sized container.
+JS is event driven and you know that all events always start with a empty call stack.
+One issue I always come across when implementing this myself is that keys can contain ..
+For larger objects, you easily generate lots of objects this way.
+I recommend using plain for-in loops once you start seeing these issues.
+But this becomes very impractical, you're building throw-away objects.
+This means you can never 100% assure that JS function will complete if it contains a function call.
+Calling flattenDictionary(A) with throw a RangeError Maximum call stack size exceeded
+But your code simply concatenates nested keys together, your flattener function will not correctly represent the object it just flattened.

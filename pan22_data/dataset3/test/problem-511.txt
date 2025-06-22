@@ -1,0 +1,12 @@
+That being said while only one user can be the "owner" of the database you can add as many users to the role db_owner as you would like.
+I am trying to set up a set of SQL logins (one for each developer) on a server who can have access to a given set of databases, currently the setup is as follows:
+Granting db_owner to a user (the database level principal) is a very high level of permissions and should only be granted to database administrators.
+(I know that using sa would do the job, but the databases are actually hosted on a third parties server with other customer's databases, so we can't use that!)
+Login 2: db_owner of database 5 (this is because this login is used by someone else who shouldn't have access to the other databases).
+As far as I know you can't have multiple db_owner's of a database.
+You can create a login using below acript and map it to user and then grant necessary privileges to user.
+Granting privilege to SQL server user is complex topic and you must read this article and this for understanding it.
+Is there a way to add a set of new logins that would have access to all the mentioned databases without changing the existing logins?
+SQL Server, requires ALTER ANY LOGIN permission on the server or membership in the securityadmin fixed server role to create login.
+Members of ddl_admin for example can make DDL changes (create/alter tables, create/alter SPs etc) to the database without being a member of the db_owner role.
+You should probably consider only granting those permissions needed by the individuals.

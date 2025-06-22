@@ -1,0 +1,17 @@
+Alternatively, consider adding a temporary USB Mass Storage Device to the server and use that to grab a full database dump.
+Obviously NFS, if there is no firewall between servers.
+Similar solution, a bit more complicated, would be to use smbmount on server1 and smbd on server2.
+Server #2 is used as a MySQL slave for replication, but now it needs to be reset and the replication reinitialized due to issues that arose.
+Your best bet, if replication is not an option and the local server does not have enough disk space, is to suffer the downtime and do a full sync from the live database files.
+If the boxes are within reasonable physical distance to eachother, you could attach a usb-drive and do your databasedump there.
+If you don't want to mess with firewall (or you do not want send unencrypted data between servers), I would recommend sshfs.
+Another alternative could be ssh/pipes if this runs on a nix-box, although depending on what backend you're using for storage, the table lock could be painful for the large table if trying to leave the mysqlprocess running.
+There is not presently enough room on the hard drive of server #1 to do a full database dump (i.e.
+--master-data=1 causes mysqldump to emit the CHANGE MASTER TO ... settings at the top of the dump to set the replication binlog and offset to the exact point in the masters binlog at the time the dump was taken
+Depending on the speed of the network connection, that will probably result in less downtime than installing a new disk.
+Server #1 is a MySQL database server running on Debian which contains numerous tables and one particular table that is over 100GB.
+You can do this without an intermediary file, as well as resetting the replication pointers in the process, so you don't miss any updates (and have to resync again)
+--single-transation tells mysql to open a transaction over the whole dump, rather than using LOCK TABLES.
+-e uses the extended output format, basically multiple sets of value per insert statement, which is more efficent both on the wire, and when being applied to the slave.
+Aside from upgrading the hardware which would require downtime, what would be the best way to get the database dump from server #1 to server #2 intact, without corruption, and without filling up the hard drive on the server #1 in the process?
+If you have a firewall, you may need to reconfigure it to allow some additional traffic for NFS to work.

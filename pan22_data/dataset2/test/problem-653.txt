@@ -1,0 +1,7 @@
+NO, you can't do with Nginx. By default, Nginx is always decrypting content, so Nginx can apply request routing. Some solution that can be tried:
+There are other things you may want to consider as well, like setting tcp_nodelay or defining a stream log_format and enabling access_log for the stream block, but of course the format and variables will be different from an HTTP access log.
+It looks like this is now supported using the [ngx_stream_ssl_preread_module](https://nginx.org/en/docs/stream/ngx_stream_ssl_preread_module.html} module
+By default, Nginx always act as SSL offloading/decryption process on proxy. Here some the advantages doing SSL offloading (taken from here)
+If you accept those limitations and e.g. you're going to do the work in another server that is either the final destination or an intermediate proxy that is doing SSL termination, then here's what you need to do:
+I am currently using the following (simplified) configuration to proxy http and https connections over the same port (required by aws elastic beanstalk):
+How can I adjust my configuration to work for SNI HTTPS and HTTP without Nginx decrypting the ssl traffic?

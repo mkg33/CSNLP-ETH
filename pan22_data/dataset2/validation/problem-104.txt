@@ -1,0 +1,10 @@
+Or you could make it more general by introducing a type Vector2D which could be very similar to Direction enum; it would have public static final fields holding instances pointing north, south, etc:
+Consider placing your data in an 1D array. All it needs for it is a simple coordinate transformation like
+(you could also have a method that adds two vectors and this could be cleaner, but would also produce a lot more garbage).
+Personally, if I wouldn't want to refactor the code too much (because the project is too small or whatever the case may be), I'd go with:
+On a modern CPU it's good for speed as multiplication is faster than memory indirection. It also makes other operations simpler, e.g., clearing or copying data.
+The transition function for the game of life is a function from Bool^9 -> Bool. This is a finite and very small function to compute. If you pre-compute it, then you don't need to count anything: Just loop through the board, and replace each cell with the value of the function at that point.
+If you like this idea, you may enjoy pre-computing Bool^16 -> Bool^4, which is larger, but still small enough to keep in RAM, and then you can go through the board 4 times as fast, filling in a 2x2 matrix of cells at each iteration. 
+If checking for neighbors is all you need, this will not be a drastic improvement. However, it has the potential of making a lot of API a bit nicer; you could introduce methods with signatures more like like:
+Make your board slightly bigger so it gets a single tile unused border. Never examine cells on the border. This way you can omit the tests as you never land out of bounds. This makes the code a bit shorter and faster.
+The answer by rolfl is great, I will just add that what you have here is a nice use-case for enums. If you define an enum like:

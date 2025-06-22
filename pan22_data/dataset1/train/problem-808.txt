@@ -1,0 +1,6 @@
+RFC 3164 that Warner pointed you to describes the network format for UDP syslog messages, you can rely on this being what goes over the wire, but syslogd may write something slightly different to disk when it logs your messages.
+That said, you can usually rely on syslog entries resembling what's described in the RFC, roughly in the form:
+Hostname is usually the short hostname, but may be fully qualified (particularly if you're logging a message from a remote host)
+Tag is freeform, but by convention doesn't contain :.  It is often of the form procname[PID], and I believe always followed by a literal :
+If you need a better guarantee of consistency in your log format syslog-NG is worth looking in to -- it will let you define your fields & insert markers to ensure you can parse the resulting files. syslog-NG also lets you include metadata like the facility+priority values from the message. Using syslog-NG reduces the definition of "everywhere" to "machines running syslog-NG with a configuration similar to yours" though.
+This essentially says the developer can stick whatever they want into CONTENT, so there really is no standard for the actual contents of messages, just for the organization of messages. I might say that this is a flaw but I'm not sure yet. 

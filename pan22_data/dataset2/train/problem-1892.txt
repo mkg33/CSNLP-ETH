@@ -1,0 +1,8 @@
+In that case you can provide Static IP first then reboot the system and provide the DHCP (obtain IP automatically). Then it will be connected to your Domain.
+It sounds like something is corrupt in your TCP/IP stack on the client. Here's my default answer for when that happens. Reset winsock. Reset TCP/IP. Reboot computer. Here's how you do the first 2 things:
+A gateway of 0.0.0.0 can often mean that negotiation of a DHCP lease has failed, and no gateway has been set. This will be obvious because when this happens you also don't get assigned an IP address, and your IP will be self-assigned to an address in the 169.254.xx.xx range.
+What do you mean by 'double gateway'? The TCP/IP properties of a NIC only support having a single gateway, you can't have 'double gateway'. 
+The Win2k3 server is running the DHCP service? Are you sure there aren't any other DHCP servers on the network, eg the router?
+I would indeed look for a rogue DHCP server dishing out incorrect information.  DHCP should not ever issue 0.0.0.0 as a default gateway, but it is possible to implement this.  It might also be a problem with one of the other virtual interfaces.  Windows 7 adds several of new virtual interfaces for features like the 4to6 bridge & such.  
+When this problem occurs... can you snag a copy of your routing table & post back here.  Also pay close attention to the metric.
+If this is happening, a workaround is to go into the NIC's tcp/ip properties, and under the 'Alternate Configuration' tab, configure an IP/subnet mask and gateway address that matches the correct values for your current network. That way if DHCP negotiation fails it will fall back to this configuration and things will keep working. Note this doesn't treat the underlying cause of the problem.

@@ -1,0 +1,16 @@
+We resolved this by correlating the application and system event logs.
+I was able to resolve the issue by uninstalling the new addition on the first server so it was back to matching the others.
+There appears to be a known issue with running 32 bit IIS applications on the same server that TS Gateway is running on.
+There was a module listed in the applicationhost.config or web.config that was not on the file system.
+Does this server have any Remote Desktop / TS Gateway functionality on it?
+I came across this question as I was experiencing a similar issue and searching for a solution.
+To get round this you can set your app pool to run 64 bit (if you're using pure .NET code this should just work fine).
+Hopefully this post will help someone find the solution faster than I was able to.
+We had enabled a feature in IIS on one of the servers (Http Redirect) that was not installed on any of the others so the server 'features' were out of sync with all the servers.
+This blog post is relatively old but shows similar symptoms to yours and the solution is to see if the event log shows any other erroring components and to resolve those first.
+Once I added the module back to the server, the app pool started.
+An IIS reset later and the AppPools were no longer going down and all was back to normal.
+The application event log called out the file path.
+Additionally, there could be a module that hasn't installed properly.
+So if you are using IIS Shared Configuration and the IIS is creating 'Service Unavailable' errors and the AppPools are going down, this can be a symptom of the system configuration being out of synch which is corrupting the shared configuration.
+My problem specifically had to do with our IIS shared configuration.

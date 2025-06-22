@@ -1,0 +1,18 @@
+If GL_MULTISAMPLING is not enabled when you render to a multisample framebuffer, the pixels covered by that rendering operation replicate their data across all covered samples.
+I know that I can set the samplecount when I create a FBO and blit it over to the final window.
+That's generally a bad idea, since they can't tell when you're rendering the UI (something that shouldn't use the FXAA algorithm).
+I'm learning OpenGL and something I am stuck with is AA.
+With mode I mean CSAA,MSAA,.. .I can't find a lot.
+Nowadays, the general pattern is to leave the default framebuffer non-multisampled and create your own multisample FBO images.
+To make the default framebuffer multisampled, you must create your context with multiple samples.
+Some drivers have control panel settings that back-door it in.
+The question I am completely stuck with is, how do I change the mode and also important, how do I query the modes that the card supports.
+To make a framebuffer object a multisampled framebuffer, you attach multisampled images to it.
+CSAA is an NVIDIA thing, with an extension to govern its use.
+FXAA is not a piece of hardware; it's an algorithm.
+They will all need to use the same sample count, and all images in the framebuffer must be multisample.
+Then, you blit from your multisample FBO to the default framebuffer's back buffer to display the multisampled data.
+Specially when I want to turn it on and off at runtime.
+This requires the use of the WGL/GLX_ARB_multisample extension, as appropriate to your platform.
+You enable multisampling by rendering to a multisampled framebuffer while GL_MULTISAMPLING is enabled.
+When I want to change the mode I switch the FBO and everything is fine.

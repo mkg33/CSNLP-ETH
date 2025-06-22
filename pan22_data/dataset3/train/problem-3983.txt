@@ -1,0 +1,16 @@
+Also note that this is an absolutely hacky way of doing what you're trying to do.
+Note: w only shows the currently running command for a user, not the last run command.
+If you checked the output of w on another terminal, it would say that you're running "fake command".
+Where users and batch applications access databases and/or embed passwords.
+That is a standard approach to this kind of problem.
+If you cannot change this behavior you have to chroot users who have command line access on that system.
+The bigger security problem with having the command line visible is something like:
+The program name and/or executable name - one way or another - is found in /proc/N/{cmdline,comm,environ,exe,maps,numa_maps,smaps}... and short of unmounting /proc, making all sorts of programs not function the way they are supposed to, the prerequisite to do this in some way would be a change to the linux kernel source.
+w shows a list of users and the last run program by each user.
+chroot allows you to selectively prohibit or allow ordinary users access to commands like top, ps and other commands that use /proc.
+Whatever you actually wanted to run can be put inside the system() call.
+If you don't like being looked over the shoulder, don't use the particular system.
+You would have to make the process attributes non-readable.
+This works because $0 refers to the current program name in perl, and you're able to change it to whatever you like.
+Another way would just to put whatever you wanted inside a shell script, and run that.
+Even then, things like auditd(8) or selinux have ways to record what you are executing.

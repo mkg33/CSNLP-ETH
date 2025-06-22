@@ -1,0 +1,12 @@
+You can't just swap two axes: if you do so, you change the handed-ness of the coordinate system. Either from left-handed to right-handed or vice versa.
+I am trying to swap the Y and Z axis in my program.  Everything worked great when Y used to be the axis coming out of the plane.  After having swapped y and x,  I have been able to draw my terrain using the X Y as the plane and Z as the height, however when converting the code for the camera I am running into trouble.  
+Here is the code that gives me the correct camera (so y is the axis coming out of the plane), along with an illustration.  The code is in SharpDX which is a C# wrapper for DirectX
+Here is an illustration of what this produces, I am able to successfully move the camera around with the mouse by having the mouse differences affect the x and y rotation:
+Now if I swap all the X and Y in my terrain, without affecting the camera, I get this:
+So now the camera is facing the terrain directly, and attempts to yaw will not produce the desired view.  (the world will revolve around the camera when looking perpendicular to the terrain, and spin in place when looking at the horizon, the exact opposite of what we want.)
+Now I thought that maybe if I just change the lookAt to 0, 1.0f, 0 ; swap the y and z rotations, and change the Up vector to use Vector3.UnitZ, it would solve all my problems.
+However, doing this, I get the same issue as before, the world will revolve around when looking perpendicular to the ground, but spin in place when looking parallel to the ground (so towards the horizon).  I believe the camera now looks like this:
+Which doesn't make sense to me, since I thought changing the Up vector to UnitZ would make Z face up and not parallel to the ground.  Any suggestions to change the second code block is appreciated.
+I figured it out on my own, and posting the answer.
+If you take a look at the documentation for the DirectX equivalent of Matrix.RotationYawPitchRoll, found here: https://msdn.microsoft.com/en-us/library/windows/desktop/bb205361(v=vs.85).aspx
+You notice that the function assumes that x is pitch, y is yaw, and z is roll.  Since there does not exist a function that assumes z is the axis pointing up, you have to multiply manually, and the order of multiplication does matter..

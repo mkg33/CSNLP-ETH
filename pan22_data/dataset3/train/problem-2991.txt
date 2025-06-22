@@ -1,0 +1,7 @@
+They're separate and discrete vSwitches for a reason.
+If they need to remain separate, you could bridge them through an external switch or potentially add another vNIC from the relevant VM's and join them into a third vSwitch.
+You can have all the VMs on the same vSwitch and use multiple uplinks to the physical switch for redundancy.
+Virtual machines on two different vSwitches can't communicate with each other, except through the physical network or through a virtual machine acting as a "bridge" between the vSwitches (one vNIC connected to each of the vSwitches).
+You'll need to configure IP addressing, etc, but you'll have network connectivity without requiring access to to the physical network.
+However, I believe this configuration (VM connected to a vSwitch with no uplink) will break vMotion, and VMs on the new vSwitch will not be eligible for vMotion.
+Assuming that there's a good reason for the current vSwitch separation, another option is to add a third vSwitch, with no uplink ports, then add virtual adapters to both VMs and assign them to the new vSwitch.

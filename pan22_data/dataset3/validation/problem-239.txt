@@ -1,0 +1,20 @@
+Perhaps you have a DB that always takes 3GB of memory to run and thus uses the most memory on the machine.
+This doesn't amount to too much data and allows you to trace back all kinds of interesting things you may come up with after the fact.
+"So the ideal candidate for liquidation is a recently started, non privileged process which together with its children uses lots of memory, has been nice'd, and does no raw I/O.
+As was somewhat hinted on before, something like psacct is perfect for this situation with minimal overhead.
+Something like a nohup'd parallel kernel build (which is not a bad choice since all results are saved to disk and very little work is lost when a 'make' is terminated)."
+As an aside, if this is a recurring problem and you want to be able diagnose the cause in the future, a technique which we've used in the past is to create a much larger swap file using:
+If you are in the same situation, check out the following knowledge base article from VMware: http://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&docType=kc&externalId=1002704
+With that in mind, I present comments from The Source:
+I use atop and I let logs stick around for at least a year.
+but I don't know how to make that go to a log file.
+You can see which processes (with pid) were considered by the OOM killer and which ones were actually killed by running dmesg.
+The default is 5 minute time slices and that works out well for tracing back to why the server ran out of memory.
+Comment block and quote shameless stolen from http://linux-mm.org/OOM_Killer
+We just recently had this problem with a RHEL guest running on VMware.
+http://www.anchor.com.au/hosting/dedicated/UsingSwapfilesInLinux
+How do you define the "cause" of the OOM situation?
+The great thing about this is typically you can go back to when the process first started growing in memory and then look at points in the log that might hint to what was going on with that particular application.
+Obviously, this wont fix the problem, but it should give you sufficient time to get in and diagnose the cause before the machine runs out of memory and keels over.
+Sometimes you can know; for instance if you had process accounting setup (+1 to @JamesHannah) and you saw 3000 httpd or sshd processes (and that was unusual) you could probably blame that daemon.
+Ultimately the cause of the problem is "An unexpected situation which may or may not have been the fault of the sysadmin."

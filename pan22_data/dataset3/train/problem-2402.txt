@@ -1,0 +1,18 @@
+No error is reported in Tomcat logs, but I fond such errors in mod_jk log:
+I think one of this timeout options should be responsible for the problem.
+So application was running out of Connections to DB, as those were never timing out.
+Every few hours when I try to access application browser simply spins, and no content is retrieved.
+If you graph the historical of these tests you might find an issue with your application and/or application server having periodic outages, which will eventually lead you to a root cause.
+It was actually, as some of you suggested - application issue.
+Typically you leave that to 'localhost' (default) unless you're specifically backending to an off-machine Tomcat running in the same network (so there's an /etc/hosts for it) and so forth.
+What I would do in this situation is have some sort of monitoring set up (be it Nagios, or something far simpler) to make sure on a frequent interval that:
+This was caused by incorrect configuration of MySQL connection pooling (typo in timeout - so value was having one 0 to much).
+Tomcat has same port number in Connector configuration:
+thanks for all your support, I really appreciate it!
+Is your machine on a NAT, and that hostname resolves to an external IP?
+It appears that no response is being sent Tomcat before the timeout period.
+Try a simple test, comment all the timeouts, retries and other optionally stuff:
+Best of luck... intermittent issues are the worst.
+Same goes for your Connector address from server.xml = do you have that set to something other than 127.0.0.1?
+There is Apache in front of web server talking to it over mod_jk.
+Fixing pooling configuration (in my case c3p0) resolved issue!

@@ -1,0 +1,19 @@
+Once a partitioned table has some explicit uniqueness imposed on it, the columns that define how to partition must be included in the PRIMARY/UNIQUE KEY.
+Case 4:  If these cases do not cover what you say; let's see it so we can discuss it.
+is useful for clustering the table by x (even if not unique) instead of id.
+Depending on the query, it might be better to rearrange the columns.
+It is possible to create a partitioned table without a PRIMARY/UNIQUE KEY.
+However, I am not sure if there are any special circumstances in which it makes sense to have this kind of index.
+It gets created even if you do define a PRIMARY/UNIQUE KEY.
+I am looking through our MySQL 5.7.16 database and I noticed that there are some indexes that use the primary key as the first column in the index, followed by additional columns.
+It says so in the MySQL Documentation (Partitioning Keys, Primary Keys, and Unique Keys).
+However, for your own good, the InnoDB Storage Engine creates a hidden rowid and an index called gen_clust_index whenever you create an InnoDB table with no PRIMARY/UNIQUE KEY.
+The construct loses the uniqueness test on id, but that is not really useful when using AUTO_INCREMENT.
+The only special circumstance where a PRIMARY/UNIQUE KEY being grouped with other keys is an absolute requirement is table partitioning.
+The secondary index might be useful as a "covering" index for a SELECT that touches only those three columns.
+In that instance, a partitioned table can be made.
+ Again, you lose the unnecessary uniqueness test on id.
+Tacking y onto the PK is required by the PARTITION implementation.
+Note:  AUTO_INCREMENT only requires that id be the first column in some index.
+Is there any situation where this would improve performance?
+Intuitively, this doesn't seem to make sense to me since the index would always narrow it down to one row by using the first column.

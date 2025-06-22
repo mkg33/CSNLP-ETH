@@ -1,0 +1,13 @@
+The database server is running Windows Server 2003 R2 Enterprise, 16 GB of RAM and two quad-core 3.0 GHz Xeon X5450s. Files are SQL Server 2005 backup files between 100 GB and 250 GB. 
+Especially frustrating is that I've transferred files of similar size on Unix boxes without problems using rsync+ssh. Installing an SSH server is not an option for the situation I'm in, unfortunately.
+The pipe is not the fastest and SQL Server backup files typically compress down to 10-40% of the original, so it made sense to me to compress the files first. I've tried a number of methods, including:
+When I need to bring our database down from the data centre to the office I just do the backup in MSSQL and then compress again with winrar. I bring a 4 gig DB backup down to about 500MB then I just use the FTP server to do the transfer. Even if it stops FileZilla will let you resume.
+I've also tried splitting the .BAK file first with various utilities and compressing the resulting segments. No joy with that approach either- no matter the tool I've tried, it ends up butting against the size of the file.
+Could you use rsync, without the ssh? I don't see where encryption is a requirement, and rsync runs okay on Windows.
+You can specify as many files as you would care to. Full documentation on the backup command is here.
+If your utilities are choking on the size of the backup file, just make more backup files, each will be smaller. You can have the SQL Server backup command to use multiple files. Microsoft calls this a "striped" backup set. Here's a stupid example:
+How about gzip through netcat? The file(s) should just go through, without running into the problems of the intermediate steps.
+qpress for fast compression with low cpu load, i used it for 130GB SQL 2008 backup dump. It compressed to 34GB file at ~35MiB/s which I think is impressive.
+I've attempted to use WinRAR and 7-Zip options for splitting into multiple segments. 7za.exe has worked well for me for database backups on another server, which has ~50 GB backups.
+I've been having a hard time copying large database backups from the database server to a test box at another site. I'm open to any ideas that would help me get this database moved without having to resort to a USB hard drive and the mail.
+Alternatively, if you have some money to burn you can use CA's Lightspeed or a similar product. This is an install on the server, but it will compress all server backups. This will result in shorter backup times, which DBAs and sysadmins usually like. CA provides a distibutable command-line utility to decompress a backup that uses their format, so you can send the backup file to anywhere.

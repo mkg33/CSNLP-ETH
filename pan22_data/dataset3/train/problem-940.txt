@@ -1,0 +1,24 @@
+Also note that if you have cross forest resource access the calling server will be doing _ldap SRV record lookup based on its own site.
+You can also get a DC to cover other sites than its own.
+Based on this location, a DC's netlogons service will register site specific DNS records.
+See Administrative Templates\System\Net Logon\ for group policies to control site coverage.
+I'd recommend you use nslookup, set type to all and check _ldap._tcp.._sites.dc._msdcs.domain.com where you replace  as appropriate based on whats in dssite.msc.
+http://msdn.microsoft.com/en-us/library/gg251208%28v=prot.10%29.aspx
+This can occur if someone has adjusted the domain controller's DNS priority (or weight) so that lookups would prefer a dc over another.
+Do you have the domain controllers setup to the correct site in Active Directory Sites and Services?
+If we look at de DnsHostName of the LDAP://RootDse on site B we always get the default domain controller of site A. Therefor all LDAP queries go much slower.
+We have 2 different locations, and at both site we have multiple domain controllers (Win2008).
+Is there a way to change the default domain controller per site ?
+This may also occur if someone has adjusted the Netlogon service so that the DNS mnemonics for the LDAP SRV record is not registered, or if one site is configured to register records for another site (Site Coverage).
+You should get DCs to cover sites from the other forest as applicable.
+if that fails it will do generic queries for _ldap._tcp.dc._msdcs.domain.com.
+In dssite.msc you'd move the DCs to certain sites.
+Autosite coverage is where a DC would cover sites with no DC as long it has connectivity as per site links.
+It should be set to map based on the IP subnet that your site is on.
+The _ldap values are observable in the dc._msdcs.domain.com dns zone.
+There is no concept of "default domain controller for a site".
+So if forest1 has Site1, Site2 and so on while forest2 has SiteA, SiteB and so on based on where the calling server is youl should ensure the DC covers the relevant site.
+http://technet.microsoft.com/en-us/library/cc759550%28v=ws.10%29.aspx
+How to optimize the location of a domain controller or global catalog that resides outside of a client's site
+In our application we use Serverless Binding to execute our LDAP queries http://msdn.microsoft.com/en-us/library/ms677945(v=vs.85).aspx.
+Make sure you have only the right DCs registered against each site.

@@ -1,0 +1,9 @@
+A cell is seen as a height printable-character long since only both escape characters are detected as non-printable.
+The problem you are facing is that your stream contains non-printable ANSI escape sequence embedding printable characters. column then fails to compute the real cell minimal width of those cells and misaligns next cells of the same row.
+Possibly the column command looks at $TERM and/or $LANG to see what (if anything) constitutes a colour-code.
+The zsh version is the same on all three (and the problem appears exactly the same way in bash). I can't tell what the version of column is, but they look exactly the same and their man pages are the same for whatever that's worth.
+column works on a per-character basis. It counts printable characters of each cells and then pads to align them (see code sources for v2.29).
+I have a bash script I got from Gary Bernhardt's dotfiles that prints a nice colorized listing of the recent git commits. It uses the column command to line the output up into columns. On my mac, it works wonderfully.
+Of course, you could just use git log --pretty=format:... to output a column-aligned colour-coded log to begin with. For example, I use git hist and have this in my ~/.git/config:
+Strangely however, when I run it on Cygwin or CentOS 6, the column bit doesn't work. All the fields have three spaces between them, regardless of their length, producing jagged gutters between "columns". I've narrowed it down to the ANSI Color escape codes. If I remove those, the columns come out lined up.
+Note that this behavior is not consistent across releases of column. Version 2.26 uses wcswidth to compute cells visible width and leads to a different mis-alignment.

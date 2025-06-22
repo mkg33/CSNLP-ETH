@@ -1,0 +1,18 @@
+You basically want an array of {time,speed, direction} triplets.
+Note that this still suffers from the potential decaying accuracy problem.
+BTW, the 1/speed makes no sense; the dimension is just wrong.
+You probably don't need to set the velocity every frame.
+This implementation is prone to decaying accuracy.
+As mentioned by @MSalters, this does seem to be a problem where you are trying to represent data as code.
+Whether you express speed in pixels/second or tiles/tick, you can't mix speed and 1/speed because you'd be mixing distance per time and time per distance.
+I'm making Space shooter game in Unity, in which I want to place boss.
+Since you are setting the velocity rather than the position, and relying on an amount of time to pass before changing it, and fixedDeltaTime may not be set to an exact value where you trigger changes at the exact right physics step, the body won't necessarily end up in the same place each time you go through your movement loop.
+A better solution would be to specify a set of target positions to move between, rather than velocities (really, just make it an animation).
+It looks like you may want to just make sure it's set to be kinematic (in the inspector if possible), and then set the velocity once on each change.
+"Speed" in this context would be just the multiplier.
+This uses a coroutine to loop through the steps, and only sets the velocity on each change.
+I have script in which I wrote how boss should move and it works but...
+You could expose some parameters in the inspector and use those.
+The main problem here seems to be a code solution for a data problem.
+It uses a loop yield returning every fixed update to wait for the next change, rather than using WaitForSeconds, which could cause even worse drift.
+This would compound over time, causing gradual drift.

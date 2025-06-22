@@ -1,0 +1,11 @@
+I don't recall anything specific to a table count that is greater than 1000, but you may have been thinking of using tablespaces to spread db objects/tables over different volumes to enhance performance?
+You may be referring specifically to the advice around tuning max_fsm_relations when you have lots of tables.
+To alleviate this, you'll want to create a number of different tablespaces and place different tables in different tablespaces in order to prevent having thousands of files in the same directory.
+But that requirement was removed in 8.4, and it's now automatically tuned for you.
+PostgreSQL creates a file in the filesystem for every table; depending on your underlying filesystem, you'll eventually run into performance problems when any process (PostgreSQL included) reads the directory metadata.
+I remember reading that there was a way to speed up the database once it reached more than a thousand Tables, but I cannot seem to find any mention of this on the Web with Google.
+It might help to read a bit about the CREATE TABLESPACE and ALTER TABLE commands to move tables into a given tablespace.
+tablespaces are covered here in the postgres docs.
+we am at a point where I have more than a thousand Tables in our PostgreSQL database server.
+having said this, unless there are specific performance issues you need to address, I wouldn't make the changes arbitrarily...
+tables that more write heavy on a different volume to tables that are read heavy, or splitting different sets of heavy use tables over volumes on different channels)

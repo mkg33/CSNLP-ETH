@@ -1,0 +1,36 @@
+Number of blocks allocated (%b): Run fsutil file layout path\to\file or fsutil volume filelayout path\to\file and count the total number of clusters allocated in the $DATA stream.
+Quoted file name with dereference if symbolic link (%N):
+The size in bytes of each block reported by %b (%B):
+File System ID in hex (%i): I don't know what's the exact synonymous on Windows but these may provide that information
+User ID of owner (%u): You can get the user SID with the below command
+Number of hard links (%h): There are no similar information.
+For a few other options you need to get with other commands
+However fsutil hardlink list path\to\file prints all the hard links of a file, so we can easily count them with
+Below are how to get the analogous information to the format options in stat (in PowerShell, with cmd version if available) that you can use to customize the output.
+As a result the number of blocks allocated is 82 + 432419 + 259 + 155076 = 587836.
+Or can be easily seen in cmd's dir output, and in fsutil file layout path\to\file output under the Size field like above
+For example for the below output we have 4 extents allocated, each is 82, 432.419, 259 and 155.076-cluster long respectively.
+For file systems generally you can use fsutil fsinfo ntfsinfo <drive> or fsutil fsinfo sectorinfo <drive> to find detailed information
+It'll give you most of the things stat provides, along with more detailed information about the underlying file system structure.
+Type: For %T you can use fsutil fsinfo volumeinfo <drive> | findstr /c:"File System Name".
+However generally you can use (ls path\to\file).Mode to get the file mode like %A above, and (ls path\to\file).LinkType to get link type
+But you can use the following command if you want to get the device ID
+SELinux security context string (%C): No comparable feature
+But unlike stat it needs to be run under administrator rights.
+Total size, in bytes (%s): (ls path\to\file).Length.
+I/O block size (%o): see %s for file systems below
+File type (%F): No direct equivalent, since Windows file and driver models are very different and there are no such things like character devices on Windows so you won't get "character special file".
+Inode number (%i): There's no inode in Windows, but NTFS (and possibly newer file systems like ReFS) has an equivalent called file ID that can be extracted from fsutil file layout output or directly with
+Format-List will, somewhat unintuitively, expose more parameters to the PowerShell host than would be seen otherwise.
+Get-Item gets the details about whatever file you are interested in.
+It also formats it as a list, as you would expect.
+However wmic was deprecated so in the future it may be removed
+I'm not sure what %t is but it seems that's the magic number of the partition
+Device type (%t, %T): See %T for file system type below
+If the verbosity bothers you, you can use aliases to shorten this to gi /path to file | fl
+You can also use wmic (or the Get-WmiObject (gwmi alias) PowerShell version) for a lot of useful data.
+Get-Item /path/to/file | Format-List should get you what you need using only native Cmdlets.
+A quick trick is to add the VCN number of the last cluster with it's length: 432760 + 155076 = 587836
+The (Get-WmiObject win32_ALIAS | where { $_.FILTERFIELD -eq 'VALUE' }).GETFIELD commands above can be changed to wmic ALIAS where FILTERFIELD='VALUE' get GETFIELD /value.
+Otherwise just dump the fsutil file layout, fsutil fsinfo sectorinfo and fsutil fsinfo ntfsinfo output directly
+There are no exact equivalent but the closest you can get with Windows built-in utilities is with the fsutil command.

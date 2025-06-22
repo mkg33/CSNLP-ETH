@@ -1,0 +1,10 @@
+First of all, SSDs have greatly improved during the last years. Overprovisioning and wear levelling (and to a small amount, the TRIM command, though not applicable in your case) have made them quite suitable as heavy-duty, general-purpose disks. I am not using anything but SSD on my development PC (which regularly does a lot of compiling) without even coming anywhere near the erase cycle count.
+is outright wrong. The opposite is the case, frequent small writes, if anything, may cause damage to SSDs.
+Unlike traditional hard disks, SSDs (or rather the NAND-based flash inside) are physically organized in large blocks which logically contain several sectors. A typical block size is 512kB whereas sectors (which is the unit that the filesystem uses) are traditionally 1kB (different values are possible, two decades ago 512B was common).
+Three things can be done with a 512kB-block. It can be read from, part of it or all can be programmed (= written to), and the whole of it can be erased. Erasing is what's problematic because there is a limited numbers of erase cycles, and you can only erase a complete block.
+Therefore, large writes are very SSD-friendly whereas small writes are not.
+In the case of small writes, the controller must read a block in, modify the copy, erase a different block, and program it. Without caching, in the very worst possible case, you would need to erase 512.000 blocks to write 512 kilobytes. In the best possible case (large, continuous write) you need to do exactly 1 erase.
+Doing an import into a MySQL database is much different from doing many separate insert queries. The engine is able to collapse a lot of writes (both data and indices) together and needs not sync between each pair of inserts. This amounts to a much more SSD-friendly write pattern.
+SSD's do not like it. If you keep max write speed up for 5-10 years (24 hours per day, 7 days per week) then you might end up with a broken SSD.
+Ofc. After 5 years most servers have reached their economical end of life.
+Do not try this with the very first generation of SSD. Those where less robust. 

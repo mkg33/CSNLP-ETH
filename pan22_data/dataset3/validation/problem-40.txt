@@ -1,0 +1,22 @@
+What's not appropriate of the default permissions for normal users on Linux?
+If you want the user to only be able to execute certain scripts/binaries, you can use a restricted shell.
+Then, edit **.bashrc (or equivalent) and set $PATH to a directory where all allowed binaries/scripts are stored.
+However, standard permissions in linux make it nearly impossible for a normal user to "harm the system".
+Belt, suspenders, and a staple-gun for good measure.
+Yes, just change the permissions on these commands.
+Set a user's login to be /bin/bash-bob, set the AppArmor profile for that specific binary right, and the only way they're getting out of that permission jail is through kernel exploits.
+The way I usually implement this kind of restrictions requires that several conditions are met, otherwise the restriction can be easily circumvented:
+AppArmor is interesting since the MAC for a specific executable is inherited by all of its children.
+Set the bash-bob profile to only allow writing to their home directory and /tmp, and such permission mistakes can't be leveraged.
+This way you can choose whether $USER can execute any command on his/her own behalf (via a link in the private ~/bin directory, provisioned via /etc/skel, as explained above), on behalf of other user (via sudo) or none at all.
+To setup a users restricted shell, set /bin/rbash (or similar, most shells enter restricted mode when the binary is named r***name*) as the users shell.
+Yes, it's possible, but in practice it would take a lot of work and planning.
+Even if they somehow find the root password, the AppArmor profile for /bin/bash-bob will still apply even after they su up since su and the bash process it spawns are children of /bin/bash-bob.
+It's trivial to prevent users from being able to install software or run programs outside of their home directory, and you can use chroot to lock down the system even further.
+You can create scripts and have them run as a privileged use, then remove all privileges from the user in question.
+This (as the Wikipedia article mentions) isn't completely secure, but if you can guarantee that no application allowed to run is able to execute a new shell then it is a good alternative.
+You might have a better fighting chance by writing a shell command that behaves as to your requirements.
+In my opinion, you only need steps 2 and 3, since in combination they both prevent the ability to do anything harmful outside of the carefully constructed box you set up in both those steps.
+There are three things that need to be in place to fully do what you're asking for:
+If some lazy install script left /var/opt/vendor/tmp global-writeable for some stupid reason, the user using /bin/bash-bob as their shell won't be able to write there.
+Or, you can set the user's shell to something of your own making that lets them do only what you explicitly allow.

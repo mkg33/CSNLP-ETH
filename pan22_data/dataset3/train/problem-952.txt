@@ -1,0 +1,21 @@
+I do not use the designer for making changes, so I have no particular experience with script problems.
+When I save changes to the model, I have it configured to automatically generate the change scripts that go along with the save.
+I then fix the problem and save again (which results in another change script).
+If I want to continue to use this feature, what should I be doing with the resulting script as soon as I get a failed save of the model?
+What occasionally happens is that a save fails, and I still get the option to save my change script.
+Database backups or database snapshots are a couple of tools that can help.
+If you are not using a version that supports SNAPSHOT databases, you can do the same thing (perhaps more slowly) using BACKUP DATABASE and RESTORE DATABASE.
+From your description, you wind up with two scripts, but they are not identical.
+Because you reverted, you can repeat the designer steps with the database in exactly the same state as the first effort.
+I then save (and source control) the resulting change script.
+So this solution depends on your SQL Server edition and you rights on that server and how many people are sharing that database.
+There seems to be overlap between the two scripts (the failed and the successful), but they are not identical.
+First, create a SNAPSHOT database (examples from the SQL Server documenation):
+However, if the designer glitched you would then use the snapshot to revert the database back to the point in time of the CREATE...SNAPSHOT.
+This works great and an important piece of the process my team(s) uses.
+Scenario using a snapshot database and assuming that you have full rights to do whatever you want to with the design database.
+I did some years ago find that the designers were prone to errors, so I am not surprised that you have some problems.
+I am a big fan of the simple diagramming tool that comes with SSMS, and use it frequently.
+I'm never clear what I need to do at this point to maintain a consistent set of change scripts.
+Once you have the snapshot created, make your modifications in the designer and then save your scripts.
+If you are using SQL Server Enterprise or Developer editions, you have the ability to create database snapshots.

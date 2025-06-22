@@ -1,0 +1,10 @@
+In addition to the answers provided by @Kin you also can restore the database under a different name or onto a different server. This could be a quick and dirty solution if you are looking to do just a one time data retrieval. 
+No. You dont even know which changes were his unless you recorded it wih triggers etc. - for sql that would be useless information, outside what the logging is supposed to handle.
+Note: You need to transaction log backups available or the transaction should not have been cleared from the active portion of the log
+Note this is very limited as it will just give you info related to who did what e.g. Who dropped the table, etc.
+Once you can capture the original values you can then perform an update to revert the users changes effectively rolling back his change. 
+Excellent reading at : Using fn_dblog, fn_dump_dblog, and restoring with STOPBEFOREMARK to an LSN and 
+You could even look at a product like Idera Virtual Database (http://www.idera.com/productssolutions/sqlserver/sqlvirtualdatabase) - you can download the trial to perform a one off virtual restore, or purchase this if you are going to need to perform data retrieval some what frequently. 
+For example if that user ran an update query and did not write begin transaction before, is it possible to revert changes made by his query WITHOUT restoring the entire Database (I want to preserve changes made by other users)?
+Can be used to track Object Altered, Object Created and Object Deleted along with other stuff. Refer to the link below.
+If you're not using a third party tool, I recommend the fn_dblog function. As it's undocumented, it's not easy to use and the results it returns are not easy to read. Try with the scripts someone has already tested:

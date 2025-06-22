@@ -1,0 +1,12 @@
+You could probably easily achieve this using ACLs and counters in haproxy.
+(C) Are there any other ways to go about this that I'm not aware of?
+(B) Are there any existing tools that can handle this?
+So bandwidth usage and statistics on which parts of the API they access, and how often.
+(A) What would be the best way to go about this task?
+I was wondering if there were existing tools (Linux) which we could use to monitor this traffic and break it up using the unique HTTP header?
+The way these users access the API is by using a special Authorization HTTP header with their unique token.
+One way to do this would be to implement these measurements within the API code, however since the webserver compresses all of the responses, the JSON objects we measure within the code will be much smaller in terms of bandwidth usage when being sent to the client.
+I've had a cursory glance at a few tools, namely ntopng and PRTG, but these seem more geared toward real-time monitoring (with options to store a historical record) and don't seem to be able to split up the stats based on the HTTP headers.
+Seems like a very common problem, so I was hoping there was already something out there that we could set up.
+I'd say that your best choice would be to pass the traffic through some reverse proxy service that can offer this capability.
+I'm currently working on an API service and one of the requirements is that we measure the amount of data used by each user of the system, and track how many times they use the API.

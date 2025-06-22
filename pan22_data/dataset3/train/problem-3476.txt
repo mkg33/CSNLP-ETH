@@ -1,0 +1,10 @@
+As you can see, after a couple of failures, the server eventually starts and it works fine after that.
+I have a need to start a script on an http get request from an external machine and I'm using Node.js for this.
+I do have one thought: this machine has a static IP but it's assigned via DHCP.
+If the problem is that network.target (and network-online.target) is up but the IP I'm trying to claim in the Node script is not yet assigned, presumably I need a service to wait on which will guarantee that the IP address is fully configured.
+This appears to have solved the problem (which suggests my suspicions about the DHCP address not having been assigned may have been correct).
+I changed the IP address the server was listening on from the specific one in the question's logs to the wildcard, 0.0.0.0.
+This isn't a perfect solution (because I still don't know how to wait for the DHCP-assigned address to be available), but as it doesn't make any practical difference for this particular case, it solves the immediate problem of logged errors.
+Everything is working except that it appears the the server is being started too early in the boot process:
+Could this be the problem, and if so, is there a suitable service to depend on?
+As well as After=network.target ..., I tried network-online.target, but it makes no difference.

@@ -1,0 +1,12 @@
+The same applies (though without granting sysadmin!)
+The idea of using a jumpstation (in your case, you mentioned a server) is possible.
+If you do go down that route, then the IT support team members could have domain accounts and you'd create relevant Windows groups the same way as the DBA group.
+Windows authentication is more secure than SQL authentication, and if you can use it, you probably should.
+Note that somebody could do an EXECUTE AS to switch their user context, but you should be able to log that as well as the IP address from which the query came, so you'd still be able to correlate activity to a person.
+That way, you can provide group-level permissions and give sysadmin to the group rather than individual users, meaning that when a DBA leaves (or a new one gets hired), you just need to adjust Active Directory rights rather than going into each SQL Server and altering logins.
+Regarding auditing, you can still have individual-level auditing when users are in a group.
+It would probably be a bit annoying for the support personnel, honestly, but if you go that route, I'd recommend a virtualized desktop for each IT support team member.
+Regarding providing DBA access, you might be better-off creating an Active Directory group and adding the DBAs into that group.
+That way, they don't have to deal with server contention issues and you can minimize the pain.
+You can use SUSER_NAME() to get the username in whatever process you're going to use to log activity.
+It would make administration a bit easier, especially if the laptop domain does not have a full trust relationship with the domain upon which the SQL Server instances are located.

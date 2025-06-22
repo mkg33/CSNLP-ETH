@@ -1,0 +1,8 @@
+Use ssh-copy-id user@client and it will copy the correct data to the correct place. If it's the same user as you, though, it can be problematic since it may overwrite something important. Make a copy of your .ssh directory before trying.
+Another problem that will have a similar symptom is a failure to add localhost to /etc/hosts.allow, the control file for TCP wrappers.  You can temporarily rename /etc/hosts.deny to determine if this is the source of your problem.
+OK, I know the basics of how to set up passwordless ssh: create a keypair using ssh-keygen then add the public key from id_dsa.pub into the host's .ssh/authorized_keys.  So for two different machines client and host, I can ssh from client into host without entering a password.  Good so far.
+But I have some software which requires that client be able to ssh into itself without a password.  Naively I do the same thing: simply copy .ssh/id_dsa.pub into .ssh/authorized_keys, same directory.  But it doesn't work.  If I type
+then it still asks for my password, even though the public key of client is in its own authorized_keys file.
+However, an ssh command option allows you to specify the location of the private key to be used as well.
+EDIT: Strangely enough, I tried to add my id_rsa.pub to my .ssh/authorized_keys and it worked. Are you sure that your local sshd is configured to accept shared key authentication?
+If I'm not mistaken the default options (and default locations of the private keys) are governed by the /etc/ssh/ssh_config file. 

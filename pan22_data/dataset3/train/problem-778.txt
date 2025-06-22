@@ -1,0 +1,19 @@
+ANSI was used as default encoding prior to Windows 2000.
+For Unicode programs the codepage is ignored completely and chcp has no effect.
+It doesn't matter anymore for Unicode, because it's well-defined and supports everything any reasonable program could output.
+It's used only for older ANSI programs which rely on proper codepage being set.
+When cmd calls the system function to retrieve directory listing, it already expects it to be returned in preferred encoding (which is not necessarily your encoding of choice - more on that later).
+Is there a way to tell what encoding is used in the file names?
+When I list them in Command shell (cmd) they display as "?????"
+cmd does support Unicode, so it will receive filenames already in Unicode.
+This problem is mentioned on Technet page on chcp:
+FS can use any encoding you can imagine, but as long as OS supports it, cmd will receive filenames in its preferred encoding, not FS's encoding.
+When you dir in command line it doesn't just copy bytes blindly.
+It doesn't care what encoding is used internally in the FS, because OS provides additional abstraction layer to simplify things.
+It first has to call appropriate OS function to list the directory, then print received file details to the console.
+When I open them in Windows Explorer, the names display correctly.
+The "preferred encoding" I've mentioned is either ANSI with codepage applied or Unicode.
+I don't particularly care about answer's method (all of the following is acceptable: Freeware program, Perl script, Powershell script, web page that makes me upload the file).
+As you have already found out, the culprit was the default font.
+(I tried common cyrillic code pages 866 and 1251 using chcp command with no luck).
+Windows 2000 and newer versions use Unicode by default, but still can run ANSI programs.

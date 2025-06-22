@@ -1,0 +1,26 @@
+Some more details: Wikokit works by taking a raw, unparsed SQL database of Wiktionary, parsing it through its Java code using Connector/J, then loading it into a formatted SQL database that starts off empty.
+has a downloadable sql file that you can just dump into the database.
+The other thing I would try is taking out the database part of the parser.
+I need the parsed database in relatively short time, within the next 3-4 days.
+http://whinger.krc.karelia.ru/soft/wikokit/index.html
+Even if it's just dumped onto another machine on the local network, that alone should give you a good speed boost because you're not contending for bandwidth and server time with everyone using wiktionary.
+This won't work if the database has autonumbered keys used in relations, though.
+Have the parser java write all its SQL commands to a text file instead.
+If you must have an up-to-date version, then a 256GB system looks like massive overkill to me and possibly solving the wrong problem.
+Then taking a leaf from mysqldump's book, turn off all mysql's key processing, load the data and then turn the keys and constraints back on.
+I'm not very experienced in server usage, so I am also unsure of whether you would be able to set up MySQL and run Java code on it on any arbitrary server.
+However, I'm not sure whether that would even work (would scaling up memory by 30x really help?
+Essentially raw_enwikt -> wikt_parser.java -> parsed_enwikt.
+An easy optimisation would be to download the latest database snapshot (https://dumps.wikimedia.org/enwiktionary/latest/) and run everything from a local database.
+I'd be tempted to try a smaller 16GB or 32GB system, but run the parser, its input files and mysql from a ramdrive (be warned, if the machine crashes or reboots or runs out of memory then all the current progress is lost) and see if that goes faster.
+This is after following general recommendations for increasing performance on MySQL, including using mysqltuner and following its directions.
+I think I need to rent a server high in RAM, average in CPU, and minimal in HDD space, at a per second rate for a day or two.
+I am currently using my personal computer to parse Wiktionary, the specs of which are 4.2 Ghz CPU and 8G ram, using a 1TB HDD.
+That will be considerably faster than processing each row one by one.
+I'm not sure if you're needing a totally up-to-date copy, but it looks like the bulk of the hard work has been done for you.
+This assumes that the mysql writes are the slow bit.
+Very naively calculated, I imagine a 256G RAM server would then be able to parse Wiktionary in about a day.
+You'll find that beyond a certain point it just doesn't make a difference.
+After writing all of this I also read the code for Main.java and realised it's pulling its data from the live database.
+I am in the process of parsing machine-readable data from wiktionary into a SQL database using wikokit, but have since realized that, according to the time estimate provided by wikokit, it will take a solid month to finish (53499 minutes.)
+), or where to find such a thing, or what to even google to start.

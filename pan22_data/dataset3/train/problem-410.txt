@@ -1,0 +1,7 @@
+Because we don't want this latency, the kernel tries to always keep a certain amount of memory free.
+In those cases, you'll want to lower the vm.swappiness sysctl to 0.
+By doing this preemptively and in the background when the server comes close to running out of memory, it ensures that any new requests for memory on the server are fulfilled immediately, speeding things up without noticeably impacting any running applications.
+Basically, if an application requests some amount of memory and the server's memory is full, it makes the application wait until enough idle memory contents can be paged out, which causes latency in the application.
+The kernel tunable that governs this particular behavior is called "swappiness" and you can read more about it here:
+MySQL isn't responsible for managing swap on the server; that's the job of the kernel's memory management subsystem.
+Sometimes you don't want that, especially if all the physical memory on the server is supposed to be used as cache by some application (e.g.

@@ -1,0 +1,24 @@
+I'm aware of MySQL master-slave, but it doesn't provide automated failover and requires application rewrite
+Many users co-locate the Management and Application nodes which reduces the number of nodes to four.
+If implemented properly there's almost no chance of a true "outage", though service may occasionally be degraded and recovery can take a while.
+The minimum number of systems is two (2) -- An active and a standby replica (with something like heartbeat or custom-grown scripts to handle the failover).  
+This protects against hardware failures (power supply, NIC, disk, switch (if they're on separate switches).
+You really need to define what level of "HA" you are looking for quantitatively -- one man's "can-sleep-at-night' is another man's "this-thing-is-a-house-of-cards".
+Note that this doesn't just apply to your DB servers -- You need two of *EVERYTHING: Web servers, DBI servers, Firewalls, DNS servers...
+What's important here is that you diversify network connections, power, etc -- You don't want your standby datacenter across the street where it's fed by the same power and fiber as your main facility.
+Redundancy of one component is meaningless if you still have a bunch of single-points-of-failure in your stack.
+Web servers connect via load balanced ip on the sql nodes so they always see one active. Works for me.
+The key part here is testing the failover in a development environment -- which means you need at least two more machines (or a virtual machine). You also want to test upgrade and maintenance processes to ensure they won't trigger unintended consequences (Ideally you should do nothing to production that hasn't been tested and proven in Development).  
+The next level above that is truly distributed resources (think Google) which requires a database system that supports replication and sharding (think MongoDB).
+2 physical servers are enough for full HA, if you believe your network is robust enough. Otherwise you need additional small physical server for cluster arbitration - to avoid split brain in case of network connection lost between data nodes.
+I mean situation that cluster should continue to work with no errors when any single physical servers fails. Failed server can be any of MySQL Cluster components (management, sql or data)
+For evaluation and evelopment purposes, you can run all nodes on a single host. For full redundancy and fault tolerance, you would need a minimum 6 x physical hosts:
+The next level of protection is network failures ("What if my ISP goes down?") - this requires replicating your whole redundant environment above to a remote datacenter.  
+With a MySQL cluster this means at least two SQL nodes and two Data nodes (to continue serving requests in the event of a failure of any one node). (If you also need redunancy on the management server's functions you would need two of those as well).
+I don't need extreme performance, just fully automated server failure handling on small number of servers
+If you fail to properly test you may trigger failover, which means you incur the procedural (and possibly business) cost of a failover -- typically having to rebuild the former active server to be a new standby server.
+The default and recommended number of replicas is 2, it means given data is stored on two nodes: the "main" one and the "backup" one. See https://dev.mysql.com/doc/refman/5.6/en/mysql-cluster-ndbd-definition.html#ndbparam-ndbd-noofreplicas for details.
+I want to achieve full HA but I'm low on server budget and can't afford to rent a dozen of servers for simple solution that I'm working on.
+From the MySQL Cluster documentation I know that I need at least two full copies of data (replicas). Does one replica need to be on more than one host?
+A company I consulted for had a requirement that any remote facility used for DR be "at least 15 degrees of longitude away" (i.e. "In the next time zone").  A common practice in the US is East-Coast/West-Coast, or NY/Chicago LA/Texas.
+Can HA be achieved on 4 servers? 2 management nodes (kind of small VPS) + 2 physical servers each running SQL and data node?

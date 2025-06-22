@@ -1,0 +1,12 @@
+This selects one column extra (p2.Domain_ID) and takes more than a day to complete https://www.brentozar.com/pastetheplan/?id=ByOpUIb0m
+There are a lot more columns in that table as well, related to that page.
+If we really have to specify every time the index to be used, wouldn't it be better to move to a nosql database?
+Once we add another column, it does a clustered index scan, wich can take up to days to complete.
+We have a huge SQL 2017 database containing more than 5 billion internetpages.
+When we specify the index to be used, it works like a charm https://www.brentozar.com/pastetheplan/?id=SkvkKIbAm
+I didn't notice this behavior before when we were using SQL 2016.
+This uses the correct index and takes less than a second to complete
+If we join with other tables and we join on the UriKey, the query will use the non clustered index only if we only require the UriKey itself.
+One of the table contains the info about the page: PageID is the primary clustered key and UriKey is the non clustered index so we can lookup based on the Uri of the page.
+https://www.brentozar.com/pastetheplan/?id=rkk1vIb07
+I noticed this strange behavior also with other keys and queries.

@@ -1,0 +1,22 @@
+Next, I'd introduce GraphBound as a type synonym, just to make graph's type signature easier on the eye:
+You might even exchange GraphBound with a proper data type later which checks does not export its constructor to make sure that you don't end up with left = 20 and right = -10:
+However, that's an overkill, so let's not focus on that for too long.
+Keep in mind that it's uncommon to use them in local bindings (where), as the outer function's signature should fix all types already.
+        pairs = zipWith (\x y -> [x,y]) points $ tail points
+The only change I could envision is a list comprehension in visible, but that's a matter of preference:
+You could make it more pointfree in some parts, but that's not going be more readable or maintainable.
+I made a small module to graph functions using Gloss, and I would like feedback on how idiomatic it is (looking for ways to simplify using standard functions and to make it more pointfree).
+But you're the judge on which variant you want to use.
+After all, no magic numbers is a good practice in both imperative and functional languages.
+I've been slowly learning Haskell over the past few months.
+Inner type signatures can be a hassle if you change your outer type signature later, but they're sometimes necessary.
+That way you can also exchange the values with proper command line interpretation
+Those are fine in a toy program, but a proper one will need some kind of configuration, so make sure that you use proper values from the beginning:
+        visible = filter (all (\(_,y) -> b <= y && t >= y)) $ pairs
+We went from a perfectly understandable function to a highly complex one.
+graph :: (Float -> Float) -> (Float, Float, Float, Float) -> Float -> Picture
+        color blue $ graph f (-10, 10, -10, 10) 0.001,
+That's not better than your original version, because your original version is already very good to begin with.
+The only part I'd change are the static dimensions in main.
+It gets a lot more readable if we use some helpers, but at that point we're almost back to your original function:
+graph f (l, r, b, t) dx = pictures $ map Line visible

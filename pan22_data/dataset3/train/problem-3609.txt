@@ -1,0 +1,15 @@
+AlertSite, which we use, does if you use their API monitor.
+Recommendation for a tool that alerts when a website is not getting hits?
+We have an alert that scans the IIS logs and checks the number of requests on each server separately.
+Twice in the past two months we've run into a situation in which a server was inadvertently taken out of the load balancer.
+If the number of requests drops below a certain threshold, it emails an alert.
+Another possibility is to set up a rule on the Brocade that if an HTTP request has a particular header, e.g., ForceServer = PROD1, then always send that request to a particular server.
+That works if your web monitor supports sending custom HTTP headers.
+This bit us a few days later when the second server was taken out and the site went down completely.
+My thought is to have an app that scans the server logs every 15 minutes and sends an email when the number of unique visitors per hour drops below a certain threshold.
+In both cases the problem was discovered and corrected quickly, but it leads me to believe that we need an alert when a server is out of the load balancer.
+We have a number of sites in a number of environments.
+Many of the environments are load balanced with two web servers (and in some cases two app servers).
+Our normal alerts don't work here because in both cases the website on the server was up and responding, it just wasn't in the LB.
+It might be possible to set up alerts on the load balancer itself, but they are managed by our hosting provider and dealing with them can be a pain.
+Doesn't sound terribly difficult to write, but seems like there may already be a standard 3rd party tool that already does something along these lines.

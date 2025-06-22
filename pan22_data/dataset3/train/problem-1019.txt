@@ -1,0 +1,10 @@
+update-rc.d mysql defaults 50 and update-rc.d opendkim defaults 95, this moved the mysql right before the OpenDKIM, but still it didn't have time to intialize so it didn't start either.
+Jul 31 10:28:35 mail opendkim[991]: opendkim: /etc/opendkim.conf: dsn:mysql://opendkim:pass@127.0.0.1/modoboa/table=dkim?keycol=domain_name?datacol=id: dkimf_db_open(): Can't connect to MySQL server on '127.0.0.1' (111)
+I installed OpenDKIM on Ubuntu Server 18.04, using it with Modoboa, so the config file contains DSN for KeyTable and SigningTable to connect to MariaDB.
+Jul 31 10:28:37 mail mysqld[1688]: 2018-07-31 10:28:35 139849791634560 [Note] /usr/sbin/mysqld (mysqld 10.1.29-MariaDB-6) starting as process 868 ...
+From this, you can see that the mysqld is starting right after OpenDKIM, I tried to switch the sequence using:
+Jul 31 10:28:35 mail opendkim[897]: opendkim: /etc/opendkim.conf: dsn:mysql://opendkim:pass@127.0.0.1/modoboa/table=dkim?keycol=domain_name?datacol=id: dkimf_db_open(): Can't connect to MySQL server on '127.0.0.1' (111)
+But I would like some proper solution to fix the startup order.
+For now I fixed it using custom startup script which has sleep 10 && systemctl start opendkim.
+I noticed that the service always fails to start on reboot, but afterwards I can start it manually with no problem, so I checked syslog and saw these lines:
+Jul 31 10:28:41 mail /etc/mysql/debian-start[2018]: Upgrading MySQL tables if necessary.

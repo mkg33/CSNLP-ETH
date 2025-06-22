@@ -1,0 +1,18 @@
+You could use avahi-daemon mDNS reflector feature on the gateway .
+How do I enable CUPS browsing on the second set of machines so that they can see the print queues defined on the first machine?
+PS: One could need to mangle the packets to increase Time To Live.
+Once this was defined, all the CUPS clients on the same subnet could see the two print queues automatically, no problem.
+NB: If you nat at the gateway you will need to set NONAT for packets incoming from the parent network.
+forward 224.0.0.251 the packets are stuck on the gateway border.
+This is a topic that needs more investigations though here are the shorewall/start, raw iptables tweaks:
+Gnome control center "printers" here send a ttl f 255 (the maximum) so it is not required.
+As far as I know there is no way to automatically make it available to other clients that are not on the same subnet.
+I use twenty locally though it is not set in stone.
+Now I have a collection of machines on a separate subnet, reachable from the first subnet by a router.
+The 'native' way is to have a CUPS server (they don't need printers, just the CUPS software) on each subnet, and configure those servers to act as a Browse Relay server.
+I have a CUPS server with two print queues defined.
+That CUPS-running server will then respond to subnet-local browse requests with the remote server.
+Mostly depends on the number of routers crossed in between printer and client station.
+You can still use the printer from another subnet (if the access controls are right), but you have to add it manually refering to by its IP address.
+The second subnet is A.B.D.0/24, and there is a router with arms on both networks.
+There is also a way to do it via multicast and the Service Location Protocol, but it isn't documented well at all.

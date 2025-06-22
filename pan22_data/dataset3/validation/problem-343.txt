@@ -1,0 +1,17 @@
+Hopefully it will continue to work when I move networks again - will comment here if it doesn't.
+I experienced this issue with a local Hyper-V instance on a Windows 10 client while working outside of the office network.
+In our domain environment, all RDP connections go through an RD Broker.
+My issue may be unique, but it's worth noting during the troubleshooting process of this console connection issue.
+I had the same issue initially after I set up a VM yesterday, but got it going after some fiddling around.
+Unfortunately I can't remember what I did that made the difference though!
+I was able to resolve the issue by disabling the RD Proxy to our RD Broker within the registry.
+Their state's are running and their status is empty.
+However this morning, after connecting to a different network, it failed again.
+Since I did not have access to the RD Broker, Hyper-V would try to communicate to the RD Broken then fail to connect to the VM's console.
+You will have to go to the - Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services and there you will have to change the value to 0.
+Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+Computer\HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows NT\Terminal Services\UseProxy = 0
+Also, if your computer and user account are governed by GPO, your registry tweak on "UseProxy" will probably be reverted.
+By using the Connect to server, I am able to see all the virtual machines.
+My eventual solution: I turned off the Hyper-V features in "Turn Windows features on or off", restarted, then turned them back on again and restarted again.
+I have installed Hyper-V manager on Windows 10 pro and have connected to the server which is hosting all virtual machines.

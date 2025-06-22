@@ -1,0 +1,9 @@
+There does not seem to be an solution to do that in place.
+Truecrypt offers the system encryption only for windows, dm-crypt overwrites partitions.
+Since this comes up near the top of google results, adding solution:
+The plaintext data is read from /dev/sda and written to the device mapper, /dev/mapper/sda-crypt, which encrypts it and writes it back to /dev/sda, overwriting the plaintext data that was read.
+Ensure the raw device isn't mounted then create an encrypted device for it and use dd to copy from the raw device to the encrypted one:
+It will likely take some time due to it reading and writing the entire disk.
+Your best bet would be to move everything from that partition into a backup with cp -a, create an encrypted partition with luks/dm-crypt and move everything back.
+It's risky - if it fails part-way through (power cut or whatever) then you're stuffed!
+If I have a partition like /dev/hd1 that is unencrypted and want it to be encrypted, but want to keep everything currently in that partition, how can I do that?

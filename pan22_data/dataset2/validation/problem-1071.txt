@@ -1,0 +1,15 @@
+Traditionally, floppy images use the FAT12 format, which have a limit of 16MB and 8k clusters. There appear to be extensions to FAT12 that allow 32MB or even 256MB (64k clusters) but I am uncertain on the specifics.
+Now you have a PXE-bootable 16MB FAT12 floppy image with FreeDOS. At this point, you can re-mount the image and copy any additional files you need.
+Now we have a 16MB floppy image (FAT12_16MB.img) containing the FreeDOS operating system. However, if you try to boot this via PXE, you will get the following error:
+However, that command can take a minute to complete. Using a higher block size, we can accomplish the same thing in less than a second:
+you need to try vmlinuz kernal to load the bigger images, you can find it in the linux mirrors online..
+If we target the maximum FAT12 size (16,736,256 bytes) for a bootable 'floppy' image, we can do the following:
+Now that we have a 'blank floppy disk', we need to format it as FAT12 (if you are interested in the available parameters for this command, run man mkfs.fat to view the man page):
+I've been through this process a few times, and although it is extremely easy, I keep forgetting the exact steps I used, so I am documenting it here for my own reference as well as others. For the record, I am using Slackware Linux 14.2+ as the PXE server, and booting to several different Dell Optiplex models for BIOS updates. As mentioned in other answers, you can create bootable ISO images for large filesystems. However, since you specifically asked about bootable floppy images, here are the steps I use for that.
+From the MEMDISK documentation, there are some specific floppy disk geometries that memdisk will attempt to guess:
+First, some background information on MEMDISK and FAT12 to put your question in context. There is a lot of conflicting and ambiguous information out there, so hopefully this clears things up a bit.
+In practice, I haven't had any luck with the APPEND floppy parameter; I get a MEMDISK: No ramdisk image specified! error when I use it.
+And now we can start copying files to it. I downloaded the FreeDOS OEM Boot Disk from fdos.org and copied it to my larger image:
+There are some other helpful step-by-step resources out there that I consulted while creating this answer.
+Important: Since we will be writing directly to the image file, make sure your floppy image is not mounted prior to the next step:
+A syslinux thread from 2003 indicates that MEMDISK supports a maximum image size of 4GB, depending on the hardware (i.e., memory-limited, but possibly additional hardware-specific considerations). An earlier thread from 2002 also indicates a separate PXELINUX limitation (Linux kernel space limited to ~1GB, but this information is over 15 years old).

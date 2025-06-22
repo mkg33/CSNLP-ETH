@@ -1,0 +1,12 @@
+Note that Microsoft documentation on error 8632 says the following:
+For whatever reason, the observed behavior is that each constant in the IN clause counts as two towards the limit.
+Suppose I want to put 32768 values in the IN clause for a query of the following form: SELECT COUNT(*) FROM dbo.Q228695 WHERE ID IN (); This is easy to do in SQL Server 2017 with STRING_AGG:
+For this incredibly simple query, 32767 is the maximum number of values that still allows the query to execute.
+Strictly speaking you're guaranteed for the query to fail with 65536 values.
+The least upper bound depends on what else is going on in the query and other local factors.
+If I remove one value from the IN clause the query succeeds after 24 seconds.
+With that said, I think it's fairly safe to consider 32768 as an upper bound in practice, but it's not the least upper bound.
+Even if your query doesn't throw an error you're going to pay a heavy performance price once you put too many values into an IN clause.
+If I put those same values into a temp table then the query executes in 0 seconds:
+I do think that this is the wrong question to ask.
+I don't think that it's a coincidence that 65535/2 = 32767.5.

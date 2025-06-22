@@ -1,0 +1,22 @@
+Then we write a second map option: -map 0:2, which refers to the third stream of our input.
+c:s is an alias for -scodec codec, which specifies the subtitle codec.
+-map 0:1 is there twice because the example has an aac and an mp3 output.
+This is a solution when you copy mkv to mp4 and want to choose audio streams:
+This is a simple answer for people like me, who like simple working explanations.
+You have to write -map 0:numberofstreamminusone in front of -c:a copy
+I read this https://trac.ffmpeg.org/wiki/How%20to%20use%20-map%20option but don't understand it really.
+Because it's the first map option, it will be mapped to the first stream in our output file (tears_of_steel-v2.mkv).
+I wrote that on my github: https://github.com/lingtalfi/ffmpeg-notes/blob/master/ffmpeg-map.md
+I'm trying to copy video/audio from an mkv container to mp4.
+In this case, you wil get the first video stream and the third audio stream
+When I run ffmpeg -i input.mkv -c:v copy -c:a copy output.mp4 I'm given no video with polish audio.
+In the command, we have only one input: tears_of_steel.mkv.
+Because it's the second map option, it is mapped to the second stream in our output.
+Also, you have to write -map 0:0 in front of -c:v copy because if you don't, ffmpeg will not copy the video stream and you get only the audio stream (If the video has two video streams and you want to copy the second one, you have to write -map 0:1)
+Then we write a first map option: -map 0:0, which refers to the first stream of our input (tears_of_steel.mkv), which might be a video stream, but that doesn't matter.
+In this case you should get the second video stream and the seventh audio stream
+The first stream is video, the second is default audio, and the third is non-default audio in the language you want.
+What would a command to copy #0:0 to video and #0:2 to audio look like?
+Let's say the video has 3 streams (you can see that in mediainfo).
+This was the example that allowed me to understand.
+Stream #0:1 is polish audio, #0:2 english, and #0:3 - #0:5 are subtitles.

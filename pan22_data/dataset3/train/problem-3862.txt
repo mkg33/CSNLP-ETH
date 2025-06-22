@@ -1,0 +1,12 @@
+And if you need to do the same thing on a Windows host, you can follow the instructions found in this post: https://www.pingzic.net/how-to-enable-loopback-adapter-in-windows-10/
+On Server 2, I have tried this policy to rewrite the destination IP of the incoming packets:
+Server 1 and Server 2 (Centos 7) both host the same application, which listens on UDP port 1514.
+After you have added the adapter, you can select the adapter in the typical network adapter control panel and apply a static IP of your choice to make the IP a live, active IP on the server, but not actually respond to traffic at that IP on a live network outside of this server.
+iptables -t nat -A PREROUTING -p udp -d 10.88.72.41 --dport 1514 -j NETMAP --10.88.72.40
+The goal is for the application on Server 2 to receive a copy of this traffic.
+A tcpdump on Server 2 reveals all of the traffic coming in; HOWEVER, the destination IP is still 10.88.72.41, so the listening application does not detect the traffic.
+On Server 1 I have tried similar commands to rewrite (or DNAT) the destination IP of the outgoing packets.
+I have been working on this for days - if you can solve it I will be eternally grateful!
+iptables -t mangle -A PREROUTING -i ens160 -p udp --dport 1514 -j TEE --gateway 10.88.72.40 [server 2]
+Please help me find a solution so that the application on the second server can detect this traffic.
+Server 1 uses iptables to duplicate traffic on UDP 1514 and send it to Server 2:

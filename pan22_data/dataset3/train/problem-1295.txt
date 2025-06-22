@@ -1,0 +1,14 @@
+I installed parted and when I ran that it informed me that the partition table didn't cover the full disk (duh), so it asked me Fix/Cancel to which I responded with Fix.
+To fix the disklabel issue I had to dump the partition table using "O" and change last-lba in the exported script to disksize as reported in fdisk -34 (for secondary GPT).
+You may need to delete the partition vda3 without writing the changes to the partition table by pressing 'w' and then re-create the partition with the new sector size so that you wont loose the data.
+So, I decide to follow the hint and write the table...
+I recently resized a VPS from a 50GB SSD to a 300GB SSD through my hoster's control panel.
+With that I could fix the GPT PMBR size missmatch.
+Apparently, that did the trick as I was able to modify the partition to the full size using sudo fdisk /dev/vda, but afterwards I did need to run sudo resize2fs /dev/vda3 to have the changes applied.
+I do not use LVM and my partition table looks like:
+Notice how the disk shows it as 300GiB, so it does recognize the size change.
+I now am trying to resize my main partition with fdisk to be able to use all the new space.
+It seems obvious that it's a sixfold of the previous size, as I went from 50GB to 300GB.
+You may need to unmount the partition and do a e2fsck before executing the below:
+The problem is that the protective MBR (PMBR) is to small.
+I can't find what causes that error anywhere despite many search queries.

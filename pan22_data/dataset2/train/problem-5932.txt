@@ -1,0 +1,6 @@
+Concurrency Scaling for Amazon Redshift gives Redshift clusters additional capacity to handle bursts in query load. It works by off-loading queries to new, “parallel” clusters in the background. Queries are routed based on WLM configuration and rules.
+I've written a detailed post on how to configure your WLM in 4 steps. The docs recommend not going over 15 slots total, but reality is that you can go all the way to 50. That assumes you have sufficient memory though so queries don't fall back to disk. 
+The original question comes from 2016, and meanwhile AWS has added a lot more knobs to fine-tune your workloads.
+You have to turn Concurrency Scaling on in the console, and AWS claims that it's free for 97% of Redshift users. We ran an internal test for Concurrency Scaling, and found that scaling may mitigate queue times during bursts in queries.
+AWS turns on SQA by default now. They predict the length of a query and route the short ones to a special queue. 
+Workload Management allows to separate your different users from each other. See image below. We recommend separating your users by the type of SQL command they run, as they share similar memory and workload patterns. We recommend 4 queues:

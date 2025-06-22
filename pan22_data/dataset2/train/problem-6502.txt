@@ -1,0 +1,10 @@
+std::iterator is being deprecated in C++17 as it does not provide code clarity and does not operate with internal name lookup. You should just provide the 5 typedefs of std::iterator yourself.
+Does your iterator need to be templated? You might want to mimic the existing iterator adaptors that require all values assigned to be the same as or convertible to T.  That is fine.  If you want to loosen that restriction and provide more flexibility, you can template the assignment operator to take any streamable type instead.
+If you are going to provide a suffix decorator customization point, consider providing a prefix decorator as well.
+Naming is important.  Reading my_ostream_iterator, I would expect to be able to use it with any std::ostream derived object.  Instead, it only works with objects derived from std::ostringstream.
+Be aware of the pitfalls of using declarations and directives.  Whether at global scope or function level scope, importing every symbol available in a namespace may cause collisions and ambiguity. The general advice is do not use using directives (using namespace X).  using declarations should be kept local to functions and namespaces to minimize the amount of coverage in which a collision might occur.
+Your class is also named similarly to the std::ostream_iterator that already exists in the standard library.  As someone aware of its existence, I might assume that the behavior would be similar.  You can pick a better name here.
+Can they point to nullptr?  What happens if they do?  Your options are either to check for null on oss assignment/use, contractually mandate oss not be null (gsl::not_null<T>, std::reference_wrapper<T>), or use a plain reference.
+There is an opportunity for strength reduction by weakening your comparisons into pointer assignments.
+Careful with your passing-by-value in the lambda.  Prefer to use auto instead of explicitly typed variables to minimize your commitment to details (minimize rigidity).
+Avoid std::endl as it does more than stream the end-of-line character.  If you want the std::flush behavior, explicitly stream std::flush to indicate to the reader that it was intentional.

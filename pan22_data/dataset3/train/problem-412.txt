@@ -1,0 +1,21 @@
+Every ECS system is different, and all of them have their own advantages and disadvantages.
+So for animations example, you might want to have AnimationComponent that would contain basic state for the animation, like which animation is playing, what frame it's at, etc.
+If the answer is no - it goes to a component; if the answer is yes - it goes to internal system state.
+After that, SpriteRenderSystem can sort SpriteRenderNodes by layers, maybe do some other processing, and finally loop over all of them and submit it to some graphics API (Your own abstraction, or directly to DirectX, OpenGL, etc).
+It could hold things like transformation matrices, vertices and so on.
+SpriteComponent would be a pure data structure, holding sprite's state information, such as sprite size, color, etc.
+Serializing all data in the game state, should be enough to restore the game later.
+SpriteRenderSystem would have access to an array of SpriteComponents and TransformComponents.
+Or if you're animating sprites, then AnimationSystem can just update SpriteComponent.
+Internally, it would also have an array of SpriteRenderNodes with one to one mapping to SpriteComponents.
+On update, AnimationSystem would update each AnimationComponent and generate bone transforms into AnimationComponentNodes.
+Serializing all SpriteComponents should be enough to restore the state of all the sprites in the game.
+Basically I've answered this question with the above example.
+Internal SpriteRenderNode would be another pure data structure, that would keep cached data required to do the actual rendering of sprites.
+So each time you're dealing with new data, you just ask a question: can you recreate the game without this data?
+In update cycle SpriteRenderSystem would iterate over SpriteComponents.
+So in general, it helps to view your whole game in the ECS like this:
+For each SpriteComponent it would take the data from it, then take the data from respective TransformComponent, combine it, and using combined info update SpriteRenderNode.
+(Also note that after all SpriteRenderNodes are set up, you can do the further processing on another thread, and since all SpriteRenderNode data is internal to the system, it can do all sorts of optimizations, like have separate SpriteRenderNodes arrays for each layer, etc).
+First of all, there is no such thing as a good pure ECS.
+For something like skinned mesh animations AnimationSystem internally could have a respective AnimationComponentNode.

@@ -1,0 +1,13 @@
+First you are not verifying that realloc() properly allocated memory.
+However, its possible that any of a number of things could have gone wrong.
+This line throws away whatever the user passed in as the parameter
+Since your InitStr() function is only providing an initial allocation, you can simplify it to:
+If something else wrong, bad format string for example, this function will sit there exhausting your memory trying to fill out the string.
+It should also be pretty obvious the strlen("") is, so why calculate it?
+This line only ends up doing the same as ReturnStr[0] = '\0'
+When using realloc() you should use two pointers so you can properly check for a successful allocation:
+You assume that a negative return value means not enough memory was provided.
+The whole function should be written as strdup("").
+Here is another example of checking your allocation using your AddStr() function:
+You can slightly improve the runtime efficiency of this function be reducing the number of times you need to find the terminating NULL character in your strings:
+You can complete your last function without the while loop:

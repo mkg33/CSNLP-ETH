@@ -1,0 +1,17 @@
+In the example you give, you want to separate your program into two pieces.
+This link provides the actual commands which can be used to do this.
+echo 'net.ipv4.ip_unprivileged_port_start=0' > /etc/sysctl.d/50-unprivileged-ports.conf
+The standard approach to resolving this apparent contradiction is privilege separation.
+Then I got to know that I can forward connections from one port to another port.
+I was unable to do it since Node.js was installed for a non-sudo user.
+Now, be carefull about security because all users can bind all ports !
+But, it's also a bad idea to allow regular users to bind to privileged ports, because such ports usually represent important system services.
+[1] http://en.m.wikipedia.org/wiki/Privilege_separation
+Simplest solution : remove all privileged ports on linux
+I have used the second command and it worked for me.
+Your instincts are entirely correct: it's a bad idea to have a large complex program run as root, because their complexity makes them hard to trust.
+So I think this is a middle ground for not allowing user-process to access the lower ports directly, but giving them access using port-forwarding.
+I tried to use symlinks, but it didn't work for me.
+So I started the server on port 3000 and set up a port forward from port 80 to port 3000.
+One that runs as root and opens and binds to the privileged socket, and then hands it off somehow to the other part, which runs as a regular user.
+The basic idea is to separate your program into two (or more) parts, each of which does a well defined piece of the overall application, and which communicate by simple limited interfaces.

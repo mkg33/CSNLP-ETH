@@ -1,0 +1,16 @@
+You don't have to use ssh port forwarding to ssh into an internal computer through a proxy.
+You should end up on server B (unless something's already bound to me:2201, in which case, pick another port).
+If you have your private and public key on machine A and your public key in the authorized keys files on machines B and C, then you can use the -A option to forward the authentication agent connection.
+Me(localhost) -> Server A(ip:100.100.100.100) =>(server B(ip:192.168.25.100),server....)
+You can use the ssh feature of executing a command on the first server you connect to in order to ssh into a 3rd computer.
+This method has a drawback that there are actually three ssh connections to authenticate.
+But  to connect to the internal host you just type:
+Tunnelling an ssh connection through an ssh connection is completely lawful, and I do it all the time, but you need to pick unused ports for your forwarding listeners.
+i'm able to SSH into server since it has a true ip
+Your problem is in binding a listener to localhost:22; there's already an sshd listening on that.
+I used a ProxyCommand option (here in ~/.ssh/config):
+if i then want to connect to server b, i would ssh server b with it's ip(192.168.25.100)
+The -t option forces ssh to allocate a pseudo-tty so you can run an interactive command.
+...so you do not need to care about choosing any IP for that tunnel.
+This doesn't set up any port-to-port tunnel, instead tunnels ssh by using standard stdin/out.
+As of OpenSSH 7.3 (late 2016) the easiest way is the ProxyJump setting.

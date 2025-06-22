@@ -1,0 +1,15 @@
+As of SQL Server 2005 and higher, it depends on what accounts you have your services configured to run under.
+It's not a general user account and shouldn't really be treated as such.
+Basically the System account is used to give the OS itself rights to Do Stuff.
+If you're talking SQL Server 2000 and Full text is installed, no, you cannot remove it.
+Generally speaking, local or domain accounts are preferred over any of the built-in accounts for the major services, thus alleviating this concern.
+One other thing you didn't mention is whether BUILTIN\Administrators have been removed from the sysadmin fixed server role or not.
+If the NT AUTHORITY\SYSTEM account has the SysAdmin role in SQL Server, that means that any Windows Service, or Scheduled Task, running under LocalSystem has God-access to your SQL Server.
+The reason for that is if Full Text does not run under the local System account, it could potentially throw an Access Violation and crash.
+Setting Up WIndows Service Accounts (SQL Server 2005 Books Online)
+Have these people been asked why they want to remove it, and if they understand what the purpose of the System account is in the first place?
+I would agree with your guess about an audit report being involved here, and I would also guess that the report just listed which accounts have rights to do what, and that the DBAs are blindly following it by removing any accounts they don't recognise.
+If the DBAs are determined to remove it, maybe try suggesting that they do so on a test system first (preferably one that gets some active day to day use), give it a month to see if anything happens, and then make a final decision.
+And the account Full Text runs under needs sysadmin access to the SQL Server.
+If not, then System still has sysadmin access as it is considered a member of that local security group.
+Here's the Books On-line page with the information on service accounts.

@@ -1,0 +1,9 @@
+I am having a problem with replicating a table, and I finally tracked it down to a consistency error on the source table, but I am stumped as to what is causing the consistency error.
+This is where I got stuck, the data in the field looks fine, the data is well under the max size for the column, I can query the row, etc.
+I ran DBCC Checkdb and found the following error on the table
+This truncated the lingering first byte of the double byte character, and checkdb now returns without error.
+I found that the error was caused by double byte characters (asian language), and the second byte being truncated.
+I found a few references online to similiar problems, where the problem was resolved by updating the row using the same data, so I tried that, but with no change.
+I used DBCC PAGE to what row within the table was causing the problem, and tracked down the offending row.
+Its been awhile, but I realized I never updated this.
+I was able to correct the problem by increasing the column with by one, and then changing it back to the original width.

@@ -1,0 +1,5 @@
+The NagiosExchange check_lpq isn't a good solution here. You might be able to get away with using check_grep as a wrapper around lpq, you'll either need an lpq that will connect directly to the printer, or one that can connect via a working CUPS or lpr-ng.
+lpstat will try to connect to the IPP port, I believe the LPD service on Windows provides just a standard unix lpr on port 515 (see http://technet.microsoft.com/en-us/library/cc728404.aspx ).
+You could also consider using check_nrpe and nrpe_nt (or similar) with service/process checks on the Windows system to make sure the services are running correctly; or some powershell to query the print queues directly (e.g. via WMI).
+You are correct, a simple TCP connection isn't going to reliably tell you the system is operational.
+You'll need a working perl and the Net::LPR module. You may need to hack it a bit,  especially if you need to add logic to detect stuck jobs. I can't say I've used it heavily, but it has worked fine for me with real printers and lpd (lpr-ng), though I have not used it with Windows/LPD.

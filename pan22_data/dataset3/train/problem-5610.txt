@@ -1,0 +1,32 @@
+Open an ADO connection, and just query for your lookup results.
+It's silly in this context though, because the Application.Match is going to return exactly the same thing for each of the 22 times that you call it.
+If you want to make the code "easier to read and look neater", the first thing that I would do is to run it through an indenter.
+Just a quick note, there's a better way to populate your array(s) -
+Find the row target row once before you loop through the Headers array, and then just map the columns to the correct destinations.
+The default array base is zero, you aren't setting the Option Base, and there is nothing in the procedure where having a base of 1 is relevant.
+I'm not sure I understand why you declare AccountNumber As Variant, and then repeatedly cast it to a String with CStr(AccountNumber).
+That would be a huge first step in improving the performance.
+The second thing I would do for ease of readabilty and maintenance is to extract the top portion of the Sub where you build the Headers array and calculate the column indexes into a function.
+This is currently haphazard at best, and makes it difficult to follow.
+It might make sense if this was a UDF (and would be inefficient as a user function too), because each cell in a column would need to find the appropriate row.
+You're basically trying to build a lookup table, but then promptly discarding (or ignoring) the captured information later in the code and relying on Application.Index and Application.Match to get your column definitions in the correct order.
+If you're using it as a String, declare it as a String.
+I'd replace the string literals "" with the constant vbNullString - it's more readable and doesn't require a memory allocation.
+ADO doesn't care about the column order, and you can just request columns by name and write them where they need to go.
+Declare it as a String and then just cast it once when you assign it:
+If you need it to function independently (for example, in a UDF), that might be appropriate, but it is never going to be performant.
+If you can't do that for some logistical reason (IT resistance, for example), then stop treating Excel as a spreadsheet when you retrieve data from it.
+Avoid 1 based indexing like Dim Headers(1 To 21, 1 To 2) unless there is a good reason to do so.
+I'd consider using a Scripting.Dictionary for the column lookup - you're doing a fairly simply column mapping between source column and destination column, so once you have the mapping built you can do lookups on that instead of repeatedly using Application.Index.
+For each account, you need to do two things; First, find the row that contains the account data, Second, copy the data based on the column lookup.
+This Sub is doing 2 things, and everything above 'retrieving information using Index Match can be treated as an atomic procedure.
+For example, FundingSheet.Rows(3) would be much more readable as FundingSheet.Rows(HEADER_ROW).
+While you're at it, I'd get rid of all of the other magic numbers that you're using.
+The real solution would be to use an actual database as a back-end and use Excel to simply present the data.
+It isn't clear from your description if the same applies to the hard coded column headers, but those can also be passed as a parameter if they are not fixed (and would be another reason to extract the top portion as a function).
+This code is slow because you are writing VBA code as if it were intended to be a function on a worksheet.
+If Excel is your "database", then take advantage of the database tools that are available.
+...is repeating the row lookup for every single column.
+All it does is add cognative load when you've scrolled down to the bottom of the Sub and trying to process the indexing.
+Regarding the comment 'B/c there is no naming convention, many different static data names, you should consider passing the sheet name to the Sub as a parameter instead of hard coding it (presumably in a copied and pasted version of the procedure).
+This is going to be way faster than using the Excel lookups (the driver is optimized for this), and you can request multiple results in one operation.

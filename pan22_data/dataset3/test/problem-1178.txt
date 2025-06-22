@@ -1,0 +1,18 @@
+1) You are logging successful logins (and don't care about failed ones) 2) You are keeping enough log files to cover the last 90 days.
+The interesting part is the powershell script that reads the events from the session stream.
+Then you will need a stored procedure to consolidate the data from the staging to the target table:
+In case this makes sense to you, you can group events by some meaningful attributes:
+https://msdn.microsoft.com/en-us/library/cc280663.aspx
+You can capture this information with an Extended Events session:
+Based on some code here I put together the following script:
+Create a job, set it to run when SQLAgent starts, add a powershell step with this code:
+Then you can stream the events captured in the session and process them with a powershell script.
+You are not interested in the individual events, you only need to capture when the last successful logon was recorded.
+is there a way to find out logins that have not been logged into the SQL Server or accessed the databases in the past 90 days ?
+First of all, you will need a couple of tables to store the results.
+Then you need another job to consolidate the events using the stored procedure: set it to run every 5 minutes and add a T-SQL step with the call to the consolidate stored procedure.
+I tried to use logon trigger, but with this trigger I get failed login for NT\reportserver, other SQL ids.
+I would suggest using SQL Audit if you want to be sure.
+The script can be run by a SQLAgent powershell step in a job.
+In this case you can use a staging table to store the events temporarily and a target table to store the events in a summarized form.
+You would want to audit the SUCCESSFUL_LOGIN_GROUP group.

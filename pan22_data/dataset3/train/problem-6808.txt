@@ -1,0 +1,11 @@
+When a block needs to be fetched, but the cache is full, then some block must be bumped out of the cache.
+But if you do table scans, or use UUIDs, then queries will still run, but they will run slower due to the I/O due to [re]loading blocks into the cache.
+innodb_buffer_pool_size controls the InnoDB "cache".
+For simple queries, this is a few blocks, for a full table scan of your 231GB, it will involve fetching all the approx 14 million blocks.
+Indexes and Data are each stored in BTrees that are composed of 16KB blocks.
+(See "1 page granularity" mentioned in a Comment.)
+All operations are done in the cache; almost nothing bypasses the cache.
+It is broken into 16KB "blocks", each of which comes and goes from RAM based, roughly, on a Least-Recently-Used algorithm.
+So, when you fetch something from a table, the query execution probably needs to look in an index to find where to find the something, and proceeds to fetch blocks as needed to find it.
+How data and index are cached in buffer pool size if the table size is more than buffer pool size.
+If the "working set" of your data is a lot smaller than 231GB, then there won't be much I/O, and the size of the cache (buffer_pool) is not critical.

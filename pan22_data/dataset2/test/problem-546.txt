@@ -1,0 +1,13 @@
+The key here, is to avoid God-like methods that do everything that ever needs to happen: by splitting the work into specialized methods that do one thing (and ideally, do it well), you limit the number of runtime errors you need to handle.
+This should be a Property Set accessor; Property Let works better for value types. Besides client code that does this:
+Assigning a null reference (Nothing) isn't illegal, so this assignment will never blow up; you don't need to expect an error here. In fact, you don't even need this tempModel - and this is overkill:
+I like that you're declaring a constant for custom errors. Best practice would be to add the built-in vbObjectError constant to your own custom error codes - and for better maintainability, it's often best to define these constants in an Enum:
+Looks very confusing, given that instance is an Class_MyModel instance. But without a Property Set accessor, client code can't even do this:
+But let's say it has to be an instance field because other members need to access it later (or earlier... whatever).
+Here's how I'd handle this - I would have a procedure responsible solely for assigning the member values; this procedure would need to handle the case where MyMODEL is not set:
+The calling code (perhaps the DoSubmittal procedure) can then handle all errors with a simple message box, because any error that could be raised in the procedures called by this one would contain a specific and meaningful description:
+The name given to errNoMyModel looks like a private field or local variable. Constants are usually clearer in YELLCASE... but I read that identifier as "error number for MyModel", which means absolutely nothing. Contrast to MyModelError.ModelNotSet, which tells you just by its name, that the model isn't set on MyModel.
+As per your post, we're not seeing the whole picture. That's sad, because based on what I'm seeing, this whole "ensure MyMODEL is set" spaghetti looks futile, since MyMODEL is really a dependency of the DoSubmittal method, and should be passed as a parameter.
+By the way, nulling a reference in a garbage-collected language (like VB.NET, or C#) would not force garbage collection.
+What you're trying to do here, is gracefully handle the runtime error 91 that would occur if DoSubmittal were to execute without MyMODEL being set.
+VBA doesn't do garbage collection, it does reference counting: that line is utterly useless, since tempModel is locally declared - its reference is destroyed as soon as the procedure exits.

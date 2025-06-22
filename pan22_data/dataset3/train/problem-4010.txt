@@ -1,0 +1,8 @@
+This allows early-Z / hierarchical-Z optimizations to still work based on the geometric Z: if the rasterized geometry gets culled for being behind something, then you know the shader-written Z would have been culled as well.
+It is pretty well known that writing depth in your fragment shader generally disables "early Z" test/write optimizations that modern GPUs rely on for fastness.
+Nonetheless, APIs still allow it and GPUs still provide support for correct visibility when shaders write arbitrary depth.
+The question is: are there any state of the art real-time effects in today's game engines that require writing Z in the fragment shader?
+There are probably other similar cases where the shape of a surface is defined by the fragment shader rather than by the rasterized triangles.
+Any techniques that involve raytracing in the fragment shader might want to write Z in order that the depth buffer contain an accurate representation of the raytraced surface.
+This is a good fit for cases like the above, as you can rasterize some bounding geometry for the distance-field / voxel / heightfield object; then the actual depth will be greater-equal to that of the bounding geometry.
+By the way, newer APIs and GPUs include support for a conservative depth output mode, in which the shader-written Z is only allowed to be greater-equal to the geometric Z, but not less.

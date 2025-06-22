@@ -1,0 +1,12 @@
+What happens when I want to add 2 more servers to the storage pool and then also use them in this volume?
+If you have to scale down you can always remove $replica_count nodes without losing data.
+I won't suggest raising replica count in linear fashion with your web workers.
+Is there any easy way to expand the volume AND increase that replica count to 5?
+My concern is that if I ever need to spin up a server, I would want the server to not only be an additional Apache front end, but also another server in the gluster file system, adding to fault tolerance as well as possibly giving a slight boost in read speed.
+About safety constraints consider trying zfs as underlying fs, since it high resiliance to data loss.
+then when new workers are added just deploy $replica_count new gluster nodes and add them as stripe brick to the existing volumes; after a rebalance you will have more performance and more capacity.
+Is there any way to run GlusterFS in a replicated mode, but with the ability to dynamically scale the volume up and down?
+your Gluster volume would have to be setup with replica 3
+I would instead do a profiling of your web load and define a reasonable amount of replicas from the start.
+My end goal is to run this on EC2 instances, say 3 Apache front ends, with the webroot setup on the gluster volume mount.
+Maybe there are better options that would fit the bill here?

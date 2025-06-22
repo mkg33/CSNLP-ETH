@@ -1,0 +1,19 @@
+I would probably go with a clustered backend right from the start.
+No matter what kind of SAN you hook up, it won't matter if you can only get one HBA of throughput at a time.
+You said you're using ESX - if it's v3.5 or earlier, or if you're not using the top license tier for v4, then you don't get multipathing capabilities.
+If you can get maintenance windows after hours or on the weekends, then you can get by with Standard Edition, which takes indexes offline while rebuilding them.
+Enterprise adds the ability to do data compression, but don't let that sway your decision.
+If you are starting with around 1000 users and might end up with 5000+ users, I'd say it's a typical scale-up project, and I would defo go with enterprise edition.
+If so, you need Enterprise Edition to get online index rebuilds.
+If these terms make your eyes bleed, here's the short story - you might be bottlenecked at just 200-400MB/sec, which can be saturated with a dozen SATA drives.
+That said, it all depends on the traffic pattern of those 1000-500 users and the service level you wish to deliver.
+Rather than counting the number of users, I'd ask a few other questions.
+If you're doing mirroring, then you get some slick features around corrupt page recovery by using the mirror's SAN instead of the primary.
+Standard versus Enterprise will be the least of your problems.
+It's not impossible to switch from standard to enterprise later either, but it will cost you some downtime, which might or might not be an option.
+Are you storing sensitive data or documents in SharePoint?
+If you're thinking about using log shipping or database mirroring, then look into Enterprise's capabilities.
+Your SharePoint users are probably going to be storing a ton of binary documents, which don't compress very well anyway.
+That encrypts the data at rest, when it's sitting on the SAN, thereby preventing someone from grabbing a SAN snapshot or a copy of your backup tapes and restoring an entire copy of your database when you're not looking.
+If so, you should consider Enterprise to take advantage of Transparent Data Encryption.
+Your throughput is confined to just one host bus adapter per array.

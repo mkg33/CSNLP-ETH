@@ -1,0 +1,11 @@
+Dose it mean 80% from total core or something between 50% to 100% of total CPU CORE ?
+we set the yarn.nodemanager.resource.cpu-vcores to 16
+but what is the right value for - yarn.scheduler.maximum-allocation-vcores ?
+This is strictly dependent on the type of workloads running in a cluster, but the general recommendation is that admins set it to be equal to the number of physical cores on the machine.
+Requests higher than this won't take effect, and will get capped to this value.
+yarn.nodemanager.resource.cpu-vcores: Set to the appropriate number in yarn-site.xml on all the nodes.
+After making any setting changes, monitor your cluster/node CPU utilization for a while under load.
+If you're not comfortable with that, you could set yarn.scheduler.maximum-allocation-vcores = 80% * (total CPU cores) * 2.
+we have ambari cluster ( version 2.6 ) with 3 workers machine , and each worker machine have 16 CPU CORE ( see pic down ) , while each machine have 32G memory
+This blog: https://qubole.zendesk.com/hc/en-us/articles/115002396546-Reference-Default-yarn-scheduler-maximum-allocation-vcores
+yarn.scheduler.maximum-allocation-vcores: This is the maximum allocation for every container request at the Resource Manager, in terms of virtual CPU cores.

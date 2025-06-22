@@ -1,0 +1,10 @@
+The goal is to replicate the exact setup, but it's currently mid-migration.
+This is the same shelf as seen by the other controller:
+Forcing the disks into JBOD on the second controller does not work either:
+A single server with two LSI MegaRAID SAS 9380-8e controllers which are both connected to two 60-bay disk shelves while roughly following the design by Edmund White (see https://github.com/ewwhite/zfs-ha/wiki).
+All 60 disks are now visible to the OS and could be registered with multipath but only report a single path (going through controller 1), the second controller still reports all 60 disks as foreign (UGood F) and there is seemingly no way to forcibly make the controller rescan the devices or forget the current config for just this shelf:
+After wiring the first shelf, all 60 disks were seen by both controllers and multipathing was setup and works smoothly.
+When adding the second disk shelf, there was still some old RAID configuration on the 60 disks which was dutifully reported by both controllers.
+But trying to clear the (wrong) info from the second controller does not work:
+Is there any way to tell the RAID controller those disks do no longer have a foreign config and should be seen as JBODs?
+Using the first controller I removed the configuration from disks and set them to being JBOD.

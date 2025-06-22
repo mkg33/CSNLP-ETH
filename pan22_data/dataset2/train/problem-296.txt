@@ -1,0 +1,6 @@
+Teorically ZFS would refuse to mount "/var" dataset over the underlying "/var", because it is not empty. But it works, possibly because they are system datasets mounted early in the boot process.
+But having the underlying "/var" not empty is preventing me to create an ABE (Alternate Boot Environment), so patching is risky, and I can't upgrade my system using Live Upgrade.
+I tried "mkdir /tmp/zzz; mount -F lofs / /tmp/zzz", but when I go to "/tmp/zzz/var", I see the "/var" dataset, not the underlying "root" dataset. That is, the LOFS is crossing mountpoints. I would usually like it, but not this time!.
+I need to access my "root" ZFS dataset to delete a file under "/var". But "/var" is overlayed by another ZFS dataset. Since these are system datasets I can't "umount" them while the machine is running. And I want to avoid to reboot the system in "failsafe" mode, since this is a production machine.
+I know there is a file in "/var/" because I can snapshot the "root" dataset and check it. But snapshots are read-only, so I can't get rid of the file.
+The machine is remote. I have an IP KVM, but I rather prefer to avoid booting this machine in "failsafe" mode, if I can.

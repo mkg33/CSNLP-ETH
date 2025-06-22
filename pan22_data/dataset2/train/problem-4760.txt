@@ -1,0 +1,9 @@
+An easy way to set up a hot failover server 100% which is and keeps staying in sync would be drbd together with heartbeat. 
+I have a live server that I want to completely mirror to a 2nd server so if something were to happen to the live server the backup server could simply be plugged in and ready to go.
+One way to do it is to use the heartbeat package. Install it on both servers and configure them in active-passive mode. If one server failed, the other will be ready to serve the users.
+Combined with the Heartbeat package listed above, you can build some very interesting fault-tolerant setups.
+Note that we'd need more details to be more helpful. It's possible that application-level fault tolerance is available, depending on what it is you're trying to accomplish.
+Done right the only one who knows that your primary server is broken, stolen, on fire is you because heartbeat send you a warning that the secondary server has taken over.
+I've not tried it,  but you should also be able to rsync between the two servers without need for a backup server.
+You can use three IP addresses for two servers. One IP is assigned for each machine and the third IP (called VIP: virtual IP) is assigned by heartbeat to the currently active server. The users will access the provided service via the VIP.
+Install the same base OS with the same partition structure onto the spare server and bring it up with its own IP address (this is the easiest way I've found). Personally we then use Bacula to take a weekly full backup of the entire server (with daily incrementals in between) and when we need to recover:

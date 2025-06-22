@@ -1,0 +1,13 @@
+You're right to be concerned about the flexibility of your approach: what would Twos return in a currency that doesn't have toonies?
+Taking future considerations into account, I think you need to re-think your model.
+By modeling the CurrencySet entity the way you have, you've pretty much hard-coded the currency paper's nominal values:
+Now you can detect currency paper with consecutive serial numbers if you want, and your Safe can contain papers in many currencies, and calculate the total value in $USD, CDN$, €EUR or ¥YEN, given the exchange rate for $USD as a reference currency.
+Granted, me putting SerialNumber, Issuer and YearIssued in there is pushing it, but it makes a point: this model is much closer to the actual real-world objects - an approach with its own pros and cons.
+Doing this turns your Safe into an actual safe that literally contains money - it also means the calculating the Totals is a method that has nothing to do in the data itself:
+It's really a log entry more than the transaction itself: I think I'd call it TransactionLog though.
+Now what your code is doing, is logging the number of individual CurrencyPaper instances that were involved in a transaction. To do this with the approach I'm suggesting, you might want to break the transaction logs in two tables for full details: one with "header", another with "details" (enabling tracking of individual CurrencyPaper instances) - but that's certainly overkill. You could also just track the total amount deposited/withdrawn, given a Currency.
+I am attempting to design an application that tracks currency and recent transactions in a safe.  I am using entity-framework code-first in a wpf desktop application.
+The first goal is to be able to track whats currently in the safe. For example - 87 Ones, 55 Twos, 76 fives, etc..
+The second goal is to be able to track recent deposits/withdrawals into/out of the safe. For example - user X deposited 5 ones, 10 fives on 1/1/14.
+Is the following a reasonable entity framework data model to accomplish this?
+One concern I have is tracking non-US currency. Not a requirement currently, but maybe in the future.

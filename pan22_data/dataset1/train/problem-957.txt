@@ -1,0 +1,6 @@
+I plan to have 2 t2.micro Linux instances with 1 MySQL DB db.t1.micro and 1 Elastic Load Balancer on Amazon Web Services. I will run PHP programs on it.
+My question is: Do I need to write session to database, in order to be shared between 2 instances? Or I can treat the Elastic LB as transparent?
+As your application does not seem to support clustering with session management to share sessions across the cluster I would recommend you to configure session stickiness for your load-balancer. This will bind a user's session to a specific instance. Then, all user's requests will be processed by that instance only.
+You have two choices there. Your application supports sessions so you can tell your load-balancer directly what application cookie to use to track the instance for each user's request.
+Otherwise you can enable so-called duration based session stickiness when load-balancer itself is inserting a specific session cookie to the responses to bind subsequent requests from the user to the same instance.
+Following screen-shots are self-explanatory. You can configure session stickiness from AWS web console -> your load-balancer description tab -> edit port configuration

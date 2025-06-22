@@ -1,0 +1,12 @@
+(I should notice that before that I got another error related to super-block, which was fixed by re-running the mkinitrd).
+I moved my CentOS soft-RAID1 drives to another box, and now it fails to boot.
+While changing box, it is highly likely that your disks no longer have the same device name as viewed by Linux.
+When I launched the boot process from the grub menu, I get the following error:
+Then, check that /etc/fstab and /etc/mdadm/mdadm.conf don't contain any references to your raw disk names.
+You should boot the new box on a rescue CD (live CD, any distro will work).
+In any case, the disk that used to be /dev/hda may now be /dev/sdb, or something else.
+This could be because the driver is a different one, or they are just numbered differently.
+Then, check how your disks are detected, find their new names, so you can update your configuration.
+Swap partitions are a frequent culprit, if you didn't put them in a RAID partition.
+Update this to be correct for your new box, and rewrite grub to both your disks, using the grub command:
+GRUB does it's best to use "independant" disk names, such as (hd0) and (hd1), but it does map these to real device names in the file /boot/grub/device.map.

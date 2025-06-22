@@ -1,0 +1,21 @@
+It requires a bit more RAM, but it supports row-level locking instead of just table-level locking (among many other improvements).
+During a slow SELECT all write activity will be queued and that can pretty soon lead to all kind of nasty problems.
+But if you have even moderate write activity and some long-running SELECTs, please be aware that MyISAM only supports table-level locks.
+You will also want to get on and run "show full processlist;" to make sure that it's not something deliberately explicitly locking the table, like some sort of backup.
+MySQL is pretty well designed in this regard, especially if you use the InnoDB engine.
+http://dev.mysql.com/doc/refman/5.0/en/myisamchk.html
+If we are talking about actual locks, as in deadlock / timeout, you should check for any suspicious LOCK TABLES command.
+InnoDB supports row-level locks, transactions and multiversioning, so even a heavily mixed read/write operations will not slow it down nearly as much as MyISAM.
+Also make sure that whatever the storage engine is in use, it is properly tuned.
+Should you use MyISAM or InnoDB, that depends on your workload.
+As already noted, the storage engine selected is the main factor affecting MySQL's performance.
+My (MySQL) database is experiencing intermittent lock timeouts.
+For MyISAM key_buffer_size and table_cache are the most important values to tune, for InnoDB the first thing to adjust is innodb_buffer_pool_size.
+Indexes do not need to be re-indexed... but they need to be correctly indexed in the first place.
+If in your case SELECTs are fast to do and there's not much write activity to DB, MyISAM is not bad at all.
+If you're having locking issues, you may want to look into converting your MyISAM tables (or at least the tables with the biggest lock contention issues) to InnoDB.
+After you compress a table with myisampack, you should use myisamchk -rq to rebuild its indexes.
+Back in the day I would have to reindex my SQL Server and Oracle indexes because they needed it.
+You should not need to reindex MySQL except in cases of corruption from a crash or sudden power-off.
+But both of the storage engines have their own gotchas: for example, only MyISAM supports full-text indexing and InnoDB table space does not shrink, so in an actively updated table where there's lots of deletes/updates/inserts going on, you need to dump to table contents and suck them back in every now and then.
+I do not have a root cause yet and we do not have any recommendations yet.

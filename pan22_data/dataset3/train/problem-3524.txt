@@ -1,0 +1,16 @@
+You can add additional valid referrers with additional SetEnvIf and Allow directives.
+And another idea is simple: just redirect to a Php file (here filter.php) which will look in the authorized website and return the required file if everything is ok:
+Correct me if I'm wrong, but if the rule is declared before any vhost it will be applied on all the vhost (kind of "default rule").
+To bypass: http://mydomain.com/images/hotlink-ok/pic.jpg
+Supported file extensions are gif, ico, jpg, jpeg, and png.
+seems to be the most applicable (and doesn't require the full weight of mod_rewrite).
+No matter what you do you will be "wasting" CPU cycles (to determine if the referrer site (the one doing the linking) is authorized or not you must do some processing of the request data).
+Cloudflare may be of some help to you:  http://www.cloudflare.com
+Automatically enable hotlink protection for your images to prevent off-site linking.
+How about writing a rule that, if referer is unknown (of forbidden), just call a Php file where you pass the image as a param, and in the Php file, just put in big red: "this file comes from MYWEBSITE.COM and has no official authorization to be shown here".
+The only thing you can do is save bandwidth while wasting a minimum of CPU cycles.
+There are some examples in the Apache Docs that do exactly what you want.
+Or use CoralCDN ant let folk hotlink to their heart's content?
+Referers that are not in-zone and not blank will be denied access.
+This however only works for images but that seems to be what you are after.
+In filter.php just load dynamically a list of vhost or something like that:

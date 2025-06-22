@@ -1,0 +1,24 @@
+Note that the "^M" in my line above is a way to get an embedded newline that will be interpreted later after screen stuffs it into your existing bash shell.
+Both Brad and Mankoff's solutions are good suggestions.
+I wrote a little utility called after that executes a command whenever some other process has finished.
+This has the advantage of being able to run in the background, you can check on it whenever, and queueing up new commands just pastes them into the buffer to be executed after the previous commands exit.
+I'm doing multiple commands in the above just for testing.
+There is a utility that I have used with great success for exactly the use case that you are describing.
+every other script will have to look in /tmp for lock files with the naming scheme you choose.
+Technically, you don't even need to name your screen session and it will work fine, but once you get hooked on it, you're going to want to leave one running all the time anyway.
+View the help with ts -h. I sometimes inspect the command output while it is running with ts -c.
+the hackiest way i can think of is to maintain the queue "state" with simple lock-files in /tmp.
+Another that's similar to a combination of both them would be to use GNU Screen to implement your queue.
+That will spawn up a background screen session for you named queue.
+Append & to the end of your command to send it to the background, and then wait on it before running the next.
+when file1.sh is doing its cp commands, it will keep a lock file (or hardlink) in /tmp.
+Recently I moved my primary laptop to new hardware, which involved moving some files to a NAS and the rest of them to the new machine.
+Then, whenever you want to check the status of your background queue, you re-attach via:
+Of course, if you do that, another good way to do it would be to name one of the current windows "queue" and use:
+The big advantage to this over some other approaches is that the first job doesn't need to be run in any special way, you can follow any process with your new job.
+It'd be pretty easy to make some simple shell-scripts to automate that and queue up commands.
+There are other methods of doing this but for your use case they all include Task Spooler.
+naturally this is subject to all sorts of failures, but it is trivial to set up and is doable completely within bash.
+Task Spooler has many features such as rearranging the run queue, run a specific job only if another job ran successfully, etc.
+I choose to use rsync over SSH to preserve file timestamps, which copying over SMB would not have.
+(incidentally, now's a good time to play with some awesome .screenrc files)

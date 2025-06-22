@@ -1,0 +1,9 @@
+You can get away with very little: assign static addresses to both ends of the 10Gb cable outside your LAN subnet. Everything will follow from that. 
+and likewise on the other machine (except for using an address 10.171.62.2/30). This will automatically create a routing-table entry for the subnet 10.171.62.0/30 thru the device eth1. 
+While the main network from the router will probably be using DHCP, the 10GbE network between the server and workstation would be statically addressed in a different subnet to the main network.
+So all that would need to happen is that the workstation would make sure to use the 10GbE IP address when communicating with the server.  It will automatically use its 10GbE interface as that is the direct connection to that subnet.
+It is better to be specific in this scenario, rather than relying on netbios advertised names (such as you would get in the Network part of Windows) as it wouldn't always take the right path.
+If you have a DNS server in there somewhere, you could add an entry for the 10Gb IP address distinct from the main network address, and so go by name.  
+Doing this automatically at boot at boot depends on distro. For instance on Debian and derivatives you would add the following stanza to the file /etc/network/interfaces : 
+In order to refer to the otherend of the cable by name, the problem is sufficiently simple that you may go back to the way it used to be done before DNS, i.e., by adding a line like the following to /etc/hosts
+As you can see, this creates two paths for traffic between the machines. Is this kind of arrangement feasible? Is there something beyond plugging it in that I will need to do to make this work properly (i.e.: traffic between those two machines only over the 10GbE connection)? It seems like having them access each other by the appropriate IP should just work. Will it? What about by name (e.g.: CIFS)?

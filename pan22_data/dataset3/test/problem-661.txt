@@ -1,0 +1,10 @@
+Is it possible the source of problem in your case is lock escalation?
+Another thread is then taking an IX on the issue table (which is blocked).
+For example, lock escalation is not triggered if a statement acquires 3,000 locks in one index and 3,000 locks in another index of the same table.
+If Java is starting a transaction for you automatically, and the insert of 10k+ rows is taking a few moments, then this thread is taking an IX on the Issue table.
+Hope this would help you to investigate the problem.
+Another great article related to Lock Escalation for SQL Server 2005 is Lock Escalation in SQL2005.
+Similarly, lock escalation is not triggered if a statement has a self join on a table, and each reference to the table only acquires 3,000 locks in the table.
+According to MSDN article Lock Escalation (Database Engine) a lock escalation is triggered when a Transact-SQL statement acquires at least 5,000 locks on a single reference of a table or index, or, if the table is partitioned, a single reference of a table partition or index partition.
+This thread is then attempting to take an S on the issue table (for the INSERT SELECT FROM statement) which is blocked waiting for the other thread, and we now have a deadlock.
+You'll want to change your code to something like this.

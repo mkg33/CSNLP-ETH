@@ -1,0 +1,9 @@
+More details here: http://mandie.net/2014/09/10/lync-phone-edition-pin-cisco-certificate-chain/.
+If you are using a load balancer and an intermediate CA (the CA that issued your Lync server certificates is not your root CA), make sure that the full certificate chain is getting passed to the connecting device.
+Make sure that your root certificate is in AD where the phone knows to look for it: http://technet.microsoft.com/en-us/library/gg398270%28v=ocs.14%29.aspx
+DHCP "lite" was running on the Lync servers, so on their subnet, they were getting the proper values, but there were still problems on the subnets the phones are on.
+One way to do this is to have your load balancer pass the full certificate chain, not just the server certificate.
+For example, I was getting a good result from it when I was either directly on one of our Lync servers or implicitly remoted from my desktop to one of them to run that command.
+However, when I installed the Lync Management Tools on my desktop and tried it from there, the truth came out.
+Also, Test-CsPhoneBootstrap can give a false positive if the computer running the Lync commands is not on the same subnet as the phone (they would probably not be on the same subnet in all but the smallest organizations).
+Read the comments for information on what is probably a better way to handle this.

@@ -1,0 +1,11 @@
+It will not work by writing the ISO file to the thumb drive with dd because that works only for hybrid ISO (ISO file that has an MBR and a partition table), which is not the case of Windows ISOs (They are actually UDFs).
+If you need the drive to be legacy bootable, write boot code to the MBR of the drive and the boot sector of the partition with ms-sys:
+Use 'a' in fdisk to mark the partition as active if you will make it legacy bootable as well.
+The partition type should be c (W95 FAT32 LBA) in fdisk or 0700 in gdisk.
+A single partition (not the same as partitionless) will do.
+Then format the partition with mkfs.fat (with optionally -F32).
+Mount both the formatted partition and the Windows ISO (to different mountpoint respectively) and copy the content from the ISO to the drive.
+You need MBR/msdos partition table if you want it make it BIOS/legacy bootable as well, otherwise you can use GPT (but it's not a must for UEFI booting).
+ef/ef00 might also work but that would prevent the drive from being accessible in normal Windows environment without extra steps.
+Note that if you want your Windows installation to be of UEFI variant, you may want to avoid making the installer drive legacy bootable to avoid ambiguity, because the mode the installer drive booted in is going to determine the boot mode / variant of the new Windows installation.
+To make a UEFI bootable drive out of of it, you need to partition the drive with fdisk or gdisk.

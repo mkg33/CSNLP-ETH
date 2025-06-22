@@ -1,0 +1,9 @@
+Unfortunately Synergy tries to enumerate all available entry formats via EnumClipboardFormats, which should also be no problem, but somehow it is.
+I seem to have the same problem and I found it annoying enough to spend time to debug and fix it (for me).
+In Synergy EnumClipboardFormats returns only the first format which is CF_UNICODETEXT for plain text and something completely different for everything else.
+According to the code that should not be a problem since each entry has several formats and always plain text UTF-16 encoded, which is what Synergy expects.
+The symptom is that seemingly all non-plain-text entries in the clipboard are ignored.
+I wrote a simple test program and there was no problem with that approach.
+Replacing CMSWindosClipboard::get with the method below did fix the problem for me.
+This can be nicely verified by opening MS Word and the clipboard view, since entries there have little icons identifying the format of the entry.
+Instead of returning the other formats, as my test program, in Synergy the next call to EnumClipboardFormats returns error 183 (ERROR_ALREADY_EXISTS) which makes no sense and is not documented.

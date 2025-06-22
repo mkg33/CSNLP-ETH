@@ -1,0 +1,18 @@
+I wrote a bug to the authors, and they replied back that it was design intent to prevent DoS by using massive keys.
+It works totally fine with ~3700-bit key, but with ~17000-bit key it thinks for like 20 seconds on client-side and then just says "Access denied" and asks for a password.
+Wild guess: It could also be that putty itself has this limit, thinking that if the client side processing of the public key authentication takes that long, something is wrong.
+There is no maximum key size or timeout defined in the protocol (or at least none that you'd be hitting), but an implementation might not support such long keys.
+Wouldn't surprise me to see something similar in OpenSSH.
+I understand that using such large keys have not much practical sence, especially when looking at these 20 seconds of calculation, just trying to solve any problems I face :-)...
+Then the server might not want to spend too much computing power on an unauthenticated user: refusing very large keys is a protection against DoS attacks.
+This could be a limit that you are hitting if it is set to 20 seconds.
+You should see the maximum if you try to go above it with ssh-keygen as shown below.
+Currently 2048 bits is considered reasonable for an RSA key; 4096 bits is higher than necessary but usually supported; beyond this you shouldn't be surprised if some programs to reject the key.
+You may be running into a limit to what is supported.
+Rather current Centos system of mine supports a 16k maximum which seems sufficient for massive keys.
+Is there any key length limit or timeout in OpenSSH for key-based authentication?
+A 20-second processing time with the private key doesn't sound high for a 17kbit RSA key.
+Were you able to generate that size of key on the intended target system?
+At one point I looked into the source of OpenSSL for Diffie-Hellman keys, and found there was an "arbitrary" 10K limit on the size of DH keys.
+I changed the source for a test, and found that worked.
+I'am using Putty on windows with key-based authentication to access some of mine servers.

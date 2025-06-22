@@ -1,0 +1,17 @@
+It's a little nasty because neither is the DB in Single User mode or readonly (of corse not) or anything else indicating the reason.
+It must have a very low timeout value, but maybe you can check if you have anything getting blocked when you try to access the properties
+I hope I see this issue again so I can find out if a trace reveals anything.
+I have resolved this by restarting the SQL Server service, unfortunately/fortunately.
+For instance, if you try to delete a very large number of rows (millions) from a table, the engine will have to log every row in for rollback purposes, which will force the log file to grow rapidly.
+Again, while this is happening, you SSMS will not be able to give you the database size because it's changing too fast to be accurate.
+I get this error message during deployment of a SQL Server database tools solution against the database (on SQL Server 2008 R2).
+Just came across this and from a trace, apparently this got blocked by an INDEX REBUILD operation that was running
+Not that I thought this would actually fix the problem, I just read that in a forum somewhere.
+I regrettably did not do what  PJ Mahoney suggested re: running a trace.
+Needless to say, please don't try this on live servers.
+See your log file blow up in hunderds of megs or even gigabytes per second.
+At least answering my own question means I don't have to see another suggestion about changing the database owner ;P
+My initial idea was to detach/attach the database.
+This can happen on very busy databases or even if the database is not a busy one in general, but at the moment it's executing a statement that is rapidly changing the log file size.
+While this is in progress, if you try to open the database properties in SSMS, you will see the error message "property size is not available.."
+Another way to reproduce it is as follows: take a very large database (100+ million rows), and execute an ALTER TABLE statement on it (e.g.

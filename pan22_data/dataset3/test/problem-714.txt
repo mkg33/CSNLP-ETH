@@ -1,0 +1,19 @@
+the kernel will see and work with the individual disks under the hood).
+You would need to perform this before you attempt to install Ubuntu.
+Your motherboard does not have an hardware RAID controller, but rather a SoftRAID one.
+Unfortunately it still shows 2 partitions, one 500 GB and another being 36GB for some reason.
+Once the RAID10 volume is created when you install Ubuntu it should be seen as a 1TB SCSI device (most likely /dev/sda) to the OS.
+Sameer is correct that you don't need to worry about mdadm at all because that is for software RAID and as your motherboard has hardware RAID that is preferred over software even on the worst day.
+RAID10 involves the stripping (concatenating) of 2 pairs of drives (RAID0).
+I think best would be if anyone had found good instructions (step by step) for how to do this...I've been googling for hours and haven't found anything...
+That's basically a standard SATA controller + custom BIOS and drivers to work in raid mode.
+If you follow the motherboard's softraid way, you have to find how to create a RAID10 setup before actually installing/booting linux, as described in the manual.
+The PDF you linked actually gives you the instructions to configured RAID10 on page 6.
+Sameer is slightly incorrect in the inner workings of how a RAID10 array is configured but that is not germane to the question at hand.
+Performance wise there is no (hardware) difference between the two solutions, which one performs better only depends on their respective software implementations (md and dmraid drivers, both in linux kernel).
+I go through the instructions when I get to the "partition" section of the install, creating 4 RAID 1's (2 partitions on each drive, one for primary and one for swap space), then combining to make a RAID 10.
+There's no cache, prefetch, parity (RAID5, RAID6), etc... it's best described as a software raid with BIOS support.
+http://www.unrest.ca/Knowledge-Base/configuring-mdadm-raid10-for-ubuntu-910
+http://www.supermicro.com/manuals/other/RAID_SATA_ESB2.pdf
+Whether to prefer using that or native linux software (mdadm) is another (long) story, but basically:
+The low level disk access will be through linux SATA drivers in both cases (ie.

@@ -1,0 +1,11 @@
+Never put your app server and DB server into one machine.
+Since you are using EC2 there are some white papers on Amazon named "Architecting on AWS" and there is a section called scalability.
+So they shouldn't be in the same group of your app servers (auto-scale or ELB).
+Depends on your EC2 type the network has low-moderate-and high type of network but when it comes to internal it's pretty much fast.
+You should be more worried about your query time on EC2 machines by choosing SSD volumes (Provisioning your EBS volumes maybe) and maybe RAID your EBS volumes to speed up read/writes.
+It will be inside DNS resolving time, HTTP request time, HTTP respond time, etc.
+It means it should be no data stored on any machine so you can easily bring a VM up (from your AMI) based on your auto-scaling group or get rid of it when the traffic goes down.
+Now the network latency, actually lately I was testing internal network speed check on AWS VPC and it wasn't that bad at all.
+"Put the webserver (Node.js in this case) on the same EC2 instance as the database"
+The bottleneck usually is the I/O when it comes to database in architecture not the network latency (unless you are using all the bandwidth so you need more secondaries so your app servers can read from them directly).
+Database servers usually have their own way of scalability like Master-slave or replica-set.

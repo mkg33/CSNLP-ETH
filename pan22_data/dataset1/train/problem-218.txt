@@ -1,0 +1,13 @@
+I see several things wrong with your code.  However, before trying to list them here, let me just show how I would rewrite your main loop:
+acceleration.set(0, 0);  // or, equivalently, acceleration.mult(0);
+The main differences between this and your code are that:
+Note that I've assumed that you want the ship to accelerate upwards when the up key is pressed and downwards if the down key is pressed, regardless of its orientation.  Depending on what kind of game you're making, you may instead want to add or subtract the ship's heading vector (normalized and scaled by a constant) instead of the fixed vector (0, 0.001) to the acceleration.
+Also, there are a couple of improvements you could make to you physics simulation (i.e. the lines velocity.add(acceleration); and location.add(velocity);).  One is to account for the fact that the velocity has changed during the timestep in your location update, by taking the average of the old and new velocity:
+This makes the trajectories physically exact (under constant acceleration), and, in particular, ensures that, with appropriate scaling, they won't be affected by changes in the simulation time step.  However, to really make use of this feature, you need to actually involve the timestep in the calculations.  This would be easiest to do if your vector class included a multiply-and-add method:
+If not, you'll just have to do it by hand, e.g. like this:
+Note that this will mess up the acceleration vector (by multiplying it with 0.5 * timestep²), so you shouldn't use it for anything after this.
+First, you shouldn't be hard-coding numbers like your acceleration.  Numbers like these, which need to be fine tuned, should be variables that can be easily tweaked, either in one-place or dynamically using a slider or somesuch during testing.
+Second, from what I understand (of your comment to MagiSun), your problem with the acceleration giving you odd behavior is that your acceleration value is far too small.  
+Even at 60 updates per second, you're accelerating at 0.06/s, and unless your velocities and positions are also in similarly small measurements (which I assume they aren't by your description of the resultant behavior), this will result in a very slow deceleration.  
+If you're keeping the "Down" key pressed the entire time, by the time you reverse course (and travel in negative velocity), your negative acceleration will be very noticeable, giving you the "uncontrollable speeds".
+Try raising your acceleration value, but take note that you might also want to increment acceleration at a slower rate than your updates-per-second/fps.  Another concern is that you might want a maximum acceleration, even if it might be unrealistic, simply for the sake of a good "feel".

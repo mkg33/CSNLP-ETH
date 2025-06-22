@@ -1,0 +1,8 @@
+What is the expected output of this? You'd expect the count to be 8. But no, the output is now 2. Because your AnyML method changes the list.
+AllOrDefault seems a little weird to me. I'm not sure it's useful but that's up to you. Though, to respect the LINQ's standards you should return a new instance of the list. Meaning : 
+Each is fine. It's exactly as ForEach for the List<>. But in that case, you don't check if the enumerable is null. You'll get a NullReferenceException in such a case. Also, I don't think it's useful for this method's return type to be anything else than void. But well, it could be a weird case of fluent API!
+Then again, your Any method just uses other LINQ extensions to replace Any. Because the LINQ's Any already has an overload that takes a predicate.
+You don't (and shouldn't) check for Any. What's the worst case? You'll get in the foreach and do nothing since there are no elements in your list. This has an overhead.
+AllOrDefaultML shouldn't exist. It's not clear what the function is used for. We're used to the Where syntax and you should keep these separated. That method has too many responsibilities : Check if it's null, check if there's something then filter.
+Why doesn't AnyML use Any? If it's to "rebuild" the LINQ extensions, you should consider not to use any of the LINQ's extension methods to learn better! (Using GetEnumerator and check if there's an element would be a good other solution)
+Overall, your methods add an overhead to simple operations that are already done using LINQ. If you want to rewrite LINQ, don't use LINQ. :)

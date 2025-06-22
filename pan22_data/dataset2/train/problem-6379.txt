@@ -1,0 +1,6 @@
+If you want to get the value of the sequences without having called nextval(), and without having to modify the sequence, I threw together a PL/pgSQL function to handle it: Find the value of all database sequences
+Note that the usefulness of the RETURNING clause goes well beyond just getting the sequence, since it will also:
+Currval only gets the last value generated in the current session - which is great if you don't have anything else generating values, but in cases where you might call a trigger and/or have the sequence advanced more than once in the current transaction it's not going to return the correct value.  That's not an issue for 99% of the people out there - but it's something that one should take into consideration.
+I want the "last inserted id" from that table, without using RETURNING id on insert. There seem to be a function CURRVAL(), but I don't understand how to use it.
+That should give you the last inserted id (4 in this case) which means that the current value (or the value that should be used for the id next) should be 5.
+The best way to get the unique identifier assigned after an insert operation is using the RETURNING clause.  The example below assumes that the column tied to the sequence is called "id":

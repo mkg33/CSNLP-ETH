@@ -1,0 +1,10 @@
+Further, continuing from the above example, you can add blanket rules via a 'trap' in the script that will always execute certain commands if any type of error status is returned at any point in the script (including receiving a control-c (interrupt) signal while the script is running):
+(Disclaimer... commands shown above are general pseudo-code, and just typed from memory without running them. Typos surely exist.)
+Bash doesn't have any built in alerting for this stuff, you need to write it into your script by checking the $? variable (holds the exit code of the last run command) and taking an action on it. 
+You use a mailwrap command wrapper, one which takes some options specifying who to mail to, before running the command which is its parameter.  The mailwrap command only sends email if there's output, or if the script failed.  There are many variants out there, and they're good exercises to write yourself if you don't like those you find.
+I want if any of the command fail this should alert over email as well as after successful competition. Any idea? I can adjust email alert but want to know how to check for errors and successful attempt.
+Be sure to check your command documentation to make sure successful execution sets an exit code of 0.
+You can have a series of commands continue to execute until "failure" by using "&&" to run the commands in succession; each command returns "true", causing the following command to run. Then use "||" to run a command upon failure, such as:
+To have a failing command not abort the script, you append || true, read as "or true", so that failure doesn't matter.  (More idiomatically, || : which is the same thing).
+On the #! line of the script itself, you use -e, so that any command pipeline which fails causes the script to abort at that point.  You might also use -u, to abort on using an unset variable.
+If you want to see exactly where a normally-silent command failed, you use a mailwrap command which doesn't send email just because of output to stderr and then you use -v on the shell #! line, to trace commands as they're about to be run.

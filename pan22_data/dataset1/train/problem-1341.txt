@@ -1,0 +1,11 @@
+It does sound like a permissions issue - whichever user Apache is running as probably doesn't have access to the share.
+There are a couple of ways around this, depending on what is hosting the samba share. The simplest method would be to force the owner and group when mounting to be the Apache user/group. This kinda maps a particular user/group on your system to the user credentials used to connect to the share (someone else feel free to come in with a better explanation here).
+Assuming you haven't used suexec, Apache is probably running as the user "www-data". If Apache is running as any other user, you'll have to modify the commands below to replace www-data with the appropriate user and group names.
+mount -t cifs -o user=smbusername,uid=www-data,gid=www-data //server/stuff /mnt/stuff/
+When mounted, www-data will appear to be the owner of the mount point, and Apache will be able to read it.
+Note that this gives Apache whatever rights you've assigned to smbusername on the samba server. Depending on what you want to do, you might want to mount it as read-only, by adding "ro" to the options:
+mount -t cifs -o user=smbusername,uid=www-data,gid=www-data,ro //server/stuff /mnt/stuff/
+This may differ slightly depending on your versions of Apache and samba/cifs - let me know if it isn't working, and what OS and versions you're using, and I'll try to help.
+I am trying to understand what my problem might be here:
+I am using a web application built on LAMP that needs access to a samba share that I've successfully mounted using
+In the application, the samba share isn't accessible like other directories are. However, I can access it through the terminal just fine. Is this a permissions issue with Apache? If so, how would I grant permissions to apache from the remote computer?

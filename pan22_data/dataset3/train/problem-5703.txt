@@ -1,0 +1,15 @@
+The MAC address is (usually) fixed on the hardware.
+And after reboot, the file is not present, and adapters still sometimes switch places.
+The interface names are assigned in the order they are found, but unfortunately this is not determistic.
+The network interfaces are probed at boot and the result of this probing is not predictable.
+Any hint or idea how to fix this annoying issue is greatly appreciated.
+You can also create a udev rule file "by hand" to map a MAC address to an interface name, for example:
+On both systems, the first adapter is always connected to the local network, and the second one is almost never connected to anything, but occasionally used for testing network equipment.
+I have two server systems, one running Debian Stretch, the other Ubuntu 17.10, both of which have two network adapters, configured in the following way (/etc/network/interfaces):
+Also, initial ram disks on both systems have the same IP addresses (yes, I an using the "old school" interface names) configured with (/etc/default/grub):
+Note that it is not the MAC addresses that are swapped, but the interface names.
+This is exactly the problem with the "old school" interface names that Predictable Network Interface Names is attempting to solve.
+Now, Debian Jesse and Ubuntu 16.04 LTS both had /etc/udev/rules.d/70-persistent-net.rules which clearly stated which MAC belongs to which interface name.
+What's happening in your case is that the physical interface that has the name "eth0" sometimes gets the name "eth1", which means your static network configuration is applied to the wrong port.
+What sometimes (1/10 times) happens is, after reboot, the adapter names switch places, and all of a sudden eth1 has a MAC address that eth0 had before reboot, and has a DHCP obtained address.
+This file does not exist on my systems, I never removed a single package nor deleted that file from those two systems.

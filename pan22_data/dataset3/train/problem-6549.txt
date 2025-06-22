@@ -1,0 +1,36 @@
+I have a desktop machine with 16GB of RAM running on PAE kernel.
+And that at the worst possible moment: when it is needed; causing delays in your application that are noticeable and often unacceptable.
+In these situations, since the cache reclaiming process in the Linux kernel, as far as I know, is still not NUMA-aware, processes running on the NUMA node which has memory allocated to cache are forced to allocate memory on the other NUMA node, as long as there is free RAM on the other node, thus killing the performances.
+If the system is swapping (trying to read and write from a disk swap partition faster than it is actually capable) then dropping caches periodically can ease the symptom, but does nothing to cure the cause.
+You should determine what is causing a lot of memory consumption that makes dropping caches seem to work.
+The solution might be to evict some big files at the end of the day using vtouch; it might also be to add more ram because the daily peak usage of the server is just that.
+This ended up being caused by Apache being configured to allow too many processes to run simultaneously.
+Be proactive in finding out why it is there, have the guts to disable it if others suggest it is wrong, and observe the system - learn what the real problem is and fix it.
+The question is from 2014, but as the problem exists to this day on some hidden centos 6.8 backends, it may still be useful for  someone.
+a nightly echo 3 > /proc/sys/vm/drop_caches is the easiest fix for that bug if you don't want to have a downtime for restructuring your zfs.
+Many simple parallel applications tend to do file I/O from a single process, thus leaving on exit a big fraction of memory on a single NUMA node allocated to disk cache, while on the other NUMA node the memory may be mostly free.
+Don't just assume that it is something that is necessary.
+In the worst case the swappiness settings of linux will cause program memory to be swapped out, because linux thinks those files may be more likely to be used in the near future than the program memory.
+So maybe not cargo cult admining, but some pretty good debugging was the reason.
+But is dropping caches the solution to this problem?
+It is possible that this was instituted as a way to stabilize the system when there was no one with the skills or experience to actually find the problem.
+For non parallel applications this problem is unlikely to arise.
+There, disk space isn't freed for deleted files because if nfs is used on top of zfs the file's inodes aren't dropped from the kernel's inode cache.
+The basic idea here is probably not that bad (just very naive and misleading): There may be files being cached, that are very unlikely to be accessed in the near future, for example logfiles.
+if something is swapping) and then analyze accordingly, and act accordingly.
+What would be the solution here is to tell linux what it doesn't know: that these files will likely not be used anymore.
+In my environment, linux guesses quite often wrong, and at the start of most europe stock exchanges (around 0900 local time) servers will start doing things that they do only once per day, needing to swap in memory that was previously swapped out because writing logfiles, compressing them, copying them etc.
+Too many processes, using a lot of memory (Magento is a beast sometimes) = swapping.
+However, in an HPC system, it would be wiser to clean cache before starting a new user job, not at a specific time with cron.
+After a an hour or two the disk performance degrades dramatically until I drop the caches so I simply put it into cron.
+This can be caused by any number of poorly configured or just plain wrongly utilized server processes.
+What you should have in place is a system that monitors your memory usage patterns (e.g.
+This may make sense on NUMA (non uniform memory access) systems, where, typically, each CPU (socket) can access all the memory transparently but its own memory can be accessed faster than other socket's memory, in association with parallel HPC applications.
+Depending on your settings of swappiness, file access pattern, memory allocation pattern and many more unpredictable things, it may happen that when you don't free these caches, they will later be forced to be reused, which takes a little bit more time than allocating memory from the pool of unused memory.
+I don't know if this is a problem with PAE kernel or with the cache implementation being so slow if there is plenty of memory.
+For instance, on one server I witnessed memory utilization max out when a Magento website reached a certain number of visitors within a 15 minute interval.
+These "eat up" ram, that will later have to be freed when necessary by the OS in one or another way.
+Dropping caches will essentially free up some resources, but this has a side effect of making the system actually work harder to do what it is trying to do.
+That way you can remove the data that is not needed anymore from the caches, and keep the stuff that should be cached, because when you drop all caches, a lot of stuff has to be reread from disk.
+was filling up cache to the point where things had to be swapped out.
+This can be done by the writing application using things like posix_fadvise() or using a cmd line tool like vmtouch (which can also be used to look into things as well as cache files).

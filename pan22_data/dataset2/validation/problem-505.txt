@@ -1,0 +1,7 @@
+I am trying to synchronize two mailboxes which reside in different servers. This is due to a migration process. The old server is a courier server and needs to be accessed via IMAP, whereas the new server is a dovecot server. I am trying to follow the original Dovecot documentation. Unfortunately it is not specified where the configuration of the source IMAP needs to be set, when the doveadm script is run on the destination server. The documentation provides the settings, but does not mention which dovecot configuration file the settings have to be entered. 
+I had great problems, because my source IMAP only supports STARTTLS on port 143. -o imapc_ssl=starttls was a life-saver in my case.
+Note this is for a single user; you may want to have different options if you use a master user/password, or if you require SSL for the connections.
+You should migrate your mail using the dsync utility from Dovecot.  This will preserve the UIDs and even POP3 UIDLs if necessary.
+Run dsync using the backup -R option, to 'reverse backup' from the remote IMAP server to the local Dovecot server.  You need to have a special configuration file created, something like this:
+Of course, this is quite insecure if you have more users on the box that can see your commands (and passwords) with who or by looking into your .bash_history file, so beware.
+Best would be to place the configuration in /etc/dovecot/conf.d/90-migration.conf (all files in conf.d dir are automatically included).

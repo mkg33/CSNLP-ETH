@@ -1,0 +1,13 @@
+So remember to carefully consider the entire security environment as a whole.
+It's not secure, and there's no reason in this day in age to use it.
+As for security of the FTP conversation itself (ircmaxell's concern), just set up FTPS.
+i don't know what distribution you use but Arch linux has a good wiki page on setting up vsftp:
+when you created the admin_ftp user you did not specify that you want the home for this user to be anything other than /home/admin_ftp.
+How about setting local home for those accounts accordingly and then use chroot with chroot_local_user or chroot_list_enable config options?
+As far as how to do it, there are a fair number of them.
+Now, it's worth pointing out that jailing people like this, in the absence of other safeguards, can be pointless; after all, since it's inside a DocRoot, they can just upload a PHP file, and then access that PHP file via Web browser, at which point they're no longer jailed.
+It's pretty trivial to do so in vsftpd, and if you use FTPES, you can connect either way.
+I'll link to a few google search results (Not vouching for any of these):
+Instead, use SSH and/or SCP and/or SFTP (all similar and related protocols).
+you should change the home directory for the admin_ftp to /var/www/ if you want that to be the directory you go into when you FTP using that user:
+so the ftp server is trying to go into the /home/admin_ftp because that's what it sees in the passwd file.

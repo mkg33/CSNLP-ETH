@@ -1,0 +1,15 @@
+I'm running Emacs on OSX (Emacs24) and on occasion I have to edit files on a mounted sshfs volume.
+There are different ways  to set variables in emacs.
+(setq vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)\\|\\(%s\\)"
+assuming you mounted stuff on /tmp/mnt it should work by appending another line of formatting \\|\\(%s\\) and adding /tmp/mnt/* to the list of strings
+                                     "/tmp/mnt/*"))
+                                     vc-ignore-dir-regexp
+I would try modifying the variable vc-handled-backends which my version of Emacs describes as:
+                                     tramp-file-name-regexp
+However, Emacs' vc integration -- git, specifically -- is REALLY slow over sshfs mounts.
+I think writing an around-advice for vc-git-registered (or even vc-registered or vc-find-file-hook) would be the best course of action.
+The default list of backends is (RCS CVS SVN SCCS Bzr Git Hg Mtn Arch)
+Just editing your ~/.emacs file and adding the following two lines should do the trick (notice Git is removed from the list)
+I'd like to selectively disable vc-mode, either in configuration or using .dir-locals.el.
+As pmr mentioned, you can remove git from the list of backends.
+In there, you would check the file path or the value of some variable that would be set through .dir-locals.el.

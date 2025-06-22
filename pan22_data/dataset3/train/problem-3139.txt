@@ -1,0 +1,25 @@
+This practically means that every single step in that workflow is a point of failure that by itself can break the website.
+When the tests go through you point the load balancer to use the new website.
+When you want to release a new version you deploy it to an internal staging website.
+I usually set up workflows where team managers can approve merge requests to a special branch that does all the normal CI stuff, but as an additional last step also starts pushing to production nodes.
+Now you have a choice of either leaving the old system as is so you can back out or bring it up-to-date so it can be used as a spare for the live system until it's time to build/test the next updates.
+Ensuring that such a thing cannot happen is the base of all the CI, HA and failover processes.
+Whichever one of those it is, do it when you do releases, and then you can take your main data centre down during a release.
+All the other problems that you and others have mentioned becomes less severe when you can deploy at any time in a stress-free manner.
+Amending the other answers: You should follow the blue-green deployment model.
+The blue-green deployment model is a quite complete solution for deployment problems.
+You could have a 2 (or more backend) systems with a front end that directs traffic to whichever is currently live.
+Once you are happy that a release is going to work you tell the front end to switch to the new system.
+You might accept the downtime, you might fail over to another data centre, you might be running in active-active mode in multiple data centres all the time, or you might have some other plan.
+Don't run just one node, don't run just one HA process, don't run on just one IP address, don't run just one CDN etc.
+What you basically do is run a manual CI deploy to a production instance.
+It might sound expensive, but putting a duplicate of what you already have in a rack on a server with it's own connection usually costs less than one hour of downtime on a business site.
+this should be easy to script an take a short time.
+If you're prepared to have downtime when your data centre has an outage, then you're prepared to have downtime, so it shouldn't be a problem during a release.
+This is normal and many people just deal with it as part of business.
+It seems from what you say that you have a maintenance window from 1 am to 7 am every day the issue is not time but convenience.
+Right now, it sounds as if you are running a production application on a single node, with one deployment process, one source and one target.
+If that instance doesn't generate invalid responses, breaks, or does weird things to your data, you then mass-upgrade all nodes using your CI solution of choice.
+Then, you can run automated tests on the next version production site.
+This way, if one deployment works, you know all deployments will work for a specific tag/commit.
+What will you do if your main data centre suffers an outage, which happens at all data centres from time to time?

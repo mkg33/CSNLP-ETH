@@ -1,0 +1,5 @@
+I have written a small C program that allows me to logout and login as a different network share user on Windows. Running the program brings up the standard Windows network login dialog.
+However, I have found a more efficient method. By just calling WNetAddConnection2, Windows does the clean up by itself with no login attempt required.
+What is weird about net use is that it doesn't seem to work with the guest user. You may have to dig into the Win32 API to get what you really want instead of relying on command-line tools.
+In my code, I have called WNetCancelConnection2 before WNetAddConnection2. If I recall, I don't think a cancel connection is necessary for an unmapped share. However, I have canceled the connection anyway for my mapped share because it makes sense to remove my mapped drive first so that it doesn't appear when there is no active login credential.
+A way to change the login credentials for a network share on Windows is to attempt to login as a different user (like entering bad username and password). Windows will clear the old login credentials by itself.

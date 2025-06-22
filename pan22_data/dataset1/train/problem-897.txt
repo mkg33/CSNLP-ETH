@@ -1,0 +1,11 @@
+Using public key authentication bypasses other authentication methods, so there's no need
+to use PermitRootLogin without-password, it's dangerous if someone tries to login as root and is not forced to present a public key.
+To accomplish what you want, disabling password authentication in sshd, use PasswordAuthentication no in your sshd_config.
+This setting will not affect the contents of /etc/shadow, where your user passwords are stored. If another application wants to authenticate via password (say CUPS for example), this will still work.
+If you want to disable this, deleting a users password with the command stated above will not work. It allow password-less logins for a given user, that's definitly not added security.
+Issuing passwd -l <user> will accomplish what you intended. Keep in mind though that other apps than ssh might have a problem with that because they expect password authentication in their default setup (sudo, su, CUPS, etc.)
+Absolutely not, removing the root password would be a great security risk, if you want to modify the root password I would suggest that you set a strong random password for the root user.
+Now you have root user locked down for SSH access only to your SSH key, your next step would be to check which other users have shell access and remove it if not needed, and do the same for any additional user accounts you may create and keep SSH access only to the root user.
+If you do choose to remove the password for any user, it should have also shell access removed in /etc/passwd by setting the shell to /sbin/nologin.
+A different approach would be to disable password login for SSH for all users and allow public key authentication only.
+Also ensure that the public key authentication is allowed in /etc/ssh/sshd_config :

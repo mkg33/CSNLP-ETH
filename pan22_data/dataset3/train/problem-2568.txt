@@ -1,0 +1,13 @@
+Second, you must check, if SELinux protection doesn't deny any requests.
+If SELinux deny access to some files from apache, you will se 403 Forbidden error in your browser.
+Files from directory /var/www/vhosts/default/httpsdocs should be labeled with httpd_sys_content_t label (you should execute chcon -R -t httpd_sys_content_t).
+This is default action for apache if apache doesn't know, what to do with special file type.
+I'm setting up a server with Plesk, and we'd like to be able to provide a publicly-accessible copy of phpMyAdmin.
+However, it's serving phpMyAdmin as the actual PHP files, not as executed PHP.
+What's the best/correct way to enable PHP execution on that directory?
+In /var/log/audit/audit.log you will se some avc:  denied messages.
+One way would be to add a  directive to control/configure that directory
+In default RHEL apache config, php is loaded from file /etc/httpd/conf.d/php.conf and file /etc/httpd/conf/httpd.conf contains line Include conf.d/*.conf, which includes all files from conf.d dir.
+To make this change premament (to survice filestytem relabel), you should execute also semanage fcontext -a -t httpd_sys_content_t /var/www/vhosts/default/httpsdocs(/.
+You wrote, that apache return files intead of executing them.
+First, you must check, if php module is installed and loaded into apache and properly configured.

@@ -1,0 +1,8 @@
+Maybe if you wrap the call into a shell script, and you invoke your shell with the option to keep it running after the script is finished.
+If your process can source whichever of /etc/profile or /etc/bash.bashrc and their respective $HOME files, then this might work for you:
+Its not clear why you would want the screen session to stick around after the process exits. presumably for capturing output, but that can easily be redirected.
+The only reason to use screen is if you want the process to run but it still need standard input/output for control. In any event it is advisable to avoid that if possible and just use nohup, and if its a long running process integrate it into the boot process of the machine as a long running service.
+The key here is that you want the process to detach itself from the controlling shell or tty. The easiest way to do this is to just run nohup, i.e nohup whateverprocess. man nohup for more information.
+When "background-shell-script" exits, the screen session will be sitting waiting for you at a shell prompt when you reattach with screen -r. If you reattach before the process is complete, you will see whatever output it creates as it occurs and have a shell prompt when it finishes.
+Launching a screen session with a background process using -d -m causes the screen session to terminate when the process exits.
+Is there any way to get the screen session to stick around after the process exits, but still launch it without any user interaction?

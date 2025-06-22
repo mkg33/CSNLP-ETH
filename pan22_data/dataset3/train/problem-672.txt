@@ -1,0 +1,19 @@
+I then thought that maybe the phy on the card was creating a crc for me so I purposefully flipped the bits in the first byte of the crc and I stopped getting packets.
+Then while keeping the fpga connected to the router I disconnected the motherboard from the router and connected the usb ethernet adapter to the router.
+So it looks like that although the ethernet adapter on my pc is checking the full 4 byte crc it is also transmitting the first half of it to the computer.
+However instead of ending at 0x07 the captured packet includes 0x27ae which happens to be the first two bytes of my CRC code.
+I thought that maybe my usb adapter was having issues, but I can browse the internet with no issues over it.
+When I check the output signals using chipscope it looks like I am just transmitting 0x07 and then another 4 bytes for the crc as expected.
+The usb nic card is the  "AmazonBasics USB 3.0 to 10/100/1000 Gigabit Ethernet Adapter".
+This worked and the last byte in the packet was in fact 0x07, and I did not see any of my crc in the dump.
+In the packet I am sending the last few bytes are 0x01 0x02 0x03 0x04 0x05 0x06 0x07 which I can clearly see in the packet.
+I created a really simple packet with a broadcast destination address and some made up ethernet type.
+In ifconfig I could see errors packets being dropped.
+So it looks like the problem lies with my usb adapter and not the FPGA.
+I have the ethernet from my fpga plugged into a usb ethernet adapter on my desktop since the ethernet port on my motherboard is used to connect to the internet through my router.
+The next experiment I tried was instead of connecting my FPGA to the usb ethernet adapter I plugged it directly into my router.
+However, most protocols I can think of like TCP or UDP have a length field so they are probably ignoring the extra two bytes of data anyway.
+Since I am using a broadcast ethernet destination I figured the packet would get routed back to my pc through the nic built into its motherboard thereby skipping the usb ethernet adapter.
+I am thinking it might have something to do with latency where the card just transmits part of the crc before realizing that it is in the crc.
+I am testing the ethernet transmission on my Digilent Nexus4 DDR FPGA.
+Now when I received packets from the fpga -> router -> usb ethernet it included part of the crc again.

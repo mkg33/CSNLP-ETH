@@ -1,0 +1,9 @@
+At this point, you know exactly what service was hogging the CPU and can then pursue finding out why that specific service would suck cycles.
+I just had one of the svchosts processes, out of nowhere, start to  cripple my Win7 32bit PC for the last 2 days, with the (Dual Core) CPU stuck on 100%.  This particular svchost process was responsible for over a dozen net services process threads, all of which appeared to be standard necessary network services.
+It was then replaced by another, utilising some 35 - 45%.  By right clicking in Task Manager and going to the service, the only service attributed was Windows Defender....  (and we've all heard of that one before).
+Disabling this in services got me back about 60% of my CPU, and this particular svchost service then dropped off in task manager.
+As many don't realise it's installed with Windows 7 by default (you can't see it in your programs list), this link show a nice tuorial on how to disable it.
+This is where everybody else stopped; that’s not enough. Now, you need to run Services.msc and stop each of the services that are hosted by the runaway instance of svchost in turn, making sure to wait and watch for a while after each to see if the CPU load drops. If it does, then the last one that you stopped was the culprit.
+Using a combination of new admin alerts in the EventVwr, Sys Internals Process Explorer and svchost analyser, I narrowed it down to the main culprit being:
+Try changing the Power saving mode from the Balance (default) to Performance and set the sleeping mode to "Never".
+I’m surprised about the advice that others have given on this issue (some even simply made guesses).

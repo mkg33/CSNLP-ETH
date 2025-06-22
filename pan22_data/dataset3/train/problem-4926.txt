@@ -1,0 +1,17 @@
+This approach is however beneficial when you tasks are IO bound, i.e.
+to a website and wait for a return - most your time is spent waiting.
+Multiprocessing is particularly useful in the case that your long-running cell is compute bound, meaning is has to perform a large computation.
+There you can create a group of worker processors, to which you can send the contents of cell 1 and at the same time the contents of cell 2.
+I don't think Jupyter notebooks (even via extensions) currently offer pausing/restarting cell blocks.
+two different instances of the Python interpreter.
+This is because Python only runs one single process at a time (key term: Global Interpreter Lock).
+In general, however,  you cannot strictly pause the execution of something and come back to it later.
+The only thing you might be able to do is create a cell 0, which performs some kind of check, testing how long cell 1 might take to run, then just put cell 1 and cell 2 in and if/else construction that gives the correct order to use.
+They will be computed at the same time, using two different processes i.e.
+This can be easy to achieve if there is no direct dependency between (in your case) cell 1 and cell 2.
+there is no big computation, but rather you send data e.g.
+If you abort the execution of the function, the intermediate results are lost (because they are stored within the namespace of the function you effectively just killed).
+I would suggest putting the code of both cells into a single cell and using Python logic to determine the order of execution.
+You might want to look into something like the multiprocessing library.
+This allows Python to kind of do two things at once, but with shared state - so each running thread can change variables that the other thread might also be changing, which can require a lot of work to make safe.
+Yet another option would be to investigate the threading module and concurrent programming in general, but this get a little more complicated and is probably beyond what you want in your situation (it also requires more effort to get working that multiprocessing).

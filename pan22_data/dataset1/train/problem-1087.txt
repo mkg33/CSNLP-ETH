@@ -1,0 +1,8 @@
+From what you've described a self referencing table is the way to go.  This only works if you can get all the data into a single schema (which you probably can).  It'll make the management a piece of cake and you can have changes on infinite length at this point.
+I am currently trying to design a table structure that can capture report data (from various sources) in an ordered fashion.
+Each day I receive three separate reports from various companies (one report per company). These reports are a dump of their database tables and include PK, FK to previous report row (of another company), Amount, CustomerID, Timestamp and some other unrelated fields.
+The order of the reports is very important. The three reports create a chain that I am interested in (query later). Each record only knows about its immediate predecessor (FK to previous report row) and is NULL if it is the root record.
+The problem I am running into is the fact that for certain chains, the length of the chain can be 5 reports, others are 3. I'm wondering if it is possible to design a Chain(?) definition table somehow and reference a chain id somewhere in the record so that the record knows which part of the chain it belongs to.
+The previous developer created a table per report and had humongous amounts of business logic to tie report chains together. I would like to abstract this design so that the tables are agnostic to the reports and have one to four tables instead of fourty-seven.
+Once everything is stored, I would like to query a specific master record and see all children records and their amounts.
+I read about self referencing tables, but I am not quite sure if this is the right way to go.

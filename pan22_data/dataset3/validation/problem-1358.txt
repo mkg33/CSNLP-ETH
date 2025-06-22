@@ -1,0 +1,19 @@
+The area will never be negative since the radius is multiplied by itself.
+It's a strange circle to contemplate, but it's not impossible.
+Besides, it'd be better to raise an TypeError, since that's a lot more specific to this case than a general things-just-kinda-broke-RuntimeError.
+Since Ruby isn't strictly typed and there's no compile step, the exceptions will occur at runtime anyway.
+Again, I'd probably just skip the checking entirely, but if I were to add it, I'd write
+If the check wasn't there, and you called, say, Circle.new("banana", "banana").area, you'd just get a NoMethodError instead.
+If you've set the radius to "banana", then don't expect the math to make sense.
+The area might be zero, but again, that is the area of a zero-radius circle, so strictly speaking it's still valid.
+For most cases, I lean toward saying "Garbage in, garbage out".
+Conceptually, a circle with a zero or negative radius might not make a lot of sense, but there's nothing in your code that would break because of it.
+It just raises a RuntimeError, with no extra explanation of what went wrong.
+I'd still argue that radius can indeed be zero, and that's fine.
+You're also checking the type of the radius argument.
+Regardless, no reason to be dogmatic either way; type-checking definitely has its uses, and I'm not saying to always avoid it.
+And if you do want to avoid strange radii, you can add a separate check after that:
+So even if you try to add a lot of type-checking, it's debatable how much value it adds.
+Of course the current check happens in the constructor, which might be nice, but is it necessary?
+Especially in this case, since raising a RuntimeError with no extra explanation seems less useful than letting, say, a NoMethodError occur, which will at least tell you things like undefined method**' for "banana"`.
+Not saying that's better, just saying that it's much worse either.

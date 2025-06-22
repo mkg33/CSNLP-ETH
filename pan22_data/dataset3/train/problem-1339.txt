@@ -1,0 +1,23 @@
+If you are still having trouble, try ssh in as the user rsysnc is connecting with and try running rsync --version to see if the shell can find rsync.
+The prompt will not be shown at all when directly executing a command, and non-interactively so.
+The false command will immediately terminate without producing any output, so it is a good test:
+If testfile is NOT 0 bytes, then the trouble is that your shell is outputting something.
+This is commonly caused by your shell's login stuff outputting stuff on a non-interactive shell.
+If rsync is not in the path, you will instead see something like:
+You can tell the client end (assuming it is the newer end) to not advertise such a high version that the old rysnc server version doesn't recognize it.
+Another thing to check if you are getting this error is whether rsync is installed and locatable by ssh:
+or alternatively, like this, since the special parameter - contains i when the shell is interactive:
+And since the shell can potentially be invoked, it must not display anything in non-interactive mode — like, when typing just "bash" into an existing prompt, nothing but the new prompt should appear.
+If it is, you can change it to check if your terminal is interactive and only output text by using the following code in a bashrc.
+Check /etc/profile, .profile, .bashrc, .cshrc, etc.
+I got protocol version mismatch -- is your shell clean?
+simply because I hadn't installed rsync on the other end yet.
+Something equivalent exists for other shells as well:
+Rsync does have options for specifying the path of the remote end, read the man page(s).
+However, if the test file is in fact 0 bytes, then your shell is behaving, but it is possible that you just have a very old version of rsync.
+This can be caused by an login message on the remote host such as "Your password is going to expire in 6 days" which RSYNC does not expect
+If that command line produces any output, one of your startup scripts is to blame:
+You can fix this by either installing rsync, or if it is installed but in an unusual location, passing the location to the rsync command line:
+A simple google turns up first result: http://marc.info/?l=rsync&m=100263876212594&w=2
+There is a simple way to test if your shell is clean, for an ssh connection: run a command from the ssh connection, rather than starting an interactive shell.
+If you get something that says command not found, then rsync might not be installed on the machine you are connecting to or it might not be in the path.

@@ -1,0 +1,32 @@
+Right-click on the EFS folder, and select Properties.
+On the file server, open “gpedit.msc” and navigate to Computer Configuration >> Windows Settings >> Security Settings >> Public Key Policies >> Encrypting File System.
+I'm asking if there's a way to prevent files from being encrypted.
+I want a way to tell the above server "don't allow files on the E: drive to ever be encrypted by anyone or any software/process."
+Create (maybe through ACL) the ability for the OS to require a user approval when a modification is made to a certain file type (e.g.
+I have yet to apply it since I can't duplicate the issue on our production server in our test environment.
+When Microsoft completes the setup of a new server, regardless of that server’s role, the setting for EFS on the server (not the domain) will be set to “Not Defined”.
+How is the OS supposed to know if a file is encrypted vs being of some format it doesn't "know" about?
+Here's the suggestion from our Encryption software support team.
+The behavior you are describing is most likely a setting on that file server.
+No, you cannot prevent files from being encrypted.
+Depending on the scenario, “Not Defined” could mean “enabled” or “disabled”.
+But if clicking on an "OK" button will allow the write, it will also PREVENT a write to a file.
+You can disable OS-level encryption, and perhaps some programs from running via GPO, but that cannot stop every program, nor users uploading already encrypted files.
+By setting the EFS option to “Don’t Allow”, that will cause the prompts to reappear.
+I've searched around online but get a bunch of EFS/bitlocker/ransomware links that have nothing to do with my question at hand.
+If you have Active directory, you can try a SRP (Software Restriction Policies) GPO to block executables in this paths:
+***Note: Before you turn off EFS on the file server, you should have the users move the data back to his/her original machine.
+Since crytpo processes do these things rapidly, without user intervention, the encryption succeeds.
+I'm not asking about ways to prevent ransomware, etc.
+The other weirdness is that on my test Windows 2012 R2 server, it does not allow encrypted files instead it takes a long while to copy the file and when it is done the files is not encrypted.
+It's probably not a perfect solution, but it's a start in preventing rapid file modifications from client systems on shared drives.
+Users are coping encrypted file to our main Windows 2012 R2 File server and of course other users can't read the files.
+We also recommend that EFS be disabled on all file servers that you may have in your environment.
+After you have disabled EFS, the user can copy the data back to the file share.
+I'm referring to some extent to ransomware, but specifically I want the following scenario:
+A couple weird things are: it used to prompt the user when they copying the encrypted files to give them a choice of de-crypting first, it doesn't do that anymore and copies the encrypted files directly.
+I can't find any way to do this at the NTFS level, short of "read" access.
+What you want to do is ensure users are only putting files where they are supposed to - and no where else.
+Change the option for “File encryption using Encrypting File System (EFS)” to “Don’t Allow” or “Disable”.
+I'm running Windows update to see if "breaks" then.
+Extracted from: http://www.sysadmit.com/2015/04/windows-gpo-para-prevenir-cryptolocker.html

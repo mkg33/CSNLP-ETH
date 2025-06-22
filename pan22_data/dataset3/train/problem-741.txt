@@ -1,0 +1,14 @@
+I have been looking at other Linux packages such as keepalived, but, I have only been using Linux (server) for a week now and am at the limits of my understanding.
+At the moment, each HAProxy box has got two network cards (well, two configured, I can have a maximum of 4 and wasn't sure if they needed their own one for management between the boxes).
+In addition, I have created an additional virtual ip for eth0 called eth0:0 which has got a third public ip address.
+I can think of one way to use two haproxies at the same time.
+I just about get how to use it for load balancing between multiple web servers that are behind it, but, I am failing to load balance between the two HAProxy boxes - they appear to fight for the virtual IP, but, this does not appear to be a smart solution.
+Inspired by the Stack Overflow network, I am now obsessed with HAProxy and trying to use it myself.
+If you want higher availability, you already got it using two haproxies and VIP assigned to one of them by keepalived or heartbeat.
+On both machines, the backend one (eth1) is a private IP that goes to a switch connected to the webservers, and the front facing one (eth0) has a public internet IP that is routed straight though.
+Is there anyone who has done this before and can you advise anything for maximum uptime?
+Now, by using the virtual shared IP address, this solution appears to work and does seem to give me maximum uptime, but, is this the correct way to do it, or is there a smarter way?
+You can configure keepalived to assign one VIP to each haproxy server.
+If you want to load balance the traffic between two different haproxies, you need to have another load balancer in front of them and that will not be useful.
+Usually, this is the solution to HA and load balancing problems.
+When one haproxy fails, the other node will hold the two VIPs and receive all traffic.

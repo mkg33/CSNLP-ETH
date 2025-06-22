@@ -1,0 +1,5 @@
+The name stored in the certificate has to match what you configured your client to connect to (exactly). For instance, if you configure your client to connect to "puppet.domain.com", you'll get an error if the certificate is named "puppet" and vice versa.
+you can ask facter (facter fqdn) what the hostname is and see if that is consistent with what you expect.  Also take a look at (by default) /var/lib/puppet/ssl/ and see what the certs look like, if they don't have the correct hostnames that may be your problem.  Since puppet does all of it's communication over HTTPS it's fairly sensitive to resolution and host naming.
+Sounds like the puppetmaster certificate was created when the host was named something other than "puppet". Recreate the certificate and you should be good.
+which will make puppetmaster use cname.domain.org instead of the default fully qualified domain name.
+Do puppet and puppetclient both resolve in DNS? If not you can edit the /etc/hosts file to map the IPs and hostnames. IIRC, you should only need to do this on the client.

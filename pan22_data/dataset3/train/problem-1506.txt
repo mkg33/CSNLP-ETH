@@ -1,0 +1,7 @@
+Texture baking can be accomplished by simply rendering the mesh in texture space.
+Lighting and shading calculations will work as usual as long as the pixel shader inputs are hooked up correctly.
+You don't have to do any complicated inversion operation; you just take advantage of the GPU rasterization hardware, which is happy to draw your triangles at any coordinates you choose.
+In other words, you set up a render target matching the size of your texture, and draw the mesh with a vertex shader that sets the output position to the vertex's UV coordinate (appropriately remapped from [0, 1] UV space to [−1, 1] post-projective space).
+Then the pixel shader can do its thing without even being aware that it's rendering into texture space instead of the usual screen space.
+The vertex shader can still calculate the world-space position, normals, and whatever else it needs and send those down to the pixel shader.
+Naturally, this requires that your mesh already has a non-overlapping UV mapping that fits within the unit square, but texture baking doesn't really make sense without that.

@@ -1,0 +1,16 @@
+If you use fewer connections and queue work, you get the same amount of work done in a smaller time.
+Wouldn't it though run very badly with the "few hundred connections" from the second formula?
+If the connections are actively working, then you also have contention on system resources and on internal locks.
+People like big numbers though, so they'll give you big numbers.
+If I'm misunderstanding something, please let me know.
+Until something changes and the applications decide to actively use all of those connections, then the insurance becomes pretty expensive.
+A lot of applications have poor connection discipline, keeping connections open even when they are not being used.
+For example,  at this time Amazon RDS's largest machine (db.r3.8xlarge) has 32 vCPUs, which according to the first formula would perhaps manage to run optimally with 100 connections in the pool, given many disks.
+Either they're using a connection pooling frontend like PgBouncer in transaction pooling mode, or it won't work well.
+It's surprisingly hard to persuade them that lowering the number of workers will make the system go faster, and that their original performance issues stemmed from having too many in the first place.
+Additionally, even idle connections have some further housekeeping costs.
+For me - not an experienced DBA -  there's a discrepancy somewhere in here, especially looking at the offerings of some DB-as-a-Service providers.
+I routinely run into people who're having PostgreSQL performance issues - and who try to solve them by adding more connections, more workers in their application, etc.
+PostgreSQL has some costs that scale linearly with max_connections, so even if the connections are not used it still has a performance impact.
+Even more extreme is the discrepancy for another DBaaS provider, who proposes a 2 core server with 500 concurrent connections.
+Setting a high connection limit is cheap insurance against these applications.

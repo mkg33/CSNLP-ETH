@@ -1,0 +1,11 @@
+I get the feeling that you're trying to use cron as a process supervisor. (@reboot is once while * * * * * is every minute).
+Yes, this is absolutely possible. Cron is an important service on every system and will likely start before something like MySQL.
+The script only does not work if I do @reboot. Is it possible cronjob is starting before MySQL does?
+The custom wrapper script wait for MySQL process to become active, then execute your python script and exits.
+If you had to be absolutely sure that mysql process started before your script runs, you can write a shell wrapper script like this (let us call it custom_wrapper):
+While it might be possible to alter the order, this has the potential to screw up your system if you are not extra careful. A better alternative would be to just add a delay to your cron script so it waits long enough that MySQL will be running (e.g. 60 sec.).
+A crude solution is to instruct your script to sleep some time. For example, change your cron line as below:
+Then, from crond (or whatever configuration management system you are using, such as cfengine, puppet, chef, etc.) call /sbin/service SERVICE ensure-started   (where the ensure-started would be something added by you. I can't remember if condrestart is meant to do that or not....).
+PS. documentation for init-scripts can be found in /usr/share/doc/sysvinit* or similar on RHEL systems.
+Yes, the cron daemon could quite easily startup before mysql has completed (or even begun) its startup process.
+Have a init-script that starts the service and manages a lock file (/var/log/subsys/SERVICE would be best, as an init-script is expected to manage that on a RHEL box (well, at least prior to 7, not sure if that is still true in 7).

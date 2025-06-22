@@ -1,0 +1,14 @@
+The first step is to devise a method to extract the value from the log file.
+That being said, I personally would choose an approach that is not necessarily the simplest, but could be the most useful going forward.
+This snmp-based approach is a bit of up-front work, but can yield great value down the road as you can begin tracking all sorts of custom values in your environment and getting them graphed.
+Generally speaking, Nagios is used for alerting based on some present condition, and something like cacti is used for recording values and storing them for historical analysis.
+For the first step, I would suggest setting up net-snmp on the server where the log file is stored.
+Nagios can do some basic trending graphs, but nothing compared to cacti.
+The second step is to get that value into a tracking system.
+Write a script, or find one that's been written already, that can extract the value from the log file exactly as you'd like to store it.
+This will get plotted into your historical graphing solution.
+Write your own script, as above, but this script becomes a Nagios plugin that is invoked by say, nrpe.
+For the second phase, you'll direct your graphing tool (cacti) to contact the server in question, and query for the specific OID, which in turn invokes the script and returns a value.
+When you say you want to be able to 'chart', that implies advanced historical graphs / analysis, and that means cacti.
+You can then customize snmpd to run this script for you, and return the value with a custom OID that you specify.
+If you're talking monitoring the current state of the latest entry in the log file, you're talking Nagios.

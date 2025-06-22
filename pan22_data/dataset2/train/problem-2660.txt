@@ -1,0 +1,15 @@
+I wanted to copy a image to one of my SD cards using Win32DiskImager. But I clicked too fast and it written to one of my external harddrives instead of my SD drive, so I disconnected as fast I could do..
+At the first time, it found the lost partition with Quickscan but it couldn't be recovered because the Win32DiskImager has created 2 linux partitions: /boot and /.
+There are two partitions on the drive it self, a NTFS one from 0-1.3TB and FAT32 at the end of the drive.
+First of all, thanks Rod Smith for the excellent explanation about this issue. I did use your references to solve my problem.
+The drive letter appears on Windows but Windows cannot read information due to corrupted files, so I opened a command prompt as administrator and run chkdsk [drive_leter] /f to fix the disk.
+After chkdsk terminates it tasks, I was able to access my files, but all the files at the beggining of the disk was lost (as expect, because Win32DiskImager wrote data on it). It was about 250MB lost, and it's nothing compare to entire disk.
+As you tackle this problem, be patient. Thoroughly read documentation and begin writing to the disk only once you've understood something. You don't want to read something like "type d," then type d in response, only to continue reading "only if you want to lose all your data." ;-)
+Is there a way to recover my partitions? I already made a DD backup from the current state just to be sure if I could get it back.
+But it was too late, the ext HDD has overwritten my NTFS partition, with the partition what was in the image (4gb +/-, actually the wheezy raspbian image).
+After a long research, I found a software called Active@ Partition Recovery, which is not free but it worth the price. I bought the personal license for $39.90.
+Then, opened APR again, did a SuperScan on entire disk, and it did found my "lost" partition again. I clicked on the partition with the right button and clicked Recover. Now the APR show that is possible to recover due to disk had no partition (I leave all default option and clicked on recover button on first tab). But the task was not finished yet.
+I closed the APR and opened the Windows Disk Manager (Control Panel -> Admin Tools -> Computer Management -> Disk Management) to delete the booth partitions.
+In some cases, tools like TestDisk can locate filesystems even if the partition table has been completely lost, enabling recovery of the partition table. This is most likely to work if your disk had multiple partitions and your accident did not intrude into the start point(s) of some of your partitions. For instance, if you overwrote the first partition but left the second intact, TestDisk might help you recover the second partition, even if your disk used MBR and you lost your original MBR data.
+I usually include advice to make a low-level backup with dd in a case like this, but I'll keep that short this time, since you say you've already done it. (I want to get in some mention of this for the benefit of other readers, though.)
+I know this is an older topic but I made exactly the same thing as Dnstje did, and maybe this answer could help other people.

@@ -1,0 +1,10 @@
+Basically you go to Network Connections -> open properties for the virtual switch you want to delete -> click Configure -> go to the Driver tab -> Uninstall Device.
+As always, I would recommend that you export your current settings to a .reg file to have an appropriate backup before attempting similar changes.  
+I didn't want to install the Azure Powershell tools so I just followed the steps in this video: https://www.youtube.com/watch?v=V5Gb342gSGg
+Even though I'm not using Docker, I wanted to figure out a solution without using regedit, so after attempting the answer from RobV8R, I found instructions on this question on MS Technet.
+Source: https://social.technet.microsoft.com/Forums/en-US/winserverhyperv/thread/e49df568-4f4c-47b7-b30c-952d1e26ca58/#8ecfa676-3184-4035-96de-10df079f706f
+After they deleted the corresponding value within that key and rebooted, the virtual switch was gone.  
+Before trying the solutions above, make sure to check the 'details' pane for the error message. In my case, it read that the failure occurred due to other VMs still using the switch.
+Also, I'm going to assume that you'll want to follow @mxgg250's advice, and set all hyper-v services to manual start, otherwise it's going to recreate the switch on reboot.
+To prevent the Hyper-V service from creating a new one next time I restart my computer without disabling it altogether I changed the Startup Type of each Hyper-V service to be Manual.
+Ultimately, the OP performed an in-depth search within the registry and found the virtual switch configuration stored within the following key:  

@@ -1,0 +1,7 @@
+I have a very large table (88m rows, nearly 300GB in size) that has a poorly planned clustered index. I want to add a BIGINT identity field, and make it the new clustered index (having the desirable attributes of unique, narrow, static, and ever-increasing). 
+The problem is that I also want this new identity field to be ordered in a certain way on the current records (based on an existing date field that is not the current cluster). This is so when we purge the oldest records, those will all be contiguous on disk. (The date field isn't unique, though, so isn't a good candidate for the cluster by itself.)
+How can I get the values for this new identity field ordered the way I want?
+The first idea I had was to make a new table with the identify field, and just INSERT INTO rows from the current table ORDER BY the date field? Would that work? 
+If I don't have enough disk space to do that, is there any way to do that "in-place"? Perhaps by changing the clustered index to the date field (wait a long time), then add the identity (and wait a long time again)? Are the values of the identity guaranteed to be ordered by the current cluster?
+I just performed the following experiment on a SQL Server 2012 box:
+I suppose this isn't a guarantee that the clustered index dictates the order a new IDENTITY column gets filled in - but, I'd say it strongly indicates that it's very likely.

@@ -1,0 +1,17 @@
+I use the Match section with the host and negated exec keywords to test for the hostname and the existence of the control socket file.
+But if I comment out the RemoteForward line in the config, it's able to successfully reuse the connection, making it connect faster.
+Match host hostname5 !exec "nc -zw1 localhost 52698 && nc -zw1 localhost 1050"
+Here's another solution that does not depend on ControlMaster:
+These work by checking to see if the target port is opened.
+Match host hostname1.example.com,hostname2.example.com !exec "nc -zw1 localhost 52698"
+netcat is a great tool for quick network tests and redirection.
+But when I open a new terminal and attempt to make a second connection, I get this error:
+When I make an initial connection to the host, it successfully creates the master socket file at ~/.ssh-lachlanhunt@hostname.example:22.
+Is there any way I can configure ssh to support both multiplexed connections and enable the remote port forwarding, such that it only attempts to forward the port if it's the master connection?
+Match host hostname1.example.com,hostname2.example.com !exec "nc -zw1 %h 52698"
+If the file doesn't exist, then this is the master connection, so setup the port forwarding.
+This also works for local port forwarding and SOCKS proxying:
+Otherwise, this is a slave connection and the forwarding is skipped.
+Match host hostname3,hostname4 !exec "nc -zw1 localhost 1050"
+-w1 says you should wait at most one second in the event your packets are ignored e.g.
+The -z option instructs netcat to just scan for whether a daemon is listening on the given port.

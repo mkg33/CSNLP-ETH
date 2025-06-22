@@ -1,0 +1,42 @@
+I realize that there has to be a limit in order to prevent DoS attacks.
+v=spf1 ip4:123.123.123.2/24 include:sgizmo.com -all
+Must I check weekly, daily, to insure that some combination of changes doesn't suddenly put me over the top?
+This doesn't mean that your SPF record can only have 10 items.
+However, in the real world, it is probably not unreasonable for large companies to have many server addresses.
+It means that processing the SPF should cause no more than 10 DNS lookups.
+If you also had a web server and 5 MX (mail servers), you could do the following:
+SPF implementations MUST limit the total number of those terms to 10 during SPF evaluation, to avoid unreasonable load on the DNS."
+Therefore, if your SPF record contains 5 IP addresses and sgizmo includes 11, you can get that information with only 2 DNS queries.
+The SPF record for sgizmo.com contains eleven entries!
+To look at your issue, lets look at the following SPF record:
+The SPF record for my domain will contain four or five entries, plus it will contain:
+A more permanent solution would be to send emails from 3rd party suppliers from a subdomain (surveys.yourdomain.com).
+For example, the following SPF record has only 2 terms but includes 254 IP Addresses and an include for a total of 265 addresses:
+Thats only 2 DNS lookups and the first one doesn't count.
+Since you can get the full list of MX records in a single DNS query, the above-listed SPF would bring the number of DNS queries to 3 out of 10 and would include 271 addresses.
+You could write a simple script or visit above mentioned tools once in a while.
+You're absolutely right, this is an annoying limit in SPF and you're not doing anything wrong.
+One query to your DNS for the SPF record and one query to sgizmo for their SPF record.
+Imagine if you have 20 such suppliers sending on your behalf, though!
+This includes 7 terms but only the include requires a DNS query.
+Some software also allows you to set an alternate return-path / bounce-address in your emails.
+You can check the state of an SPF record at https://dmarcian.com/spf-survey/ or at https://MXToolbox.com or many other tools.
+sgizmo.com looks like it has just 5: sgizmo.com, a, mx, emailsrvr.com, and support.zendesk.com.
+This means that this would add 16 servers to your valid SPF check and would count as 1 DNS lookup out of 10 as the ip4 terms do not require any DNS queries to resolve them.
+So that ends up as being only one additional lookup in your own SPF record.
+Keep in mind that the initial SPF query doesn't count in the total of 10.
+Receiving mail servers will dismiss your SPF record as a whole, and, if you have setup a DMARC (reject) policy your emails might very well be dropped.
+SPF is always checked on the Return-Path email domain, if present.
+Correct me if I am wrong, but I thought it was just 10 DNS lookups.
+By itself it accounts 10 DNS lookups, so adding it to your own record would put your SPF at 11, and thus a broken SPF.
+This, plus mine, is way over the maximum ten allowed by the RFC (and probably by most servers).
+However, the website of SurveyGizmo states that if you use their services and need to add them to SPF, you should use app.sgizmo.com to include, which does only include IP addresses.
+Furthermore, must I know monitor my 'include:' counterparts for changes and additions?
+v=spf1 mx a ip4:123.123.123.2/24 include:sgizmo.com -all
+It doesn't seem to me that SPF is suitable for prime time.
+RFC 7208 states that DNS queries are limited to 10.
+You may be confused about RFC 7208 § 4.6.4 where it states: "The following terms cause DNS queries: the "include", "a", "mx", "ptr", and "exists" mechanisms, and the "redirect" modifier.
+Since the MX and A terms require DNS lookups, they count as 2 additional DNS queries.
+On your question on monitoring your SPF record, you surely do need to monitor your record and DNS lookup count including all includes of includes.
+You can include networks, domain names, mx entries - there is no need to put in a single individual IP address.
+v=spf1 ip4:123.123.123.2 ip4:123.123.123.4 ip4:123.123.123.6 ip4:123.123.123.8 ip4:123.123.123.10 include:sgizmo.com -all

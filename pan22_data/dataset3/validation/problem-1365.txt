@@ -1,0 +1,10 @@
+Also, the problem doesn't happen when joining the Windows 8 image to a new forest.
+We have a problem where domain members built from a certain Windows 8 image can no longer update Computer Group Policy.
+I am not sure this will solve your issue, but I have found it useful to force policy updates when they seem to be otherwise stuck.
+It's only the combination of the old forest and the specific Windows 8 image.
+These domain member have recently been moved to a new Organisational Unit, but moving them back is not possible because the OU structure has changed significantly.
+You can remove the current GPO settings by removing the HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy key and then repopulating with gpupdate /force
+In the gpresult /h output, we see that Group Policy Infrastructure component has failed due to the error "A directory service error has occurred."
+We believe that there is something on the client side that needs to be deleted/reset so that the client can behave normally.
+There were also some (undocumented) Group Policy changes, but this should be irrelevant given that the error still happens when the domain member is in an OU with no GPOs applied to it.
+Other domain members (not built from said Windows 8 image) are fine.

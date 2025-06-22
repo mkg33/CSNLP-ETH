@@ -1,0 +1,10 @@
+Was that table part of any exports, output files, reports, extracts, etc. that are still available?  If so, you may be able to find some or all of that row from those output sources.
+Perhaps it's financial data, and can be recovered by a reconciliation process, since the numbers all have to balance.
+If it is that important, keep working, but understand that corrupt data without a good pre-corruption backup means data loss!!!
+First, determine how valuable that one last row you can't get is.  Chances are, it's really not that important, so you can stop, since you got every other row out of the table.
+If it's complaining about files and/or filegroups being read only, and you've checked files and filegroups within SQL and even changed them back and forth... did the changes work on every file and every filegroup?  Try again; if you tried to set one READ_ONLY and it failed, that's a clue.  Also look at the OS filesystem level - is the actual MDF or NDF read only?  Does SQL Server have FULL CONTROL of the directory and the file both?
+You can certainly use a hex editor and, if your data isn't encrypted, try to find the correct 8k page of that particular table, then look carefully to try and find the affected row's data; see what you can find, but this is at best guesswork, and SHOULD NOT be relied on - you're looking at data that is either actually corrupt... or that's not the correct data in the first place.
+The article is on how to corrupt a database with a hex editor but you've already got that so look at the steps right below "It’s the Moment We’ve Been Waiting For: Trash That Page". 
+Perhaps that row, or most of it, can otherwise be re-created from the rest of the data, knowing the business rules for that data?
+Extracting information in this way can't be healthy for the database, so ensure you are using a backup! 
+From the comments I see that you have it narrowed down to a single corrupt row. You may be able to get the underlying data (or most of the data at least) in that row via a hex editor. Paul Randal has good information on how to crack open MDF files this way and here is an article by Kendra Little as well. 

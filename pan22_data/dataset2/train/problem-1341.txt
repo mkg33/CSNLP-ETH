@@ -1,0 +1,12 @@
+UDP syslog is a historical braindamaged protocol that should have been eliminated long ago. If your vendor provides it by default, please lean on them.
+In my experience with both rsyslog and syslog-ng, rsyslog wins out in ease of configurability, especially since you can use your existing syslog.conf, and add onto that. 
+I have also restricted the outgoing syslog connection (tcp 514) so my hosts can only connect to my rsyslog server, and created an incoming whitelist on the rsyslog server side so only my hosts can connect.
+There is some out of scope prep work: Deploy a local CA, add the CA's cert to each host, generate individual certs for each host. (now all of your hosts can talk ssl to each other)
+So I've got a few servers which I'd like to log centrally but obviously I don't want to pass the data insecurely over the internet.
+Stunnel (http://www.stunnel.org) is a program that allows you to encrypt arbitrary TCP connections inside SSL (Secure Sockets Layer) available on both Unix and Windows. Stunnel can allow you to secure non-SSL aware daemons and protocols (like POP, IMAP, LDAP, etc) by having Stunnel provide the encryption, requiring no changes to the daemon's code. 
+The software is easy, the algorithms are easy. The politics of getting it installed by default are not.
+I probably wouldn't send log data over the internet in the first place, but install a centralized loghost at the location(s) where needed. 
+If your vendor does not provide a syslog solution that signs each message before sending it on, lean on them.
+I've tried syslog-ng but can't make it work in a secure way, a normal ssh -L PORT:localhost:PORT user@host SSH tunnel won't work because I believe that makes the logs appear to come from the local machine, and a VPN seems a bit like overkill.
+These days, I prefer rsyslog to syslog-ng. It is a near drop in replacement, and has a variety of papers and howtos, including one on sending encrypted data with TLS/SSL (as of v3.19.0), older versions can still use stunnel.
+For what it's worth, Rsyslog is the default syslog daemon on Debian Lenny (5.0), Ubuntu and Fedora. 

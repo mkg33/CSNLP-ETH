@@ -1,0 +1,16 @@
+https://docs.microsoft.com/en-us/azure/virtual-machines/windows/upload-generalized-managed#generalize-the-source-vm-by-using-sysprep
+screenshot of current VM state (via boot diagnostics)
+I installed boot diagnostics and got a picture of the current state, however I'm not sure how to proceed from here.
+I created a Server 2008R2 VM in Hyper V, ran Sysprep on it, then uploaded the VHD to Azure via Azcopy.
+Then I converted the VHD file into a managed disk, and created a VM from the managed disk.
+Is there any way I can connect to it to complete the installation?
+You're going to need to use Sysprep with an answer file so that the specialize phase runs unattended.
+You must have missed the step in the process to convert VHD to and Azure Image before deploying.
+Now I am unable to RDP to this VM to complete the installation.
+There's no traditional "console" access to an Azure VM.
+At this point you will have to delete VM and disk.
+Upload sysprep VHD again, this time convert to image then deploy from image.
+There's a serial console connection available, but I don't believe you can use it to configure the VM while it's in the specialize phase of Windows Setup.
+https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/use-answer-files-with-sysprep
+I tried running mstsc /admin however this didn't work either.
+There's no RDP functionality during the specialize phase of Windows Setup, which is the phase you're seeing in your screenshot upon first boot of your sysprepped VM.

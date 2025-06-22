@@ -1,0 +1,8 @@
+As pfo says, SSH tunnels are only for TCP traffic, and the application has to be aware of SOCKS proxies.
+If it's a SOCKS 5 proxy, and the client program supports it, DNS will go through the proxy. Most browsers support DNS through a Socks 5 proxy, but may require special configuration to do it.
+I know the answer is bit late, but for the reference and for those who are still looking for the answer,
+I'm using Google's DNS servers (8.8.8.8), but how do I make sure that DNS queries are going through the SSH tunnel?
+I am using ssh -D 8080 my server to create a SOCKS proxy. I'm then configuring OS X to use localhost:8080 as a SOCKS proxy. I'm using this to access the internet without being monitored.
+You can't do that out of the box since the SSH tunnel is for TCP/IP connections only - UDP traffic won't be able to be cross that tunnel without a special setup. Basically you need to create a fifo to do some trickery with netcat as described here. You can use google's DNS from the far end box then.
+Set the network.proxy.socks_remote_dns property in firefox config (type about:config in address bar) to TRUE (just double click the property to toggle the value) to enable dns lookups over your local/remote socks5 proxy.
+If your goal is privacy on the web , you really should use something like privoxy. Privoxy will cleanse the headers of your web requests and ensures all traffic, including DNS, goes through the Socks 5 proxy. Run privoxy locally, and you can use ssh to tunnel the Socks 5 traffic.

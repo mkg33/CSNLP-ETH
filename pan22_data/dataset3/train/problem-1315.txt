@@ -1,0 +1,11 @@
+It is useful only with transactional tables such as InnoDB, because then it dumps the consistent state of the database at the time when START TRANSACTION was issued without blocking any applications.
+A consistent read is not isolated from those statements, so use of them on a table to be dumped can cause the SELECT that is performed by mysqldump to retrieve the table contents to obtain incorrect contents or fail.
+The --single-transaction option and the --lock-tables option are mutually exclusive because LOCK TABLES causes any pending transactions to be committed implicitly.
+Easiest option, if you aren't relying on features specific to MyISAM or other storage engines: change your tables to the InnoDB storage engine, and use the -single-transaction option with mysqldump.
+Also this option is not supported for MySQL Cluster tables; the results cannot be guaranteed to be consistent due to the fact that the NDBCLUSTER storage engine supports only the READ_COMMITTED transaction isolation level.
+You should always use NDB backup and restore instead.
+For example, any MyISAM or MEMORY tables dumped while using this option may still change state.
+While a --single-transaction dump is in process, to ensure a valid dump file (correct table contents and binary log coordinates), no other connection should use the following statements: ALTER TABLE, CREATE TABLE, DROP TABLE, RENAME TABLE, TRUNCATE TABLE.
+This option sets the transaction isolation mode to REPEATABLE READ and sends a START TRANSACTION SQL statement to the server before dumping data.
+When using this option, you should keep in mind that only InnoDB tables are dumped in a consistent state.
+To dump large tables, you should combine the --single-transaction option with --quick.

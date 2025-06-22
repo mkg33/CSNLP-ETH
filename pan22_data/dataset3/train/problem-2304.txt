@@ -1,0 +1,13 @@
+Finally, if you were to continue to use your method - you can block at the .htaccess level with the same syntax (minus the  tags)
+Your current method seems un-scalable and relies on your ability to judge genuine/malicious traffic - so the automated solutions above would be highly recommended.
+When we see unusual behaviour on our site I am block IP addresses by adding them to the Apache config as so:
+I would be inclined to configure a software firewall like CSF - which can add another layer of protection, by rate limiting/blocking abusive IPs.
+Have a look here for an explanation http://spamcleaner.org/en/misc/modsec2ipt.html
+One of the bad side of this approach is that will lose those "attacks" from your Apache logs (although that may be a pro instead of a bad thing).
+This soon becomes unwieldy so is there a standard way of dealing with this?
+If you are using some kind of firewall it will surely have a easy way of adding bad IPs.
+Also, to comment on your original post, you can but multiple IPs on one line of the allow/deny directive, see http://httpd.apache.org/docs/2.2/mod/mod_authz_host.html
+It takes a bit of configuration, but you can do some really clever things with this.
+mod_security for Apache seems like the obvious choice as it can directly integrate with IPTables and block users at the TCP/IP level (rather than user-space).
+If you don't have one in the web servers you should try to install one in you systems: I would recommend shorewall for Linux, or maybe a simple iptables script if you just want to block the access to the web server.
+If you are getting a not-so-nice behaviour from those IPs maybe it would be a better idea to block them at firewall level than in Apache, that way you will save Apache some load.

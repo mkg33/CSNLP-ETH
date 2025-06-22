@@ -1,0 +1,22 @@
+It has nothing to do with encodings since the Windows console always uses Unicode internally.
+it sends these sequences to another program which is responsible for actually rendering the bytesequences.
+If you want to see Japanese output, for example, you have to change your System Locale to Japanese and reboot.
+so, the solution to your problem (seeing any unicode-character in the 'console / terminal' of windows) is: use a font for the program which has (almost) every glyph for (almost) any given unicode bytesequence in it.
+This is a very old question, but all of the answers given here are wrong.
+It can, however, display DBCS (Double-Byte Character Set).
+Based on your username I suspect you mainly work with asian languages.
+to do that, it has to search in a font for the glyph.
+The characters are simply not available in the fonts you use, which are designed for programming and European languages.
+You will never see Unicode output on the Windows command line (CMD.exe).
+Windows tools operate normally in unicode mode (as you saw by piping the output of dir into a file and opening that file with an editor):
+to be able to display these sequences, this program has to map the sequence to a glyph.
+this mapping only works IF the font has a glyph for the given byte sequence.
+if the font does not have a glyph for the given sequence, then the program can not display the byte sequence produced by, for example, dir.
+Windows supports Japanese Shift-JIS, Simplified Chinese, Korean, and Traditional Chinese "Big5" DBCS code pages.
+again: dirproduces bytesequences, which sometimes are purely in the ASCII-range, sometimes they are in the unicode range (depending on what filenames it finds).
+In other words, CMD supports Unicode, but it doesn't display Unicode.
+Incidentally, you can pipe UTF-16 (inaccurately used interchangeably with "Unicode" by Microsoft) to a file, then open that file in, say, Notepad, and view the Unicode characters.
+I don't have access to Windows at the moment, but I remeber that I could print Greek characters after switching to the Lucida Console font.
+to display any character on the screen the program from step 3 has to lookup the glyph appropriate for the given byte sequence.
+You can also mark and copy the gibberish text from CMD.exe and paste it into Notepad and see the Unicode characters.
+otherwise the visual result differs, sometimes you see '?

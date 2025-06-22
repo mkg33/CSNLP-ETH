@@ -1,0 +1,7 @@
+Don't randomly add indexes.  Look at your queries to decide which indexes are needed.  See my cookbook.
+For a table with 1000 rows I think it does not make sense to put any index. The complete table could fit into memory and that would be fast enough. 
+But if you want to put indexes you should always take the business value into consideration. Take into account  that each index generates an overhead to the table. 
+WHERE a=2 AND b=4 begs for a "composite" index:  INDEX(a,b) or INDEX(b,a).  Those are different than two separate indexes: INDEX(a), INDEX(b).
+DESC is ignored on an INDEX declaration.  However, that does not stop the optimizer from running through an index in reverse order to have the effect of 'descending'.
+InnoDB really needs a PRIMARY KEY.  Keep in mind that a PK is, an index, is UNIQUE, and is clustered.  So don't add any index(es) that start with the same column(s).
+Not sure where the limit is, but in any case check which are the most often used filters and use this as a first indicator for indexing

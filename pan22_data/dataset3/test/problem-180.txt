@@ -1,0 +1,24 @@
+then the server tries to decrypt it with the public key you gave to it, and if that works, it knows you have the correct private key matching the public key it knows, and so verifies that you are A) you or B) someone who stole your private key.
+Since each public key corresponds to exactly one private key, in a manner fixed by the key's encryption algorithm (RSA or DSA or ECDSA), you cannot change what private key the server will accept for a given public key.
+how did you make a public key for two different private keys?
+However, knowing the public key does not allow the server to find the private key.1 The public and private keys are generated at the same time by ssh-keygen or whatever equivalent tool you use to make your keys.
+So if you have 10 users (for example), you could generate 10 key pairs so that when the time comes to lock out a single user, you can do so by removing the corresponding public key from authorized_keys, thus rendering the corresponding private key useless.
+you upload the public key to the server, and when connecting, ssh encrypts some information using your private key.
+in case A, everything is fine, in case B, it's simply your fault and you should be protecting your private key better :D
+To answer the second more important question, you generate keys in pairs.
+When generating the key pair, ssh-keygen generates a private and a public key, which match each other.
+I don't know the specific method used on the server side to match the key pair, but it works.
+However, if I use the SAME public key, with a different private key, and try to SSH, the server doesn't let me in.
+if you didn't (which I suspect), your problem is simply that you didn't understand the asymmetric key principle:
+Note that at no point in this process does the server ever have access to, or know anything about, the private key.
+Secondly, how can I change what private key it should accept for this specific public key?
+if you want to use two different private keys, just upload both their matching public keys to the server.
+If you want to use a different private key, you need to generate the corresponding public key and put it in the .ssh/authorized_keys file as well.
+When I SSH into it, it automatically recognizes my key and lets me in.
+The client encrypts the nonce with your private key and sends the result back to the server.
+As part of (a simplified "toy" version of) the SSH login process, the server makes up a string, called a nonce, and sends it to the client (your personal computer).
+You can't generate a new private key to go with a specific public key or in reverse, you must generate a new pair.
+1technically it could, but it would take longer than the age of the universe
+Then the server tries to decrypt that result with each public key listed in the .ssh/authorized_keys file, and if it finds one for which the decryption process results in the original nonce, it grants you access.
+Each public key is compatible with exactly one private key, in the sense that a server or any other computer can use a public key to decrypt a message that was encrypted using the corresponding private key.
+I put the contents of my public key into my server's .ssh/authorized_keys file.

@@ -1,0 +1,12 @@
+Federated tables are going to be inherently slow, especially when doing joins.
+With an inner join, the presence or absence of a row on the remote server qualifies or disqualifies the joining row from being included.
+If your data quality is such that you can loosen the inner joins to the federated tables into left joins, the optimizer may take a hint and perform the query in a more efficient fashion.
+That's actually a somewhat critical piece, because the server needs to be able to decide which rows to include based on local information.
+If this is a live interactive web site, it may not be the best approach.
+If that's missing, it could make a huge performance difference.
+This strategy is what I use when I run reporting jobs that need to join tables from disparate systems.
+If update_date doesn't have an index on it, you need one, by the way.
+Here's one alternate approach, that looks worse to the trained eye but is may perform better in spite of the fact that it's going to pull down an materialize a temporary copy of each of the federated tables.
+With federated tables, you have to remember that the local server thinks of the remote table as if it were essentially a MyISAM table on disk, and it decides how to join a federated table based on what it thinks it knows about the cost of accessing the data... then the federated engine, itself, takes the request for rows that the optimizer generated, and turns it into a SQL query, to fetch the data remotely.
+The temporary copy disappears when the query finishes:
+It's basically copying down an entire copy of the table for each join.

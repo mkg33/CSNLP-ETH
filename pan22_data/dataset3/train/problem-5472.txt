@@ -1,0 +1,17 @@
+I've found that many hosting companies require each client with a cluster of servers to have their own firewall.
+You could use iptables on each host, however I never liked that method as introduces too many variables when troubleshooting.
+Should I require that each dedicated server customer have their own dedicated firewall?
+A different customer already has a single dedicated server that is not behind any firewall except iptables running on the system.
+But I don't necessarily want to use up 1U of space in my rack for each firewall, nor the power consumption each firewall server will take.
+If you need a web node and a database node, you also have to get a firewall, and pay another monthly fee for it.
+The configuration works well for my current needs.
+Each KVM host is running a software iptables firewall that only allows specific ports to be accessed on each VPS.
+I'm looking at possibly rethinking my network now that I have a client who needs to transition from a single VPS onto two dedicated servers (one web and one DB).
+I have colo space with several KVM virtualization servers hosting VPS services to many different customers.
+Note that there is not a hardware firewall protecting the virtualization hosts in place at this time.
+However, the KVM hosts only have port 22 open, are running nothing except KVM and SSH, and even port 22 cannot be accessed except for inside the netblock.
+I'm familiar with iptables, and am currently thinking I'll use it for any firewalls/routers that I need.
+I think that if you are the only person controlling the firewall, and that customers do not want to be able to make changes, you can certainly get away with a single firewall.
+Or can I utilize a single network-wide firewall for multiple customer clusters?
+I'm trying to determine if I can use a single firewall for my entire network, including customer servers, or if each customer should have their own firewall.
+I can control which ports any given VPS has open, allowing a web VPS to be accessed from anywhere on ports 80 and 443, but blocking a database VPS completely to the outside and only allowing a certain other VPS to access it.

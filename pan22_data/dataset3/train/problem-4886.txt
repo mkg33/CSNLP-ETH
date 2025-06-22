@@ -1,0 +1,31 @@
+You care more about visits than uniques... and you can estimate how many hits and page views a visit generates on average.
+Good luck, but I'd be careful getting too many of your answers from here (message boards in general).
+Routers/firewalls will provide access control and routing between your network and your ISP's network.
+That being said, here's some super-simplified answers:
+EDIT: Our infrastructure served about 12M visits last month, so similar size.
+load balancer - splits incoming requests across multiple servers so they appear to be one more powerful server
+They are load balanced using a combination of mod_rewrite on the apache servers and LVS.
+Don't think the cheap switches are any bargain... when you're under heavy load and you can't figure out what's happening, you'll curse the saved money.
+Having said that, you can get good 48-port managed switches for $1k.
+Just need some clarifications, can someone briefy outline what usage load balancers, switches and routers are when it comes to web hosting.
+You can go very expensive commercial solutions here, or roll your own with some Linux/Unix knowledge.
+12 tomcat machines with lots of ram and processor.
+An ecommerce site would have a lot more than a blog/news site.
+Also if and how you can use a CDN to offload the front end will make a huge difference in how much infrastructure you need to maintain at your origin.
+The basic starting point would probably be two firewalls, two loadbalancers, and two switches.
+We have a primary and standby that sync state between them, so they are fully-redundant.
+router - connects one network to another, in your case you will probably need one to be the device that connects your upstream internet provider with your network
+Your firewalls will likely double as your routers.
+Money spent on managed switches will make your life easier.
+In regards to switches, even you $40 cheapo special gigabit switch can deal with this connection, it all comes down to the number of ports you want on the switch.
+switch - the basic device needed for everything to talk to each other
+Our firewalls are OpenBSD with PF running on rather low-end boxes and regularly handle 100Mb/s of traffic with no problem.
+You asked about 10M UVs, and thats an important number to you, but for the infrastructure PVs (or more specifically http requests per second) is going to drive your cluster design.
+Those firewalls load balance incoming port 80 connections across 3 apache servers that serve static content and do SSL and all sorts of mod_rewrite to distribute things to the app servers.
+These are about $2k Dell machines, and any two machines can handle the load, which peaks around 500 hits/sec.
+In regards to load balancers, 10 million website hits whilst it might look high, probably means about 100,000 unique visitors over a month period, which means about 3000 a day... At this level if you have a single machine with plenty of memory and disk IO and apache configured with plenty of threads, it will keep up with that without too much hassle of needing a load balancer.
+Say a site gets 10 million monthly uniques, what kind of each would be required (if at all), and what are the general price ranges.
+You'll need a router, so you can get onto the internet, but if you just have a single ISP feeding you, just look at something like Vyatta as this can scale without a problem upto 100MB connection with no problem at all.
+I have one site I manage with about 32 million "hits" a month, running on a 100MB dedicated connection on a dual xeon 2.33 ghz CPU box with hyperthreading, 16GB of ram and SAS raid array and this machine hardly breaks a sweat.
+Load balancers distribute incoming load among one or more servers.
+56 questions, 0 answers, 'can a sysadmin work remotely'... looks like you're trying to plan out some kind of online business.

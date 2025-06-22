@@ -1,0 +1,40 @@
+Unfortunately, This file cannot be shrunk smaller than its original size.
+If you have many large records (say, long strings), there could be much unused space in the data pages (because one record is usually not split between pages).
+You also have one or more transaction log files in the database.
+What is good with Data Compare is that after you copy those 30gb of data (you can do it starting with some tables only) after a while it just needs to 'recompare' only some changes and not whole 30gb of data.
+So, you can only shrink a database to the original size and no smaller.
+You might consider adding other, smaller database files to the database, transfer all the data out of the 30 GB file, and then drop it.
+If you have, say, 20003 (mb) of actual datat in the database, then "SIZE = 20000" would be too small.
+I'm assuming that you have a single database file with the logical name SMS2_Data.
+You may consider SSIS as a way to transfer the data from one database to the other.
+I would normally recommend following up the shrink with a full reindex (which will reclaim some of the space that was just freed), but it doesn't sound like you're even able to get to that point.
+Another thing is a fill factor - initially, clustered indexes are not created 100% full to avoid page splits (an expensive operation) on subsequent insertions.
+Unfortunately, this won't work either because you can't delete the initial file from the database.
+I'm assuming that you understand what SHRINKing really does, and that it can negatively effect your performance:
+If lots of data were deleted from the database, the space previously occupied by these data will not automatically be reclaimed - it will stay allocated to the table.
+However I've noticed that you want to do it quite regularly.
+Thirdly, this could be an issue with LOB data (text, ntext, varchar(max)).
+Some have reported SHRINKFILE issues on prior versions (see http://www.sqlservercentral.com/Forums/Topic981292-146-6.aspx#bm985164)
+The database backup and restore to an existing, smaller database doesn't work either.
+Switching to Simple recovery mode during this process is also a good idea, to keep the log from growing too much.
+Secondly, can you verify that the database is set to mode 90 compatibility, and not mode 80?
+As you already experienced, SHRINKDB and SHRINKFILE are not giving you what you want.
+When you do a database restore, the database files are restored to the file sizes as they were during the backup.
+You have a few options here, and maybe you're already aware of them.
+See additional information on the SSIS transfer database task.
+The first step is to create a new database with a size that is smaller than the data size.
+The important piece of information you state is that the 'original size of the database file is 30 GB'.
+So your best option is Redgate Data Compare and Redgate Compare.
+If you look at your shrink SPID in activity monitor, does it appear to be doing anything?
+The only other thing I can think of is if there is other activity on the database, blocking the shrink.
+Then, you can expand the database size to the required size.
+These commands follow the can't shrink smaller than original size rule.
+This apparently was an issue with SQL 2000, but the restriction was lifted in SQL 2005.
+You have a challenge that can't be fixed on the current copy of the database.
+Make sure no other active spids are making use of the database at the time.
+As some people already mentioned you could create new database and "copy" stuff over from old database.
+Which means it will do a lot less impact on both databases then it would by copying it normally.
+Try calling DBCC DBREINDEX (table_name, '', 100) on every table in your database - it will rebuild all the indexes with 100% fill factor, so the data is placed as compactly as possible.
+So, the best solution is to copy the data to another database.
+If your database is still set to mode 80 compatibility, this might still be a problem.
+You will find a copy database task that will help you out.

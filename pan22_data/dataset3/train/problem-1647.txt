@@ -1,0 +1,16 @@
+That said, you can make the server highly-available.
+You will have some downtime as the cluster figures out that all is not right and initiates failover, but it should be very fast; well under 30 seconds.
+But serving static files from a GlusterFS is perfectly fine.
+I'm not quite sure on the POSIX compatibility so you might not want to run PostgreSQL/MySQL/Oracle from that.
+If this node then goes down the client implementation is smart enough to detect that and continues to work with another node in the Cluster.
+GlusterFS is (to me) not in the same space since it doesn't require any fiddling with the kernel.
+Put two NFS servers in a Heartbeat cluster and you at least have failover, though locking won't transfer.
+It's a userspace implementation thus a bit slower.
+It's still not simple, but it's a lot better than GFS/OCFS2/Lustre.
+Honestly, you're not going to find a "simple" solution, because this is not a "simple" problem.
+Given that you've already got the equivalent of DRBD with your SAN (assuming you want to use it), NFS+heartbeat is really where you're going to end up if you want failover.
+That being said, for robustness and simplicity, the least-worst option I've found is NFS over DRBD.
+With a GlusterFS Cluster you mount any of the nodes.
+The trick will be to get the clients to support this kind of non-standard operation.
+Please note: Serving static files doesn't necessarily mean that it has to be a webserver.
+But personally I believe that most networked filesystems have the network as the bottleneck.

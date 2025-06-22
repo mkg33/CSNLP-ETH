@@ -1,0 +1,18 @@
+Depending on what sort of queries are run against you database, you can have a downtime on the order of seconds.
+Some extra-sharp readers will correctly identify that the "UNLOCK TABLES" is unnecessary, because the client connection is going to close at the end anyway.
+Then make the new server writeable and take down the old server.
+Dan C is right on the money, but I'd like to be more specific about the 1st 3 steps
+Why not setup the second MYSQL server as a slave, replicate, then reconfigure the slave to be a master?
+We're running on EC2 with the data on an EBS volume.
+So, you cannot open the mysql client, flush+lock, quit client, make snapshot, open mysql client, unlock tables.
+I'd like to minimize downtime (during the "cutover" period).
+Use this snapshot to setup the new server, and configure replication to the old system (you can figure out the binlog name and position (master_log_file/master_log_pos) by looking at the size of the newest binlog in the snapshot).
+I put it in there because it makes people more comfortable.
+LVM or similar) of the mysql directory under the global read lock (FLUSH TABLES WITH READ LOCK).
+This however depends on your write queries being deterministic so that the old and new server will have exactly the same data.
+For the sake of speed, and to avoid disasters, do it all in the CLI mysql client like so:
+Is it safe to take a snapshot of the database volume while it's running and use that to restore on the new one or do I need to shut down the old database first?
+There are a few finer details, such as whether you are a heavy InnoDB user.
+When you're ready to move, stop all writes (read_only=true, kill all connections) on the old server and wait for the new server to catchup with replication.
+The documentation clearly states: "If a client connection drops, the server releases table locks held by the client.".
+I see this describe ambiguously, or blatantly wrong all over the internet!

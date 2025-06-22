@@ -1,0 +1,12 @@
+Use one function and pass arguments that control diagonal or not and pass the array you want to add the tiles to so that you can add them directly.
+The functions getTilesAdjacentTo and getTilesDiagonalTo are almost identical and constitute repeated code.
+You can remove the exit statements and just check the array length, removing 4 lines of unneeded code.
+Modern JavaScript has a lot of optimization that happens as the code runs. When you create a loop that has no termination clause 'while(true)' some engines will mark the function that contains that loop as "DO NOT OPTIMIZE" Always provide a clear exit that the engine can deal with in the exit clause of any loop.
+If you have 1000 tiles the above will need to store 1004 tile references (the original and the new 4) and iterate over all 1004. To complete the line you need to allocate space for double the array size 2008 tile references, for which half are dumped after the line is executed.
+Looking at the function getTilesAdjacentTo you create all four tiles that you hold in an array then  you iterate them again, making a second array, that you return and immediately dump. 
+The function calculateRange does not feel right to me, but you have not provided enough context to check the logic against the abstract need. "Does not feel right" is not of much help to you so I will leave it as is.
+You are using method Array.some to check for visited tiles. This is very inefficient. There two simple ways to change the CPU cost of each visited check from O(n), where n is the number of tiles, to n(1)
+Applying the above points the functions searchAroundTile, getTilesAdjacentTo and getTilesDiagonalTo can be changed to 
+The main while loop in searchAroundTile has the loop exits inside the loop block, and are not required. 
+For example you add tiles to the array by recreating the array. That means that you need to keep both the old and new copies in memory and itterate over each tile when all you want to do is add 4 new tiles.
+You have some poor array techniques that will be thrashing GC and adding additional processing load that can be avoided.

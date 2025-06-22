@@ -1,0 +1,17 @@
+The other option I mentioned is have one bigger table that includes both header level information and detail level information.
+Because when you're loading those tables you need to be extra careful to always make sure your records exist in the first table before you try to load the table with the Foreign Key.
+The header level table would unique by Sales Order (or Shopping Cart) as long as you have a unique ID for each of them.
+And you would still want a Sales Order ID or Shopping Cart ID to help distinguish all the items on an order.
+Sometimes what we do instead of using a foreign key is we instead have a Stored Procedure that checks if all the values in Column A exist in Column B and if not reports any exceptions and we just check and review that so we have an informal Foreign Key that we just keep an eye on.
+With Option #1 you can or can not have a foreign key it just depends.
+And then the Line Item table would be unique by Sales Order and Line Item (aka Product) and would include the information like Quantity, Price, etc.
+So even though all line items have the same customer you still list it on each item.
+The way I'm interpreting your use of the term "shopping cart", is it's just the collection of items purchased at one time by a customer.
+So part of your question though is whether you should have a foreign or not.
+The benefit of this is less joining and easier to query, the downside is more data redundancies and the chance for errors.
+At my company we refer to that as a "Sales Order".
+To handle Sales Orders there are two methods you can use: 1) it often makes sense to have a Header level Fact table and a Detail level Fact table and seperate information into one of those two tables, or 2) you have one Sales table that's denormalized where you keep all your sales information.
+If you went with Option #2 then you definitely wouldn't have a foreign key.
+And can include information that's specific to the entire Order like who placed it (since the person placing the order can't vary by line item).
+The benefits of this set up are there's less data redundancy, but the downside is the need for more joins to connect the two tables.
+For a lot of database models it gets really tricky having a fact table point to a fact table.

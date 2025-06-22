@@ -1,0 +1,7 @@
+It works well for removing defunct screen processes.
+I've run into the problem where I have users logging in to servers under customer accounts, opening a screen session as that user, and then never closing it.
+While that's still not much of a problem there is yet another step in this clustercuss.
+Ordinarily this wouldn't be much of a concern, however we're running into an issue where if a customer is migrated off the server [which deletes their user account] with an active screen session under their username that screen session sits idle.
+If a client that was previously resident on a server, which has an old screen session still active, is migrated back to the server screen refuses to start because /var/run/screen/S-username still exists and is owned by the old UID, and the user [with a spanking new UID] isn't allowed to touch any of these files in their named directory.
+If you're fine with killing them off and really just want a way to deal with the unowned sockets sitting in /var/run/screen, I would just set up a cron job using find with the -nouser flag to clean up the old files:
+How can I make screen shut down properly and clean up all of its files when the user no longer exists?

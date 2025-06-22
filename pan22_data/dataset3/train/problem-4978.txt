@@ -1,0 +1,26 @@
+If your computer is 192.168.1.10 255.255.255.0 it can talk to 192.168.1.1 - 192.168.1.255 without use of the gateway.
+After that it will send a PING to 192.168.0.100 with the MAC address of 192.168.0.100 at the link layer.
+If your computer has a netmask: 255.255.255.0 and IP addr 192.168.0.50, then it knows that the IPs 192.168.0.0 to 192.168.0.255 are in its same network, and thus won't need a gateway to reach an other network.
+By the way, I think the routing table in Unix is the equivalent of forwarding table in the context of switches.
+When you're using that interface to connect to another IP address, the subnet mask for an interface defines what addresses are "on this LAN"  (or local) vs. what addresses are "out there", via a router.
+When specifying the subnet mask on the interface, e.g.
+It looks to me that what subnet mask value the interface has does not matter at all.
+The traffic in that range never goes to the gateway.
+On the other hand if you want to PING and address outside your LAN (e.g.
+While I don't want to say that this approach makes a lot of sense, it clearly shows that the network mask on the interface is rather useless, apart from automatically setting up the on-link routing table entry.
+By way of example, if you're on a computer with an interface with an IP address of 100.100.99.5 , with a subnet mask of "/24" (or 255.255.255.0) , that mask says that "to find hosts with 100.100.99.0-255, ask the ARP table, because they're on my lan" ... for all other addresses (so, outside of the mask), you should send the packets to the host designated in my routing table (the router), or the default route.
+8.8.8.8) your computer will not make an ARP request for 8.8.8.8 MAC address but will instead send a PING to 8.8.8.8 with the MAC address of default gateway at the link layer (e.g.
+192.168.0.100), your computer will first send an ARP request like this one: Who has 192.168.0.100 ?
+However, one could specify a wrong netmask on the interface (just for fun), and afterwards correct the entry in the routing table by hand.
+If a host sends traffic to say 8.8.8.8 (google.com) it must know if 8.8.8.8 is in the same LAN or if it is outside the LAN.
+Maybe the reason that you set IP and net mask at the same time on the interface is just a way for you to set up route entry.
+The kernel only consults with the route table to determine if another IP is reachable via gateway, on-link or neither.
+In case there is any information I missed, I would be eager to hear about it!
+and it will wait for the ARP reply containing the MAC address of 192.168.0.100.
+through ifconfig on linux, an entry is added to the routing table, which states that all hosts which have the same network prefix as this host are reachable without going through a gateway.
+It tells the computer what range of addresses it can talk to before sending the traffic to the gateway to decide where it goes next.
+Only traffic not in that range because the computer can't "talk" to anyone but the gateway outside its subnet range.
+While all three answers are correct, they don't answer the actual question, which is
+Fyi... gateway is a router or layer 3 device like a switch or firewall that will also have a range it can talk to before sending traffic to its own gateway or 'next hop'
+If the subnet was 255.255.0.0 the computer could talk to 192.168.1.1 - 192.168.255.255 without a gateway.
+For example: if you want to PING some host on your network (e.g.

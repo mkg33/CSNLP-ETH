@@ -1,0 +1,24 @@
+I've extracted a subroutine from some perl code I've written.
+    return 'Block comment still open' if $status == BlockComment || $status == BlockCommentStar;
+(I also included the use enum line for easy reference.)
+    return 'Unterminated string' if $status == String || $status == StringEscape;
+The code passed to this sub is C-like with strings like "First line of string\nSecond line of string" and comments like /* block comment */ and \\ line comments use backslashes.
+The purpose of the whole program is to check code for errors, so the 'normal' path where undef is returned is less interesting than the paths where errors are given.
+Its purpose is to parse the given code, returning a string with an error message if the code is malformed.
+(I don't actually expect malicious code -- it's run strictly offline, and with code that has been human-checked -- but if you see any gaping security holes that would be worth pointing out.)
+                return "Unbalanced parentheses, ) without matching (, had $parens" if $level == 0;
+For example, the four lines with Unbalanced parentheses, ) without matching ( are repeated three times, once for each of Normal, NormalSlash, and NormalBackslash.
+The code comes from a priori untrusted sources and is run in taint mode.
+                return "Unbalanced parentheses, ) without matching (, had $parens" if $level == 0;
+I looked at various parsing modules like Marpa::R2, Parse-RecDescent, Parse-Yapp, Parser-MGC, Regexp-Grammars, etc., but they all seemed cumbersome and more trouble than just coding a simple parser.
+    return 'Trailing backslash' if $status == NormalBackslash;
+Apologies for the poor code formatting -- despite identifying the block as lang-perl it formats // as a comment.
+                return "Unbalanced parentheses, ) without matching (, had $parens" if $level == 0;
+Secondary goals include efficiency (each run of the program will require parsing 50,000 to 100,000 blocks of code) and using idiomatic perl code.
+use enum qw(Normal NormalSlash NormalBackslash BlockComment BlockCommentStar LineComment String StringEscape);
+    return 'Trailing slash' if $status == NormalSlash;
+I have two main issues (and any number of subsidiary issues).
+Second, a lot of code is repeated here, and I'm not comfortable with that.
+First, should I be coding this directly or using a module?
+    return undef if $status == Normal || $status == LineComment;
+        return "Unbalanced parentheses, ( without matching ), had $parens";

@@ -1,0 +1,13 @@
+In this case, it is number 0 (=first device) and active as my RAID is online right now .
+one of the things I've found is that mdadm --create /dev/md0 --assume-clean will only work correctly if you use same (or close) version of mdadm that was used to create original array.
+This will output (among other things) the information which number in the RAID is really missing.
+Only the correct position of the drives and missing will work.
+for example, using recent mdadm 3.3.2 or even previous 3.2.5 didn't work for me, but falling back to mdadm 3.1.4 (which created the array) worked just fine.
+Now you know wich drive should be specified as missing.
+Problem is that mdadm output will always say it recreated array just fine, but the data contained in /dev/md0 will be wrong.
+when recreating array and use overlay files for all the testing (in order not to increase the damage), using instructions at https://raid.wiki.kernel.org/index.php/Recovering_a_failed_software_RAID
+In my case the problem was 6-disk RAID5 which was being grown to 7 disks, but it didn't progress at all so was aborted and wouldn't assemble anymore with mdadm: Failed to restore critical section for reshape, sorry., and --force and --invalid-backup weren't helping either, so I had to use --create --assume-clean
+This information is lost, however, because it got overwritten by your reassembly try.
+That is becase they use different offsets for data and metadata, even if same superblock version (like 1.2)
+But you still have 2 choices: The order of the working drives may also need to be swapped.
+Note that I also took care to specify drives in correct order (as detailed in mdadm --examine /dev/sd?)

@@ -1,0 +1,13 @@
+There's a lot of possible numbers to choose between 1 and 28800!
+interactive_timeout is the same, but for interactive sessions (mysql shell)
+And what would be the likely outcome of choosing a value that was too low?
+Setting a value too high may cause stale connections to remain open, preventing new access to the database.
+IMO, for wait_timeout, you would want this value to be as low as possible without affecting availability and performance.
+I looked up the meaning of these variables in the MySQL documentation but that gave only a very basic description and no guidance of choosing a value.
+You could start with 10 seconds and gradually increase it if you are seeing degraded performance.
+Setting a value too low may cause connections to drop unexpectedly, specifically if you are using persistent connections in your web application.
+wait_timeout is the amount of seconds during inactivity that MySQL will wait before it will close a connection on a non-interactive connection.
+For interactive_timeout, changing this value won't really increase or decrease performance of your application.
+We ran the MySQLTuner script on it (http://mysqltuner.com/) which tells us we should set a value less than 28800 for wait_timeout & interactive_timeout.
+Is there a value that's considered a generally accepted best practice?
+We have a live server that's being hit hard so we're tying to optimise everything we can.

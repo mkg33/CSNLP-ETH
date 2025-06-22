@@ -1,0 +1,14 @@
+In general I assume the pg_catalog schema is public but I don't want to allow updating pg_settings at all.
+Im planning to publish my postgresql server to a few untrusted clients.
+One can set work_mem, for example, to a fairly high value, and make huge sorts, but this will not affect the overall server performance more than, say, a four-way Cartesian product of one million rows each - which you can't prevent by any means...
+And, unfortunately, I don't know any means of modifying a session's settings from an other session (be the latter connected with the postgres user).
+Firstly, if I had to publish my DB server, I would separate it from my own servers (or server processes) - either physically, if possible, or putting the public DB server into a VM, which is constrained in its resource consumption to a degree when it can't really affect other processes on the same physical machine.
+This is, of course, not really friendly, but may be useful as a last resource.
+One possibility to control the usage of the public servers is checking resource consumption at the OS level, and kill the processes that show signs of abuse.
+I you're concerned then you can run multiple instances of Postgres, each on different port, IP address or socket, each with it own memory limits.
+You can't even really see (to my knowledge) the changed settings of the other session.
+Secondly, limiting changes to resource-related configuration parameters can be only of limited use.
+You can limit memory used by all postgres processes on a server that it'll not take the whole server memory.
+I agree with Tometzky, just want to add some thoughts.
+I dont want them to modify any runtime setting, like work_mem or something risky to my server.
+I doubt that it's possible to limit a single Postgres user on shared server instance without patching it.

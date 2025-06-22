@@ -1,0 +1,15 @@
+There is a now expired draft RFC that proposed additional IPFIX fields that would have provided statistical variance information (ipTotalLengthSampleMean, ipTotalLengthSampleVariance), but this was never approved, and the additional fields are not listed in the IANA IPFIX registry.
+If you care about the statistical niceties (stability, pop vs sample etc) use R or python instead.
+Variance = (octetDeltaSumOfSquares/packetDeltaCount) - (octetDeltaCount/packetDeltaCount)²
+Certainly R will give you nice graphs to understand the distribution of whatever categorisations you're interested in.
+Use tcpdump or similar to get the packets you're interested in:
+It is not possible to directly export the variance of the packet sizes in a IPFIX flow record.
+Understanding the characteristics of your data can be critical.
+However, you can calculate the variance of packet size by time calculating the average size of a packet as the total flow volume divided by the number of packets during different intervals, and seeing how this value changes over time.
+If you want to calculate the variance in size of different individual packets in a single flow, that's not possible AFAIK.
+RMON can show the number of frames by size class, e.g.
+However using some of the standard IANA fields (octetDeltaCount, packetDeltaCount, octetDeltaSumOfSquares) that a device might include in an exported flow record it is possible to determine the variance and standard deviation.
+for HP Provision switches show rmon statistics <portno>:
+If you can't get what you need with IPFIX, and it's somewhere you can get pcap files from, tcpdump-type tools plus awk-type tools will give you an answer pretty easily.
+IPFIX's purpose is to measure packet flow, not the size of the single packet.
+The "Packet Sampling for Flow Accounting: Challenges and Limitations" paper by Tanja Zseby, Thomas Hirsch, Benoit Claise, is a good reference on the foundational theory of this statistical calculation.

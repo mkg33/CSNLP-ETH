@@ -1,0 +1,34 @@
+I could setup these using apache's name based virtual hosts and have one ELB routing traffic and selecting the correct doc root based on the domain name.
+Since ELB automatically scales with load, and these addresses are dynamic, you can't point traffic to these IP addresses directly.
+In addition I also have a few small websites I need to create (blogs, internal tools, etc..) that I have already assigned some EIP's to.
+Unlike on a traditional network, where the router can be a choke point, the "router" in VPC is actually used for all traffic, even on the same subnet, so there is no performance penalty for devices to be on different subnets.
+Like some kind of Route53 solution that sends the traffic to the correct load balancer based on the domain?
+I am trying to figure out the best solution for my use case.
+As mentioned in comments, ELBs do not use Elastic IP addresses (EIP).
+This traffic does not transit the NAT gateways in any way.
+They will need outbound access for any external services the servers themselves rely upon, and to pull packages for patching.
+The ELB, for certain, needs to be on a "public" subnet, where the default route points to the igw-xxxxxxxx Internet Gateway object, in the VPC route table, but your instances, since they only need to be accessible from the ELB, not the Internet, can go on a "private" subnet.
+If your sites use SSL, then you need one ELB per SSL certificate.
+If your sites are not using SSL, then you can host the sites with a single ELB on one or more instances, using virtual hosting configuration to serve the correct content... but all of the instances connected to a single ELB need to be prepared to serve the content of all the sites.
+Such access may not require the HA setup of multi-AZ NAT.
+Note also that, somewhat counter-intuitively, when provisioning ELB, it is often wrong to put the ELB on the same subnet as the instances.
+Further, the instances behind ELB do not typically need public IP addresses -- inbound, they're accessed through the ELB (which receives their reply traffic also, forwarding replies to the requester) and outbound -- for back-end service requests, the instances can use a NAT instance for their Internet access.
+"An" elastic load balancer is actually a cluster of one or more load balancer instances, each with a public and private IP address, all having exactly the same provisioning and behavior.
+Because of the dynamic nature of ELB, you need to route traffic to the ELB endpoint via your DNS configuration, to hit the hostname that was assigned to the ELB (it's not configured in your web server, it's only used in DNS).
+With an Alias in place, route 53 will then return one valid IP for your ELB, with a short TTL, in response to each request.
+If the SSL certificate is a wildcard, or a multi-domain "UCC" certificate, then you may still only need the one ELB... but if you need multiple certs, then you need one ELB per cert, though the ELBs can still front-end for a common group of EC2 instances, so long as all of those instances are prepared to serve all the sites.
+If the web site is a hostname in your domain, like www in www.example.com, then you can use a CNAME in DNS, and DNS can be hosted anywhere... but if the web site is at a zone apex (the top level of your domain, like example.com) then you need to use Route 53 to host your DNS so that you can use an Alias A record to route traffic for the site to your ELB.
+Each of these websites need to be behind an Elastic Load Balancer.
+From my understanding, each ELB needs to be assigned an Elastic IP (EIP).
+Should I be assigning each of these an EIP like I want to (I will have to request more EIP's due to the Region EIP limitations) or should I setup these sites in a better way?
+These instances are largely invisible to you, managed by AWS, and they are included in the ELB price, regardless of how many of them the infrastructure decides you need, in order to serve the load you offer to it.
+(There are alternative configurations involving ELB in transparent TCP mode and a web server that understands the PROXY protocol and SNI, but I would suggest that these are advanced topics outside the scope of the question).
+This is not needed for the functioning of the web-servers behind an ELB.
+(All hostnames can use Alias records, but they are only required at the zone apex, where CNAME records are not valid).
+Set up an ELB and it should be more apparent, from observation, how it works.
+As far as the web servers are concerned, and your access logs will show this, all accesses will be coming from internal private IP addresses in the subnets you configure the ELB to occupy.
+Is there any other type of solution I could consider?
+When you create an ELB, a hostname is assigned to the load balancer.
+I am also creating Multi-AZ NAT instances to allow communication from my instances to outside the VPC (These also need EIP's associated with them).
+This hostname is mapped (internally) to one or more IP addresses, dynamically assigned from a public pool, at least one IP address per availability zone where the ELB Is associated with a subnet.
+EC2 instances can be associated with any number of ELBs, but one ELB can only send requests to one group of instances -- ELB does not select instances based on any criteria other than balancing the load among all the healthy instances associated with it.

@@ -1,0 +1,15 @@
+Using a local IP will be fast, no matter if it is located on lo interface or not.
+Having a DNS ttl long enough for this entry will keep you away from the DNS lag (which may not be that important, depending on your environment).
+I am sure that better to use localhost:port because of less delays on lo interface.
+If your question is the performance of 127.0.0.1 versus, say, 192.168.0.5 (or some other local IP address that your server hosts), the performance will be largely identical because the network stack will check its ARP table to figure out where to send the packet, notice that it's a local address and deliver it locally.
+Assuming you have a local DNS cache, I would use the domain name, not localhost.
+The only performance impact at all would be any iptables rules that apply only to the other local address and not to 127.0.0.1.
+These three can change within your environment and not always guarantee you are able to connect to the service, and also have additional network dependencies such and DNS resolution.
+For this I can use localhost:port or real.domain.name:port (lets think that it cached or can be resolved by local dns).
+If you really want to use real.domain.name and point it at 127.0.0.1, modify your localhost's /etc/hosts file:
+Lets suppose that I need to send data from one services to other on the same host.
+It will never arrive at the NIC card driver and cause any CPU cycles to be used by the NIC card driver.
+If you are connecting to a local service on the same host, always use a localhost address and not the IP Address, hostname, or FQDN.
+That way if you move your service to another host, it would still work, whereas localhost will always be stucked on your local machine.
+This also allows, if the real.domain.name moves to another host, to remove this from /etc/hosts and use that (now remote) host without changing your application's configuration in any way.
+Then there's no DNS lookup involved (checking /etc/hosts is very fast).

@@ -1,0 +1,11 @@
+Are there any possible solutions to get current time on commit with oracle ?
+As other have asked, it would be helpful to know what business requirements need this functionality.
+If I use default value sysdatetime on the column, it uses the current time at insert (which could be significantly different to commit time).
+When inserting a row I want to make a column, equal to the current time on commit.
+To get an approximate value (+/- 3sec or so) you may use ORA_ROWSCN
+When you insert into the table you could set the effective date to something in the future after you know the commit will have occurred.
+For example, if you need to know when a certain row started appearing in query results for other sessions (which would only occur on the commit, not the insert), then you could rename your table and add a column that is an effective date.
+If I use an on insert trigger, it again uses the time at the insert - not the actual commit.
+It has a big defect, it's commiting twice for the same records, so generating almost double redolog for each run.
+You must define the table with ROWDEPENDENCIES to have the SCN stored for each row.
+You could then create a view named the same as the original table and have it show only rows with effective dates less than sysdate.

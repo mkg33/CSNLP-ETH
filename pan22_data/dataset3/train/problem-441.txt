@@ -1,0 +1,11 @@
+For example, if a vulnerable device has a default global rate limit of 100, then implementing a per-node rate limit of 20 at a border router would prevent an outside attacker from executing the off-path attack, even if the device and firewall clock are not synchronized (best attacker can do is 20 at the end of one second followed immediately by 40 in the next, far short of the 100 that the attacked device is configured to send).
+The Linux kernel vulnerability CVE-2016-5696 disclosed last week affects a lot of devices, and a network administrator may not have root access to all of them (if owned by customer, or in the case of Android, root is held by the manufacturer and not the owner).
+(This probably could not be accomplished using iptables alone, but using a reactive rule generator)
+What packets should be matched, what modules would keep track of the per-node rate and allow limiting?
+Local devices could still communicate without being affected by the rate limit.
+It's unreasonable to think that patches will be coming anytime soon for all of these devices, and without root it isn't even possible to increase the global rate limit to mitigate the side channel.
+Is it possible to detect an ongoing attack by counting challenge ACK packets (does the firewall have enough information to distinguish them?)
+How would one implement such a mitigation using iptables on a Linux firewall running kernel version 4.x?
+If a border firewall were to restrict the number of challenge-ACK packets returning to an attacker to a lower number than the limit on the device being attacked, the information leak would be plugged.
+However, the attack relies on the attacker being able to intentionally trigger a number of challenge-ACK packets back to themselves, in order to see whether the one on the spoofed connection causes the limit to be reached.
+Detecting challenge-ACK packets may be a prerequisite, in order to not throttle ACK packets coming from the true peer.

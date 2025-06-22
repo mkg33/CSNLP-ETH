@@ -1,0 +1,9 @@
+AWS has a tool to convert EBS volume device names in /etc/fstab to their UUID values: c5_m5_checks_script.sh
+I rebooted a m5d.xlarge EC2 instance running Ubuntu 16.04.5 LTS (xenial) using shutdown -r.
+The script also checks that the NVMe module is loaded in your OS image, but your newer instance type would not have launched if that was not present.
+This caused various services to fail, which rely upon the drive mount with the assigned name containing specific data associated with that name.
+In this case, /data needed to contain what is normally expected to be in /data, and not some other drive mount, like /foo or /bar or /whatever-else.
+Running lsblk helped with manually redefining the /etc/fstab file to reflect the new device assignments and bringing services back online.
+Problem: My worry is that rebooting will randomly reassign device labels to drive mounts, and this problem could or will occur again when the server requires rebooting.
+Upon reboot, various drive mounts defined in /etc/fstab did not line up with the device assignments given to them initially.
+Question: How do I ensure that drive mounts and their respective device paths are preserved between reboots, without needing manual (re)intervention?

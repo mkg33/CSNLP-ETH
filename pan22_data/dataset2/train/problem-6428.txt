@@ -1,0 +1,11 @@
+Is there a better approach to getting this information? My real-world query (not this example) is currently running in around 6 seconds, and I'd like to get it running faster. Using EXPLAIN ANALYZE, a big part of the time is spent looping for each group over the nested select statements.
+And if there's nothing faster, is there a more succinct way of expressing these lookups? I want to produce one row (per group) with the percentile values to create a boxplot (p25, p50, p75).
+However, in some cases, I have less than 100. My understanding of NTILE(N) is that it attempts to assign n over the entire range [1, N], and once all values have been assigned, it adds more entries to the buckets with a smaller n. This is likely easier to understand with an example, such as this one
+This works, and I could also use it when M > N, though if M >> N, there's not much of a gain in accuracy for the complexity. However, it feels like I'm re-implementing something that likely would/should exist.
+Note how for n40, the groups with n <  10 each have 3 rows while the groups for n >= 10 have 2 rows.
+I have a "large" dataset (75k) containing multiple groups (30), and for each group I am generating box plot percentiles. In most cases, I have more data points (M) per group than 100 (N), which allows me to get relatively accurate percentiles using NTILE(100). 
+When M >> N, it's more accurate. When M < N, I get gaps, so I looked at stretching the bucket numbers to cover N.
+According to SQL:2008 PERCENTILE_DISC(x) is the first value with a CUME_DIST greater than or equal to x.
+Ideally, I wouldn't have to install a stats package as I'd love to keep this running on Heroku, which has the following extensions: btree_gin, btree_gist, chkpass, citext, cube, dblink, dict_int, earthdistance, fuzzystrmatch, hstore, intarray, isn, ltree, pg_stat_statements, pg_trgm, pgcrypto, pgrowlocks, pgstattuple, plpgsql, plv8, postgis, postgis_topology, postgres_fdw, tablefunc, unaccent, uuid-ossp
+When I have M > 100 data points, I'll search for a given percentile (say the 50th) using nested queries like this one and it's a reasonable approximation
+If you can't upgrade on your Heroku instance you can rewrite it. I did that a few years ago on Teradata, besides the proprietary QUALIFY it's similar syntax:

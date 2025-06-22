@@ -1,0 +1,9 @@
+In short: I want to install apache2, php5, mysql-server without using lamp, but configured in a way so I can open up netbeans, start a project with root in /var/www/, and run every single function without permission faults. Does anyone have experiences or workarounds to this?
+At last change your umask in the file /etc/profile to 002, umask should be the last line of that file
+Now change the owners of the /var/www/ folder, as the owner I wouldn't take root, but rather www-data, and change the group to the group just made: www-pub
+I've been searching a long time, but I can't figure out how to configure apache the best way for a developer computer. The plan is simple, I want to install apache 2 + mysql server so I can develop some php website.
+I.e. you can set a default ACL on a directory and that ACL will be applied to every object created in that directory.
+I don't want to install lamp though, just the apache2, php5 and mysql. The problem that I've been looking an answer for is the permissions on the /var/www/ folder. I've tried making it my folder using the chown command, followed by a chmod -R 755 /var/www. Most things work then, but fwrite for example won't work, because I need to give write permissions to everyone, unless I change my global umask to 000 I'm not sure what I can do.
+Modern linux you can add ACLs over and above,the old user:group:others model, using setfacl and getfacl.
+We still have to change the permissions so that we can create file on /var/www/. If you don't know what the "2" means, this stands for SGID, information about this can be found at http://www.codecoffee.com/tipsforlinux/articles/028.html
+It is much easier to enable userdirectories (see UserDir) and let apache serve stuff from your home directory, like it does on most hosting services.

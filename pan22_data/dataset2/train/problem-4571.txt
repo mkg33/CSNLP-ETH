@@ -1,0 +1,5 @@
+The compression can be turned off or postponed until the next rotation. If the compress directive is used, the old logfiles are compressed. If that directive is not used, they are not compressed.
+Process is writing to the same file, thats why lograte copy instead of move. When you delete log, process still writes to log and you can see filesystem usage growing, but no file. Process restart will free disk space.
+The standard method of rotating logfiles is to rename and then send a signal to the process to let it open the new logfile. This is faster and doesn't risk losing part of the log. But it requires the writing process to be able to switch to a new logfile.
+The behavior you are describing only happens if logrotate has been explicitly told to do so through the copytruncate directive. The documentation warns about the possibility to lose some log data due to this behavior. That directive should only be used as a last resort.
+If both compress and delaycompress are used, compression is delayed until the next rotation. That way after each rotation the two newest logfiles will not yet have been compressed.

@@ -1,0 +1,13 @@
+Let's say you want the file to be called /var/lib/mysql/.shutdown_signals
+The error log just shows "Normal shutdown" followed by the typical shutdown messages.
+We have had several situations when our production MySQL server suddenly became unavailable.
+How can I determine the Linux or MySQL user account and host name of the connection issuing the shutdown command?
+One perfect example why root access even for admins is bad.
+cd /home; for u in *: do; sudo grep mysql /home/$u/.bash_history; done
+Check the secure log in the event it was run via a sudo service call
+If you want to see who issued shutdown from a Linux viewpoint and if you are real risk taker, I have a very dangerous but fun suggestion.
+Check to see if there's any mysql related stuff going on in cronjobs
+You will need to shutdown mysql and switch the files around
+You could create a special log file that records when service mysql stop is issued or if mysqld_safe decides to shutdown.
+Check with people you know that either have sudo or mysql root access on this machine
+Maintaining a sudoers file and a centralized database of privileged users and groups(LDAP for example) would help solving problems like this.

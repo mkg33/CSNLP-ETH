@@ -1,0 +1,15 @@
+if you have an unmanaged siwtch, most likely you not going to get anywhere you want for the bandwidth, but thats not the case if you are binding the ports together on the switch.
+You might be seeing I/O limitations on the system bus architecture itself.
+Some possible combinations may be along the lines of different ratings (5e vs. 6) as well as lengths (shorter is not always better).
+You could also try to enable interrupt coalescence if you don't already have for your network cards (with ethtool  --coalesce)
+Outside of having other systems with different hardware and I/O architectures to test, cabling might also come into play as well.
+It looks like the PowerEdge 6950 is limited to possibly PCI slots which top out at 133 MB/s shared across the entire bus.
+here's something ive learned a long time ago, 65% of the time, its a physical issue.
+if you have configured jumbo frames on your nics which by the look of it you have make sure you have configured your switches to support the high MTU as well.
+doing jumbo frames is a gigantic help, as long as your switch and nic's support it.
+These were the settings that I applied on both nodes:
+In the end I managed to get about 150MB/sec synch speed.
+Have you configured this two-way trunk on the switch?
+Jumbo frames are a great performance on gigabit networks but you need to ensure your have configured them end to end (both source and destination servers and the network switches they use).
+I had a similar problem trying to raise the speed of a drbd synchronization over two gigabit links some time ago.
+if not then it won't work like that, it'll just work in active/passive mode and only use 1 of the 1Gbps links.

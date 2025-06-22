@@ -1,0 +1,13 @@
+It simply sounds like your clients aren't running the Puppet agent service.
+Which is the default configuration which came with the package.
+run service puppet start or systemctl start puppet (systemd) and if you're on a Red Hat-type OS, also run systemctl enable puppet (systemd) or chkconfig puppet on.
+Puppet uses a pull model, so you need to run the agent to pull configuration from the master, every 30 mins by default when the agent is running as a service.
+The only one that really matters is server if the default of puppet (relying on the search domain) isn't sufficient.
+Most of the settings under [agent] on your server are the defaults and you don't need to copy them to your clients.
+Start it and ensure it's configured to start at boot.
+Since you say running Puppet manually works, I guess you don't even have to worry about that.
+While looking at the Foreman dashboard I can see that 95% of the servers appear as synced and updated (blue icon) and 20 servers which have no known common ground appear as unsynced and not updated.
+You can see that under the [agent] section the only configured directives are classfile and localconfig while on the Puppet server's /etc/puppet/puppet.conf the '[agent]' section looks like so:
+Linux servers in my company are configured and managed by Puppet which installed with Foreman.
+Normally you'd configure the agent to start at boot during provisioning.
+When looking on the /etc/puppet/puppet.conf file on any of the Puppet agents (the ones which are updated or the ones that are not updated), I see it's configured like so:

@@ -1,0 +1,8 @@
+I understand that this would give a very minimal level of protection; the idea is to prevent random browsing from search engines or easy access for anyone who knows the URL(s). That is, we don't need or expect to protect against informed or motivated attackers this way.
+I can't find any precedent for this online. Are there any similar examples out there, or any better ways to achieve something similar to our goals? (Not meaningful security, but a first modicum of confidence in the request's origin)
+On the other hand if your testers come from known locations you should simply have a whitelist of approved IPs on the test stack and reject anyone coming from elsewhere. 
+What you are describing is essentially Bearer token authentication - the client will have to present a valid token or be refused access.
+Needless to say this should only be used over HTTPS to prevent anyone from tapping on the plaintext traffic. However all sites these days should only use HTTPS so it's a moot point ;)
+We thought of doing this using a custom 'X-' request header, and then using AWS WAF's regex match conditions to check it against a 'non-trivial-to-guess' pattern.
+There are pretty much no rules around what that token is - it can be a base64 encoded random string that both the server and client know, or it can have some auth data encoded inside like JWT tokens. In your case you can simple genarate and encode a random string (32 chars or so) and use that for basic authentication.
+My organisation is adding a firewall to our test stacks, using AWS WAF. We'd like to whitelist all traffic from the SDKs we've built to facilitate requests between our services.

@@ -1,0 +1,13 @@
+Dell support were also unable to answer my question and said that as we didn't configure the switches in their recommended fashion (stacked) they couldn't help us.
+During testing if I shutdown the port the SAN is connected to on A1 it just becomes unreachable. It doesn't fail over to A2 at all.
+In this instance the Equallogic uses ports A1 P15, A1 P16 and then A2 P15 and A2 P16 (not A2 P31 and P32 as I had configured)
+"The version of the midplane installed in the enclosure is displayed in the Midplane Revision field under the Summary tab of the CMC web-based interface"
+For future reference the Equallogic uses the SAME ports on both Fabric A1 and A2. I was following the diagram below with my SAN in slots 7c, 7d, 8c and 8d.
+I have one configured along with Force 10 - MXL 10/40 switches in Fabric A. These switches are not configured as a stack but as two separate switches.
+One last thought - you may just not be getting the results you expect because you're shutting ports down at a config level, and there's no true component failure that would signal a real need for failover. Perhaps try pulling A1 entirely and see whether the connection moves to A2?
+If you do have a v1.0 fabric, I would suggest testing on Fabric B if you have that option (if you have Ethernet on Fabric B), as that document only calls out Fabric A being reliant on the correct midplane version.
+Regarding support stating the configuration isn't as recommended, this white paper (EQL BP1049) only makes mention of a LAG-based configuration (no stack-based config is even presented as an option from what I'm seeing initially). I'm not certain which config is most "recommended" though.
+Does anyone know if this SAN when configured to run on Fabric A of a Dell M1000e should be able to work on either A1 or A2?
+I have looked through lots of the product documentation but this information is not clearly explained in any of them.
+According to the M4110 Installation Guide, "the M1000e must have a Version 1.1 midplane for use with Fabric A"
+The information I had that listed which ports the SAN would use on the switches wasn't entirely correct so basically I was using the wrong ports.

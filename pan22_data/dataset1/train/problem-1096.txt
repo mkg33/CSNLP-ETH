@@ -1,0 +1,7 @@
+I have two instances of Sql Server 2005 running two copies of a database in a Principal and Mirror configuration.
+I want to send an email to someone whenever there is a failover, by which I mean the Principal DB goes down (for whatever reason) and so the two DB's swap roles, the Mirror becoming the Principal (and the Principal becoming the Mirror).
+I have already configured "Database Mail" and sent a test message using sp_send_dbmail successfully. But I don't know how to create a Sql Server Agent Job (or whatever will work) that runs on failover.
+I imagine the way to do this would be to somehow hook into some sort of "Oh! I was the Mirror a second ago but I have just become the Principal" event and make it exec sp_send_dbmail .
+Anyone have any idea how to do this? Or a better way of accomplishing this?
+I'm assuming you have a witness instance here to allow for automatic fail over of the database.
+The way I would handle this is to have a table on both the principal and mirror that stores the value of the "mirroring_role_description" column from sys.database_mirroring and then have a SQL agent job run a script that does the following:

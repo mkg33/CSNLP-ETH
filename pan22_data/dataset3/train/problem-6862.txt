@@ -1,0 +1,14 @@
+I'm fairly confident that part of the blame lies in the ever-growing database--this view loads much faster on the test environment, which has far fewer records in it.
+In my example you will find the concatenation of sentences in different languages (not exactly what you're after), but it seems to me that you could use the same technique.
+This SQL Fiddle demonstrate how to use a recursive CTE for concatenation.
+You should try to do everyting in a single pass with UNPIVOT/PIVOT.
+The major factor about this is getting the view to specifications involves a mix of CTEs and string concatenating to combine multiple rows into one column (multiple times).
+Looks like the issue in your code is multiple access to the CTEs and all the complicated logic you have in there.
+My question is thus:  Is it possible to go about this in a way that is faster and less resource-intensive on the DB?
+Currently, we are using a view which I created that pulls data from a number of tables.
+If you believe that FOR XML PATH is the culprit that slows down the view, you can use a different approach to concatenate rows into a single column.
+While the view works, users have recently complained about it being too slow.
+Just insert cte1, cte2, cte2 and cte4 between your thing1 and thing2, and then just use the Invoice, Invdate, InvTot columns from cte4 directly in place of your last three columns (where you use FOR XML PATH)
+http://spaghettidba.com/2011/10/13/concatenating-multiple-columns-across-rows/
+Currently, the view setup looks something like this:
+Problem is, once I get to that final SELECT that concatenates the Invoice, InvDate, and InvTot, the query goes from not needing a single second (that is, a straight SELECT from thing2) to taking up to 7 seconds to run its course.

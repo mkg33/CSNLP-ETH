@@ -1,0 +1,10 @@
+Anycast essentially makes clever use of the inherent behavior of the BGP routing protocol.
+Worth noting, it's not operating based on geographic proximity but rather proximity in terms of number of autonomous systems (entities, such as ISPs, doing BGP routing) on the network path to the network.
+This happening will obviously break any protocol which maintains state (including anything based on TCP) when it happens.
+Often this somewhat correlates to geographic proximity, but not necessarily.
+The relevant technology is called anycast routing.
+The other BGP routers out there on the Internet are used to seeing multiple paths to the same destination and selecting the shortest (in terms of AS hops) path.
+In this case, however, it just so happens that the multiple paths to this "one" destination actually happen to end in different places on the network.
+DNS is an example of a protocol that is particularly well-suited (primarily using UDP, just answering the one thing it received in the current query), but anything that doesn't have very long-lived connections can work well enough (CDNs are known to do HTTP/HTTPS, which is obviously a little bit of a gamble).
+A network prefix which contains the relevant address(es) is advertised from multiple places.
+Also worth noting, when the availability of routes in the BGP table will inevitably change over time it is entirely possible that what is the "closest" anycast destination changes, possibly mid-session.

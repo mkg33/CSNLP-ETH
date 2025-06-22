@@ -1,0 +1,33 @@
+There might be some other optimizations possible depending on specifics about your data (e.g.
+if everything is 1:1), but the biggest concern seems to be the attempt-table, and you only provided details for this anyway.
+Since it takes a little more time to calculate the statistics, you should reset it to its original value if it does not work.
+A better way would be to normalize this table, e.g.
+It might require some rework of you orm/data model, so maybe try a view (or insert the rows into a temporary table) for that and join with this to see the effect it might have.
+Using an index hint is the proper (and oftentimes only) solution if MySQL chooses the wrong index.
+(This would tie the ORDER BY to the UNION instead of the 2nd SELECT -- I assume you wanted that??)
+** Let's see SHOW CREATE TABLE; we may be able to trim the 50GB somewhat.
+** OPTIMIZE TABLE is almost always a waste of time.
+It looks like you are using the union only because of the join to 2 different loan_application_*-tables.
+If you need columns that are specific to a subtype, you can join with that.
+This is called an is-a relationship (a "loan application" is a subtype 1 or 2).
+This will make a join to the "general" loan_application-entity much more reliable and easier.
+All references to ca.id can be replaced by cpr.campaign_id.
+It could perform better than your current single column index, and will probably be used even without forcing it.
+Or keep both of your tables, but in addition have a parent table with id, subtype and all columns these two tables have in common.
+So this will indirectly solve your problem too, so it's useful even if it doesn't actually speed up your query - which will be the case if (nearly) every row in the created_at range will also have parsed_at = null.
+It uses a larger portion of your table to create the statistics, so the estimates might get more precise for larger tables.
+If they actually describe completely different things that have nothing in common, that would of course not be a good idea, although they would have very misleading names.)
+(This was concluded from how you used these table in the query and their names.
+You can try to increase the innodb_stats_persistent_sample_pages (to e.g.
+** You can probably get rid of one JOIN -- namely to campaign ca.
+(This simplifies the OR, and avoids adding an extra second to the interval.)
+** If valid, use UNION ALL instead of UNION DISTINCT.
+What helps today may hurt tomorrow (after the distribution of the data changes).
+** Is there any difference between the SELECTs other than the loan_application* table?
+The two other table will only contain the id and the columns specific to the subtype.
+have the content of both in one table, maybe id, subtype, other columns, and set subtype=1 for rows from loan_application and subtype=2 for rows from loan_application_external_lookup.
+Depending on how common null is for your column parsed_at, I would recommend the composite index attempt(parsed_at, created_at) though.
+You can save up to 50% of execution time if you don't do that.
+200), then run analyze table attempt and check if it improves the execution plan.
+While that can happen due to outdated statistics or an undersized sample rate, it's hard for MySQL to find a proper ranged index when an equality is available.
+This could explain why the effect happened only recently, although it probably won't change the plan.

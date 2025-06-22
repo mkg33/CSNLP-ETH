@@ -1,0 +1,25 @@
+sda is the disk that failed long before, it's listed correctly in all of them as faulty removed.
+What you are looking for is probably the commands to hot-remove and hot-add drives to the raid array.
+By doing this you run the risk of corrupting data, especially if you don't know which drive went offline last - but it sounds like you have little choice.
+Is RAID5 supposed to recover from a two-disk failure?
+It wasn't that one of the disks failed, it was something else.
+just remember to give the drives at the same order they were originally created and with same stripe sizes etc.
+However I do recollect that once I figured out the series of commands to run, it was a fairly straightforward procedure and it worked great.
+Read up on the various ways to use the --force option in the mdadm man page.
+If al else fails, you could use raidextract: http://www.chiark.greenend.org.uk/~peterb/linux/raidextract/
+Maybe I had to run some kind of filesystem check, I don't know.
+Provided the drives have not actually failed but rather become temporarily unavailable or for some other reason have come out of sync, you can try to force the raid online ignoring the change number/time stamp of each member.
+So I tried just --force ing a start of the array and it worked like a charm.
+No need to remember what order the devices were in or anything like that.
+One of the disks failed (actually I think it's one of the connectors in the hot-swap cage) and it's been running off of three disks while I find a replacement HDD or further diagnose the problem.
+I know, by now a lot of you probably think I'm a nitwit, or worse.
+I was able to simply add back in the second "failed" disk and in a few minutes, I was back up and running.
+The crux of the issue is that if I run a mdadm --examine on sdb, sdc, and sdd, sdd thinks it's still part of the array but on the superblock info of sdb and sdc, it lists sdd as removed.
+The server in question is not on the internet so it's not possible to C&P the output of various commands on to the forum.
+Anyway once before, I had some kind of HW hiccup, maybe the power went out or something, and I had problems recovering the array.
+I tried explicitly stating the members with which to assemble and I would get errors like "missing:  device not found"
+I'm running 4 500GB SATA drives in a RAID-5 on Ubuntu 7.10 server.
+If one of the drives have actually failed and another is out of sync, you can still bring the raid online supplying "missing" as the device ID for the failed drive, combined with the --force option.
+I spent hours, if not days, figuring out how to do it last time and have since forgotten.
+this is silly, this has happened before and I figured out how to fix it and it was fine.
+Now, before you read any further, NO I do not have backups and the information is not super important, just nice to have.

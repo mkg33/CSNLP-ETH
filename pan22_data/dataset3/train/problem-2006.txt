@@ -1,0 +1,11 @@
+It may be seeing the SHA1 as older and not trusted.
+I noticed there is a SHA1 certificate in the chain.
+The failures showed up by running 'openssl s_client -connect :443' In the first group of lines of output you either see openssl '20', '21' and '27' errors if the issue exists and otherwise you see the correct cert chain.
+Make some changes, click ok. Click `edit bindings...' again and undo your changes and click Ok again.
+https://blog.mozilla.org/security/2014/09/23/phasing-out-certificates-with-sha-1-based-signature-algorithms/ also https://support.mozilla.org/en-US/kb/secure-website-certificate may help.
+(This is common with other CAs too)  All you need to do is download the missing intermediate and add it to the certificate store on the server and it will serve it up for these troublesome clients.
+SHA1 is being phased out and may be causing your issue.
+There is nothing wrong with the certificate, it has multiple chains to support obsolete browsers.
+I fixed it by going in to IIS manager, select the web site, top-left corner 'edit bindings...'.
+If you test your site with Firefox, you may experience the same issue.
+A similar issue happened to me today on WS2012R2 IIS8.5 on 9 out of 80 Windows VMs that were deployed from scratch using Salt automation.

@@ -1,0 +1,9 @@
+I would opt for strict type checking here. It seems a bit lazy to force it to a single when implicit in the function name. No need to use a variant and force it to a Single via a cast. 
+I've also added optional parameters for the Precision and the NumericScale with default values.  The ToDoubleParameter, ToCurrencyParameter should also be modified as well.
+Why have all these functions -- you don't use them anywhere else in your design.  Create a function that makes a parameter based on type -- this is what you are actually doing. 
+IMHO, if the function ToSingleParameter is expecting a Single, then it should get a Single value and complain with a type mismatch error if it doesn't receive it. 
+You felt the need to go through great lengths in your post here to explain that the client code owns and is responsible for opening/closing connections and closing the returned recordsets, yet I see no comments mentioning this in the code. I would add some proper documentation for something you see as being this important. 
+I'm fairly sure you don't need to cast "value" to the type as you do, you have already checked its type and you are not changing the type.
+Keep in mind that Precision is the number of digits in a number. NumericScale is the number of digits to the right of the decimal point in a number.  Where a number like 99999999.99 has a Precision of 10 and a NumericScale of 2.
+If you feel the function is getting "to long", then make a helper function that sets direction, type and value on a new ADODB.Parameter and re-factor all those lines out.
+But then something strange happens, you look at the type of the variable and convert that to a string so you can call a function named after the type to do a standard set of options that only change based on the type.

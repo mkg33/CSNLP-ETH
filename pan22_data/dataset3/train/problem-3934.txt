@@ -1,0 +1,10 @@
+I want to filter these messages based on the bucket number, which I suppose can be done with a regex.
+Every message starts with a bucket number, so the messages are written as:
+These buckets are numeric and can be in the range 1-999.
+If you want to learn more about configuring rsyslog in here is an excellent place to start: http://www.rsyslog.com/doc/rsyslog_conf.html
+Can someone help me with how this can be done with rsyslog?
+The messages written to the syslog are for various buckets which need to be filtered out.
+This will search the msg property of incoming syslog messages for that string, and log it to the file I specify.
+However, is you are happy with the 999 lines, it is certainly simpler, and the matter addressed by Ronaldo Nascimento can be taken care of by using contains_i instead of contains - contains_i is case insensitive.
+I guess I am a bit late with this answer, but actually rsyslog lets you create log file names dynamically, so you could create a template that constructs the log file name based on the msg contents, using either field.number or regex.submatch properties to extract the bucket number - see http://www.rsyslog.com/doc/master/configuration/templates.html for details.
+The output for these buckets should go different files, one for each bucket.

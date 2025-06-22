@@ -1,0 +1,6 @@
+So I dug a little deeper and found a systemd socket config file for Docker:
+When I look at the docker.service configuration file, I get the impression Docker is only listening on a file descriptor (--host=fd://).
+However, when I check the listening ports via netstat, I see the following:
+I'm reading through the systemd configurations for Docker on CoreOS trying to figure out how the TCP port for Docker (port 2375) gets enabled.
+This seems to be what's providing the listening service at port 2375 (the default Docker port), because when I stop it (using systemctl stop docker-tcp.socket) and restart the Docker service (using systemctl restart docker.service), port 2375 no longer shows up in netstat.
+So, my question is this... does the docker-tcp.socket config actually enable the local TCP interface as a --host option to Docker, or does Docker by default listen on the local TCP interface when fd:// is specified a a --host option, or is the docker-tcp.socket config somehow setting up a mapping from 0.0.0.0:2375 to /var/run/docker.sock at the OS level?

@@ -1,0 +1,44 @@
+I'll go through your code sort of line-by-line, commenting on any issues I encounter:
+The last thing I'll say about this is that you really should consider following the PSR coding standards.
+In this case: $result holds an instance of mysqli_result.
+It should receive the tools and data required from the caller.
+A function is an encapsulated piece of logic that do a single, relatively simple job that you're very likely to repeat.
+I've been writing PHP for over a decade, and I've never, ever come across a situation where I actually needed to use global.
+This object has got a mysql resultset associated with it.
+Although none of the current reviewers have mentioned what I'd consider to be the biggest problem with your code.
+If you don't have the native driver installed/enabled for some reason, you'll have to build the full array yourself, but it's a simple matter of:
+Ok, what you could do here if mysqlnd is installed, as I've shown earlier, is simply fetch and return the results in one go:
+If I see this function, I know it requires a DB connection and a query.
+What you're actually doing AFAIK, is fetching the results, row by row, and adding them to an array.
+The other problem I have with the function name is that gd is actually the name of an existing PHP extension.
+Whether you're using PDO or mysqli: the best thing about this is that you can actually type-hint for this in your function signature.
+It saves you the bother of having to pass that $connect variable to the function.
+But like I said, this, to me is the worst part of your code: global is a keyword that you can, and should, avoid 100% of the time.
+Now this function is (somewhat) clearer about what it does, and what it needs to work.
+In other words: your function should be expecting the caller to pass the DB connection as an argument.
+For some reason, you're decrementing the row count, and you're using these numeric values as keys.
+A function should not be relying on a global variable being there, simply because a function cannot guarantee that this variable exists, let alone that that variable will hold a DB connection.
+That means putting the opening { bracket on a line of its own
+Your code will work, of course, but you go to a lot of trouble to grind the result set into an array when that capability is already available.
+Not doing so could give you an error about MySQL being out of sync, and you would get errors calling SP's until you freed the offending result resources.
+It shouldn't be expected to "format" those results.
+If I see gd in PHP code, I immediatly think of images being generated or transformed.
+You're not checking for a false return value, and you're assigning a result resource to a variable called $fetch.
+Looking at that, I'd be about 99% sure that this function will return an array.
+Ok, I basically agree with most (if not all) of the comments others have made so far.
+Be that as it may, there is a far shorter way to do get an array of rows.
+It probably stands for get data or something, but you can't expect people reading your code to know that if they see some code like $data = gd($query);.
+To find out if you have mysqlnd enabled, just run php -i | grep mysqlnd and look for mysqlnd => enabled in the output.
+So the first result you fetch will have the highest index.
+But even so, I wouldn't, and here's why: even though PHP manages the resources for you, I firmly believe that it's good practice to clean up things after you're done with them.
+Ok, whenever you're nesting loops like this, you really have to ask yourself if there isn't a different way to do things.
+This function returns the results of a query as an array.
+Mysqli would provide the fetch_all() function if you had the mysqlnd drivers available; fortunately, PDO has provided it since PHP 5.1.
+Although it's been some time since I've actively used mysqli, when I last did, you sometimes really needed those free or close calls when you were calling stored procedures, especially if those SP's relied on MySQL session variables.
+Queries tend to contain a WHERE clause, and that clause may look different depending on logic that resides elsewhere, so you could end up with messy code like this $array = gd(getQuery($data));.
+You can also use a mysqli connection as an object (which it actually is).
+Not sure what the advantage of this is (you could just as well use an ORDER BY x DESC or ORDER BY x ASC clause in your query, or even use array_reverse.
+If you have the native driver enabled, you can just write this:
+I urge you to change the definition to something more like this:
+Just a small comment: mysqli_query returns either false or an instance of the mysqli_result class (which already holds the rowcount).
+If you don't need those resources anymore, you can free them using the mysqli_result::free method (mysqli_result::close is an alias of the same method if ever you encounter a close call), so what I'd do is either:

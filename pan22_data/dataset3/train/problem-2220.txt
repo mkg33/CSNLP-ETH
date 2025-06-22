@@ -1,0 +1,22 @@
+In my experience Cisco switches should insert less than 1ms to the latency, so yes, this is an indication of a problem.
+Can you connect to the switch and check for issues?
+We've overloaded high end switches (10Gbps backhaul) with traffic in the 100Mbps range because we were inadvertently sending traffic that had to be switched within the CPU.
+This could be especially prevalent on lower end cisco switches.
+One thing that could be happening is if the switch doesn't know which port you're server is on, it will need to flood all ports with the packet, which could take time (shouldn't take 100ms though).
+Are you comparing the timestamps between the two boxes?
+If the devices and switches are lightly loaded I would be concerned that someone was using an ARP hijack to insert themselves in the traffic flow as a man-in-the-middle...
+You mention that you are analysing tcpdump output.
+That could also require CPU switching which would be orders of magnitude slower than in ASIC.
+If it's a lower end switch and only getting delay on tcp/ip, I'd check that there isn't an ACL that is applied to TCP/IP packets.
+alt text http://ironicsurrealism.blogivists.com/files/2009/10/homer-simpson-doh.gif
+Do you have access to a third host on the network to compare performance to the other two boxes?
+Are both devices connected to the switch via wires (i.e.
+If you check the ARP table on these boxes (arp -an) and check the IP address of the other box with the output of ifconfig, do the MAC addresses match?
+This seems like the latency you would get going from one side of US to the other.
+Once the server responds, it will then learn the port-mac assignment and do the forwarding in asic.
+Bad cables and/or punchdowns can result in retries that can greatly increase latency.
+I would also check the switch for CPU load, even if it's low usage, if it's got some stupid config that is causing it to switch in CPU, it can easily be overloaded.
+The delay I was getting was 100 microseconds, not millis!
+It appears I misread both the tcpdump and wireshark logs.
+Do you have the same problem when running pings, in that the  first ping has 100ms delay, and then subsequent pings are <1ms?
+You can verify by running TCP dump on another server that isn't one of the two servers you are using.

@@ -1,0 +1,11 @@
+Once key files are in a controlled location, you'll need a management interface to update (and enforce password policy) followed by distribution of the keys to required hosts.  Either roll one yourself or have a look at products such as FoxT / Tectia etc.
+To gain control of user keys, all keys must be moved to a root owned directory where the keys are readable but not modifiable by the end user.  This can be done by updating sshd_config.
+The passphrase that can be set on the private key is unrelated to the SSH server or the connection to it. Setting a passphrase to the private key is merely a security measure the key owner may take in order to prevent access to his remote shell by a third party in case the private key gets stolen.
+You can't.  Once the user has the key data in their possession, you can't stop them from removing the passphrase.  You'll need to look for other ways of doing your authentication.
+I'm looking at removing password-based logins for SSH.  However, I don't want to allow passwordless ssh keys, as that would be even worse.
+If this can't be done, are there alternatives, like centrally managing SSH key generation, and preventing users from generating and/or using their own keys?  Something like PKI, I suppose.
+This way, even if a third party gained access to an unprotected private key, it would be extremely difficult to find out for which remote hosts this key is valid. Of course, clearing the shell history is mandatory for this technique to be of any value.
+Users can do anything with their keyfiles, convert into passwordless even if You generated it for example.
+Also, another thing you should always bear in mind, is not allow root to login remotely by adding the following in your SSH server's configuration (sshd_config):
+Unfortunately, you cannot force users to secure their private keys with passphrases. Sometimes, unprotected private keys are required in order to automate access to the remote SSH server. One good habit I highly recommend for such cases is to advise the users to hash the known_hosts file (stored at ~/.ssh/known_hosts), which keeps information about the remote hosts the user connects to, using the following command:
+On the other hand, if you want to prevent users from using keys to authenticate, but instead use passwords, you should add the following to your sshd_config:

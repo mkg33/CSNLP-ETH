@@ -1,0 +1,24 @@
+If you are using a laptop, then after turning hibernate on and before turning it off, do also the following :
+in my next experiment I shall toy with the "HiberFileSizePercent" registry key under:
+As a 99% solution, I changed the HiberFileSizePercent value to decimal 1, which makes the hiberfil.sys only 80MB on an 8GB RAM machine.
+Not a solution, but a workaround that worked for me:
+I suppose I could try .001 or less, but 80MB is not much.
+And next time I run out of space on the C drive, I can still delete the 1GB file..
+I thought about creating a small hiberfil.sys, but I think that would ave been overwritten.
+Could this be caused by a restore partition or similar?
+this is really frustrating since I'm running Win7 Ultimate on a 60 GB partition.
+So I removed it with powercfg -h. But it just kept coming back after about 10 seconds or something.
+and see if that might force it to (re-)create a smaller file at least.
+I think it has something to do with PointSec because that was mentioned earlier here.
+My Windows 7x64 install is on an SSD partition on a Mac laptop.
+out of frustration, I even configured the local policy such that it would run a cmd on machine startup that would run the powercfg line, but even that's not good enough!
+Now it doesn't come back and I have still 6GB of space left.
+I guess it's still trying to enable hibernation and finds that there is no longer enough space for that.
+I tried to change the permissions in regedit, but they did not stop the value change to 1.
+Then I disabled hibernation, and then quickly copied a 1GB file over to the C drive.
+I've disabled with powercfg /h off (elevated) and ms fixit's disable hibernate, as well as the setting registry key HibernateEnable value to 0.
+I had only 900MB of free space on my C drive and wanted to get rid of the hiberfil.sys file, which took more than 6GB.
+Tom Wijsman's suggestion of ProcessMonitor with boot logging helped me find that vmtoolsd.exe (from VMware) was re-enabling the registry key during the native boot.
+Maybe manually recreate it after the removal and set permissions to disallow the system to modify the file?
+When I boot native hiberfil.sys is always re-created, but when I boot inside OS X and VMware Fusion, the hibernation stays disabled, as it should.
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power

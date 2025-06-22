@@ -1,0 +1,13 @@
+Some file formats (such as PDFs) have data in them that allow you to determine if the file is complete.  But you have to open and read pretty much the entire file to find out.
+One alternative I was thinking of was to have the file be copied as a different file extension (like .tar.gz.part) and then renamed to .tar.gz after the transfer is complete. But I figured I'd try to figure out if there is simply a way to determine if the file is whole at the command line first... Any clues?
+Using inotifywait can achieve what you're after - it has the capability to wait until a file write has finished before executing a command.
+lsof will just tell you the file is no longer open - it won't tell you why it's no longer open.  Nor will it tell you how big the file is supposed to be.
+Because determining that the file is closed is not the same as determining if the file is whole.  For example, a file will get "closed" if the connection is lost partway through the transfer.
+The problem that I am expecting to run into: If it takes > 1 minute for the tar file to be copied to the server, and the cron script runs once every minute, it's going to see the .tar.gz file and try to do untar it, even though the tar file is still in the process of being written to.
+But all methods have to rely on the sender somehow signalling that the transfer has completed successfully.  Because only the sender has that information.
+That's a perfectly fine way to communicate that the file has been fully and successfully transferred.  You can also move files from one directory to another as long as you stay within the same filesystem.  Or have the sender send an empty filename.done file to signal completion.
+You are on the right track, renaming the file is an atomic operation, so performing the rename after upload is simple, elegant and not error prone. Another approach I can think of is to use lsof | grep filename.tar.gz to check if the file is being accessed by another process.
+The tar files are automatically copied to this server over SSH from another server. In some cases, the tar files are extremely large, with lots of files.
+Is there any way (via bash commands) to test if a file is currently being written to, or if it's only a partial file, etc?
+I need to deploy an automated process (via 1 min cron script) that looks for tar files in a specific directory. If a tar file is found, it is untarred to the appropriate location and then the tar file is deleted.
+The following will continuously watch a folder for new files and execute the command in the loop when writing to the file has finished.

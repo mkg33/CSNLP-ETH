@@ -1,0 +1,17 @@
+You can allocate queue on the stack and have run_length_queue_alloc simply initialize it (and rename to run_length_queue_init).
+I would seriously consider implementing 3 merge routines - merge two ascending runs, merge two descending runs, and merge ascending and descending runs (they would be almost identical, the only difference is in a run traversal direction).
+Please, tell me about other aspects of the code snippet as well.
+get_number_of_leading_zeros typically has a compiler intrinsic (called bitscan reverse in windows or __builtin_clz in GCC) which translates to a single instruction on most CPUs.
+Is there any chance of squeezing a little bit more performance?
+That makes me guess that reversing descending runs is just a waste of time.
+There is a define for how many bits there are in per sizeof unit: CHAR_BIT in limits.h.
+Notice that you remove two slots, and put back one.
+You could pull that code out of both places and put it after the if statement.
+I have this C implementation of the natural merge sort:
+It turned out that joining runs doesn't affect the performance whatsoever.
+As a minor optimization I also recommend to object-deorient the queue.
+This code appears in both the if and else halves of your code in build_run_length_queue():
+The big-O constant was 0.0137 with joining and 0.0143 without.
+This means that the beginning of the queue always have room.
+I built your code with -lprofiler, and pprof told me that
+My primary concern is performance: qsort beats my implementation easily by the factor of 2.

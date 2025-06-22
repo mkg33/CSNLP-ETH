@@ -1,0 +1,36 @@
+A dictionary whose keys are (x,y) tuples does a nice job of representing the placement of the pieces.
+Some of your big, complex functions spend a lot of time creating and assembling new data structures:  for example your pseudo_legal() function (in chess_functions.py) is creating a new dictionary object every time its called.
+More importantly, I also brute-forced the calculations for checkmate by basically unioning all of the moves for each side after each turn.
+I'm sure there are more elegant ways that could be done, this was just a quick way to get it working:
+You're storing the board as an array-of-arrays, which means more objects to be updating and also two lookups for every access.
+That way when you want to know what moves are available for the piece in a square you don't need an extra lookup:
+On a related note, I think you're also paying extra for the way the board is represented.
+The way I happened to try it is not really the point; it's mostly useful to show that you should be able to shave an order of magnitude or more off the times by paying close attention to limiting memory moves and object creation.
+so now when you grab a piece and call slide() it will yield all the moves along its possible vectors, clipped to the limits of the board, and including possible captures (it does not however actually care those moves are captures -- it just says they're legal moves).
+That allows me to spit out all of the move combinations for a knight one at a time without having to assemble them into a list.
+If you want to speed things up, it might be a good idea to tackle these in a couple of ways.
+But it's hard for a purely one-step-at-a-time generator to evaluate thing sequentially.
+For example, you can take the move set for a given piece and location and clip it against the board like this:
+A nice thing about splitting things up like this is that you can easily outsource pieces of the logic in bite-size pieces.
+Between the lookups, the string creation, and the use of temporary lists you're moving a lot of memory around and also creating a lot of disposable objects which will need to be garbage collected.
+I put a rough-and-ready approximation of a way it could be done into [this gist](https://gist.github.com/theodox/ea402db04aedcff607cd816843f3887d.
+There are 64 spaces on the board, but only 32 pieces at max (and fewer as the games goes on).
+So you can avoid checking a lot of empty air by representng the board sparsely.
+A rook, for example, can slide along until it hits a friendly piece or captures an enemy piece.
+which would also automatically 'capture' any piece in new_x, new_y if there was already something there.
+Looking over the github, one thing that's probably impacting your performance a good bit is memory thrash.
+Along the way it calls range() quite a few times in order to loop over possibilities -- in Python 2, anyway, each of those range() calls is creating a new list.
+Taken together all that means every time you want to update the board, you have to do this for a lot of squares:
+For example all of our moves have to be limited to the range 0-7 in both x and y.
+I tried it by making each successive run of moves start with the original home address, so one can make a new generator that resets it's idea of 'blocked-ness' when it runs into that home value again.
+It's not nearly as fully-featured as yours and I think it's probably got a hidden logic flaw -- white wins by a very lopsided 8:1 margin or so  However it does generate about 2,000 games a minute, averaging around 65 turns each, which suggests that even with a lot more careful attention to detail it should be possible to generate a lot of data without going to C++ code or compiled extensions.
+There are several bits I didn't try to handle: the en-passant rule and castling, for example, and there's no algorithm for a draw.
+These short lived objects take time to create and also to destroy when they are no longer needed.
+One thing that's a bit hard to tackle with a pure generator setup like that is the fact that chess moves are -- as you show in your code -- sequential for many kinds of pieces.
+Related to using a dictionary is what you put into it.
+For any given piece, many of the possible moves will be invalid so we don't want to create a list and then trim it down -- instead we can pass along one possible move at a time and then validate it in isolation, keeping or discarding it as conditions permit.
+Your method for scanning involves checking all of the board squares (including the empty squares) to find the string string identifiers for the pieces, and then you parse the display names like 'wN' or 'bBp' before you start collecting possible moves.
+A more selective update of the different zones-of-death would probably double the throughput.
+You can save a lot of string splitting and if-checking by just storing the functions which generate a move set in the board itself.
+which will filter out the impossible moves without any reference to what they are.
+Rather than copying that logic around, we can just add a filtering function that only passes along values that are in the right range:

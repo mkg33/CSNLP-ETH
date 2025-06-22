@@ -1,0 +1,22 @@
+This is annoying me as well, mostly to add every new server to nagios.
+To make it easier to add new server to nagios I started using web based administration tool NagiosQL http://www.nagiosql.org.
+We have not scripted the update of the assetdb, but we intend to using the XML-RPC interface into satellite.
+It's kind of tedious to have to add each new server into nagios, puppet's dashboard, munin, etc...
+Right now the biggest pain point is func and puppet certificates, both on new builds but most often on a re-build of an existing server.
+For nagios we have config/software channels with an activation key to register the host against the channels and load the correct packages.
+I tried few administration tools for nagios and I can say that this is the best I found and it's pretty easy to set up and work with it.
+I've since migrated most of the resources to use mysql as the backend.
+I'm in the process of developing a method to automate new virtual machines into my environment.
+Why are you not using the Nagios functionality built into Puppet?
+I'm not sure about the puppet cert aspect as I've never set up puppet so am not sure what is involved.
+90% of our machines are virtual but the process is similar for both physical and vmware based images.
+I am using it for a few months and I think it's faster to set up new server using this tool than configure new server manually in configuration files.
+What I do now is I use cobbler to install the base OS.
+So what you should do next, and then post about so I can steal from, is figure out how to get func, puppet, and ssh to sort out their keys crap themselves so I don't have to think about it.
+We do have an asset db other than satellite (as it needs to track hosts of many OS's not just red hat) which we add the servers to manually.
+I wanted to see what others are doing and my goal for 2011 is to have puppet inventory the hardware into mysql, and somehow i'll script a python script to have nagios grab the info and automatically add it for monitoring purposes.
+We also use the XML-RPC interface into satellite with another script that also talks to talk to ESXi to work out if we have machines in satellite that no longer exist as VMs and can therefore be culled, and to make sure that all the machines on ESX are in an appropriate satellite group to make sure they get patched we patch via satellite - and batch the patching via satellite system groups.
+http://blog.gurski.org/index.php/2010/01/28/automatic-monitoring-with-puppet-and-nagios/
+We manually add the servers to nagios, but there is no reason why we could not script it - except we're lazy.
+The kickstart script has post hooks to modify the yum repo and installs puppet and func.
+Once the servers are running, I manually add them into nagios and sign the certificate via the puppetmaster.

@@ -1,0 +1,9 @@
+Best bet would be that they map according to the "Parameter Sets." Which also maps the same as the Syntax part of the help file:
+Definitely looks like the documentation is lacking there. If you look at the example for SignatureScheduleDay it documents the mapping a lot better, which lines up exactly as the Parameter Set lists them.
+0 is the same as NULL (example of the docs here), which means to follow the default that Microsoft applies to each threat.  In other words, every virus/malware/etc. has a severity and threat action (i.e. mitigation) attached.  A '0' in GetMpPreference means to use that mitigation and not whatever value you might have specified here to override that universally for each severity level.  Hope that helps any future travelers.
+I would think from the Set-MpPreference documentation that it's Quarantine, but that same bit of text references a Parameter set that starts with 'Clean', not 'Quarantine'.
+but an attempt of Set-MpPreference -HighThreatDefaultAction Ignore leads to InvalidData error as the [ThreatAction] type enumeration does not contain name of Ignore:
+I checked to see if an issue for this was listed in github and didn't find one. You could definitely inquire more there: https://github.com/MicrosoftDocs/windows-powershell-docs/blob/master/docset/windows/defender/set-mppreference.md
+Zero value of any above property should be considered undefined as successfully performed Remove-MpPreference cmdlet sets their value to zero. Demonstration in the following example:
+All HighThreatDefaultAction, LowThreatDefaultAction, ModerateThreatDefaultAction, SevereThreatDefaultAction and UnknownThreatDefaultAction are properties of [ThreatAction] enum type. Their value specifies which automatic remediation action to take for a given level threat. 
+I'm looking at a default Defender configuration in Server 2016.  I'm not sure how to discover what these '0' mean for the ThreatDefaultAction:

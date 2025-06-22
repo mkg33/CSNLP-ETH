@@ -1,0 +1,12 @@
+In my experience, 64% is very low for a machine that is dedicated to a MySQL server. I have numerous machines where the InnoDB buffer pool size is set at 75-80% of the physical RAM on the machine, with even more of the remaining RAM allocated to the query cache and key_buffer.
+Remember, that it is very dependant on the my.cnf settings, so check through those, lookng at the buffer sizes, cache sizes, etc. 
+MySQL will cache queries whenever possible (if set to do so), and this will each up the query cache allocation, also the key cache is used to hold myISAM index in memory for faster performance.
+MySQL system tables in the "mysql" database are all myISAM, and so any indexes of those tables will be cached.
+Other areas that will use RAM are the sort buffers, read buffers, etc. which are allocated on a per connection basis - remember, you can have connections established which aren't running queries, and would therefore not show up on the processlist...
+Don't worry about MySQL using that much RAM, I'd even configure it to use more if possible! 
+You should start looking at things if you start to see the swap file being used lots, and I'm sure nagios can be set up to monitor that - I'd set the threshold for MySQL within nagios for MUCH higher that whatever you have it set to at the moment!
+Check out the MySQL Configuration wizard from Percona - these guys really know what they are talking about...
+http://www.mysqlperformanceblog.com/2011/12/23/online-mysql-configuration-wizard-from-percona/
+recently nagios sends alarms regarding the memory consumption on the server. I logged into the server and executed the top command then I found that mysql is the process that consumes a lot of the memory (about 64%).
+This server contains a forum, and DB replica for another server so I logged into mysql and show processlist I found only 7 records.
+How could I dig more in this situation to decide what is the application which consumes all that memory?

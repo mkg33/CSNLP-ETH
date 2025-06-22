@@ -1,0 +1,26 @@
+The reason this exists is for recovery purposes because it's possible to lock yourself out of an instance.
+This group can be removed from SQL Server and it was considered best practices to do so.
+That being said, there's no way to prevent Windows (local or domain) from affecting the server that SQL Server lives on.
+If the instance is restarted in single-user mode, SQL Server is hard-coded to allow local administrators sysadmin privileges, even though there may not be an explicit login.
+Again, only if the instance is running, uninterrupted.
+As Aaron mentioned, local administrators can impersonate NT AUTHORITY\SYSTEM, which by default has a sysadmin-level login created in SQL Server 2008.
+This can be exploited to recover sysadmin access while the server is running.
+While the Windows administrators can not perform tasks or access data (by default) within the SQL Server itself, they still control the environment in which your SQL Server lives.
+In SQL 2005, there was a BUILTIN\Administrators group with sysadmin access rights.
+No, it's not possible to completely prevent local administrators from gaining sysadmin access to a SQL Server instance.
+For a Windows administrator (i.e., someone who is either a Domain Administrator or a Local Administrator) to have access, their login needs to be explicitly granted access or the group they belong to granted access along with rights within SQL Server itself.
+You need to take care with who you assign to those roles.
+I don't know exactly what this login is used for (upgrades/hot fixes/etc., presumably), but I think it's safe to disable it except during those events.
+You are required, when setting up the instance, to specify one Active Directory login or group as an administrator, but that login/group can be anyone in your domain.
+This group would allow local administrators sysadmin access to SQL Server.
+If there are no other impersonatable logins, that should be sufficient to deny access.
+In general, you should trust your administrators, both SQL Server and Windows.
+If a user is a Windows Administrator of a box, assume that they own everything on the box (including SQL Server).
+By default in SQL 2008 and 2012, there is no default access for Windows administrators to a SQL Server.
+With Windows Administrator rights it is trivial to bypass any targeted protection you apply (such as a logon trigger that identifies their user name), by impersonating someone else (including NT AUTHORITY\SYSTEM, which gets de facto admin rights on all local SQL Server instances).
+This means the administrators can still affect services and OS level configurations, change directory security, and other OS level tasks.
+If you don't trust someone, don't give them Windows Administrator rights, period.
+(Note: in SQL Server 2012, this login is no longer a sysadmin.)
+Auditing won't help much either, because they can easily turn that off, but you should have it just in case.
+This is, after all, why they are Windows administrators.
+That said, restricting access while the instance is running in multi-user mode (with no service interruptions) is not as difficult.

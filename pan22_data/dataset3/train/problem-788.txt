@@ -1,0 +1,20 @@
+There are three as you stated: TORN_PAGE_DETECTION, CHECKSUM, and NONE.
+We all provided documentation by Microsoft to support our answer.
+The previous setting is retained during upgrade as stated above.
+As well note that torn page detection is on the depreciation list as of SQL Server 2012, so what is the concern with how it was set on your databases to begin with.
+As quoted from this MSDN article titled "Buffer Management":
+So with that said how can you determine which answer is acceptable?
+You would need to explicitly set the database to utilize the CHECKSUM page verification method.
+So it depends on who and how they created the database as to what it is set to, could also be controlled by what model database is configured to.
+Torn page detection was introduced in SQL Server 2000.
+If I saw it set to anything other than CHECKSUM I immediately change it and move on to other more important task.
+A synopsis of other things noted in this article is that the page verify mechanism is specified at database creation time.
+This dictates that prior to SQL Server 2005 the option for TORN_PAGE_DETECTION existed, but not CHECKSUM.
+It could have persisted through upgrades as stated on MSDN here:
+I have no concern on how a bad configuration was put in place it is more important to correct it and then ensure those who have permissions to change it are informed of why that configuration item should not be changed to anything else.
+Anyone that has permissions to the database instance can modify that value.
+Which as stated in those articles is true, however it is proven many times over that Microsoft documentation should not be held as truth in all circumstances.
+Now I would like to point out the fact that other links provided by folks state that SQL Server 7.0 is when torn page detection was available.
+It could have also been modified at a later time because someone misunderstand the configuration and was shooting in the dark to try and solve a problem.
+Also interesting to note is that if you change the setting it does not take affect over the whole database, only when the page is written to next.
+As well according to Paul Randal it is only done when the page is read into memory, changed, and then written back to disk; that info is here.

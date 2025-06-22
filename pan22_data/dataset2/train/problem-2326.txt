@@ -1,0 +1,5 @@
+The advantage of a soft mount is that if your NFS server is unavailable, the kernel will time out the I/O operation after a pre-configured period of time. The disadvantage is that if your NFS driver caches data and the soft mount times out, your application may not know which writes to the NFS volumes were actually committed to disk.
+A hard mount is generally used for block resources like a local disk or SAN. A soft mount is usually used for network file protocols like NFS or CIFS.
+A hard mount using some kind of network file system (nfs or fuse) can (sometimes) block forever while trying to re-establish a broken connection. This means, every process trying to access that mount goes into disk sleep (D) until the device is available again or the system is rebooted.
+for mission critical application use always hard mounts to prevent file corruption (this is the reason why it is default for most systems).
+In short, do not use hard mounts for network file systems, ever. You want the file system to fail (immediately, to processes using syscalls) if I/O is not possible. Otherwise, the memory that they claim may as well be leaked if the FS fails.

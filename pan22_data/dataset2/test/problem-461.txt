@@ -1,0 +1,7 @@
+I just upgraded Ubuntu 14.04, and I had two ZFS pools on the server. There was some minor issue with me fighting with the ZFS driver and the kernel version, but that's worked out now. One pool came online, and mounted fine. The other didn't. The main difference between the tool is one was just a pool of disks (video/music storage), and the other was a raidz set (documents, etc)
+Is there some sort of black magic I can invoke via zpool/zfs to bring these disks back into a reasonable array? Can I run zpool create zraid ... without losing my data? Is my data gone anyhow?
+These drives were, once upon a time, part of a software raid5 array. For some reason, during the upgrade, it decided to rescan the drives, and find that the drives were once part of an md array, and decided to recreate it. This was verified with:
+I've run zdb -l on each drive, dumping it to a file, and running a diff. The only difference on the 3 are the guid fields (Which I assume is expected). All 3 labels on each one are basically identical, and are as follows:
+Stupidly, I do not have a recent backup of this pool. However, the pool was fine before reboot, and Linux sees the disks fine (I have smartctl running now to double check)
+Inspecting the various /dev/sd* devices listed, they appear to be the correct ones (The 3 1TB drives that were in a raidz array).
+I've already attempted exporting and re-importing the pool, to no avail, attempting to import gets me this:

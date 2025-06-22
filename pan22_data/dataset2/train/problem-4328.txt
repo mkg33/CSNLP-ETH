@@ -1,0 +1,12 @@
+Your linux distro is assuming your BIOS clock is using UTC, and your windows install is assuming that your BIOS time is in local time.
+hwclock --hctosys --localtime should copy the BIOS date/time settings to your computer and set them to the local time. hwclock --systohc --localtime should set the BIOS time in localtime instead of UTC. I would recommend setting the time with the date command above, then running:
+in linux should make it so whatever time you set in linux is shared with windows properly. Alternatively, it can be done but is harder to instead set windows to use UTC. How this is done changes with versions and windows has been known to revert back to localtime after updates.
+to make sure /etc/adjtime has the last line of the file saying 'LOCAL' instead of 'UTC' or anything like that. the --hctosys --localtime flags together can accomplish that programmatically. It's possible that date will do it alone, but I've not checked.
+If you don't have that, try to find your relevant timezone information file. On my install this is /usr/share/zoneinfo/America/Indiana/Indianapolis.
+In Debian or derivatives like Ubuntu, you use sudo dpkg-reconfigure tzdata to change timezones in a ncurses interface.
+Don't fret over how the date setting string is formatted, it's extremely flexible. As an example of other valid ways to say it:
+Linux may be assuming your computer's hardware clock is set to UTC instead of local, and Windows may think it's set to local. If you're at UTC+1 or UTC-1, you may see that behavior. Linux may be loading the hardware clock's value, adjusting it to be local, then transforming it back to UTC before writing to the hardware clock at shutdown time.
+I remember one particularly stubborn computer where doing all the hwclock stuff was getting overriden, because the computer was fetching the current time over the internet with NTP. The time zone setting was the only way to fix that without disabling NTP altogether.
+First, you may have daylight savings time enabled in one and not the other, or one of your OSes is configured for the wrong time zone.
+Anyway, that's just a big dump of all my past experiences with the matter. One of those will almost definitely work. I'd try the timezone stuff first, and then definitely try the hwclock --systohc --localtime stuff after you're done to make sure the BIOS clock is in local time.
+I'd make sure the time is still set with date properly after doing this. If it's not, run the first two commands (date and hwclock) again.

@@ -1,0 +1,11 @@
+And make sure uncomment pam_limits.so from the different files under /etc/pam.d, e.g.
+ulimit -n upon login (and for services that are started upon bootup) shows 1024 still.
+Had to add both 'hard' and 'soft' entries in /etc/security/limits.conf for pam to recognize settings for rtprio (-r) and memlock (-l).
+All init startup scripts source /etc/init.d/functions so for all services you could hack that script and set limits there.
+In my case the limit was not set due to an error causing the default value (1024) to be used.
+I have the following lines in /etc/security/limits.conf
+If you want to set it permanently, especially for a particular user, change the file /etc/security/limits.conf to have the following lines (assume user = www-data)
+For services in init.d you cannot use /etc/security/limits.d inittab is not reading that files and it is based on pam.d which is not used in initialization startup scripts.
+The pam_limits.so file is required in each of the following files.
+I used to hack /etc/sysconfig for particular services when I needed {httpd, some brokenass oracle stuf} e.t.c.
+sudo, login, sshd, ... after following above steps which you have already did.

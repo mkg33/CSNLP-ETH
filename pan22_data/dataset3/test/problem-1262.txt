@@ -1,0 +1,8 @@
+Knowing that I set the maxconn parameter in the server definition line of backend configuration in haproxy.cfg file to 1, but the server still gets queries because I see in our server's log messages like "query rejected, already processing" and also in the HAProxy log queries that return to the client with a 502 http status code.
+I've read StackOverflow's questions where the maxconn is explained and how it works in the different sections that's why I'm asking this now, it shouldn't work like this.
+Someone knows why the server instances get the queries when the maxconn parameter is set to one?
+Take special note that during haproxy reload, there is a time frame in which two haproxy processes will use your resources, and each enforce connection limits on their own.
+Make certain that there is no other process that has open connections to your service.
+Therefor, it is quite possible that the new process and its clients contend for seats.
+I'm using HAProxy in production to balance queries to a series of server instances that can only process 1 query at a time (by our own decision).
+The finishing process will not terminate before all queues are drained.

@@ -1,0 +1,11 @@
+The use of $http_host (the HTTP Host header from the incoming request) here rather than $host (the server hostname configuration) causes the same Host header passed by the client to be passed up to the upstream, in my testing.
+So from reading all documentation for nginx (I could not really parse code for upstream module =( ) I came up with this bastardized solution. Unfortunately this solution does not keep track of failed hosts, but simply select random one and redirect request to it. So I have to setup some kind of monitoring to make sure all backends are running.
+Now, because containers receive hostname "main" instead of "web1.local", they do not respond properly to the request. 
+The above example looks almost the same as upstream. There exists other modules do the mapping, i.e. chash_map_module, but as they are out of the tree you will need to build them by your own, which is not possible for some use-cases/
+Proxy Pass handler threat script variables in a different way, if a value is not conditional (does not have $ in the name) is backed to the upstream on configuration phase and use later.
+A simple way to omit this issue, and have the most advantages of (free version) upstream would be using something like Split_Clients:
+As other people already posted using script variable (like $upstream), you can set it however way you like, and that will fix the issue, without additional header hacking.
+While the goal seems logical, nginx isn't going to change the Host: header to match the upstream. Instead, it treats upstream domain names like a CNAME in DNS - as a way to get to an IP address.
+Question: how I can tell nginx to pass name of the upstream server instead of name of upstream group of servers in Host: header when proxying request?
+Routing to these done based on hostname by nginx. I have a proxy in front of this setup (on different machine connected to internet) where I define upstream as:
+The request headers (and body) are fixed before the upstream is selected. The upstream may change mid-request if it's a particular upstream is found to be non-responsive, but the request doesn't change.

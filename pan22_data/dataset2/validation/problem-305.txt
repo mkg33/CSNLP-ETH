@@ -1,0 +1,10 @@
+I am unable to run both simultaneously (services will fail to start) due to port conflict, so is there a way to run both simultaneously that allows unbound to provide DNS service to the machine and VPN, as well as OpenVPN to also listen on port 53 UDP?
+Ports below 1024 are best left alone because they generally are used for something important. None more port 53. Go back to using port 1194. 
+Otherwise, if you are really bent on using port 53 twice (are you behind a firewall you do not control?), place either service inside a VM, and make sure that the VM is not behind NAT, but has instead an IP address on your LAN. 
+I am trying to run a OpenVPN tun server that listens to port 53 on UDP. I also am running unbound DNS on the same machine to provide DNS and filtering to the VPN and the machine itself.
+You mean that you changed the regular UDP listening port for OpenVPN, 1194, to 53? Why did you do that??? 
+You don't want to use OpenVPN for this, if I understand what you're trying to do...  you probably want Iodine
+If a VM too much of a hassle, you may try a lighter solution, a Linux Container (LXC) if you are on Linux. Ubuntu has some scripts that will do all of the work for you.
+It may be possible, but it's a Really Bad Idea™. In order to accomplish this, you may very well have to do some C coding to patch this functionality into OpenVPN. Don't do this.
+The only way to do this without two different ip addresses, is to use a different port for openvpn, since dns cannot operate over any other port, unless you're using a custom compiled dns server and client that uses a different port  (although I've never seen such a thing in real world usage although I'm sure it's possible).
+A common use case for tunnelling traffic over port 53, is to break out of captive portals. Is this what you want? Then you might want to look into DNS tunnelling.

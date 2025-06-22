@@ -1,0 +1,8 @@
+Instead of setting your DNS to automatic, set it to manual and put in your primary DNS servers.  Then you can input as many DNS servers as you want.
+While I'm not sure how Group Policy will interact with this, you can manually edit the registry value HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\SearchList to contain a comma separated (no spaces!) list of domain name suffixes that get appended to your DNS.
+After making the change, you have to renew your DHCP lease as a way of getting the DHCP client to run so you can apply the change:
+What are you trying to accomplish with the additional DNS? Are you trying to get to another resource? The answer is likely no, as workarounds like adding an entry to a host file, or creating a static route will be disabled if you are a standard user. 
+Personally, the way I do this, is have my DNS servers setup with forwarders, i.e. they forward requests to other domains to get the answers and I simply put my suffix list in there, but my PC only queries my domain's DNS servers.  I don't have to type FQDNs.
+Add to the end of that key any domains you want to add to your search list -- although this key may entirely replace your search list.  This list should be comma-separated with no whitespace.
+I found a way to do this which is probably a workaround and which won't work on a locked-down box where you don't have admin rights.  Edit the registry key:
+You'll probably want to change your suffix behaviour so it looks up the other domains too - this bit is probably more important in terms of helping you avoid typing FQDNs and instead just type hostnames.

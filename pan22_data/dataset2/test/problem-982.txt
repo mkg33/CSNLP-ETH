@@ -1,0 +1,7 @@
+More practically, this is also doable from within common operating systems, as other answers have noted. In Windows, this is provided by the WinAPI SetFileTime function, and you can do this with utime on Linux. Tools like touch build on top of these APIs.
+The most common legitimate use for these APIs is in preserving modification time, e.g. when copying files, extracting them from archives, etc..
+In my experience it is has been when one or more computers have been used to modify the file and one of them has the wrong system time.  The three most common causes for the system time being wrong, in no particular order are:
+From here, we can see that it's always possible (excluding write-once media like a CD) to go and directly modify the bits on a drive that store the last modified time, or even the creation time.
+If you create a file from scratch, it gets a creation time of "now", and a modification date of "now". Now imagine copying this file to another drive. Windows will keep the modification time, but the creation time of that file will be set to the time you copied the file to that drive (i.e. the time the file was created on that drive). Simple as that.
+Yes.  On Windows, make a change to the file and save it.  Now copy the file.  Looking at the properties of the copy, you'll see it has an earlier modified date.
+The most important thing to note here is that file modification time isn't really special - it's stored just like any other data. There's no way to tell when data was actually last written to, or read from.

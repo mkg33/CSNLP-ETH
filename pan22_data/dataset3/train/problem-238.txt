@@ -1,0 +1,19 @@
+First of all make sure that the ecommerce and blog have separate databases and separate mysql accounts.
+This is ideal for shared hosting, and for what you are doing.
+The only thought I have is to install the blog on a separate server and use mod_proxy on the main site as a reverse proxy.
+Then provide suexec with the proper configuration.
+Make sure neither of of them have FILE privileges,  which is the most dangerous privilege you can give a web application,  and in this case even if Apache/PHP was locked down an attacker could use MySQL to read and write files to the other application.
+However, this means that we would have to maintain the main website template in two separate places (the blog has to be integrated with the main site with the same header, footer etc).
+Finely consider installing a WAF like mod_security.
+The deal with suexec is that a php application runs as a specific user.
+I'm very aware of the benefits of running different websites under different user accounts to limit the damage if a single web application is compromised.
+(something like chown wordpress -R /var/www/blog && chmod 550 -R /var/www/blog).
+I have been instructed to install a wordpress blog on our main corporate domain as a subfolder (example.com/blog) of the domain and not as a subdomain (I believe this is a SEO strategy).
+Basically create 2 user accounts,  and have 2 application directories.
+Personally, I would setup a front-end spearcatcher and reverse proxy all requests for everything so all the app servers are in-effect double firewalled.
+Make sure that these users cannot access each others directories.
+I'd also run phpsecinfo, disallow shell access to both accounts by setting their shell to /bin/false.
+If this is the only solution, then it's probably the path I will choose but I would like to know if anyone has any other ideas, it would be greatly appreciated.
+I must partition the blog from the main ecommerce site (which has access to our user accounts database), but I can't see a clear way to do it with suexec.
+The reverse proxy is probably the way to go -- even if the blog uses the same header and footer look and feel, it probably does not share the same exact coding so you will have the problem of 2 codebases anyway you want to carry it.
+Make sure that these accounts don't have access to each other or to the database named mysql.

@@ -1,0 +1,9 @@
+What we want to do is temporarily create an extra foreign key CHECK WITH NOCHECK and ON UPDATE CASCADE ON DELETE SET NULL; what this does is it is a working foreign key but the existing rows aren't checked when the key is created.
+Basically all the keys are defining the same relationship.
+I want to know what's the use of having multiple foreign keys which are defined on the same column and reference to the same column in another table.
+SQL Server allows me to create multiple foreign keys on a column, and each time using just different name I can create another key referencing to the same object.
+Same reason you can create 50 indexes on the same column, add a second log file, set max server memory to 20MB... most people won't do these things, but there can be legitimate reasons to do them occasionally, so there's no benefit in creating overhead in the engine to add checks against things that are merely ill-advised.
+What's the benefit of it that SQL Server allows us to do a thing like that?
+When you begin to cutover from blue to green, you need to temporarily create extra copies of things.
+Notice that if you just dropped and recreated the foreign key, some garbage rows could slip by you.
+Later after cleaning up all the rows that should match we would create the new foreign key without any command options (default is CHECK WITH CHECK which is what you typically want), and drop the temporary foreign key.

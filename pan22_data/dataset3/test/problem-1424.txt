@@ -1,0 +1,17 @@
+I have a vmware server that host several virtual machines and use the vSphere client to connect to the windows session and I can open a closed tunnel vpn connection out and not lose access to the windows session.
+So the end result will be a default route 0.0.0.0/0 to the IP address of the VPN Gateway, and a static route to your machine using the default gateway.
+What you have to do is set up a static route to your machine in Computer #2.
+In windows what you would do is something like this:
+or just a side effect of reconfiguring the network, but I have often encountered it.
+This drops any currently open connections and changes the routing behaviour on the server, hence why your connection is dropped.
+I had this problem before, and the solution is "split tunneling", this means, send the Internet Traffic to the default gateway, and the traffic to the VPN network using the Tunnel.
+Its likely that the VPN client is configured to route ALL traffic down the tunnel, not just traffic to the networks that the VPN routes to.
+Check the manual for details, and for how to fix this.
+Hard to tell without more information, but many VPN clients have the nasty habit of (logically) deconnecting their host computer from the LAN while setting up the VPN connection.
+Whit this information, we can help you up setting the "split tunnel"
+If your VPN client does this, obviously your RDP session would be killed as a side effect of cutting you off from the LAN.
+I'm not sure why VPN clients do this, whether it's an intentional measure (security?)
+if you have physical access to computer #2, connect to the VPN and let us know the routing table of the machine:
+I.e., you can be connected either to your LAN, or to the VPN, but not both.
+This doesn't solve the specific problem mentioned but this is what I used to solve the same type of problem in supporting a variety of customers using a variety of vpn clients that are not all compatible and some that create a closed tunnel vpn connection.
+This will ensure that traffic going to 10.1.1.140 will not be routed to the tunnel.

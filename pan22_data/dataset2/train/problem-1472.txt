@@ -1,0 +1,13 @@
+You could find an old beater desktop to setup as a temporary host and develop on that.  If you make your site work there, then moving it to a host will only improve performance, and if you are using shared hosting (most people do) then the results from the old machine will more closely match what you can expect from your hosting service anyways.
+(This is specific to wanting a Wordpress dev environment, it wouldn't work as a generic LAMP system).
+I've set up two VMs, to test out the staging/prod workflow (write config/content in staging, export to prod).  Much better than messing about on my hosting provider's cpanel.
+This will allow you to install plugins inside Wordpress - as it (ie Apache) will have write access to the directories it needs. Your FTP user will be set correctly, as nobody is the use rapache runs as on some distros.
+I would use a VM and use the same distribution that the target host will use.  This could eliminate a lot of frustrations later.  As far as the VM and the netbook goes, I thought the whole point of the "NETbook" was that local storage was only a cache and the bulk of the work was to be dome remotely in the "cloud?"
+Looks like your apache (and hence XAMPP) is running as user 'nobody', whereas your Wordpress install is owned by your login userid. I'm guessing its a non-internet-accessible development server, in which case easiest thing is to change the run-as user in apache's httpd.conf to your login userid.
+You do have to be somewhat careful not to end up with a Bitnami LAMP install on your machine, that download looks almost the same.
+Once the VM is up you can do most of your work through the wordpress gui.  You can also customize via child theme-ing (requires an editor on your local machine and then zipping up).  If needed you can set up an SSH login to the VM.
+Now, to make things slightly easier for yourself, add your user to the wheel group so you can su, perform a load of commands, then logout back to your normal user.
+It sounds like you're unpacking the addins as yourself, and then having to chmod them to the user apache is running as. This is normal, don't fret about it. 
+Try the pre-built bitnami wordpress VMs.  They run under VirtualBox and VMWare.  https://bitnami.com/stack/wordpress/virtual-machine
+The point of it is that you're running apache as a low-privilege user that only has permissions for some things, like access only its files and none of the ones in, say, your home directory ('cos you'd be annoyed if Sam Hacker could download your private files). Whatever directory you're running your sites under, needs to be readable (and writeable in some cases) by the Apache user.
+Better practice would be to install suPHP or suexec, but setting them up is a bit harder than the above.

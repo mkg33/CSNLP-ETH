@@ -1,0 +1,7 @@
+I'd recommend Microsoft ISA Server 2006. Specifically for this requirement, it will limit to 600 HTTP requests/min per IP by default and you can apply an exception for Jon Skeet (sorry, I realise that "joke" has been made already!).
+You can even perform rudimentary rate-limiting with any regular Cisco router of any decent capacity/vintage.  Are you using a Cisco router?
+We use Foundry load-balancers (specifically SI850s) to handle this kind of shaping issue, it also handles quite a lot of other 'nastys' like SYN-floods etc. Might be a bit overkill for you guys though.
+We use a Watchguard firewall (ours is a X1000 which is end-of life now). They have many feautres revolving around blocking domains or ips who are seen time and time again or are using an obsesive amount of bandwidth. 
+You have the additional benefits of application-level filtering, the ability to load-balance across multiple webservers (instead of NLB on those servers), VPN termination etc. There's a number of commercial extensions available and you can even write your own ISAPI filter if you're feeling brave.
+This would need some tweaking because you obvisouly would not want to block Jon Skeet on stackoverflow :)
+If your PIX is running version 7.2 or greater of the OS, or can be upgraded to it, then you can implement QOS policies at the firewall level. In particular this allows you to shape traffic and should allow you to limit the bandwidth used by bots. Cisco have a good gudie to this here.

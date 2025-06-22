@@ -1,0 +1,19 @@
+Deployment host is using Ubuntu 16.04.2 LTS, based VM with access via ssh.
+Currently the approach we are looking at is simply allowing the continuous build machine to have publickey to that application's account for purpose of deployment.
+There are a number of other options that can be applied including limiting the source IP for the connection.
+I don't want the benefits of continuous deployment to harm our production environment.
+The deployment can be specified in the connection request, or you may be able to pull the latest file.
+Are you building a new server each time or reusing an existing one?
+Using the SSH key the way you are is not necessarily a bad way to go.
+Server will be hosting a web facing HTTP based application.
+The second is less likely to accumulate configuration changes that leave you open but with out more information about your pipeline this is a hard question to answer.
+Limiting the access to IPv4 block is not really an option, due to clustered nature of our third-party build service, so we need to consider other risk mitigation approaches, as part of our deployment process.
+See your man page for authorized_keys and/or sshd for details.
+It is possible to force a command to be run on connection, which can limit what can be done with the key.
+We are in the process of setting up a host for continuous deployment.
+You may want to provide the deployments via NFS, or use scp to push or pull the build.
+If you're really concerned you could split the deployment account from the credentials used to actually run the service.
+Can anyone suggest approaches that can provide the CI machines the ability to do their job, while ensuring we aren't opening up a security hole.
+Ideally approaches that have been used in an environment you respect, as to avoid purely theoretical approaches.
+For a use like this you may want to force a command to pull the deployment into the environment.
+There is concern that this may create a vulnerability, so we are trying to see if there are ways of reducing risk.

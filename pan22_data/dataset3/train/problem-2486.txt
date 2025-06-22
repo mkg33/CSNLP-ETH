@@ -1,0 +1,22 @@
+As is usually the case, everything looks like a nail if you happen to have a hammer, and thus Cisco's engineers implemented route filters with the object they already had - access lists.
+Access list is for traffic filtering & prefix list is for route filtering
+You can still use access lists as route filters but don't do it.
+Prefix-lists are used to specify an address or range of address to be permit or deny in route updates...
+Here's the history of how they came into being (and why they are the way they are):
+Prefix-list is used for route-filtering and route redistribution because it matches on prefixes either sent,received or present in the routing table or BGP table.
+They match on bits in the prefix but also on the prefix-length.
+At this point: access list = packet filter (and sometimes route filter)
+They can also be used for route filters and redistribution but their syntaxes is then different than when they are used for other purposes.
+Fortunately someone retained a shred of reason at that time and started wondering what exactly the brilliant minds that decided reusing extended ACLs for route filters makes sense were smoking when they got that brilliant idea.
+For example: advertise all /24s from OSPF into BGP, but not the /32s.
+Not a problem, but you wouldn't want ALL the information you have propagated into the other routing protocol - you need ROUTE FILTERS.
+For routing policy, folks will tend to prefer to use prefix lists because some feel that they're more "expressive" but there is not much to limit you to using one or the other - it will be what the situation/requirements call for.
+Later (but still decades ago) people started running multiple routing protocols on the same box and wanted to redistribute information between them.
+With the advent of classless routing (yeah, it's that long ago - does anyone still remember the days of Class A, Class B and Class C addresses), people wanted to redistribute prefixes of certain size between routing protocols.
+Today: use access lists for packet filters and prefix lists for route filters.
+Time for a new kludge: let's use extended access list and let's pretend the source IP address in the packet filter represents network address (actually prefix address) and the destination IP address in the same line of the packet filter represents subnet mask.
+Simple access lists also serve as route filters (matching only on network addresses) and extended access lists serve as route filters matching addresses and subnet masks.
+Prefix lists work very similarly to access lists; a prefix list contains one or more ordered entries which are processed sequentially.
+ACLs  can be used for a lot more features like: traffic filtering, matching traffic for QoS,matching traffic for NAT, VPN,Policy Based Routing, etc..
+They both provide means to filter on network addresses, but there are a couple key differences:
+End result: Cisco IOS got prefix lists, which are (almost) identical in functionality to extended access lists acting as route filters, but displayed in a format that a regular human being has a chance of understanding.

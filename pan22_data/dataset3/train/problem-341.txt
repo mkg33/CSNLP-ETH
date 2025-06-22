@@ -1,0 +1,16 @@
+Given two hosts running SMTP and IMAP services, how would you best make them redundant so that one can easily take over if the other goes down?
+And even then I don't even want to think about the disk i/o for that setup.
+To make things easier I would use the second one as semi-cold standby.
+To sum up: The problem is the concurrent access to the storage.
+Rsync would be bound to lose mail, unless it could be triggered by something like fanotify or inotify.
+As you replicate your storage you can switch (in an emergency) to the clean machine and run all mailboxes there.
+In case of emergency you shutdown the first, switch IPs on the other and restart the other.
+Having a client (or worse two) simultaneously accessing the same IMAP mailbox on different hosts may break everything.
+On the other hand you probably want load balancing where you slice your mailboxes.
+So you would break things in production whereas you just inteded to make sure you get failover in case of emergency.
+Keep in mind there are no other servers where network filesystems can be hosted and you must assume any of the two could break.
+In this case access to the mailbox storage is easier to manage, no concurrency and therefore no inconsistence.
+What you are looking for is DRBD to keep the filesystems in sync http://www.drbd.org/ .
+The one half gets delivered on the one server and the other half on the other server.
+Solve that problem and you can have failover/high availability/load balancing.
+All SMTP and IMAP will be on one server with a distributed filesystem (DRBD) to the other server.

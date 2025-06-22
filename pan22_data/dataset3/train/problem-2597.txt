@@ -1,0 +1,10 @@
+The solution would depend on your terminal and how it's set up.
+You probably also want to set a very short ttimeoutlen so you don't accidentally trigger this new mapping with EscReturn, e.g.
+If your terminal is set to use #2, you might be tempted to do noremap <Esc><CR> viw.
+would make "normal" mappings wait a full 3 seconds between keys but key code mappings only a tenth of a second.
+doesn't convert that into ASCII 27), so you have to wrap it in an exec:
+However, this will make Vim pause any time it receives an escape.
+Unix terminals generally send a meta character or sequence when you hold Alt and press another key.
+There are two traditional ways of sending meta characters to terminal programs:
+To avoid this, you can set an <A-CR> key code and use that in the map; this makes it so that Vim can treat the sequence as different from an escape+character sequence (in particular, the sequence can have a timeout that's much shorter than the one used by other mappings; since terminals send the escape character and the following character almost simultaneously, this can guard against accidentally triggering a key code when you're not trying to).
+The set command itself interprets strings like <Esc> literally (i.e.

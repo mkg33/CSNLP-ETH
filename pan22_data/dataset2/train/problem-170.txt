@@ -1,0 +1,8 @@
+Question: what is the best way to re-activate these accounts?  What the SA's have been doing is su over to the account, then exit, so it will have an entry in lastlog, but this seems inelegant.
+To fix the pam_unix password expiration, edit /etc/shadow.  It has the format [colon separated fields]:
+It seems the recommended method is to null out the file.  While this changes it for all users, this is less severe than the passwd expiry changes. cp /dev/null /var/log/lastlog will do this without disturbing the selinux permissions.
+The usermod utility will reset the information for a single user but only when using the -u option to change the user's uid.  Perhaps, used in conjunction with -o:
+To fix the pam_lastlog it's a bit uglier.  The control file is /var/log/lastlog.  It's a compressed and/or binary format file.
+It can be viewed with the lastlog utility.  But [AFAICT] the utility provides no mechanism to change an individual entry.
+At worst, do it in two commands, first setting uid to new unique uid, then set it back to the old one.  For example, if the user's uid was 5001 and there was no uid 5500 in use, do:
+If you really want to preserve most information in /var/log/lastlog and the above doesn't work, the shadow-utils source package has a way to do it ...

@@ -1,0 +1,25 @@
+Notice that if your traffic goes through protocol translation you may get different results or none at all.
+Also as wireless connections are becoming more common (thing 4G), it is not impossible that the IP address reported by your router would not be a public one.
+In the example below Router #2 could perform NAT and send traffic to either uplinks and the receiving host could see different external IP-address for the Host.
+So if your question is "can I find my public IP without sending packets out of my network", you MIGHT in your context, but there's no 100% proof solution.
+So, to be complete, a notion of "external IP address" may require defining a destination point to which your address is being external.
+Now as it's been highlighted in a comment, you may have multiple external IPs.
+Using a web based service is one way, but you could also do it by, say, SSHing into a cloud server instance and seeing where sshd says your SSH session is coming from.
+OpenDNS doesn't use TXT records for this but rather A and AAAA records, so you have to specify which protocol version you are looking for:
+It is possible that your computer is located within a network that has multiple external IP addresses and the router somewhere up the line sends the traffic out to the Internet based on some criteria: for example, destination IP-address, or time of day (may be one uplink channel is cheaper at night or for other reasons).
+This answer is based on these sources 1 2 3 and a bit research of my own.
+This will show the unicast address of the DNS server you are using, and if it supports EDNS it will also show your IP address, though possibly truncated.
+Support is more common in home gateway routers than in corporate or carrier-grade NAT solutions.
+Web generally refers to HTTP, if that is the meaning of your question, then for instance, you could use STUN ( Wikipedia Article ) which stands for "Session Traversal Utilities for NAT".
+When you find yourself behind a NAT, the only sure way to see what public IP address it is translating your traffic into is to send some outgoing traffic to some public host that will report back, in a way the NAT won't translate, what address your traffic appeared to come from.
+There are a few ways that work with some NATs but nothing that's guaranteed to work everywhere.
+You can use a DNS request, which I believe would not fall under the category of "web request":
+I believe uPnP, NAT-PMP, and PCP (Universal Plug And Play, NAT Port Mapping Protocol, and the Port Control Protocol) all have ways to ask a compliant NAT gateway what the public address is, but not all NATs support these protocols.
+If you want to see your IP address in a specific protocol version you can use -6 and -4:
+So, your external IP addresses as seen by those hosts will be different, providing that Uplink A and Uplink B are different ISPs.
+I would like to add one point to already existing answers.
+To get your full IP address you can bypass your local DNS server and send above request directly to ns{1,2,3,4}.google.com
+So, sending traffic out will allow to get more reliable results.
+Or it could be that a certain destination (for example host1.example.com) always routes thru the Uplink A, and the host host2.example.com always routes via Uplink B.
+I've even met that scenario on optic fiber connections in some countries, where the ISP would give the local router a private IP, that would get 1:1 translated to a public IP later when leaving their network.
+Testing from a machine behind NAT64 I was able to see my IPv6 address with the above commands but not the IPv4 address of the NAT64.

@@ -1,0 +1,12 @@
+You can base64-decode it to see what the provider is storing there.
+A provider is free to store whatever it wants in principle, but in practice today this is most commonly used by the Terraform SDK to track schema versions.
+That is likely what you'll find if you decode this one, in JSON format.
+"private" in this context means "for use by the provider only", not "secret".
+It is possible in principle for a provider to store private data in there -- just as it's able to do so in the "attributes" object too -- but that's not what this property is designed for.
+Therefore from the perspective of the detect-secrets tool this is an unfortunate false-positive.
+My organisation scanned the repository using  Yelp/detect-secrets and flagged the line containing private as a Base64 High Entropy String.
+https://www.terraform.io/docs/providers/aws/r/dynamodb_table.html does not export the field as an attribute, and I can’t find documentation on the meaning of the field.
+The Terraform 0.12 state snapshot format has a first-class property for schema version which you can see further up in that object, so in this case that data is redundant but the SDK is retaining it in two places so that providers can remain compatible with Terraform 0.10 and 0.11.
+I’m bootstrapping my terraform remote state by storing the tfstate of creating an S3 bucket and a DynamoDB lock table and storing it in git.
+The "private" property is a place where providers can retain any metadata they need for internal lifecycle tracking, separately from the actual data in "attributes".
+From Terraform Core's perspective it's just an arbitrary sequence of bytes, base64 encoded.

@@ -1,0 +1,27 @@
+Cached memory is increased as system workload increases.
+I would monitoring the cached memory to ensure performance of running programs rather than to ensure memory is available to start huge programs.
+When calculating free memory take account of cache and buffer as well but keep the dirty pages aside from the calculation.
+Being a demand based virtual memory management system, Linux works pretty fine with memory.
+It is common for the virtual size of a program to be much larger than the resident (in memory) size.
+The dirty pages are disk backed but they are counted as pagecache and should be flushed to disk based on requirements.
+Linux uses the available memory for cache and it cleans it whenever it is necessary.
+I had the same experience in Nagios when I used the check_mem.pl plugin.
+Then it takes the cached memory in account and it will not send warnings.
+And to ensure you never run out of memory, keep an account on Committed_AS value.
+Based on that value, you should determine whether to increase RAM or decrease work load.
+You will likely see significant performance issues if the cached memory gets too low.
+Monitoring to ensure you have a few MB free should be sufficient.
+You can free the cached memory whenever you want by running
+When programs start-up they usually don't use all the required memory initially.
+Depending on how swapping is coded and configured, inactive pages are likely to be swapped to make space for your program.
+I monitor for 1 MB on my 32 MB OpenWrt router, and 10 MB on my Ubuntu severs.
+The remaining memory can be allocated from disk (code from the program image and libraries it utilizes) and swap (allocated but not used).
+I also monitor swap usage as that will decrease as memory load goes up.
+This gets used when launching programs and normally you will will experience problems if this gets too low.
+If so, under nearly equivalent circumstances, they will consume same amount of cached memory.
+This usually results in far less page swapping than you expect.
+I believe the workload of both systems is same, right.
+Freemem is unallocated memory which is immediately available.
+In the second system, there is not much cached memory because there is no need.
+You seem to do fine with the committed_AS part too.
+When you define the tress hold for critical, you need to use a capital C instead of a normal c.

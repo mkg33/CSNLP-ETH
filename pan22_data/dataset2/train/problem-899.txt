@@ -1,0 +1,10 @@
+What this change boils down to, is that newer versions of perfmon take the amount of reads into account for each measurement. I guess that if you opened the file in perfmon on the Windows 2003 server, you'd get the same value for average as you get in Excel.
+Strictly speaking, from a math perspective, an average of averages is bad math.  Think about it.  One average could be on 10 measurements and another on 50.  So averaging them together gives too much weight to the first entries and less to the 2nd group.  
+I don't know if that's what's going on here or not.  Have you tried this with some other instantaneous statistic?
+=AVERAGE(SY:SY) (this is the SY column that contains this data, PhysicalDisk(2 T:)\Avg. Disk sec/Transfer) returns 0.008787746.  That's not even in the same ballpark. I even tried an AverageIf to exclude columns with a value of 0...barely makes a difference.
+I can't figure out why if I use perfmon to save the data to .csv, or relog the whole blg to .csv the number calculated by '=Average(A:A)' in excel is wildly different than the number reported in the tool.
+Probably, this has to do with the way the average is calculated. Newer versions of Perfmon use a different calculation:
+I'm looking at a Physical Disk\Avg. Disk sec/Transfer counter in perfmon.  We've always had faith in the Average number that perfmon reports over the selected time span.  
+BTW - The counters are being recorded on a Server 2003 32bit machine and analyzed on a Win 7 64 bit machine.
+http://blogs.msdn.com/b/ntdebugging/archive/2013/09/30/performance-monitor-averages-the-right-way-and-the-wrong-way.aspx
+Several people seem to have asked this question in various forums over the years, but I see no answers.

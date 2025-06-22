@@ -1,0 +1,10 @@
+I suggest simple configurations where all the disks are the same size.
+Such as 4x 512 GB in a RAID 10, or 2x 1 TB in a RAID 1.
+You are quite likely to run into problems while assembling the array during boot.
+You can easily get 512 GB usable by mirroring the 2x 512s in a RAID 1.
+Be aware of the disk layout of raid10 in linux, which is described in detail here: https://www.finnie.org/2012/11/04/linux-md-raid-10-disk-layout/ Each pair of two partiions given during mdadm --create will be treated as a mirror group/RAID1, so both of theses disks will contain the same data.
+It will have more predictable performance, and one size disk to replace.
+So, if the big disk is sda, and it is split into partitions sda1 and sda2, and the other disks are sdb and sdc with one partition, each, the following command should do the trick:
+I strongly discourage to manually place a RAID0 on top of a RAID1, as suggested in other answers.
+Create software RAID with mdadm, then create LVM volume groups out of the md devices.
+The easiest solution is probably to split the 1 TB SSD into two partitions of 512 GB each, and then use those two partitions and the other two SSDs to form a RAID10.

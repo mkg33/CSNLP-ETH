@@ -1,0 +1,14 @@
+I'm not sure why it's trying that, there is no etc directory under /sys at all, should I create it?
+I'm trying to rename a network interface on an Ubuntu 16.04 VPS, but am unable to do so.
+I also renamed the enp0s3 entries to eth0 in the /etc/network/interfaces file.
+Docs say you have three options to disable that behaviuor, and probably the third one is the easiest one:
+So apparently, it starts out as eth0, but is then renamed back to enp0s3 again.
+Although, when I reboot the machine, the interface is still named enp0s3.
+Any insights into why my interface name doesn't stick is very welcome.
+According to the systemd.link documentation I created a file called /etc/systemd/network/10-eth0.link with the following content:
+Systemd names my primary network interface enp0s3.
+The line about it being unable to open the device seems odd.
+Acording to systemd docs, this is due to the new Predictable Network Interface Names
+The following entries in the dmesg output are interesting to me:
+The MAC address matches the one given in the ip a output for the interface.
+When I try to debug the link file, I get the following output:

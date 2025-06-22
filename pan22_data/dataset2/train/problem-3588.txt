@@ -1,0 +1,14 @@
+Of course I have to outsource processor intensive calculations to other threads now because the rendering thread itself should not load the CPU, but that is good practice anyway and was already done.
+First I am afraid it degrades maximum performance of the render loop as the resolution of "Sleep" time is limited.
+However what you could do is load your file from disk on another thread (or asynchronously with say overlapped IO) then create your texture from that on the main thread. If your using a compressed image format that will need to be decompressed (e.g. PNG) you could also do the decoding on another thread.
+Loading performance gets much better when I deactivate vsync and the render tread runs full speed. That is because the relative portion of time the render thread is inside a DirectX function is lower.
+Preventing present waiting for a vsync is basically all you can do if you want to do other things with that thread or D3D9 in general.
+I know that Microsoft worked on these things with DirectX11 but porting the whole thing now is not an option, it would take too much time.
+Do not let "Present" wait for the vsync, instead do a "while" loop with a non waiting "Present" and as long as it returns "D3DERR_WASSTILLDRAWING" do a short "Sleep".
+Testing shows no degradation in maximum performance, even If I set the maximimum buffered frames to only one to achieve better responsiveness to input in terms of delay.
+If your not letting D3D9 block and just doing D3D calls on the main thread I believe that is about as good as you can get. I have never found the CPU thread to be completely limiting at that point, but rather the GPU or data transfers cant keep up.
+Second problem is that I am using multihead rendering with several monitors and I am afraid taking away full control about vsyncing from DirectX might introduce effects like tearing on some monitors or something like that.
+Does anybody have a better solution for this, or enough experience to tell me that my possible solution is not problematic at all or can think of a better way.
+Sounds weird at first sight and as far as 8 miliseconds is about half a frame you might think that I am limiting the maximum performance of my engine to 50%.
+Seems that all DirectX calls are blocked for the whole duration the "Present" call waits for the vsync. That is in my case 99% of the time -> Loading thread has very few opportunities to run its DirectX calls.
+I would bet my life that blocking whole DirectX while waiting for vsync is not neccessary especially while I am only using separated resources in the loading thread.

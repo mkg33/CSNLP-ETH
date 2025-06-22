@@ -1,0 +1,28 @@
+However, do not rely on the client to indicate to you that you should remove the file.
+The entry in the log file will not be added untill the connexion with the client is closed.
+I don't feel worth to even contribute due to the cleverness of TRS-80's approach.
+I do pass through 'nice'  so I can drop the archival process's priority.
+So I would parse logs file to know when the file has been downloaded.
+In the log file you will have the number of octet served to the client so that you can compare with the file size to be sure that he has download the whole file.
+TRS-80's got the right idea, and I'd definitely recommend going down that route.
+Instead, I just emit the appropriate HTTP headers (including Content-Disposition to set the filename), and then hand off to zip (or tar) with the appropriate flags for them to write to stdout.
+I don't know much about your setup, but instinct tells me you should:
+I would periodically use lsof on the the "begun log" for removal.
+When the download has started you can delete the file as TRS-80 said.
+Of course, in my industry we always have to worry about being able to scale.
+I have a rather dumb script running that deletes all files that have been created 90+minutes ago.
+I want to make sure you are being wise with your most precious resource, RAM.
+Thinking about it, it might even be sufficient to check if the server is using a file or not as it is created right before it is served to the client.
+I would also be concerned about generating the file with any module based application layer, mod_php, mod_python, or reverse proxy to mongrel/Ruby on Rails.
+What concerns me though is that you are serving huge dynamically generated files, but are worried about disk space.
+My only concern with my system is the inability to recover a partial transfer without starting over, but you've specifically said you want to clean up both successful and unsuccessful transfers.
+In that case I can delete that file as it will not be served twice.
+We have an Apache HTTP server up and running, which serves dynamically created zip archives to the users which are possibly several 100s of megabytes in size.
+First, you must make sure that you are doing things in such a way that Apache can utilize sendfile.
+As for scaling -- I have large files, but don't send them that often.
+I was wondering how to determine from the command line of the server when a download finished, successfully or not.
+As another option -- I have a similar process, but I don't write anything to disk, as I serve multi-GB archives.
+The first way I see is to parse the result of server-status to know if the download has started.
+As we create a new file with every click on the "download" button (even if the content did not change...), we will most likely run into disc capacity problems.
+If you're dead-set on waiting until the transfer's finished, then consider using lsof to determine when nobody's got the file open.
+But I would not recommend that because if you client got disconnect for any reason he will not be possible to restart the download.

@@ -1,0 +1,16 @@
+Although you only requested ports 25 and 110, I included options for secure SMTP and secure POP3 as well.
+If they don't, then drop that first line, and drop the "-m tcp" portion of all the other lines.
+BEAWARE: this is by no means a strong firewall, it is just a minimal set of rules to do what you want.
+What I recommend below takes into account whatever firewall rules you have in place and puts the rules you've requested higher in the processing order than anything else.
+If you don't have any other firewall rules, then you could substitute the "-I" with "-A" and drop the line numbers after the "FORWARD" and "POSTROUTING" tables.
+Can you help me to configure iptables step by step (im really noob at iptables)?
+Asuming that every computer has as its default gateway this linux box (192.168.16.6) it is just a matter of configuring ip forwarding:
+Behind eth1 is a router that gives me an dynamic ip.
+It has to network interfaces, eth0 (lan) and eth1 (wan).
+When the public connection comes up, if it creates a ppp link,then you'll have to replace eth1 with, let's say, ppp0.
+Iptables processes rules in the order that it matches them, so just in case you have other rules already in the firewall that might block SMTP or POP3, I used the insert command and specified the rules should be placed at the top of the list.
+I recommend implementing connection tracking whenever you can and the first iptables rule below turns that on.
+Now, i need machines in the lan to access SMTP and POP3 servers over the internet.
+If you're running on a really old kernel then you might have issues with these commands, but if they work for you, then great.
+Actually, the computer on the lan can access the web only using the proxy.
+Iptables is easy enough to work with - you just have to be explicit about telling it what to do with traffic that comes from or goes to specific locations on specific ports.

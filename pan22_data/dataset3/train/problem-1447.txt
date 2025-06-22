@@ -1,0 +1,14 @@
+Additionally: If the WOL event comes at random times you can still use the scheduled task approach if you configure your computer to NOT use auto-login.
+My usual approach to this is to use tasklist | findstr explorer.
+But if there is no one logged in there is also no explorer.exe running.
+The best you can do applies if you know for certain that the WOL event only takes place in a time-frame that you would never be using your computer yourself.
+This is a bit tricky though as Windows doesn't provide an easy check for this.
+As Ramhound already mentioned in the comments Windows has no way of knowing how the computer was turned on.
+The script should basically check first if the application is already running (if it is: exit) and launch the application if it was not running.
+You can setup a scheduled task to run every 5 minutes or so during that time-frame that runs a script to launch the application.
+If you make sure to LOG OUT before you leave the computer to go to sleep, the computer will come out of sleep on the WOL event without anyone being logged in.
+The task must be configured to NOT wake the computer up, so it only gets to run if the computer is woken by WOL.
+You can test for this in the scheduled task and only run the application if no one is logged in.
+The only thing you can get from Windows is whether the startup of the computer took place after a normal restart or shutdown event or if the computer was started up after an unexpected power-loss or forced shutdown.
+If there are user(s) logged in you will get 1 line for each user, because each has his own copy of explorer.exe running.
+(WOL, Bios timer event, manually switched on, and so.)

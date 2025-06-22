@@ -1,0 +1,21 @@
+So if you utilize the servers differently you will get different caching behavior.
+The test server may have more of the relevant data in the buffer, not being flushed out by other production queries.
+If there is a slightly different execution on the big select like an skip scan instead of aindex scan it might explain everything.
+If they happen to be in the cache and don't require a physical read, it will run faster, but that's not really something you can control.
+Also Oracle Server Seam to adapt to expected loads rather than current load.
+make sure your tables are analyzed in both DBs and the indexes AND the data is the same.
+I assume the production server is doing something other than wait for this particular query?
+It's also a question of what data is actually in in the shared pool and buffer cache.
+If the 'fast box' is doing less buffer gets than the 'slow box', then it is processing less data.
+Trace the query with full timings and see what's really going on :)
+That shows the explain plan actually used, as opposed to an EXPLAIN PLAN statement which is a prediction about what plan might be used.
+Perhaps the production server has allocated it's SGA pool differently.
+Fun as it is, lets not waste all our time on guesses.
+In 10g, you should be finding the cursor in v$sql, then using the sql_id in a call to DBMS_XPLAN.DISPLAY_CURSOR.
+It is more likely that other stuff running on those boxes has forced different data blocks into the cache.
+In theory, this situation may indicate that there is more memory for cache on the fast box than the slow boxes, but if the hardware is the same, that would imply that your prod and test instances have memory available at the hardware level but the database is configured not to use it, which is pretty unlikely.
+If the data and query plans are the same, then the same logical blocks are going to be processed in the same order.
+"I noticed a high number of buffer gets as compared with physical reads in the server that runs the SQL fast"
+"Even the SQL execution plans are exactly the same."
+If it is doing more buffer gets than the slow box, it is processing more data.
+Something simple like write back cache could make a huge difference.

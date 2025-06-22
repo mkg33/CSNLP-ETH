@@ -1,0 +1,8 @@
+Having said that, generally it's considered best practice to separate your "Sign-In" accounts (ie. those you log into via the AWS console) from your "Access Credential" accounts (ie. where the API keys are used within other software). 
+Your "Sign-In" accounts should have MFA enabled but no Access Credentials. You use this account to create other "Access Credential" users which have limited access to only the services/functions you specifically need to access.
+Note: I haven't found a way to get the CLI to ask for MFA when calling a user profile (--profile my_iam_user) only calling a role profile triggers the MFA request.
+However, this user can also access all services via CLI (by access key and secret key), does that mean the CLI will always bypass the MFA, even it is enabled for this user?
+Adding a new answer as this situation has changed somewhat. The CLI can manage a lot of this for you if you're using roles. Described here: http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html
+You can enable MFA on API access but any services using those credentials including the CLI has to use temporary security credentials (ie. you make an AssumeRole call providing your access key, secret and MFA token and it returns temporary access keys which are valid for as long as the MFA auth is valid).
+When I call aws s3 ls --profile my_admin_role it says Enter MFA code:, after I paste in the code it returns the listing. 
+Note the mfa_serial entry. You can get this value from your user details in the AWS IAM console. This entry tells the CLI that MFA is required for that role. 

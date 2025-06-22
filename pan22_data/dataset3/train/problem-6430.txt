@@ -1,0 +1,24 @@
+The way I solved this recently is via use of this share property
+These files should be only accessible for the users in group group_confidential.
+and then making completely different shares for each folder that needed those permissions, and only allowing those AD groups to connect that should have access to that local group.
+We chown'd the folder to the groupread group, and assigned it chmod 2770, all the way down.
+So the question in short: It is possible to change the unix group of file in a samba share from a windows client or is there another way to restrict the rights for the unix owner group so it is not any more accessible from the windows client.
+When I can get away with it, I define all my groups in AD which means both the windows client and the linux server know what I'm talking about.
+Then we created the next folder under it that had the data that had to be restricted to writes only, and chown groupwrite the folder, permissions chmod 2775, so the people with just read access can also read it.
+The removing of the rights for group_common is not working.
+When I change the group on the Ubuntu machine it works fine.
+For all Unix users there is an equivalent samba user.
+In the /etc/samba/smb.conf file, we added the share declaration inherit permissions = yes, and did not do force group or anything else, on that share.
+If you are not already doing this, I would also suggest using Centrify and Centrify's samba packages for AD integration.
+We had a confidential folder, where we only wanted some users to write to it, but others to read from it.
+Some users are additionally in group group_confidential.
+It seems to work fine but there is one permission problem.
+So I try to remove the rights for the group group_common and add rights for the group group_confidential on a windows client.
+So users who need access to it to read are in the read group; everyone who needs to write to it are in both groups.
+Or is there another way to have confidential files?
+There is a group mapping setup for both groups using net groupmap.
+While not quite the same situation, and not changing from the Windows end, this is what we did.
+All files and folders which created on the share should belong to the user and the main group group_common.
+Again, it won't help for actually changing the permissions, but hopefully it helps anyways.
+All files in those folder get the right group set on creation.
+I try to setup a small samba server on Ubuntu 12.04 to share files.

@@ -1,0 +1,20 @@
+in my case this was set, yet the problematic host was still present in class w of sendmail
+Solution: reconfigure Sendmail so that it is not authoritative for your public DNS namespace.
+Option 1: remove the entry from /etc/mail/local-host-names
+The code that's sending the mail, are you using a full email address, or are you just having the server mail it out via a local account?
+with the host named www.domain.com, sendmails class w still contained BOTH www.domain.com AND domain.com (even after a reboot)
+To summarize, there are a number of options (most of which have been mentioned in other answers, but for whatever reasons didn't work in my particular scenario).
+You can add local emails "manually" in /etc/mail/local-host-names file.
+the external link provided above even specifically says, "If I want to remove whipple.org from class w, I could rename the server to frodo.whipple.org, www.whipple.org, elvis.whipple.org, for example."
+And this is telling sendmail to rewrite the domains in local addresses to domain.com, but does not alter the local delivery.
+2) Sendmail may add (autoconfigured) "this host email name" ($j) to list of local email domains.
+Option 5: THIS IS WHAT WORKED FOR ME add a LOCAL_RULE_0 to the sendmail mc file
+this needs to go at the end of the file and <tab> needs to be an actual tab character
+You cant turn it off using the following line in your sendmail.mc:
+This is telling sendmail to deliver all mail to users@localhost.localdomain locally
+(It requires HUPing  or restarting sendmail daemon after)
+There's no valid reason for a hostname to ever be equal to a naked domain name.
+3) mailertable is NOT consultede for deliveries to domains listed in $=w.
+1) Sendmail automatically fills list of local email domains ($=w).
+I finally found a rather comprehensive solution here.
+Option 2: remove any LOCAL_DOMAIN entry in the mc file

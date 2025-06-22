@@ -1,0 +1,15 @@
+This may be a stupid/obvious thing that you've already checked, but is your filesystem mounted with the noatime flag?
+When accessing the first 4096KB area for the first time,
+every I/O has rare chance of hitting page cahce, so
+(Incidentally this is why performance-critical read-intensive filesystems are supposed to be mounted with noatime - the I/O for updating inodes constantly is substantial and can be a measurable performance hit).
+I figured out what is going on, but I don't know what it is for.
+Ext3 filesystem has some 4KB data in each 4096KB(8192 sectors) data.
+(Ext4 has more efficient scheme for block addressing.)
+then OS reads the 4KB just before the 4096KB area first and
+And 4096KB area in only accessible by application programs.
+I changed the filesystem to ext4 makes the issue disappear.
+When accessing a large file (compared to the DRAM size) randomly,
+(I tested in many machines with many kernel versions.
+Or Is there any way I can clear the 4096KB area only ?
+If you did not specify noatime then Linux needs to update the inode every time a file is accessed (to set the access time), which means it has to read the area of the disk containing the inode, and write it back out.
+(Ext3 has a block which has block pointers in every 1024 blocks.)

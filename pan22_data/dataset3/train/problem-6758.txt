@@ -1,0 +1,12 @@
+I hope this helps you make choices, and i apologize to the moderator for the way my previous post was written.
+this is because kernel disk cache is handled by the virtualization host, so on a highly loaded machine, that RAM cache could be getting blown every few seconds by a different virtual machine !
+So when should i use dedicated varnish RAM cache ?
+In most situations (exceptions in the elaboration), For good performance you will need free memory on the system (available for the kernel to use to cache the disk) equivalent or larger than the size of the frequently accessed parts of your website, the kernel should be able to use RAM to cache your varnish disk cache, this is probably the reason why disk cache is default in varnish.
+such an application on  the same machine as varnish will also blow that kernel disk cache for both varnish and the database engine / other application.
+I have appended a modified previous answer below, it did not contain a direct answer to your question, but might help you form an understanding of the relevance of the answer above, i hope it helps.
+This also means that having more free ram than the size of frequently accessed parts of the website will improve the performance of varnish greatly, as if it were running with ram cache, while not forcing the server to SWAP (down to it's knees) when another event happens, like an operating system update, or a cron job is fired.
+2- Having a database (or any other application that reads or writes much to the disk often) with many, frequently accessed, large objects (such as big BLOBS)
+1- Your varnish install is on a virtual machine using some para-virtualization technologie (PARA being keyword as this happens when kernel is shared).
+The default caching in Varnish is Disk not RAM, this is probably because, on a machine dedicated to varnish, the varnish cache on the disk will be cached in RAM anyways (default behavior of the linux kernel), this happens as soon as parts of the file system are read or written.
+If the situations below are likely, then dedicating ram to varnish can be a good idea.
+more free ram than that would probably yield a diminishing return and will not provide the value for money you spend on RAM.

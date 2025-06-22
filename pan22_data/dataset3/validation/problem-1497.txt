@@ -1,0 +1,26 @@
+A starting point would be to determine who (rather, which logins) could perform the drop, and go from there.
+Assuming an "average" default installation of SQL Server, sitting down at your server right now, you will not be able to determine this information.
+If the above tactics are not possible, restoring and reviewing backups might track down when it occured.
+As to who the users was, you might be able to see who was logged in to the system at that time, and be able to narrow it down somewhat.
+This would work, but SQL 2005 does not provide any "native" functionality for sifting through transaction logs.
+Actually, one of the critical jobs failed while executing.
+Why on earth is people you're not trusting given enough privileges in your database to actually delete that sproc in the first place?
+It's like trying to find out who robbed your house after you left the key out on the porch.
+(If your database is actively used, it may already be gone.)
+As for who dropped it (or rather, via which SQL login was it dropped), unless you've got some intentionally configured process installed and running, I do not believe you can extract that information.
+How do I find out which user did it and when he did it?
+(There are a number of ways you can log this information (DDL triggers), but that doesn't help you now--it would only help with future activity.)
+By default, SQL does not log or track this kind of activity.
+If you can do point-in-time recoveries on transaction log backups, you should be able to get a pretty close estimate on when it was dropped; If you only have complete or differential backups, you'll get less precision (e.g.
+Remus Rusanu outlined how to query the system trace.
+It might not be possible, but you might be able to work up some reasonable guesses.
+In the error message it was found that the failure is because it was missing a stored procedure.
+You should be able to go back through a transaction log and be able to at least find out when that procedure was dropped from the database.
+This again depends on your recovery mode and whatever backup files you have.
+Chris mentioned going reviewing the transaction log and extracting what information is present there.
+And that only applies for as long as that data is in the transaction log; if the database recovery mode is set to "simple", that data will be wiped from the log--sooner rather than later.
+was there in the 1:00pm backup, was not in the 2:00pm backup, must have been dropped between 1 and 2.)
+Now how do I find out when was the stored procedure was affected by the user.
+As he said, this too has a limited shelf life--you should probably make copies of those files now before they get overwritten.
+Is your SQL installation configured to log succesful logins in the Windows Event logs?
+...though neither will help if SQL authentication was involved.

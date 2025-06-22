@@ -1,0 +1,23 @@
+Can you login as the user with net -U $username rpc share?
+I'm looking through the LDAP settings and Groups and comparing the new user account to existing ones, and I can't figure out what settings in LDAP are required for this user to be able to access the Samba share.
+So in the future you have only to add the user to the group at ldap level without further modify Samba configuration.
+The former jackass IT-guy that I'm taking over for had a Samba share setup on a Fedora server that uses our OpenLDAP server to authenticate users who want to log in from Windows.
+We don't use smbldap-tools, so we can just use smbpasswd -a $username or pdbedit -a $username, but that may not be the case for you.
+Try to check the shares part in Samba configuration in /etc/samba/smb.conf (usually near the end).
+If the user doesn't show up in the output, that means that the necessary attributes aren't there.
+Maybe that in the valid users directive for the selected share there isn't the group but only the usernames of the enabled users for that share.
+pdbedit on the Samba controller is a good place to start.
+You can use smbcontrol smbd debug to turn up the appropriate debugging sections, such as passdb.
+The log files are often useful, too - ours live in /var/log/samba/ under the machine name and IP address.
+However, I can't seem to use their login to access the Samba share.
+So I'm at a bit of a loss on knowing what to look for here.
+Are you sure its using LDAP for authentication and not just authorization?
+If you change your password in LDAP does the share allow logins with the old password or the new one?
+You can also use net rpc users to do something similar, but that works over the network rather than querying the password database directly.
+We recently added a new employee and I jumped through the LDAP hoops to add them to the system.
+On the server that is hosting the Samba share, he has samba running obviously but also has smbldap-tools loaded as well.
+If the user does show up in the output, then I would start looking higher up the stack.
+For some reference on Samba access layer: http://www.samba.org/samba/docs/using_samba/ch09.html
+Thats an important question to answer-if you change your password and it doesn't seem to pick it up on the Samba server, the Samba server may be using locally setup Samba users and checking their group membership in LDAP.
+In this case, you have to add the username of the new user or, if applicable, is best to use the enable group with the syntax @{{ group_name }}.
+Of course the former idiotic IT-guy didn't document a single thing and has all sorts of weird setups on the network.

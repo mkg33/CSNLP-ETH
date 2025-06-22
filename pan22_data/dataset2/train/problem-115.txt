@@ -1,0 +1,12 @@
+I was getting the exact same error, but also another error when Updating ("Cannot find the file specified").
+Disabling/changing antivirus did not help. Neither did downgrading to TortoiseSVN 1.5.10 (that only had the consequence of not being able to read the checked out repository directories any more.
+In my case it was fixed by going into Repo-Browser and deleting the file "map". So I still had the original un-renamed file ("Map") in version control. From then the checkout worked fine.
+I am still getting the errors, but I thought this might be a helpful piece of info towards the solution. NB I get the errors with indexing paused anyway, so there may be another factor.
+What helped was configuring the Windows Indexing Service to not index my SVN/source code directories. I found that tip here: http://schleichermann.wordpress.com/2009/12/09/svn-tortoisesvn-cant-move-the-file-or-directory-is-corrupted-and-unreadable-windows-7/
+What I have found is that if I go to the indexing options in Windows 7, and click 'Modify', a new popup appears. From this popup I can see my C drive with and expand and collapse arrow. I have simply unchecked my workspace directory. Presumably this should disable indexing on this directory.
+I had the same problem (using MS Security Essentials).  I 'think' it might have something to do with the AV programs monitoring program activity.  It seems like that MS SE 'thinks' a malicious script is running and it stops it.
+I had renamed a file from "Map" to "map" and committed it. The commit worked fine but Checking Out failed with the "directory is corrupt" error. 
+I tried disabling 'Monitor file and program activity on your computer' in 'Real-time protection' and it seemed to solve the problem.
+From there, I did some other testing and found that I could leave the option on and still have successful checkouts by configuring 'Excluded Processes' to include "C:\Program Files\TortoiseSVN\bin\TortoiseProc.exe" "C:\Program Files\TortoiseSVN\bin\TSVNCache.exe"
+Either method seems to have worked for me so far. (I've been able to do large check-outs consistently since I've changed the options.) I prefer the 2nd, so that MS SE still monitors for potential malicious activity anyway.  
+You can recover from this problem using "cleanup" in Tortoise SVN. Find the directory(ies) that are giving you problems and descend into them. You will see files badged as unversioned. If you run the cleanup command on the containing directory, it will temporarily fix the problem.

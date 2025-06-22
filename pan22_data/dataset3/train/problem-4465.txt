@@ -1,0 +1,17 @@
+File layouts for a database can be non-trivial, and the topic of adding/removing files from a filegroup raises lots of tangential discussion points.
+I would go ahead and pre-grow those files so that you're not trying to autogrow FileA while trying to shrink FileB.
+This is done page-by-page, and is an online operation.
+If you choose to remove data files from a filegroup, the first step is to run DBCC SHRINKFILE(logicalname,EMPTYFILE).
+Or possibly, I would just create some brand-new files and get rid of the existing 16 files.
+Multiple filegroups can distribute some load but often it is about recoverability with partial restores, read only filegroups etc
+(If you don't do this manually, the GUI will do it for you--I recommend against doing this sort of thing via the GUI.)
+There are many considerations when determining the right number of files in a filegroup--Determining the proper number and layout of files in this filegroup is a separate question, but one that should not be ignored.
+Once the file(s) is deleted, I would run your index maintenance job (rebuild or reorg) followed by a stats update to ensure no fragmentation exists and that the optimizer has the latest data about the data.
+Transaction throughput is mostly determined by the log file anyway because of "Write Ahead Logging".
+That being said, I'm going to assume you've already looked at those things and come to the conclusion that you must remove some files.
+This will evacuate data pages from this file and move them into another file in the filegroup that has room.
+However, just like any file-shrinking, it's going to cause all sorts of nasty fragmentation.
+You can safely remove the secondary data files if you are absolutely sure that they provide no performance benefit as suggested.
+Before you begin, you will  also want to consider which file(s) you want to remain at the end.
+To do this, as you may already know, you have to empty the file(s) and then delete it.
+You probably want to run index maintenance after you remove the files.

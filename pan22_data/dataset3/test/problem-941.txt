@@ -1,0 +1,13 @@
+This is required in order to employ stable load balancing.
+We define one host as the "master", also (as per most distributions these days) the virtual host configuration is kept in a folder /etc/apache2/vhost.d/ and allocated a file per virtualhost.
+Each server starts with a command-line switch that tells which server it is.
+into /etc/apache2/envvars (that's for Debian - for RedHat you'd put OPTIONS='-DDEVELOPMENT' into /etc/sysconfig/httpd).
+Most of the configuration is the same for all of them.
+Then a cron'd rsync that copies from the "master" to the other servers.
+Where they're different, I put the differences either into virtual host definitions, or in <IfDefine> sections, for example:
+The most important directives are those that define the virtual hosts.
+When the configuration changes, I commit the changes to version control, usually in development, and push them to the other hosts.
+I use a unified configuration for our development, staging, and production servers.
+You could consider combining the 2nd option with some provisioning tool like Puppet or CFengine so that Apache will be reloaded when the central configuration changes.
+So besides its virtual hosts, the development server has all of the configuration within the <IfDefine DEVELOPMENT> sections.
+What is the best option to share configuration directives between Apache2 servers.

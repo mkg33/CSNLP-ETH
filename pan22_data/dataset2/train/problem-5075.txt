@@ -1,0 +1,13 @@
+I know Hyper-V quite well and can work with powershell and am a C# programmer so the development side of things is taken care of. I also know enough about Linux to be at least competent: I have used it on and off for a number of years but not done anything Enterprise-level with it.
+I have a requirement to create a ton of linux VMs for our customers (we run managed infrastructure) on Hyper-V 2012 in the coming months and I have an issue with automating it.
+I actually wrote a script which will provision machines by renaming and joining them to an AD Domain using Samba and Winbind.
+My problem is that I don't know how to open a VHDX file and insert a kickstart script into it... can't figure it out.
+I am reaching here and this solution may be miles off... I am more used to creating Windows VMs with scripts and so on which i am more familiar with... any help would be appreciated.
+There are a lot of ways you could figure out how to do this but it will definitely take quite a bit of scripting and setting up your template properly each time.
+My first thought is to have a database with random-generated names and IPs already created but I don't know how to get a Linux VM to boot up and grab one from the database... I suppose a Kickstart script would take care of it but I don't know what to do from there.
+You could also look at hosting the config file on an FTP server and change your dhclient config to grab a newly created DHCP option which will point to said file then use it for the VM configuration.
+What you need to do though is first generate a Virtual Floppy drive and write a Microsoft unattend.xml file to it.  My provisioning scripts use this file and parse for the computer name, NetBIOS and FQDN domain names, as well as the user/pass to join to the AD Domain.  You could just write a text file to the machine with a list of computer names though and PING for a non-responding host then use that information.
+It will also depend on the Linux distribution you are looking at using.  Currently, my provisioning works in conjunction with Dell vWorkspace and Hyper-V or VMware ESX using Red Hat/CentOS 5.8, 5.8, 6.x and currently finalizing Debian 7 and Ubuntu 12.04/12.10.
+I depend on DHCP for IP addresses but if you had a name/IP pairing in a text file on the Template machine that would work as well.  Start with DHCP but then convert to static IPs.
+Windows can't mount an ext3/4 file system natively and most of the software packages out there to do so are (in my opinion) untrustworthy. So that is out.
+All this can be done easily by manual processes but I need to be able to script or program this to automate it as there could be hundreds of them being created but I don't know how.

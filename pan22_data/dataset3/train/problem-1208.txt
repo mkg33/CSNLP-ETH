@@ -1,0 +1,14 @@
+iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
+iptables -A FORWARD -i tun0 -o wlan1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+However, I cannot write a book within this answer, so I'll keep it short and simple.
+Then it sends the package back into the tunnel called tun0.
+This line allows the traffic coming from the tunnel tun0 going to the interface wlan0, but only if a connection was established previously.
+The second line here is basically just the way back for the package.
+I assume wlan0 is used as the primary internet connection in this guide, so this is main route between the router and the VPN tunnel.
+In a nutshell, those rules allow packages coming from the VPN tunnel to flow into the rest of the private network and back.
+This makes the Pi accept packages on this interface and gives access to the internal network.
+This line says to accept all traffic forwarded to the wlan0 interface.
+This rule basically takes the package, applies NAT, but after the decision how to route this package is made.
+It also applies masquerade, because the rule does not know the IP of the device.
+Without it, you'd need to use this command for every device connecting.
+To understand this, you must understand the principles of routing.

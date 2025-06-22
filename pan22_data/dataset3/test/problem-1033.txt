@@ -1,0 +1,24 @@
+The first thing I'd have a look at with your code is implementing the command pattern  on your inputs.
+Any questions/complete misunderstandings of the problem give me a shout.
+GameTime.TotalGameTime is just the total running time of your game.
+I'm not sure if u can access it in unity but maybe.
+(Also I recommend reading the other programming patterns in that book as well, they can be pretty handy in a pinch).
+In my sinple games I have two integer variables: forward and right.
+Keep in mind that using this method of movement means going forward and sideways at the same time moves faster than going forward, because you are going forward 12 and sideways 12.
+(12 squared plus 12 squared = a number more than 12)
+I want to have the script check if there a movement is currently happening before executing the movement on the keypress.
+Then in your case I would add 12 times forward as the vector in moveObject.
+This will end up making your Update method look like this:
+Allows for easy rebinds and using your key response methods for more than just the player character.
+I wrote this script with simple booleans in the right place to do what I wanted it to do:
+If the player enters valid input then apply the transform only if the current velocity of the player character is 0.
+Then an Implementation of the InputCommand might look something like this
+This will abstract the actual movement keys pressed from the act of moving itself.
+Whenever the player presses A or D, it moves him/her to the left or right by 12 units and when the player presses W or S, it moves him/her up or down by 12 units.
+There'd obviously be a few getters and setters up there for testing and flexibility but they seemed a distraction so I ignored them for this.
+The interface itself only needs two methods, one to do the thing when the key is pressed to the player, and one to provide easy access to a string representation of the key.
+The next thing I'd recommend is handling input before you move the character.
+Always try to avoid "magic numbers/keys" since they tend to scale poorly.
+This is a rough sketch up of what an InputHandler might look like, though keep in mind I'm not a regular to C# or Unity so a few errors might creep in:
+My script works fine, but if a person starts to spam all of the keys at once, it glitches out and the player object is not in line with the level anymore.
+Notice all the code is on one layer of abstraction, and the update method isn't actually worried about the details of how Inputs are handled.

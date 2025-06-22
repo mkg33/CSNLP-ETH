@@ -1,0 +1,5 @@
+Yes, it is very common (and sometimes very useful) to have different stuff in the subscriber database than the publisher.
+To be clear, though, SQL replication is normally used to only push data (contents of tables and/or views), not to push functions and stored procedures. 
+I'm not even sure it's possible to use Replication to keep functions/stored procedures in sync between databases, you'd probably have to use database-level triggers or something, or just manually script them out and create them on the other side.
+You would typically use transactional replication to move data between the publisher and subscriber(s) (although you can include other objects as well). Your subscriber (destination) database is fully writeable, and you can create stored procedures there, add indexes to replicated tables, and even create entirely new tables.
+Be aware, you can also delete data from the replicated tables on the subscriber, which could lead to replication breaking and you having to re-snapshot.

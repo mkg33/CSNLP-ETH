@@ -1,0 +1,29 @@
+Under different circumstances, the pattern low-high-low-low-low-low-low-high might mean the number 65, a capital letter 'A', a sky-blue colour, that a customer ordered coffee, the date 'March 6th' or anything at all, really.
+When you open your image file in a text editor, it gets treated as text.
+The editor is not smart enough to figure whether some text makes sense or not, so it displays any file as text unless specifically told to do otherwise, if it has that feature.
+A zero in a text editor isn't stored as a single bit with value 0, it is stored as 8 bits with value 0b00110000, or in hex 0x30
+(In Hex, rather than Binary - the string in Binary would be four times as long - 0x7F being replaced with 0b01111111)
+There is a lot more to it than this - files have starts and stops and metadata and all other kinds of things, but the takehome lesson and answer to your question is:
+A few patterns don't show up as characters but instead are treated as basic formatting: newline, tab.
+This is a very simple format, much closer to what's really going on in the computer, but there is still some interpretation going on.
+[Nul][Nul][Nul][Nul][Nul][Nul][Nul][Nul][Nul][Del][Del][Del][Blank][Blank][Blank][Blank][Blank][Blank][Blank][Blank][Blank][Del][Del][Del]
+ - three black pixels, a grey border pixel, three white pixels, a grey border pixel, repeat.
+(The situation is slightly complicated by things such as Unicode and text encodings such as UTF-8 but I won't deal with those here for the sake of simplicity.)
+The image is a simple chess pattern, with the squares 3 pixels wide and a 1-pixel gray border between each square.
+Then 0x7F is the ASCII code for Delete, and you need THAT three times to get a gray pixel.
+The first line in that image would have the following value four times:
+0xFF isn't valud ASCII code for anything in particular - even in the extended ASCII set - and you need to write it 9 times to get 3 white pixels.
+Because you've opened it in a text editor, not a binary editor.
+Finishing it off, you get three more Deletes to write a gray pixel.
+The ASCII code for '0' is 0x30, and the ASCII code for '1' is 0x31, so if you want to store a chess pattern as zeroes and ones, your file will look like this:
+This is because 0x00 is the ASCII code for the Null value and you need to write that 3 times to get the value for a black pixel (In 24bit BMP anyway) and you  have 3 black pixels.
+Unless the first 8 bits ouf your file are 0b00110001, your text editor will not write '1' because that's the ASCII-code for the character '1'.
+When you have an binary file open in a text editor, take care not to make changes, because almost any change you make will completely disrupt the normal interpretation of the file's contents, that is it will ruin the file and make it unusable.
+Specifically, nearly every pattern gets interpreted as a particular character, some normal like A-Z, but also some weird characters.
+As a simplified example, consider an image file opened with a text editor.
+Unless the first 8 bits of your file are 0b00110000, your text editor will not write '0' because that's the ASCII-code for the character '0'.
+What's in your computer is patterns of high and low voltage, or magnetised regions of a disk, that only gain meaning when we decide how we want to interpret them.
+As others pointed out, some editors have the feature of displaying hex.
+A different way to show it, which might be more usefully explanatory, is the reverse example - what DO you have to write to a file in order to get zeroes and ones when opened in a text editor?
+When you open your image file in a graphics program, it knows to interpret it as an image, knows which patterns indicate the image format, which patterns indicate the image size and so on.
+If you load that string of data in a text editor, you would get the following text:

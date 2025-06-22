@@ -1,0 +1,17 @@
+The file system would need to have a hole for this if it is to be used to boot the system.
+A real disc has blocks which are 8 times larger for rotating disc and much larger for flash devices.
+If you are booting from the disc then BIOS needs a boot signature in the end of the first 512o so that it knows it can run this when its loaded.
+Does feeding btrfs whole devices have some particular advantage, or are these basically equivalent?
+and create a single partition that span the whole device.
+There are a number of disadvantages of partitioning.
+If I'm going to create a multi-device btrfs filesystem.
+This shifting to the next track may make it impossible to align "logical" sectors with actual blocks using stride and stripe.
+If I understand correctly, using whole disks will allow BTRFS to make some assumptions which allow some optimization of behavior.
+A track is number of sectors times sector size, but a real disc does have sectors and sector size is not 512o.
+/dev/sdb, /dev/sdc, etc, but this is not explained.
+With all these 4K sectors drives you can use partitioning to align your filesystem.
+XFS (mostly used on /var on rotating discs) does not have such a hole.
+Like, if granted full devices to work from, it can assume that it won't have anything challenging it for access to the device, and it can tailor its access methods instead of having to anticipate delays periodically from something else asking for data from somewhere else on the device, and having to wait for the drive to get back to it after handling the other request.
+In the old days you could define sector size in FAT, but MBR put an end to that.
+The official recommendation from the documentation apppears to be to create it on raw devices; i.e.
+Are there any advantages to creating a partition table on these devices first, either GPT or MBR, and then creating the filesystem on /dev/sdb1, /dev/sdc1 et cetera?

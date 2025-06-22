@@ -1,0 +1,30 @@
+The advantage of a batch file is that you have great flexibility in how you analyse the results and send notifications if there are any errors.
+Typically you set your Sql Agent jobs to write to the Windows event log when they fail, and your monitoring tool frequently reads the Windows event log and will alert you based on conditions you define.
+Every time I mention this I get shouted at, but I'll mention it anyway because it works for me.
+There are several different ways to monitor the output of sql server jobs.
+I mention this option first because if your reporting system is critical, you probably want to invest in a reliable monitoring system long term.
+Short term you could do some custom scripting if you wanted to go the Windows Log route.
+You could also use a tool like Logparser to read these logs.
+For most production instances, you want to have an enterprise monitoring tool which will scan for OS and SQL related errors.
+You can do this both from query windows or from a custom tool-- for instance, you could create a powershell script that periodically connects to your each of your servers and queries the msdb database for given conditions and alerts accordingly.
+None of them do exactly what you're asking for, but they will help you work with the way dates are stored in MSDB, which can be a bit tricky as they aren't stored in datetime fields: http://thedbaknows.wordpress.com/category/sql-agent/
+We have two MS SQL servers (one 2000 and one 2005) that run a number of jobs at various time during the day and night.
+You can purchase a monitoring system such as SiteScope, or create your own tool to look for these errors.
+Due to security restrictions we are not able to enable sending emails from the servers so how can we monitor these job effectively without having to constantly check the Job status in Enterprise manager or MS SQL Studio?
+I have written a couple of blog entries which have sample scripts for querying sql job history.
+I assume you use some sort of Enterprise class mail system (Exchange, Lotus, etc).
+This way there shouldn't be any worries about the SQL Server magically sending email to people who shouldn't be getting them.
+All sql job history is stored in the MSDB database, and you can indeed query it.
+These jobs have a number of steps that will pull data from an Informix database (our business system) and update tables for use by various reporting and production systems.
+Setup the SQL Server to send mail via SMTP to the mail system, and setup the mail system so that the SQL Server can only email the DBAs.
+Virtually anything you do as a SQL job you can do from a batch file using osql to run the appropriate SQL commands.
+You can run sp_help_job and drop the results into a table, then look for jobs which have a last_run_outcome of 0.
+Option 1: Monitoring Tool, Such as Sitesope, MOM/SCOM, or Custom
+Or better yet, inform your management that the restriction that the SQL Server can't send mail is adversely effecting you from proactively monitoring the SQL Server as the SQL Server can not be used to it's fullest capabilities by alerting the DBAs where there is a job failure.
+What's the logic behind not letting the SQL Servers send email anyway?
+If there are any have the monitoring app send out an email.
+However I have over a hundred servers scattered across the North West of the UK and using batch files (and some VBScript) to run database backup and maintenance tasks and analyse the results is the best way I've found to make things managable.
+Just run the batch file from the Windows scheduler.
+The usual criticism is that this is a non-standard way to do things, and I guess it is.
+Is it possible to run a query on the servers and find the status of various jobs?
+We had a failure of these imports over the weekend which resulted in many reporting systems giving wrong data.

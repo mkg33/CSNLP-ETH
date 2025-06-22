@@ -1,0 +1,16 @@
+Otherwise, your only other option is to reconfigure your application to use another port.
+I get back "start port 1025, Number of Ports 64510" on the systems using low ports and "Start port 49152, Number of ports 16384" on regular systems.
+Note that you will lose functionality such as UPnP if you do this.
+You can change dynamic port range used by Windows application by command:
+Is there a way to instruct lsass.exe not to use port 5000?
+Our custom windows application listens on port 5000.
+Your only chance is disabling the SSDP service on the server.
+This is supported by running the suggested commands
+see https://support.microsoft.com/en-us/help/929851/the-default-dynamic-port-range-for-tcp-ip-has-changed-in-windows-vista
+After a regular reboot, our application could no longer listen on port 5000, since lsass.exe (Local Security Authentication Server) wich runs as a Windows Service already started listening on 5000.
+More than likely the default port range for your system has been altered from the standard 49152-65535 to the larger 1025-65535.
+https://social.technet.microsoft.com/Forums/en-US/3cd81773-e22c-4347-b10c-3dd2a8da6433/firewall-ports-for-remote-desktop-services-deployment?forum=winserverTS
+My guess is that systems with some enterprise grade software (exchange, SQL, etc.
+), the default port range gets increased from the standard 49152-65535 to a larger range (1025-60000?)
+This is done sometimes when certain applications are installed such as Microsoft Exchange or SQL Server.
+They give commands to change the ports, though I don't know if there are consequences to changing it back when one of the special applications are running:

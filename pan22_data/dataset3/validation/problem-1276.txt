@@ -1,0 +1,29 @@
+I am in the process of setting up an new Tomcat deployment, and want it to be as secure as possible.
+I'd seriously consider backporting the tomcat6 packages from testing.
+Finally, I tightened the permissions on the instance directories:
+It seems this can be done using mod_jk or with mod_proxy... any pros/cons of either?
+This is partly because I'd like to think that more people use apache, so bugs would be found quicker.
+Don't forget to change the default password of the admin role in the tomcat-users.xml
+I installed the Tomcat application under /usr/java/tomcat (CATALINA_HOME) and an instance under /var/lib/tomcat (CATALINA_BASE):
+You can install Tomcat 6 to run under jsvc as user tomcat (not as root).
+The tomcat user shouldn't be able to write to anything outside the log directory or the work directory.
+It's very important, else malicious person can deploy applications without restricted permission like backdoor to the tomcat server and try to do many bad things.
+Is it worth enabling the Security manager so that webapps run in a sandbox?
+You can subscribe to the package to get notifications of new versions being uploaded to the archive.
+I know I will need to remove the default webapps - docs, examples, etc... are there any best practices I should be using here?
+I have not tried running webapps under a security manager, as no application comes with a policy and it's frankly a time consuming operation to create one yourself.
+At the time of writing, it seems more focused on Tomcat 5.x, but hopefully will be updated as time passes.
+You have the choice of mod_jk, mod_proxy (and either mod_proxy_http or mod_proxy_ajp).
+mod_cache, mod_ssl, mod_security all spring to mind.
+You should make sure that your webapps directory only contains the webapps you want to run.
+It mostly involves running tomcat, waiting for something to bitch and then adding an exception to the policy and restarting tomcat again.
+I have seen examples of people running two instances of Tomcat behind Apache.
+This is pretty much wishful thinking and you shouldn't rely on this being a security improvement.
+There are lots of modules that tomcat just doesn't have, or can't do as efficiently.
+I have created a 'jakarta' user and have jsvc running Tomcat as a daemon.
+Any tips on directory permissions and such to limit access to Tomcat's files?
+When you run Tomcat now, you'll need to start it using jsvc, so add this script as /etc/init.d/tomcat and symlink it appropriately:
+mod_jk (and mod_proxy_ajp) use the binary AJP protocol rather than the less efficient http protocol.
+(I'm slightly biased as I have worked on the debian packaging).
+I am not using apt-get because lenny only offers tomcat 5.5 and we require 6.x.
+The Open Web Application Security Project (OWASP) offers a wiki page on securing Tomcat, which you might find useful.

@@ -1,0 +1,5 @@
+Right now have a 6-node Riak cluster that is experiencing very high latency and timeouts. When I go to check riak-admin transfers I get the following:
+I've since turned off Active Anti-Entropy, and still experiencing high latency but nothing else seems to be giving us a problem. When I check the error logs there aren't any errors for the last 5 hours.
+so the machine obviously isn't maxed out. Is this the sign of data corruption? What could possibly be going on here? Thanks
+When a Riak node is started it spawns a vnode for every partition in the ring, even those that it doesn't own.  Each vnode that it doesn't own will attempt a handoff with the node that does own it, and after a successful handoff will shut down.  These handoffs are subject to the transfer-limit.  
+Assuming you have a ring size of 64, there would be 10 or 11 vnodes owned by each node.  The transfers output you have shown would be expected if no handoffs hand completed since the last time the entire cluster had been restarted.

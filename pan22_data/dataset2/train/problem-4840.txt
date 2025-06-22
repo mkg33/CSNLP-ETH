@@ -1,0 +1,15 @@
+[Note that I have only been able to replicate this with a particular version of an Amazon home page as described further down below]
+During my attempts to replicate this I noticed that Amazon currently serves at least two different home pages. The more frequent home page has these menu options in the upper right corner:  
+After seeing above error I entered amazon.com into the address field of a new tab, and it seemed like I was already logged in. Being that it was late Friday night I thought perhaps Amazon was making some changes on their site and this was just a temporary problem that would disappear on its own.
+The second (less frequent) home page version has more options in the upper right corner and looks like this:
+Last night I entered my credentials to log into my Amazon account (using Firefox v.50.1.0) and got the error shown below.
+The login option in this latter version redirects to the URL in step 2 above. That URL is what sets the address to amazon.com:80, leading to the error message.
+But this morning I am getting the same error when I log in to Amazon. And still the same behavior, in that if I just ignore it and navigate to amazon.com afterwards, it looks like I am already logged in.
+Firefox is therefore misinterpreting the HTTP response as malformed SSL traffic which only accidentally looks like a "too long RX record".  The error should be gone if you type in  https://www.amazon.com/ or https://www.amazon.com:443/. (Port 443 is the default for HTTPS.)
+[UPDATE:] Thank you all for your explanations. The error does seem to result from having the port 80 specified in the address, although I did not enter it on my own.
+You can provoke similar behavior with many other sites. Here is how Chrome similarly yields a ERR_SSL_PROTOCOL_ERROR when visiting https://google.com:80/:
+You are connecting to https://www.amazon.com:80/. Your browser expects a SSL handshake to take place because of the https protocol part. But the website actually serves a plain HTTP response because you also explicitly specified port 80, the default port for unencrypted HTTP.
+This happens when you try to connect with an insecure connection (without SSL on port 80), while your browser settings only allow secure connection for this site (with SSL on port 443).
+So the question I wanted to ask is if this error can be caused by some configuration on my local machine?
+An error occurred during a connection to www.amazon.com:80. SSL received a record that exceeded the maximum permissible length. Error code: SSL_ERROR_RX_RECORD_TOO_LONG
+After attempting to replicate this multiple times, it seems that this happens at the end of the following sequence of steps:

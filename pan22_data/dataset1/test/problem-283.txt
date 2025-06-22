@@ -1,0 +1,9 @@
+You'll need to have your Active Directory administrator create a service account that holds the Kerberos Service Principles for your intranet server. The SPN or SPN's should look like <service>/<hostname> and contain all the host names and/or DNS aliases users use to access your intranet website, so something like:
+Your Active Directory administrator can extract the SPN's to a keytab file which you need to copy to your Solaris host and configure in Apache. Note: the http/hostname SPN is also used for HTTPS.
+On Solaris you'll need the MIT Kerberos 5 tools and libraries, download and install the Apache module and then configure it. 
+Typically you'll edit the global Kerberos configuration file /etc/krb5/krb5.conf to set up the the defaults mod-auth-kerb will also use, important are generally only the names of the REALM, typically the Windows AD domain, your DNS domain and the KDC servers - normally the domain controllers your AD administrator tells you to use.
+The Apache configuration looks something like this:
+Some understanding of Kerberos and Microsoft AD helps, as it can be tricky to debug for uninitiated. Oh and with Kerberos make sure your clocks are synchronized.  
+Within an intranet system on Solaris we currently use perls Apache2::AuthenNTLM module to authenticate with a Win 2k3 doman server, so we can access the user ID of the person browsing the site.
+Moving to Win 2012 AD servers, we're told this won't support NTLM, which Microsoft don't recomend these days anyway. Is mod-auth-kerb a suitable replacmenet for this soft of use case?
+I've searched google and can't find a relavent article or tutorial showing mod-auth-kerb being used in such a way. I'm having difficulty in getting started and could use a point in the right direction.

@@ -1,0 +1,5 @@
+Everything inside a BEGIN..END block is PL/SQL code, and it'll behave differently than the rest of your script because it's a different language. The entire block of code is sent to the server and executed there, and the database doesn't know how to interpret sqlplus commands like prompt and @.
+So it's a bit confusing - you're writing a SQL*Plus script, which accepts both SQL*Plus commands as well as SQL commands and PL/SQL blocks.
+SQL*Plus commands are executed locally on your client machine, so they have access to other scripts on your local filesystem.
+It's hard to tell what you want from your example, but I'd suggest looking into handling sqlplus errors using a shell script - split this into two sqlplus scripts, then run the first script, check the return code, and if you got an error, run your second script. Sqlplus itself doesn't really have much in the way of built-in exception handling.
+There are ways to have a PL/SQL block execute scripts on the database server - see this answer for more details - but I don't think that's really what you want.

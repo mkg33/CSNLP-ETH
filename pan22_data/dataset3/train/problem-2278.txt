@@ -1,0 +1,12 @@
+If Windows and EFI partitions are mounted correctly grub-mkconfig (also os-prober) detects the Windows bootloader in esp/EFI/Microsoft/Boot/bootmgfw.efi.
+Let assume the partition style is as following (omitting Windows Recovery partition):
+I used a recovery USB and tried using BCDBoot, automatic repair, etc.
+However, Windows 10 will not boot no matter what I try.
+After a few hours, I managed to fix my Ubuntu installation by using a live USB and editing /etc/fstab.
+GRUB is executed first then it executes Windows bootloader.
+In Windows, bcdboot C:\Windows fixes and copies (if necessary) the boot files to EFI partition and adds a new Boot Configuration Data entry (if not present).
+bootmgfw.efi loads Windows\system32\winload.efi file in C drive (here /dev/sdaY) then NT kernel takes over.
+I foolishly decided to delete and recreate my EFI partition (I needed to expand it.)
+First grub-install adds the EFI file in esp/EFI/Boot/bootx64.efi.
+Then it add the menu entry in /boot/grub/grub.cfg file.
+Can anyone offer a specific set of instructions to fix the issue?

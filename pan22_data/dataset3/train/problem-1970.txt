@@ -1,0 +1,70 @@
+This text is a repost of a document on my personal site, but I can't link to it because I'm a new user here on serverfault.
+You've got your keypair but we need to place the public half of the key on a remote machine.
+OpenSSH contains a tool called "ssh-agent" which can be used to accomplish this.
+This makes the account totally immune to a brute-force password attack.
+You'll also find that you're no longer tempted to share a single password with multiple remote hosts, which yields a dramatic increase in your overall security because if an account is compromised on one remote host it cannot be linked to any of your other accounts on other hosts.
+You can simply log in to remote hosts and remove that specific public key from your authorized_keys files and the laptop will be rendered incapable of logging in to the remote hosts, even if someone manages to crack or guess the passphrase which protects the private key.
+Each shared password on a remote system puts you more at risk of a brute force attack on that host's password file, and means that if one host is compromised that all your other hosts sharing that same password are significantly less safe.
+OpenSSH will talk to the local ssh-agent daemon and retrieve the private key from it automatically.
+In this way, having access to the public half of a key allows you to send secret information to anyone with the private half, and to also verify that a person does in fact have access to the private half.
+When set up properly, it's not only more secure than using passwords but it's also a lot easier to use.
+SecureCRT has a keypair generator built in as well.
+OpenSSH contains a tool called ssh-agent which simplifies this process.
+Additionally, if you've got accounts on a large number of hosts it's tempting to reuse the same password on more than one host to reduce the number of passwords that your fingers have to memorize.
+Allowing password access to a system with many users is an invitation for a security breach.
+In reality, the user account on the remotehost side doesn't even need to have a password.
+Even a secure password is at risk to these attacks, done by hand or by worm.
+For example, you might create separate keypairs for your computer at home and the computer at your office.
+This is done at the protocol level inside SSH and happens automatically.
+Before SSH can read your private key in order to perform the public key authentication you'll be asked to supply the passphrase so that the private key can be decrypted.
+On a shared system where you do not have root this can be accomplished by encrypting the private key with a passphrase, which functions similarly to a password.
+You can actually have more than one public key placed into the authorized_keys file on a remote host.
+Heck, you could accidently "erp" your password into an IRC channel by mistake some day and then spend the rest of the afternoon finding all the systems where you've re-used that password so that you can change it before anyone figures it out.
+As a user, you can generate a keypair and then place the public half of the key on a remote system.
+Be aware that using ssh-agent puts your private key at risk to anyone who has root access on the machine where ssh-agent is.
+The key is making sure that the SSH_AUTH_SOCK and SSH_AGENT_PID environment variables are global to your sessions on the host.
+This means that it's easy enough to cut and paste, which can be simpler than trying to send it to a remote machine using a file transfer protocol like sftp or scp.
+The file id_dsa is the private half and the file id_dsa.pub is the public half.
+The first thing you need to do is generate a keypair using the ssh-keygen tool which is part of OpenSSH.
+This is critical, because OpenSSH will refuse to work with key files which are world or group readable.
+Even if a user picks a 'secure' password that's stronger than their dog's name, the password is still susceptible to a brute-force attack.
+Public-key authentication (or PKI -- a public key infrastructure) is an authentication method that relies on a generated public/private keypair.
+It does, however, mean that you need to protect the privacy of the private key.
+That remote system is then able to authenticate you, or prove that you are really you, and allow you to login just by having you demonstrate that you have access to the private half of the keypair.
+Windows users who use PuTTY can use the related putty-keygen.exe program in the same manner.
+OpenSSH has a robust and well-tested public key authentication system built right in.
+It's not wise to use ssh-agent on a machine where you aren't or don't trust the administrator.
+With no password (which is not the same as a NULL password) it's not even possible to log in to a remote system without the private key.
+That authentication can even be (optionally) tunneled to the remote host which means if you ssh hop from that remote host to yet a third host the authentication can pass back through to your local ssh-agent and still not require typing a password or passphrase.
+After having done that, you should now be able to ssh to any remote host without being challenged for your passphrase.
+Not only is it more secure but it makes using SSH much simpler and more powerful.
+Instead of being asked for your password on remotehost, you'll instead be challenged for the passphrase you've used to encrypt your local, private key.
+You might create a third keypair for your work laptop.
+You run ssh-agent on the local machine where you're sitting, and use it to cache the private key for repeated use.
+Usually it's easiest to just open up another terminal window and paste it to the other host.
+Now you have the two halves that comprise a keypair.
+Windows users using PuTTY can use PuTTY's "pagaent.exe" tool and Mac OS X users can download a third party tool like SSHKeyChain or use the command-line ssh-agent as they would with any other Unix.
+Brute force attacks via ssh against user passwords are quite common on the Internet and several prevalent worms and zombies perform automated attacks incessantly against any internet-connected host.
+This provides a compromise between the easy use of a passphrase-less private key and the security of having your private key encrypted in case someone gains unauthorized access to the actual file.
+[Edit: OS X 10.5 "Leopard" has ssh agent support built in.
+Once you've grown accustomed to using public key authentication you'll wonder how you ever managed to live without it.
+Many Unixes are already doing this for you, and if you check your process list you may find that ssh-agent is already running to provide this capability.
+The key to using ssh-agent is launching it as the parent process to your user session itself.
+Remote hosts might have just one or both of those keys in the authorized_keys file.
+You can control whether or not this agent forwarding takes place using the command line using the -A or -a switches or by setting the option in your $HOME/.ssh/config file like this:
+With PKI a special "key" is generated which has a very useful property: Anyone who can read the public half of the key is able encrypt data which can then only be read by a person who has access to the private half of the key.
+So now you're all set to log in using public key authentication.
+In either case, you'll want to take the contents of id_dsa.pub and stuff them into a file named $HOME/.ssh/authorized_keys on a remote host.
+For example, you might change your gdm or xdm login to invoke "ssh-agent gnome-session" instead of just "gnome-session" so that ssh-agent can sit on top of your session.
+Passwords aren't the most secure things in the world.
+This means that you can generate more than one private key if you routinely ssh from multiple locations.
+You don't need to install any additional software if you're running Leopard] If your operating system isn't running ssh-agent for you, you'll want to invoke it as part of your login process.
+With ssh-agent resident, you can run it manually and store your private key inside with ssh-add:
+You'll want to make sure that only you can read the private files.
+It's easy to see how this technique could be used to authenticate.
+It's also not wise to allow OpenSSH to forward the authentication on to a machine where you aren't or don't trust the administrator.
+On more secure systems (like a machine where you are the only user, or a machine at your home where no strangers will have physical access) you can simplify this process either by creating an unencrypted public key (with no passphrase) or by entering your passphrase once and then caching the key in memory for the duration of your time at the computer.
+You can actually take public key authentication one step further and make your life even easier by caching your private key locally.
+Nugget's general treatise on public-key authentication
+As before, make sure that the .ssh directory is only readable by you (chmod 700) and that the authorized_keys file is as well (chmod 600).
+If you look at the id_dsa.pub file in your favorite editor you'll see that it's just a big block of numbers and letters.

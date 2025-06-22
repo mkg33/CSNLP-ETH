@@ -1,0 +1,14 @@
+This looks like known bug what is gonna be fixed in version 3.4.5 what hopefully comes out before end of this month.
+I'm not sure if the "Timestamp 0|0" in the 2nd & 3rd lines here are meaningful but they also look strange to me.
+I have confirmed that the primary server remained in state PRIMARY throughout the entire operation, and that the clocks on all hosts are in sync.
+Because of the different storage engine, the common suggestion of using a filesystem snapshot to bootstrap the new member won't work.
+Regardless of possible explanations, can anyone suggest an approach that might prevent this issue from occurring?
+Mongo happily continues to sync until it has copied all databases, after which this happens:
+What could be causing the initial sync to fail in this way?
+First indication that something's not right (initial sync source is db-primary.xxxxxxxxxxxxxxx:27017):
+In addition, there is a reliable 1 Gbit network link between all hosts involved, with no indication that anything went wrong on the network level.
+Replication starts fine, but eventually runs into InvalidSyncSource errors.
+I'm trying to add a new 3.4 (RocksDB engine) member to a ~2 TB replica set currently consisting of 3.2 (WiredTiger engine) members and running into problems with the initial sync.
+The only thing I can come up with is that an attempt to read the OpTime from the primary hangs for quite a while and returns late enough to be compared to a much more recent reading from the secondary, but I would think/hope that Mongo would account for that.
+Note that I have succesfully performed this operation on a much smaller (~300 GB) replica set, but that might have just been lucky if the problem occurs randomly.
+Strangely enough, the log entries appear to claim that the OpTime of the primary server is more than 30 seconds behind that of the secondary, which sounds impossible to me.

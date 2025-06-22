@@ -1,0 +1,20 @@
+In your case, once whatever's done generating the callbacks finishes, you could output $ect.Output to pass the captured data on to the calling script.
+(There are some automatically defined variables that may be useful in such handlers.)
+Now events go into the event queue, tagged with our source identifier.
+At first, if you want details how Write-Output works (and is intended to work), see BenN's answer.
+Neither Write-Output nor Write-Host is really working for me.
+Returning a value with the Return keyword is indistinguishable from allowing the value out the output pipeline and then exiting the function.
+Speaking of returning to callers, simply letting a value come out of an expression or cmdlet invocation will pass it on as output.
+I am not in control of the calling script but luckily, the Verbose-channel is already merged to standard output.
+$myEvent.Output will be an ever-growing array of times, one from every run of Get-Date in the event handler.
+Objects that come out of script blocks registered as event actions are automatically stashed in the Output property of the event's job object, which is what you get back from Register-ObjectEvent if you use -Action to provide a script block.
+Alternatively, if you don't want to deal with custom event handlers, you can leave off the script block and instead supply a source identifier that names the event subscription.
+Therefore, 5 on a line by itself and Write-Output 5 are equivalent.
+But Powershell has more options for writing on screen and to output channels to offer.
+We could replace the $myEvent line from the previous example with this:
+The script output (which may be multiple objects) is the return value.
+A helpful effect of the distinction between Write-Host and Write-Output is that you can insert logging (Write-Host) in your functions without messing up the values they actually return to their callers (Write-Output).
+If that's not the case, you need to merge debug-output into standard-output manually:
+A somewhat tricky concept is that PowerShell scripts don't have return values in the same sense as most programming languages do.
+The $myEvent variable will receive the job object from Register-ObjectEvent.
+Here is an example script that notes the current date and time every time a timer fires:

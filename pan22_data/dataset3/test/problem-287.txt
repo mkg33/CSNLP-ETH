@@ -1,0 +1,13 @@
+based on the message id (4C9521A0A4 in this case), I can retrieve the message body:
+Now I shall disable this postfix notification, and my problem is gone.
+After googling a little, I figured out the problem:
+If you're using NAT any box behind your IP could be infected and sending spam.
+You don't need open relay (wikipedia link), you should configure mydestination and smtpd_recipient_restrictions.
+Google says that I'm originating too many emails from my IP.
+Postfix does not seem to have a specific feature like sendmail's promiscuous_relay but if you add 0.0.0.0 to mynetworks, it should allow anyone to relay.
+based on its contents, I figured out that someone was spamming me - and postfix tried to reply to the sender (telling "undelivered mail returned to sender").
+Is it possible to configure postfix in order to not allow originating emails from it?
+Since I NEVER uses this smtp to originate emails, I suspect my postfix is somewhat misconfigured, so that I have an open relay
+Could block outgoing requests to port 25 until you've tracked it down?
+Otherwise, how can I fix my postfix configuration about the open relay issue?
+So that it is not an exploit neither a postix misconfiguration.

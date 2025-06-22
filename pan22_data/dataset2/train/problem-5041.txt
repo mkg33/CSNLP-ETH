@@ -1,0 +1,8 @@
+Also do not mix "absolute" Options "FollowSymlinks" with relative Options (-Indexes) you either, use +/- or not at all in all your options, but do not mix it.
+When you ProxyPass to are sending the request to another "back-end" service, where as <Directory> controls what Apache does when that virtual host maps the request to the file system. A single virtual host cannot do both with the same request.
+Try with this, because this "must" allow access to the documentroot and all directories, but if you don't specify the documentroot and only just a subdirectory you are leaving the rest of the directories in the tree under documentroot without access.
+Also, it is important to note that ProxyPass directives do not specify full paths, but relative to DocumentRoot so maybe your ProxyPass should be:
+Once you see it works, you can then add your AllowOverride all if necessary. Although if you have access to the main configuration yous shoudln't use .htaccess files at all, since it is just intended for users with limited rights in certain directories, not for administrators. It will also increase the overhead in the server as well as complicate configuring apache.
+I would start by adding individual access/error logs to each virtual host you have (if you have more than one) to verify the request is landing where you think it is. Run "httpd -S" to see how many virtual hosts you have defined.
+The most common causes of "client denied by server configuration" are detailed here: http://wiki.apache.org/httpd/ClientDeniedByServerConfiguration
+This is driving me stir crazy and I have researched across the Internet trying various answers none of which have worked.

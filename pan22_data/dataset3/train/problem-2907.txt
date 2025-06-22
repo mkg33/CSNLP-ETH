@@ -1,0 +1,19 @@
+To make a long story short, MANY of the USB bridge manufacturers didn't even have to worry about their stuff breaking until disks got larger than 2TB, which is fairly recent when you consider how long it takes to turn a drawing and microcode of a chip into a finished product.
+WD have chosen to go with 4KB sector for some of its 3TB drives ("Advanced Format") cleverly sidestepping the problem for a few years to come (that is, until 16TB drives -- but new partition tables are spreading even now so likely it won't be a problem in 5-10 years when those come about).
+I have seen this quite often, as we write code that does disk diagnostics, and we constantly see some vendors change the 'guts' of these things and it breaks code.
+So that means you can even boot from large drives using 4KB sectors and you don't waste a thing.
+True, but there is as soon as you hook it up to a USB bridge chip which is the magic that facilitates connectivity.
+So yes, that and everything else that supports the SATA standard supports 3TB SATA drives.
+Intel, as example even has firmware updates and driver updates for motherboards that use their SATA controllers that adds proper support for these disks.
+Also assume that if you open up any of these external bridges that there could be a different chip inside of one at any time in the future.
+There is a software limit where MSDOS style partition tables can't hold more than 2TB but that's not too important for an external disk, only if you want to use it as a boot drive.
+If you want to know for sure, then this is such a moving target that the only safe thing to do is ask the manufacturer if it supports the >2TB disks, and if there are any old versions out there with same part number that doesn't.
+Now, the length is measured in sectors and the common sector size is 512 bytes.
+A USB-attached device "speaks" the SCSI command set.
+DO NOT USE ONE OF THOSE disks unless you have both AHCI (which means forget attaching to USB), AND the appropriate device driver that rewrites the I/O for efficiency.
+You would think this comes at the cost of wasting some space for <4KB files but that's not so because common (NTFS, HFS+ ) filesystems are storing things in 4KB blocks anyway.
+The problem is that since SCSI was first implemented decades ago, the most common commands, such as READ & WRITE allowed only 4 bytes for the address offset.
+THe correct answer is that unless the manufacturer is quite proud that their device supports disks > 2TB, assume that it doesn't work.
+For a more precise answer, the so-called MBR partition table format has 4 bytes for the first sector and 4 bytes for the length of the partition.
+This worked just fine until the early 2000s when people such as me who were writing RAID firmware and such and to start implementing 16-byte SCSI Commands, and companies such as microsoft had to start adding support for them in their O/S.
+Technically you can use an AF drive behind a USB bridge, but performance will suffer.

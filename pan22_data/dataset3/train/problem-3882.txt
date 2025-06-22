@@ -1,0 +1,9 @@
+I've got a brand new installation of CentOS minimal, and have installed Samba as follows:
+They do correctly have home directories as /home/<DOMAIN>/<username>, though.
+Since a single backslash is the default separator for Winbind, I have removed the separator line, and both template directives now work.
+I can now use getent passwd and see AD users as well as local users, but all the AD accounts have shell listed as /bin/false.
+Using testparm I discovered that this was due to trying to specify the Winbind separator character as \\ - in an attempt to get it to do the standard backslash that Windows uses.
+Firstly, have I got all the necessary packages to become a domain member?
+Because of the parsing of smb.conf, that is interpreted as a line continuation, so the line after the separator is seen as the end of that directive, and therefore ignored!
+All AD users currently get logged out on authentication!
+When placing the template homedir first, Samba ignored it, and when placing the template shell first, Samba ignored that command instead.

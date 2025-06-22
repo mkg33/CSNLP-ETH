@@ -1,0 +1,16 @@
+Looking into that, it seems to reference /usr/share/postgresql-common/init.d-functions which in turn contains the following towards the top
+I tried using postgres with the -o "-c config_file=/var/lib/postgresql/9.3/main" option but it seems that this just tries to start another instance of the service, separate from what a service postgresql start does.
+What I guess I'm asking is if there is any way to configure the config_file variable or customize how the service starts.
+Make sure your postgresql.conf points to the right places for those.
+Next time, use pg_upgradecluster -m upgrade 9.1 main, and it will figure all of this out for you automatically.
+As you have figured out, the Debian packaging of PostgreSQL requires postgresql.conf to be located in that place, because it starts there to figure out where everything else is located, including the data directory and the other configuration files.
+Sorry for my lack of understanding, I'm trying to learn more!
+I've spent a while looking for a way to change this and so far I've found that while hba_file and ident_file can be easily changed in postgresql.conf itself, the config_file cannot be set except through the postgres command line interface.
+I had a PostgreSQL 9.1 db that I just upgraded to 9.3 using
+After the upgrade (which was successful), I found that instead of the default location of the data directory (in this case /var/lib/postgresql/9.3/main), the option in the upgrade had now configured all of my PostgreSQL config files to be located at /etc/postgresql/9.1/main/.
+which I take to mean that -c... /etc... is being passed to whatever starts the service.
+Then you should be able to start the new server using
+Make any adjustments that you want to make as part of the upgrade.
+following the instructions here, unfortunately realizing after that I hadn't looked to closely at the last bit.
+Based on my limited knowledge, I believe this to be /etc/init.d/postgresql with the start parameter.
+Copy all your configuration files to /etc/postgresql/9.3/main/.

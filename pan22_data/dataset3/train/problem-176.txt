@@ -1,0 +1,13 @@
+I've always been a little lost when it comes to generics.
+Sure it would work, but xmlDocumentBody would be null.
+I am casting the generic T into XmlDocument (which is what I need for that specific implementation) and I don't think that's the right way to use generics.
+Assuming the template has a source file path and a "content", here's what I came up with:
+So you should better make the IDocumentGenerator generic and not the Generate() method.
+But the generator related class and interface are flawed.
+The template related class and interface are looking good to me.
+The template would be created elsewhere and injected into the document generator.
+I would like to create a generic template class for my document processor.
+and now your WordDocumentGenerator class should implement IDocumentGenerator<XmlDocument> like
+You could if the passed in template isn't a ITemplate<XmlDocument> throw some exception, but a user of this class wouldn't expect for a generic class which is called correctly to get an exception.
+For sure if you have different types of templates you should add a DocumentGeneratorFactory which returns the desired DocumentGenerator for the task at hand.
+Assume one would call the Generate() method with an ITemplate<string> which would be totally legal.

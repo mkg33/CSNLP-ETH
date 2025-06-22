@@ -1,0 +1,11 @@
+If some processes do come up as running, but not reported in /proc, you probably do have a problem any way you look at it.
+Essentially, when you run "kill -0 $PID" you are sending a nop signal to process identifier $PID. If the process is running, the kill command will exit normally. (FWIW, since you're passing a nop kill signal, nothing will happen to the process). If a process isn't running, the kill command will fail (exit status less than zero).
+When your server is hacked / a rootkit is installed, one of the first things it does is tell the kernel to hide the affected processes from the process tables etc. However it can do all sorts of cool things in kernel space to muck around with the processes. And so this means that 
+So, if you're here until now, the method is to kill -0 every available process in the system (anything from 1 -> /proc/sys/kernel/pid_max) and see if there are processes that are running but not reported in /proc. 
+What are the tell-tale signs that a Linux server has been hacked?  Are there any tools that can generate and email an audit report on a scheduled basis?
+a) This check isn't an extensive check, since the well coded/intelligent rootkits will ensure that the kernel will reply with a "process doesn't exist" reply making this check redundant.
+Other monitoring systems such as Zabbix can be configured to alert you when files such as /etc/passwd are changed.
+This will give you a quick indication if any of your main server files have changed in the last 2 days.
+Here's a bash script that implements all that - https://gist.github.com/1032229 . Save that in some file and execute it, if you find a process that comes up unreported in proc, you should have some lead to start digging in.
+b) Either way, when a hacked server has a "bad" process running, it's PID usually won't show under /proc.
+Tripwire is a commonly used tool - it notifies you when system files have changed, although obviously you need to have it installed beforehand.  Otherwise items such as new user accounts you don't know about, weird processes and files you don't recognize, or increased bandwidth usage for no apparent reason are the usual signs.

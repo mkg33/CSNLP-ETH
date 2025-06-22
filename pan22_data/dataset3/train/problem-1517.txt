@@ -1,0 +1,20 @@
+Alternatively no activity occurs and the patients remain as they were, untouched, as though the doc was still present.
+There are few justifications to delete data from a database when disk space is so cheap.
+If so then you a cascading delete would enforce referential integrity.
+In SQL Server 2008, there is a Primary table which is linked to three other child tables by 1 to many relationship.
+For your situation, does it make sense for the rows in the 'child' table to remain if their corresponding  'primary' rows go.
+Using cascading delete is a matter of personal preference, like whether to name tables with plural names or not (Customer vs Customers).
+From personal experience think carefully about the design of the database.
+If you have to delete data then using stored procedures to manage this gives you more transparency and control.
+This week I had to run a purge of orphaned records in a table which pointed to nowhere and was literally taking up space.
+You might want to keep child rows as a record, an archive of past activity (though potentially you could write these rows to another tables specially for this purpose.
+Would the data in the child table be meaningless without the parent?
+One possibilty is that they get purged another is that a default value replaces the doc reference or they could be removed from the main table and placed somewhere else.
+Your application can execute a stored procedure which deletes from the child then parent.
+So, we are thinking of using Cascading delete in the primary table, so that all the records on the child table will be removed when record from primary table is deleted.
+You don't know how the business requirements will change over time so sp's will give you more versatility.
+A patient can only be a patient if they have a doctor.
+Some database designs set an additional field "IsDeleted" rather than physically delete data.
+I guess the answer boils down to whether or not makes sense for your situation, it depends.
+A example I used to illustrate this point was the doctor/patient relation.
+If the doc goes (leaves the practice) then something has to happen to the remaining patients.

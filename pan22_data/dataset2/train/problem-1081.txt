@@ -1,0 +1,7 @@
+i.e. looks like such freeze/amend/thaw approach is working fine with manual changes, but doesn't fit with configuration-management pattern, as at the amend step, Puppet is recreating all static dns records from the catalog and trowing away ddns hosts.
+If I remember correctly, in older BIND versions rndc freeze used to flush the journal automatically, but now it no longer does that – it only makes the server refuse new updates and doesn't do anything with those which have been already received into the journal but not yet flushed.
+I've found another option, ixfr-from-differences, but with that one, after rndc thaw, all dynamic changes disappears.
+So you need to run rndc sync -clean after freezing, but before making your edits, in order to preserve all dynamic changes.
+So, maybe anyone see some more tricks, how to workaround such problem, or maybe I am missing something? 
+I've find out what it is possible to update DDNS enabled zones using rndc freeze/rndc thaw, but my problem is, at the thaw step BIND9 doesn't want to use journal, it just shows such error:
+Dynamic zones in BIND are journalled (similarly to databases and filesystems): the updates do not immediately regenerate the actual zone file (which could be very time or I/O consuming operation for large zones); they are only appended to the .jnl file until some periodic sync happens.

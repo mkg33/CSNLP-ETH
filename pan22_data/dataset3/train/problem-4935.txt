@@ -1,0 +1,24 @@
+When I deleted the dot file, from a separate SSH session, the ability to browse came back.
+Question 2: Is there another way to achieve the required result?
+At this point it was decided that due to the unpredictable behaviour, combined with the age of the OS and the SFTP package, and the lack of any viable upgrade path, this was not a viable solution and the team requesting this access needed to go back to the drawing board.
+Thanks to harrymc for the 'bind' suggestion and to anyone and everyone who took the time to read this.
+to something outside the chroot because it would be looking for a file with
+You could use mount with bind to remount the directories you need in
+As mentioned in the comment to @harrymc, I thought I had found the answer with the 'namefs' mount type, however even though it allowed the SFTP session to navigate to the mountpoint, the 'ls' command showed it as empty (it wasn't).
+Further testing revealed that the presence of the dot file had mixed and unpredictable results, for example, while in an SFTP session, I deleted a temporary file and then found I could no longer browse the directory.
+Symlinks are essentially just pointers to another file, but you can't point
+One that does not involve installing third-party software.
+Following this link - Configure an sftp chroot environment - I have successfully created an account with home directory of /sftpjail/sftpuser and have confirmed a) it cannot log on via other methods (SSH, console) and b) it can connect via WinSCP and can only see the contents of its home directory.
+But (you knew this was coming, I bet) ... it needed a dot file in EVERY subdirectory that the user needed to browse, not really sustainable if there are regular new subdirectories created.
+I am not allowed to change any owner, group or permissions within the /app directory branch.
+I've been asked to set up an SFTP user account to allow access to two of the subdirectories, /app/data/bills & /app/data/invoices, but it must not be able to access the other subdirectories or anywhere else on the server.
+Long-winded first posting, I have tried to be succint while providing details.
+Question 1: Should it be possible to access directories that are outside of a chroot home and, if so, how?
+My team lead, a very smart chap, suggested it might need a dot file in the source directory to allow browsing, so I created a '.do-not-delete' file and, Hey Presto!, it worked.
+If you wish to place it in /etc/fstab, the same example would look like:
+I have created symbolic links to /app/data/bills in the user's home directory, I presume this doesn't work because the link is a path to a directory outside of the chroot.
+I appreciate your patience if you have read this far.
+I have tried mounting the /app/data/bills directory onto a mountpoint within the users's home:
+I am working on an AIX 6.1 server where SFTP (via WinSCP) is already used by several service accounts to access files in many subdirectories of /app/data.
+... this latter approach had some interesting results:
+I eventually found just about every combination of presence or lack of dot file and abililty or not to browse.

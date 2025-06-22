@@ -1,0 +1,29 @@
+You could estimate how long the file transfer will take and ensure the oplog is a reasonable multiple of the worst case file transfer time.
+A main consideration when using a three node configuration with an arbiter is that if one of your data-bearing nodes is unavailable, you no longer have replication or data redundancy.
+Starting parallel copies is unlikely to speed up the process, and could potentially slow down the overall transfer if your copy process requires reading multiple files which are randomly located on slow origin storage (eg.
+It required minimum manual operations, minimizing human mistakes probability
+Here are the logical steps i have come up with so far:
+a) when copying files from one volume to another, assuming the bigger one is also faster (more PIOPS), is it efficient to use parallelism ?
+[optional] stepdown primary - return to original setup
+i need to resize the volumes to a more appropriate size.
+I have a replica-set which consists of 3 amazon ec2 nodes : primary, secondary and an arbiter
+When tested on a ~80GB volume, the creation of a snapshot and a new volume from that snapshot was significantly faster than copying files from one volume to another.
+I'm looking for the best solution to do it with minimum downtime/no-downtime and minimum resource overhead - meaning use the least amount of CPU/IO/network needed for the resize process.
+===============================================================
+For a critical production environment I would encourage you to use three data-bearing replica set members instead of two plus an arbiter.
+ensure all processes bounced correctly to the new primary
+Instead of compromising replication by stopping your only secondary in order to copy the files, I recommend adding a new secondary with increased storage and dropping the arbiter (since it won't be needed if you have an odd number of voting nodes).
+At this stage you could either drop the former primary and add an arbiter to return to your Primary/Secondary/Arbiter config, or consider adding another secondary to the replica set so you have a more robust Primary/Secondary/Secondary deployment.
+With MMAPv1 there are some possible benefits to copying the data files vs a resync:
+I strongly recommend avoiding any approach which leaves you without a viable secondary while you are copying/syncing data; racing against the oplog duration is risky if something goes amiss in the copy/sync process and it takes much longer than you planned for.
+You currently have a Primary/Secondary/Arbiter configuration.
+See: Initializing Amazon EBS Volumes in the EC2 User Guide.
+the data volume size is ~400GB and currently it is 90% full.
+c) how can i measure/verify that the oplog retention is sufficient for resyncing the database after copying the files?
+Once your new secondary completes initial sync you can then upgrade and resync the other secondary, and finally step down the primary.
+I will post the solution process I eventually used:
+Limiting factors for your transfer are likely to be the speed of reading from your original storage as well as the network bandwidth between old and new storage paths.
+c. The required oplog retention was much shorter, since the snapshot of the volume was taken right before the mongod process was stopped.
+time is not a big issue as i believe it wouldn't take more than 24 hours.
+Some EBS volumes (notably those restored from snapshots) may also benefit from initialization or prewarming to achieve maximum performance after being attached.
+b) some would say if i already put the effort for copying the data then i should simply wipe the data and let it resync anew - however i'm worried about the network and read impacts on the "living" primary which may degrade performance for my applications.

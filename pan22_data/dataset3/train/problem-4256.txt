@@ -1,0 +1,23 @@
+Well, it seems that the X-Forwarded-for doesn't work well for your setup.
+So, is there any special reason for you to stick with haproxy?
+This means we can't get to some locations, and our app is behaving a little oddly where user IP is important.
+The latest linux kernel (2.6.28-11-server) includes support for TProxy, so recompiling the kernel is not necessary.
+Note that it would appear that you can override what the application see's my changing the Apache headers:
+Use rpaf apache module http://stderr.net/apache/rpaf/  I know this is and old post but it took me days to find this.
+HAProxy, by design, can't forward the original IP address to the real server, pretty much like any other proxy.
+One solution may be, if your only problem is with a web server, to look into the X-forwarded-for HTTP header, which should contain the client's address.
+There is a way to recompile HAproxy to include Tproxy which will allow forwarding of the source address.
+Now, that's pretty much application/language specific, but take a look at this example in php:
+Make sure to configure the servers in your web farm with a default gateway address which points to the HAProxy server.
+However, this doesn't work for Apache access via "Allow from" etc.
+However, we've just chucked this behind ha_proxy so we can look at adding some more app servers, but now the remote IP is always coming through as the proxy ip, not the real remote user.
+If you also want to log the original address, you can modify the LogFormat in httpd.conf to look something like this:
+I'm testing a new web server setup which is having a couple of issues.
+Essentially, we have a web server, where the code uses the remote IP for some interesting things, and also some apache directories secured down to some certain IP's (our office etc).
+Using IPVS in 'IP Tunneling' or 'Direct Routing' mode preserves the client's address.
+This will present to any application the x-forwarded-for ip.
+There's a blog post here about it:  http://blog.loadbalancer.org/configure-haproxy-with-tproxy-kernel-for-full-transparent-proxy/
+server w2 192.168.1.1:443 send-proxy check check-ssl verify none
+server w1 192.168.1.1:443 send-proxy check check-ssl verify none
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{X-Forwarded-For}i\"" common
+It seems that IPVS is more aproppriate for your needs (I actually use ldirector which in turn uses ipvs).

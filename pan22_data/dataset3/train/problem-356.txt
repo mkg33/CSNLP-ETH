@@ -1,0 +1,19 @@
+The first plane (code points U+0000 to U+FFFF) contains the most frequently used characters and is called the Basic Multilingual Plane or BMP.
+It also means that UTF-16 is self-synchronizing on 16-bit words: whether a code unit starts a character can be determined without examining earlier code units.
+Since the ranges for the lead surrogates, trail surrogates, and valid BMP characters are disjoint, searches are simplified: it is not possible for part of one character to match a different part of another character.
+UTF-8 shares these advantages, but many earlier multi-byte encoding schemes did not allow unambiguous searching and could only be synchronized by re-parsing from the start of the string.
+nchar/nvarchar are SQL Server's fixed and flexible length UNICODE UCS-2 character set data types.
+http://msdn.microsoft.com/en-us/library/ms186939.aspx
+The question then becomes, what the heck is UCS-2?
+Both UTF-16 and UCS-2 encode code points in this range as single 16-bit code units that are numerically equal to the corresponding code points.
+Code points from the other planes (called Supplementary Planes) are encoded in UTF-16 by pairs of 16-bit code units called surrogate pairs, by the following scheme:
+UTF-16 is not self-synchronizing if one byte is lost or if traversal starts at a random byte.
+The following has been copied from the wiki article as I'm a dumb 'merican and I've tapped out of understanding what this all means.
+I know that for example some special characters like $ % are allowed, but where do I see which list characters are allowed?
+Within this plane, code points U+D800 to U+DFFF (see below) are reserved for lead and trail surrogates.
+http://en.wikipedia.org/wiki/List_of_Unicode_characters
+And according to wikipedia, it's going to allow for 1.1M code points.
+I have a column in MSSQL which is nvarchar(50) in which I enter passwords for users.
+Because the most commonly used characters are all in the Basic Multilingual Plane, handling of surrogate pairs is often not thoroughly tested.
+The code points in the BMP are the only code points that can be represented in UCS-2.
+This leads to persistent bugs and potential security holes, even in popular and well-reviewed application software (e.g.

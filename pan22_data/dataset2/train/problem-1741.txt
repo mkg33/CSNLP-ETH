@@ -1,0 +1,9 @@
+I was kind of hoping to have all this configuration in the main saz/sudo module, rather than having to create site_sudo like this, but the documentation isn't clear about to do this. 
+The second method that saz/sudo supports is to define the configuration in Hiera under the sudo::configs key. It will look this data up and then apply the configuration. Using Hiera is another good way of keeping the configuration outside of the module you're using. Your Hiera data files can be stored in your Puppet environment.
+Modules should be reusable, and if you customise a module to contain site-local configuration then you will need to maintain your customisations. It won't be possible to install a newer version of the module without merging in your changes (depending on how you maintain the changes and install modules, this could be anywhere from trivial to difficult).
+Our current sudo config all contained in a single (large) /etc/sudoers file, which I'd like to break up into relevant files in sudoers.d.
+I've been able to get the saz/sudo module installed but have been fumbling about configuring it. I've currently got it to work by including it in another module, site_sudo, using the following config: 
+The site_sudo class you've created is a profile class (see: Roles and Profiles) for configuring sudo using the saz/sudo module for your site and service preferences. This is a common and well-used design pattern in Puppet environments, so by all means, stick with it.
+If it is possible to include this configuration in the main saz/sudo module, can someone suggest how to achieve this ?
+The module provides a public interface through sudo::conf and its class parameters to customise everything you should need.
+I'm trying to deploy the saz/sudo module to manage our sudo configs (I'm pretty new to puppet (~3days), so please excuse my potential ignorance).

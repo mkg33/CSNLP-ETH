@@ -1,0 +1,16 @@
+Our fix was to explicitly use the G1 garbage collector (Java 8+) with a specified limit on the length of GC activity to prevent these time gaps in the data collection.
+I think your can do some kind of alerting on a metric rate with something like this:
+Most likely the exporter isn't reachable in which case the up timeseries will be 0.
+On the status page you should also see that it's down including an error message.
+You can alert on this like this (taken from https://prometheus.io/docs/alerting/rules/#templating):
+Meaning we were seeing gaps when the data collection stopped because the activity for the instance stopped while the JVM was doing a Full GC.
+This blog post could be an inspiration also for a more generic detection.
+The main idea is to alert whenever the metric rate is at 0 for 3 minutes, with the proper metric name and a label somewhere telling from which exporter it comes it should give you the correct information.
+Your Prometheus server can be also overloaded causing scraping to stop which too would explain the gaps.
+Unfortunately there is no way to see past error but there is an issue to track this: https://github.com/prometheus/prometheus/issues/2820
+I'm not sure if this is the same problem you are seeing.
+In that case you should see Storage needs throttling.
+errors in the log and increases in the prometheus_target_skipped_scrapes_total metrics.
+But we saw these random gaps for Java applications that did not specifically set the GC settings.
+Choosing the right metric to monitor by exporter could be complex, without more insight is hard to give a better advice out of vacuum.
+There are a few reasons which might have caused the gap.

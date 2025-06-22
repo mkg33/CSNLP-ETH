@@ -1,0 +1,20 @@
+This method has the advantage that you are more free to define the directory structure of your assets in the source tree and in the apk (since you can exec zip multiple times with different arguments, and even wrap zip in a script that runs zip from multiple current directories in your source tree).
+To load bitmaps, you'll want the BitmapFactory, and you'll have to do some extra work if you intend to load resolution dependent images.
+(With normal android resources, the ResourceManager handles all of this for you.)
+Yes, you can absolutely use files in other directories.
+How strange that the other answers here do not answer your question...they all assume you want only one assets directory, or refer to res/ instead of assets/.
+Off the top of my head, I don't think you can use anything outside of res/, but if you're looking to avoid added cost to your dev cycle with a copy, you might try moving them instead or maybe even using a symlink...
+Place the assets you have in to the assets directory (sibling to the res directory), and use the AssetManager to
+This changes path of entire directory, but if you have Android-specific resources, you can still use "res" directory.
+Ant build property "asset.dir" is responsible for providing name of assets directory.
+If you need to use the standard Android Java assets calls to access these items, I'm not sure whether or not they must be in a path inside the zip named assets/ or not.
+I copied the <target name="-package-resources"...> tag from the master build file that ant uses, android_sdk_dir/tools/ant/build.xml, and pasted the tag into my project build.xml (you must paste the tag right before the master build.xml is included, as the comments at the end of the pre-made project build.xml explain), then added a second section to simply exec zip to add the assets to the .ap_ file (which is ${out.absolute.dir}/${resource.package.file.name} at that point in the ant file):
+Note this ant xml comes BEFORE zipalign in the ant build process, so we still get a "zip-compatible" archive that meets the alignment needs of APKs and Android Java.
+In my case I have an NDK based app and I want to access these assets from C code only (where any apk path is OK).
+Depending on your architecture, you may need to do this with WeakReferences so you don't end up with the entire game data in memory.
+It's "assets" by default, but you can change it to something like "../assets".
+If you are on a unix OS you can hard-link them, and tell your version control to ignore the res/ directory.
+You also have per-file control of compression (zip has a -0 option to suppress compression) and do not need to use the limited, per-extension-only nocompress tag.
+Because you will be dealing with raw file handles, you'll probably want to implement some resource/memory manager that allows you ot quickly look up references to existing Bitmap objects and the like.
+If so, you can adapt the trick above by execing a script that cds to the relevant source tree folder, then runs zip.
+I fought with the <aapt> ant module for hours and hours and finally gave up and realized there's a much easier way.

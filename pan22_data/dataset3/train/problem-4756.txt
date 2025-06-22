@@ -1,0 +1,22 @@
+This router lookup and forward goes on until the packet gets to the network where the destination host is.
+(Router A)[10.10.10.1][Gig0/1]-----------[10.10.10.2][Gig0/1](Router B)
+If the router finds a match, even if it is only a default route, it will forward the packet out the new interface toward its destination.
+If (Server 2) wants to send a packet to (Server 1) then (Router C) will have to know what to do with that.
+In the home and small buisness markets boxes that come configured by default as NAT boxes are sold as "routers".
+Based on your mention of ports I will assume that when you say "router" you actually mean "NAT box".
+IP addressing is how packets are forwarded through an IP based network.
+(Server 1)[20.10.10.1][Gig0/2]----[Gig0/2][20.10.10.2](Router A)[10.10.10.1][Gig0/1]-----------[Gig0/1][10.10.10.2](Router B)[10.20.20.1][Gig0/2]---------[Gig0/2][10.20.20.2](Router C)[Gig0/1][30.10.10.2]-----[Gig0/1][30.10.10.1](Server 2)
+If you add another Router (Router C) to the equation, you end up with this:
+(Router A)[10.10.10.1][Gig0/1]-----------[10.10.10.2][Gig0/1](Router B)[Gig0/2][10.20.20.1]---------(Router C)[Gig0/2][10.20.20.2]
+If the router doesn't find any sort of match in its routing table, it will discard the packet.
+Routers have IP tables, which they populate with routing protocols (you can read more about them:RIP, OSPF, BGP.. others), in this case one of those protocols will be in charge of letting each router know which network is connected to who.
+Your client wants to retrive a web page from a server on the Internet.
+The last part of that sentence is inaccurate, namely, "which can be accomplished using a port number."
+Port numbering is not required for your packet to reach the endpoints NIC card.
+The port number comes into play within the endpoint (computer) as the packet gets consumed (routed to / unpackaged) by a particular application.
+Each router in the path simply has a route to the endpoints address, or it doesn't.
+If you wanted to run a server behind two NAT boxes you would have to manually configure port forwarding rules in both NAT boxes so the outer NAT box would point the traffic at the inner NAT box, then the inner NAT box would point it at the client.
+A router, receiving a packet on an interface will look at the destination address of the packet (as Ron Trunk pointed out, ports have nothing to do with the routing decisions), and it will look in its routing table to see if it knows how to forward the packet toward its destination.
+So you have your client machine and you have two NAT boxes between your client machine and the Internet.
+In this example Router C will know that in orther to get to the 20.10.10.0/24 network it has to send that traffic to Router B and that is how Internet works!
+The interface towards the packet destination can be connected to another router, and the new router will repeat what the first router did.

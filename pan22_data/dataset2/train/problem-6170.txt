@@ -1,0 +1,5 @@
+See if you can ping the gateway host on its internal ip address.  Also run a traceroute and see where those packets are going.
+Can you post the openvpn config files? If so, be sure to conceal any private information like IP addresses or domain names.
+That smells like a client-side routing problem.  Take a look at the routing table immediately after the OpenVPN tunnel establishes (while it's working), and then again after it stops working, and look for any differences.  I've had a problem where a DHCP client was wiping out (overriding) routes from OpenVPN, which would make the connection to the OpenVPN server unavailable.
+Most routers or cellular operation are using NAT with very short timeouts for UDP sessions. Solution is to reconfigure router or force OpenVPN to send ping packets more frequently (check keepalive config directive)
+I was experiencing this exact same issue, with the connection working fine for a few seconds and then stalling without any information in the logs. Starting OpenVPN with --mssfix 1300 fixed the problem on my system.

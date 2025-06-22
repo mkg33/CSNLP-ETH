@@ -1,0 +1,11 @@
+This is just a stab in the dark, but you could maybe try sharing the surface with a D3D10 device instead, and then save it the texture as a bitmap with D2D.
+I have to say that you will not save any extra memory by using this.
+Copy the back buffer to shared texture and create a shared handle:
+Textures are not stored in gpu's ram by the creation.
+So I used the D3D11_RESOURCE_MISC_SHARED flag instead with a regular mutex, without using the DXGIKeyedMutex stuff.
+Now that we have a shared copy of the back buffer and handle to it, we can save it to a file from another thread without hogging the device context:
+Basically this allows me to save HD screen captures without killing the frame rate because my device context is not stuck in the D3DX11SaveTextureToFile function, it's handled by the secondary context.
+The fact you can't save a shared texture may have something to do with how it is stored in memory, since it has to be shared between devices, but then again, I'm not sure so I might be wrong.
+Turns out, using the D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX misc flag doesn't allow to save the texture to a file.
+And cleared from gpu ram after the SetResource(NULL) call.
+On a side note, I've not tested it a whole lot, I just hack this together this morning, it might not work in some cases, but it solves the problem I had with the other flag, which caused empty images to be saved to file.

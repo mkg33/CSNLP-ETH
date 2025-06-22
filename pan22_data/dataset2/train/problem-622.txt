@@ -1,0 +1,7 @@
+I don't know anything about the firewall config and if you'll be able to alter it this way, but at least you'll have file-level access.
+If you have installed the custom script extension, you may use it to disable or configure your firewall.
+There is no way to run commands on an Azure VM from outside the VM itself; there also is no VM console access. This is a really big limit in Azure, unfortunately.
+EDIT @massimo already answered this (and I didn't realize he covered the attach-disk solution). But, since I already typed this up, I'll leave the answer here, since it contains a bit more detail about attaching a disk from a locked-out VM...
+To access your VM's disk if you're locked out, you can delete the Virtual Machine (but not delete the disk/vhd or any attached disks), which breaks the lease on the page blob holding the vhd. Then, you should be able to attach the vhd to a running Linux VM as an attached disk. At this point, you should be able to access the files on the disk.
+Azure provides an extension to recover access to Linux VMs in many scenarios. Jointly with custom script, as @proteus mentioned, you should be able to fix this without recreating the VM.
+If you accidentally lock yourself out of a VM, the only way to recover it is by downloading its virtual disk and running it on a local Hyper-V server, where you can get console access and fix whatever is wrong; or, if the problem can be fixed offline (f.e. by editing a configuration file), you can attach the disk to another Azure VM and work on it from there.

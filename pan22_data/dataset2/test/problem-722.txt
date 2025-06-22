@@ -1,0 +1,7 @@
+** Depending on your host OS, you can look into some block level backup software that can make live backups of your system or VMs that could be used to do a bare-metal restore of the VM.
+You can essentially write a command to backup all the files/directories like above except they are securely backed up to a remote system and are also transferred more efficiently.  If you have files that haven't changed between backups, they won't be copied.  If you have a large file (i.e. log file), then only the changed portions are copied thus saving lots of data transfer.
+Compress the backup.  It will take longer to backup, but you will probably make up the time in copying.  You can achieve this with a command like:
+My guess is that the FTP files are corrupted because they aren't being uploaded in BINARY mode, and are instead being transferred in ASCII mode.  Also note, FTP is insecure and your credentials and backups could potentially be intercepted.
+Yes, you can simply add those to the backup.  If you are backing up /var/www now, modify your command to something like this:
+The above example backs up /var/www, Apache config directories, the MySQL config file, user crontabs in /var/spool/cron and the SSHD config.  You can add files/directories to the list as needed.
+The backup system will need to be accessible over SSH (using keys or password) and have rsync installed.  Then you can manage your backups much more efficiently.  For added security you could then backup the files on the backup server and keep history.

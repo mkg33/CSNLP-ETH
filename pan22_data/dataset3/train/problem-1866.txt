@@ -1,0 +1,23 @@
+As long as you have enough disk space, SQL Server can fly itself in this regard
+You can use SQL Server Profiler to find the problem queries, and I learned a lot by breaking them down and running them in SQL Server Management Studio, looking at execution times and execution plans.
+The solution would be to find and improve long-running queries.
+Change the db compatibility levels to 100 if you can.
+You can change the collation all you want, but it won't affect any of the existing data.
+We have tempdb logs on a log drive and our tempdb files (1/4-1/2 the number of cores) on their own drive.
+Log file access is generally sequential and Data is generally random.
+Can your application actually withstand the changes from NVARCHAR, NCHAR, and NTEXT?
+I'd start with sp_WhoIsActive by Adam Machanic, sp_Blitz by Brent Ozar.
+While you're at it, NTEXT is deprecated so moving to TEXT would not be good.
+If you're going to be making these changes, make sure you have a good, durable backup.
+RAID level matters and SQL Server accesses the files differently.
+I'm glad you have an opportunity to do this cleanup.
+I wouldn't worry too much about setting the database file sizes.
+Separate data and log files (see RAID, below) - get a good tempdb strategy.
+I'd also look for Kendra Little's work with scheduling and storing the results from sp_WhoIsActive.
+I'd also recommend coming in to this install with a good tool set.
+Check out some of these trace flags none of them may be appropriate.
+While you're at it, make sure that tempdb has an appropriate number of data files, that their initial sizing is exactly the same, and that they have exactly the same growth factor.
+Finally, I'd start up a way of capturing Waits and Queues so that you have a good history of your server's profile.
+In general, however, your issues shouldn't be impacting performance and that may still be an issue after cleanup.
+Finally (and maybe firstly), check out Glenn Berry's excellent series on provisioning a new SQL Server Instance.
+What happens in 9 months when someone actually needed those tables?

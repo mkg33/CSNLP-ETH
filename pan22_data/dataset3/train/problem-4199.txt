@@ -1,0 +1,17 @@
+Probably you want case insensitivity and whitespace tolerance, and grep will terminate if it doesn't find any instances of the desired file pattern in the current directory.
+find and xargs show their power with single flat (but very big) directories that grep fails on and extra qualifiers (for instance if you want to search for .inc, .php, and php3 files only).
+LC_ALL=C egrep -irn "class[ ]*myclass([ ]|\n)" * | egrep "\.(inc|php[35]?)"
+This can still match comments, such as // class myclass exists in file, but I find those to be small relatively, and they can be filtered out with ... | fgrep -v '//'
+This runs recursively, lists the file name it finds results in, with line numbers for where they are found, and highlights.
+will search through all the folders with names ending with .php
+If there is at least one file of the desired extension, then you can use egrep -ir.
+I know it says using grep, but my personal favourite is to use ack-grep:
+It needs to know where to start, as it were, and no files matched produces no starting path.
+will search for class MyClass in all files in all sub folders, then only return the ones that have .php in them.
+-type f -name *.php -print -exec grep \"class MyClass\" {} \; will give you the contents of the line its found on as well as the path to the file.
+The package has a plethora of options; I'd definitely recommend it (and browsing its associated man page) for doing fancy things.
+But it loses quite a bit of convenience and speed in my experience.
+That (with the first options) will be quite fast and mostly limited to php files.
+You can also include more complex file masks (for instance, to catch most .inc and .php files) on the egrep file pattern like so:
+For human written class declarations a big problem is going to be whitespace.
+In case the matched files might have arbitrary names, you should consider using -print0

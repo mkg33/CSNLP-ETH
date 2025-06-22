@@ -1,0 +1,10 @@
+Obviously first optimisation is too see wether the player is in an 'empty' tile or not. Then to have, for each non empty tiles, a few contiguous segments [ {x: , y: } , {x:, y: } ] (sorted on x) describing the slope with a settable precision. So you can quickly test a point against those segments. The segments needs to be computed once per tile type.  
+3) norm the resulting vector, reverse it ( {x: -x, y; -y } ) and here we go ! we have our estimation of the normal.
+Rq5) you can precompute the (x-xcenter) (y-ycenter) of the vectors within an array (of { x :, y: }) or two (of numbers)  then you can go and add linarly sum the x and y  if there's a pixel in corresponding image data array. One while (--) loop !  
+Rq3) if you go for a 5X5 matrix, compute first the norm of the 3X3, then end the matrix computation to get the 5X5 norm. if you compare the two norms you can know about a near edge : another magic !!!
+2) now sum up every vectors coming from center point (1,1), but only if the corresponding pixel is not transparent.
+I'm sorry i cannot give credits : i can't remember where i saw this gem, but here's one technique that is worth mentionning :
+Rq2) get the image with getImageData or webkitGetImageDataHD, then iterate through the image.data. You might want to test a pixel for being null in one read if you set up a 32 bits view on the image.data, ( which is originaly a UInt8ClampedArray ) : 
+the normal. And you have tu use neighboring segments to smoothen the changes. Could be tricky with arbitrary length  (x2-x1) segments. And how to be precise enough ? not too slow ? work whatever the game's scale/resolution ?
+Rq1) you might want to use a 5X5 or 7X7 grid. In fact in the article i saw that a 3X3 was perfect for a game with gentle slopes ( < Pi/8 ).
+easiest way is to pixel test one point (or two points, one for each foot) , to see if we touched something.

@@ -1,0 +1,18 @@
+binary_representation_size is roughly data + information about the containment hierarchy, document order, and element and attribute values -  insignificant white spaces, order of attributes, namespace prefixes, and XML declaration
+Looking at the particular test XML document you are using, and the VARCHAR datatype (1 to 2 bytes per character, most often the 1-byte variety), we can now explain what you are seeing as being a result of:
+<element1>test</element1><element1>test</element1><element1>test</element1></root>';
+-- More "typical" XML (repeated element names -- all "element1"):
+In the second version, all element names are "element1" so that they are the same length as each element in the original version.
+To better illustrate this behavior, consider the following two variations of XML data: the first being the exact same XML as in the question, and the second being almost the same, but with all elements being the same name.
+From the docs on XML Data Type and Columns (SQL Server)
+DECLARE @xml2 XML = '<root><element1>test</element1><element1>test</element1>
+       DATALENGTH(CONVERT(VARCHAR(MAX), @xml2)) AS [VarcharBytes];
+       DATALENGTH(CONVERT(VARCHAR(MAX), @xml)) AS [VarcharBytes];
+But the element names being the same in the second version allow the internal optimizations to be more noticeable.
+<element3>test</element3><element4>test</element4><element5>test</element5></root>';
+There are two things to know about the XML datatype that together explain what you are experiencing:
+That's not a clear win if you have no namespace prefixes, and whitespace you're just storing more data.
+This is results in the VARCHAR data length being the same in both cases.
+It's also mentioned explicitly in the docs that you may just want to use nvarchar(max) if you're only storing and don't care about the features or validation,
+-- Original XML (unique element names -- "element1", "element2", ... "elementN"):
+DECLARE @xml XML =  '<root><element1>test</element1><element2>test</element2>

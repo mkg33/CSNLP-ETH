@@ -1,0 +1,24 @@
+If you cannot find a way to do this, perhaps your architecture isn't as agile as it needs to be.
+@Dan Cornilescu - your scenario is valid for tightly coupled architectures which is why loosely coupled architectures (microservices of versioned RESTful APIs) have emerged as the current best practice in high performing organizations.
+Since the two changesets do not touch the same files no final merge happens, which typically would be an indication of potential problems, warranting a closer look and maybe a re-execution of the pre-commit verification.
+Such changes can interfere with each-other and cause regressions without actually have collissions detectable at the SCM-level.
+And often the claim is supported by hard evidence indicating that:
+When you find this type of issue, you should write some new extremely quick running acceptance tests that can eke out these issues, and add them to your build verification tests that run prior to your integration tests.
+Both developers correctly perform the pre-commit verifications with a pass result and proceed to commit their code changes.
+Two developers working in parallel on that project are preparing to make some changes to the code.
+I believe it was both Google and eBay that have completely rearchitected their platforms 5 times (in a span of something like 10 years) due to constraints their previous architecture imposed upon them.
+In a CI context one of the commonly-used measures of increasing the quality levels of the integration branch is a mandatory set of pre-commit quality verifications (typically including building some artifacts, performing unit tests and even some feature/integration tests).
+Sometimes you need to refactor your entire architecture to overcome issues such as these.
+During analysis of these regressions an argument often heard is that the developer who committed the change identified as root-cause of the regression has successfully passed all such verifications.
+Is it really possible for a software change to cause such a regression despite correctly following all the prescribed processes and practices?
+Of course developer B is filling the argument list to match the function's definition visible in the latest label.
+Yet the end result is catastrophic - the build is broken as the function call added by developer B doesn't match the function definition updated by developer A.
+You should constantly be shifting left and trying to shorten the feedback loop to the developers committing changes.
+Developer A reworks that function removing or adding a mandatory function argument and, of course, updates all invocations of the function in all the associated files to match the updated definition.
+Yet some regressions (build breakages, various test failures) are detected by the CI system verifications in exactly the areas which were supposed to be covered by these mandatory pre-commit verifications.
+Nothing whatsoever can give even a subtle hint that something may go wrong.
+Which is the old definition, as developer A's changes aren't yet committed.
+Let's assume the code in the latest version of a project branch includes a certain function, defined in one file and invoked in a couple of other files.
+The breakage is always theoretically possible because the pre-commit verification performed by the developer is done in isolation and thus can't take into account other in-flight changes being verified in parallel.
+These matrix of services organizations have other complexities to overcome though.
+Developer B decides to add an invocation of said function in a file which didn't contain any such invocation before and is thus not touched by developer A's changes.

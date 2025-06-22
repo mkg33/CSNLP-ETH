@@ -1,0 +1,9 @@
+The txr_shell environment variable is set, so that the re-executed script knows it is the re-executed recursive instance.
+The prologue is written in a conservative shell dialect, using test for file existence tests, and the ${@+"$@"} trick for expanding arguments catering to some broken old shells (which would simply be "$@" if we were in a POSIX conforming shell).
+On a system where /bin/sh is dash, you can see that the above logic will find /bin/bash and re-execute the script with that.
+(In my script, the txr_shell variable is also subsequently used, for exactly two purposes: firstly it is printed as part of an informative message in the output of the script.
+Secondly, it is installed as the SHELL variable in the Makefile, so that make will use this shell too for executing recipes.)
+The idea here is that we find a better shell than the one we are running under, and re-execute the script using that shell.
+On a Solaris 10 box, the /usr/xpg4/bin/sh will kick in if no Bash is found.
+In the ./configure script which prepares the TXR language for building, I wrote the following prologue for better portability.
+The script will bootstrap itself even if #!/bin/sh is a non-POSIX-conforming old Bourne Shell.

@@ -1,0 +1,20 @@
+What you need to do, is run a typical load on that machine and use SAR or something similar to measure your average request size.
+Creating the volume and logical in the %post step creates them with the correct hostname so they mount correctly at runtime.
+I moved the volume and logical creation to the %post section to avoid an issue with the newish initramfs kickstart environment in centos6.2.
+That said, I have little experience with using LVM for RAID-like schemes.
+A stripe is a chunk of storage that is divided over several storage devices.
+Your stripe size will then be (avg req size / 2) * 3, with 2 data chunks and a parity chunk, all the size of (avg req size / 2).
+A physical extent is just the size of a chunk of storage you can extend your logical volume with.
+Then, you reinstall the machine (or just reformat the RAID set) and use that average request size divided by two(!)
+I hope I'm saying this right :) I'm getting tired.
+There are sophisticated ways to deal with the initramfs issue but it seemed like a rabbit-hole when I could just move them to %post for this application data volume.
+The optimal size of a stripe is determined by the size of the average request size, which is the average size of a read request from the disk set.
+The third disk will hold your parity blocks (assuming you are building a RAID 5 set).
+If by 'stripe' you mean your PE size, we are talking about two different things here.
+What I think would happen, would be for your LV to span all three disks, but in a way that will fill up disk sdb first, then sdc and finally sdd.
+I'm not sure LVM is the most logical way to do this.
+Personally, I'd go for a software RAID set with mdadm.
+Apart from that: there is no way to tell whether your stripe of 4MiB is the right size without more information.
+Usualy, the average request size would be in the order of kilobytes, not megabytes, but there is no way of knowing this for your specific situation without measuring.
+I'll go over this again tomorrow to see if I make any sense :)
+That would make an actual RAID set and not a LV that spans three disks.

@@ -1,0 +1,23 @@
+You'll probably need to look at clustering, which means running a form of fencing and heartbeat so that the servers monitor each other.
+You'll have to browse Microsoft's marketing drones site for more information on that.
+What you want is generally called a load balancer.
+Once the other server comes back up, you can transition service requests back to the primary server.
+Load balancers can either come in the form of an appliance, F5 Big-IP boxes for instance, or in the form of a load balancing application running on top of commodity hardware.
+If possible you'd probably want to use shared storage with web server front ends.
+I don't know of anything that's not a balancer as a hardware solution.
+So if you don't want to take the balancer route, you'll have to dedicate some time and effort in running a cluster.
+On Linux/Unix, you probably want to be looking into Heartbeat (simple, but not super-configurable), Pacemaker (robust, but a bit more complex), or another similar system.
+There are some opensource solutions here that will help.
+What you're looking at doing isn't necessarily simple to implement and takes some monitoring/maintenance.
+If you don't want load balancing, all you need is a simple failover clustering solution which sends heartbeats between the cluster members and assigns ownership of the virtual IP that you'll be using to access the service.
+Another way of accomplishing this is on Alcatel-Lucent Omni-Switches there is a feature called Server Load Balancing.
+pfSense will run on virtually any hardware - as well as in a vps.
+This will do exactly what you are looking for but instead of doing this at the ip layer it does it at the MAC address layer.
+the system will allow for load balancing, clustering, as well as a variety of other services
+That said, if you're using Linux, you'll probably want to google high availability Linux, which should point you to resources on configuring heartbeat software that monitors services on the servers and if one goes down it brings up the other server to take over.
+On Windows, the de facto answer is Microsoft Clustering Services (MSCS), which is included with Enterprise and Datacenter editions.
+One example of this is HAProxy, which coincidentally, is currently doing the load balancing for all of the StackExchange sites.
+The reason I said this isn't simple is because you may have a split brain situation come up.
+I don't know much about Windows clustering, but if that's what you're running you'll have some options built into the higher-end versions of Windows for clustering services; I think it's in Enterprise and Data Center editions.
+pf uses the idea of the "carp" method for load balancing and fail over- very easy to setup.
+You'll also want hardware set up to talk to each other on a dedicated high speed connection between the servers and you have to maintain a shared storage share of some kind so you don't need to sync files.

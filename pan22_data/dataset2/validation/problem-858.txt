@@ -1,0 +1,9 @@
+The VARIABLE thread_cache_size says how many "threads" or "processes" to keep around.  20 is a reasonable value for *nix.  0 is fine for Windows.
+With the query in hand, get SHOW CREATE TABLE for the table(s) involved.  And EXPLAIN SELECT ... to have some clues of how it operates.  Then show us those things; we can probably help you.
+You do not mention what language your application is in but if you are connecting on every page requested you could add a lot of speed simply by using a database connection pool. That way you application will not need so many connections and will not have to connect on every request, giving you extra speed simply because you don't reconnect every time and also reducing drastically the number of concurrent connections it uses, which seems to be your problem.
+I am not sure why this is happening, or whether this is normal. I tried to adjust the 'max_connections' variables but still no luck. Has anyone ever got this problem as well? How can i optimize this ?
+Threads_created -- again, find out the "per second" value.  It, too, should probably be under 1/sec.
+I have only seen problems like this you mention on Windows machines. Most of this problems are also highly attenuated simply by moving your db to GNU/Linux (or BSD).
+Connections / Uptime is "connections per second".  If this is less than 1, then the rate of making connections is OK.
+Back to the 'real' question...  If MySQL is "slow" or "high CPU" or "high I/O", then locate the query that is likely to be the villain.  SHOW FULL PROCESSLIST; might catch it.  The slowlog, with long_query_time=1 will catch and record it.
+I have a website that runs perfectly normal, until today it becomes very slow. After a few hours debugging, it all points down to database.

@@ -1,0 +1,8 @@
+In my case I had a virtual disk file with a total size of 80 GB, the first compaction reduced it only to 78 GB, deleting the shadows copies and compacting again reduced it to 72 GB, but after running sdelete the next compaction reduced the file size to 56 GB.
+I am hosting several virtual machines on a host running Hyper-V Server 2008 R2. The disks were originally provisioned on a different server (2008, not R2) about 16 months ago, and were migrated onto this server one year ago. Most guests are running Windows 7.
+In the interest of Internet search consolidation: Eventually found this link thas an approach that has worked when HyperV compact did not:
+Apart from the suggestion of deleting the shadow copies you should use SDelete for zeroing the empty space before compaction, since sometimes it allows compacting much more unused space. For example, for zeroing the empty space in C: you should run this from inside the virtual machine:
+The first time I tried this, it worked flawlessly and reduced the size of my VHD by about 50%. But for the disks of every other guest, I get this error message:
+No guests have NTFS compression enabled. There are no snapshots of these disks. What else could be causing this error?
+Edit: Bonus points for anybody who describes a solution to keep dynamic VHD sizes in check automatically.
+Recently I was comparing the VHD size to used space reported by the guest, and noticed that several machines had VHD files that were 50-100% larger than actually needed. So I decided to try compacting the VHD files to free up space on the host. I followed instructions I found on the internet, roughly as follows:

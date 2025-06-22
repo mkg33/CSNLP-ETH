@@ -1,0 +1,17 @@
+A huge portion of the internet now on CDNs, or cloud services like Amazon/Azure/Google/etc.
+So I hacked together a small script that simply DNS-resolves all the entries in ip_conntrack, and log them.
+Your reverse DNS for anything big will probably just tell you that lots of content you visit is hosted on one of the many cloud services.
+AFAICT, /proc/net/ip_conntrack should have all information I need, because all my LAN's connections go through the NAT.
+So, I have a server that also does NAT (masquerading) for my LAN, and forwards all internet traffic to a gateway.
+How can I get every new connection that is NAT'ed on my server in realtime?
+Have I missed a ready-made software that simply tells me who on my LAN is talking to which server on the internet, via this NAT?
+To get the same results you could probably add netfilter(iptables) rule that logged the traffic you what to know about.
+Then just tail your syslog file that  those particular kernel messages go to.
+The /proc/net/ip_conntrack is not a log file that tail -f would work on.
+I need to know who in my LAN is visiting what websites.
+There is also available a nice  netstat-nat tool which displays NAT connections, managed by netfilter/iptables.
+Though in my opinion this is more or less pointless since a reverse DNS of the IPs used isn't going to be close to reliable for telling you what people are going to.
+It is more like an API that returns the current state of memory when queried.
+My plan was to simply do a 'tail -f /proc/net/ip_conntrack |my_script.pl', and be done with it, but tail-f doesn't seem to work on that file?
+The program reads its information from /proc/net/ip_conntrack or /proc/net/nf_conntrack, which is the temporary conntrack-storage of netfilter.
+You just need to take care of logging its output and monitoring it.

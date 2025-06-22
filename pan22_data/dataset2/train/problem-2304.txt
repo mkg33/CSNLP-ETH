@@ -1,0 +1,12 @@
+When retrieving data for a single country from the combined data set, these were the execution times for melt() and stack():
+It is also important to note that when using melt() I had to call dropna() as an additional step. This removed any rows which contained only NaN for all the columns. With stack() this was done by default.
+I also considered iterating over the dataframe to create a year column. However, this is not very efficient. The result would be a file that looks like this, with country and year being the key:
+I can list the dataframes and use concat to combine them, but this makes it awkward to access each dataframe.
+When combining the dataframes, these were the execution times for melt() and stack() working with the same data set:
+This will show me the value for one dataframe, country, and year. However, I cannot easily list all the data from all countries for a given year.
+The result appears to be that melt() takes longer to rearrange the data, but offers faster processing for future manipulations of that data. If I was only performing a few operations on the data, stack() may be a better solution.
+As you can see, stack() rearranges the data in 30% of the time required by melt(). However, melt() retrieves the data in 50% of the time required by stack().
+Ideally, I think I want to use groupby() to sort the data by country, year, indicator (GDP, life expectancy, ...), or some combination of these. However, I don't see a clear way to do this.
+After asking around, melt() was the most common answer I received. While implementing this using melt() I learned about stack() and that also offered a solution to this problem. Therefore, I setup a couple tests to determine which is the best solution to this problem.
+I'm struggling to find the most efficient way to combine multiple dataframes with columns that are years and country names for the index. As an example:
+After transforming the data like this, I could combine the dataframes using the country and year as the key. Since the column heading GDP would be unique for each data set, these columns would extend the dataframs rather than being added together.

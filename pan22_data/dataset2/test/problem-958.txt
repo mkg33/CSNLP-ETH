@@ -1,0 +1,7 @@
+Since those seem to be mutually exclusive conditions, you may not want to execute all 3 ifs every time by putting an else in between:
+...where the method DailyRate() automatically returns the appropriate rate based on the internally-known interval duration.
+By looking at your code it appears to me that your basic problem is that isDailyRateRequired, isWeeklyRateRequired and isMonthlyRateRequired are distinct boolean variables instead of an enum.  If you just turned them all into an enum things would be a lot more simple, there would be no possibility of inconsistencies between their values, and you would not even have this multiple-choice issue.
+ It prevents invalid states where more than one (or zero) boolean are true. (As @MikeNakis already suggested.)
+You could create a class Interval with subclasses DailyInterval, WeeklyInterval, and MonthlyInterval and then do:
+Since these booleans comes from a legacy database maybe you want to throw an exception or at least log an error message when more than one (or zero) flags are true.
+If these three if statements repeating in the code replace the conditional with polymorphism. (See Replacing the Conditional Logic on Price Code with Polymorphism in Refactoring: Improving the Design of Existing Code by Martin Fowler).

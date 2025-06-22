@@ -1,0 +1,23 @@
+But unless you need the higher amounts of RAM, the performacne impact is not worth it.
+For a server configuration it feels a bit odd because, AFAIK, the vast majority of web servers have been in 64bits config for years now.
+IIS + .NET on x64 rocks and can support very large workloads.
+You can be sure it will run on a 64 bit server, as there is no current 32 bit production offering from microsoft.
+If you do load testing, you will see that x64 servers with sufficient CPU and RAM outperform x86 by a healthy measure.
+The default setup for an IIS application pool is to start in 32 bit mode - for compatibility and performance reasons.
+Otherwise, only testing your specific app under 32bit and 64bit can tell you for sure, and then it depends on what is most important to you, memory footprint or CPU performance.
+The  advice from Microsoft for IIS configuration is to use 32 bit application pools  on a 64 bit server.
+Go 32 bit unless you need 64 bit address space - which is rare for a normal website.
+As it is x64, it can handle the load and users don't notice.
+In our case, we load balance multiple x64 servers.
+If your workload is small, and/or you are going to load balance a number of servers, you may well find that x86 is fine.
+In our case, if that server was x86, it would be stressed and very slow.
+(I am a big believer in using smallest possible instances for the workload -- so much of IT is throwing metal at the problem, and it is wasteful.
+See also: https://www.hanselman.com/blog/PennyPinchingInTheCloudYourWebAppDoesntNeed64bit.aspx
+Unfortunately, it is getting harder to get x86 instances.)
+The reason is simply that websites do normally not need the address space and 32 bi programs run faster.
+It's only simple if your application requires access to many GBs of RAM (most apps do not), then you must have 64bit.
+Considering the usual use cases for ASP.NET sites, are there any reasons to favor 32bits over 64bits?
+However, during deploy operations, all or most of the load can be directed to a single server.
+The Windows Azure Web Sites offers two options 32bits or 64bits.
+http://www.iis.net/learn/web-hosting/web-server-for-shared-hosting/32-bit-mode-worker-processes
+Remember, if you run out of memory then your app will either page to disk and say bye-bye (in a huuuuuge way) to any performance gain you may have gotten from switching to 64bit, or your automatic scaling will kick in and you will be charged more money by Azure for the added server instances, or you will start getting OutOfMemory errors which is game over for your app.

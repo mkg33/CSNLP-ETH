@@ -1,0 +1,20 @@
+System<Draw,Move> wants to filter all entities who have at least Draw and Move component, so the system itself should have a mask (bitset) (same size as entity's bit mask) as well.
+There is no need to filter in this scheme; you might have a rendering system that draws all the "drawn" components, and a physics system that moves all the "moved" components.
+Then, in your "System<DrawComponent, MoveComponent>", you loop through EITHER your vector of DrawComponents or your vector of MoveComponents, and use the ent_id from those components to find the corresponding component from the other component vector that you're not looping through by using something like std::upper_bound.
+An alternative to a Component base class containing the Entity ID would be to use an associative vector class, like  Łukasz Czerwiński's AssocVector or Loki's.
+The entity ID is not the index of component vector, if you want to get certain component of your entity, you have to find it sequentially in the vector, so I keep the component vector sorted by entity id.
+The system also has a list of entity (or entity id) which records the filtered entites.
+When an entity add a component, the entity updates its component bit mask, and then try to match the masks with all systems; when a match occurs, that system register the entity onto its list, then the filtering is done.
+The entity has a component bit mask to identify which types of component it has.
+You really want an associative container for your components, like an std::map or std::unordered_map, but barring that, if you insist on storing your components contiguously, you just need to let your components know what entities they are associated with:
+The point of ECS is that you can create unlimited types of "entity" with provided components, so with N types of components you can have a maximum of (CN1 + CN2 + ... + CNN) types of entities, and that's really many.
+In a "pure" ECS, your entities consist of just a unique ID, which shared among its components.
+Like bitset<64> componentTypes, and the value could be 1100... which indicates the entity contains type 0 and 1 of components.
+On the next system's update, the system check the list, get the first entity id, then get the components from c1, c2 by this id, update those components, then move to the next entity id and repeat.
+These guarantee memory contiguity while allowing you to retrieve your components by a key.
+should be contiguous, and that's guaranteed by vector.
+(in your case, that's the vector<Entity> draw)(so this list should belong to a system)
+I am using component bit mask as well and the mask size is only 64 now, maybe too small, but I don't think it would grow to 1000 in any case, that's too much for the types of components.
+I think the contiguous memory is focused on components not on entities, i.e.
+Thus you'll have the following component collections:
+I suppose that you're really asking now, post-edit, how you can use the entity ID's as indices into your component vectors without there being gaps in the component vectors.

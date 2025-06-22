@@ -1,0 +1,31 @@
+If you're still keen, look up dynamic compilation.
+Should I change from string parsing to some hardcode methods/classes?
+It is like a script engine, but I prefer C# than creating new language, so how would I parse custom files into appropiate status commands?
+This is a quite false problem: every interpreted languages allows extension at different level: to extend is easier than to embed.
+In terms of storing code in a text file, I personally like compile-time error checking.
+However, I do not know how to dynamically parse these things and translate it into working script.
+For example, MOVE command in "MOVE 1 2" would automatically parse the parameters into int, int and put it into X and Y.
+The best way (in my experience) to manage this integration is to export a Façade that both simplifies your script manipulation duties and let you to decide what/how expose of your game engine functionalities.
+I want to create a mechanism that could read text script, for example some kind of custom script such as  ".skill" or ".item", which maybe contain some sort of simple script like
+This is how every -base plugin system works for every program usefull enough to deserve a plugin system for customization.
+I can hear you from here "what about interpreted slowness?"
+However, I think this is not well designed, because I desire it to automatically parse the parameters according to specify list of types.
+This is a quite proven strategy, the main reason you should not write your custom "script parsing procedures" is that you will never get enough.
+This is for the reason of custom number/type of arguments per each command.
+An higher level language let you to focus to the matters of your application: when the things start to go slow you can profile your modules to see the bottlenecks.
+You'll lose that (if you have it -- Ruby, anyone?)
+You will add functionalities to your script engine over and over, until it will start to look like any general purpose interpreted language out of there (but more ugly).
+For example, in battle scenerio, I should make my game read one of this ".skill" file and apply it to the current enemy, or the current player.
+Another problem is, I have also created a command engine which would read String input and parse it into action such as "MOVE (1,2)" would move character to tile (1,2).
+I suggest you to embed an interpreted language into your game engine.
+It may be different from this, but just want to give some idea of what I desire.
+Once you have a bottleneck you can try to fix that or to reimplement that using a lower level language.
+In practice your game engine adds the instance of the Facade to the interpreter context and ask such interpeter to evaluate a script file; that script will find an istance of that Facade in the global context when executed.
+In this case you can write a generic extension of your reactor that looks for scripts as event handlers.
+Good choices are: Lua, Javascript, Python (maybe Ruby), Guile and probably many others.
+A good strategy is to let your game engine to delegate to a script set (found in specific folders) the execution when something happens (onInit, onBattleBegins, onTick, onProgramCrash ect).
+If you are good enough, your game engine has some sort of event management system.
+Now, this form can change, and we should be able to manually specify all type of formats.
+You can read the text file, compile it at runtime, and execute it.
+Each command belong to separate class, and provide generic parsing method that should be implemented by hand.
+One last thing, consider to write all your game engine using an interpeted language.

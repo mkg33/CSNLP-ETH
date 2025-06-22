@@ -1,0 +1,22 @@
+I have had to perform this exercise in the past, so I can explain why some other suggestions here may not be enough.
+This means we have one stop to clean up after ourselves and/or add something new.
+The ISC dhcpd tries to hold on to previously assigned leases as long as possible until the lease pool is empty.
+The solution I used was to collect ARP records from (Cisco) routers.
+The original question asked for FOSS tools for this purpose, but I'm not aware of any that do it just right.
+I'd ask what kind of routers you're using on your network.
+I've no idea if or how well this works but it appears to collect some of the data you require so it could be a start.
+In places like schools and universities they register users based on their mac address, Tools like arpwatch have a database of static ARP entries.
+If you mean static reservations, the answer is: human process.
+It is best to audit your network space prior to building an MAC address database.
+It will then scavenge from expired (and therefore currently unused) leases.
+So add a note to that process to clean up DHCP reservations at the same time.
+You are cleaning up your DNS (and, if applicable, NIS) when old computers are decommissioned, right?
+If you mean dynamic allocation of leases, you don't have to do anything.
+The minimal information you need to capture is IP address, MAC address and some temporal data (first seen, last seen) over some period of time.
+I'm trying to ensure that we do not have stale IP addresses reserved when old MAC addresses are pulled.
+This could then be compared against your DHCP configuration to see which registrations are NOT being used and may be reclaimed.
+DHCP should not be depended on for network user management.
+You also need to create (and publish for users) a policy so the script that compares DHCP records with ARP information will nominate addresses to be reclaimed after some time N of non-usage.
+In our case, we have a perl script that reads a specially formatted source file and generates NIS, DNS (forward AND backward), and DHCP tables automatically, distributes them, and notifies the serving daemons.
+Are there any good FOSS tools to do an audit of reserved IPs used in a Linux/UNIX ISC DHCPd environment?
+We used six months, though we did end up reclaiming an address of a staff member who went on sabbatical.

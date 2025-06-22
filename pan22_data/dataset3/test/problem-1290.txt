@@ -1,0 +1,27 @@
+Cache protection is about protecting what is in the controller cache "before" it is written to the disks.
+So if you want to protect the data that the OS has written to the disks, but the controller has not yet physically written to the disks, then you need cache protection.
+This principles remains no matter what RAID level is used.
+If the system does not “scrub” the array after a dirty shutdown before returning data to the reader, it might return different data for the same block in subsequent reads.
+A Write cache is a volatile memory (usually RAM) that the OS and disks use to consolidate and cache write actions into.
+Neither the filesystem nor RAID will know exactly what was in the cache, and as such you'll lose that data.
+(Which excludes the risk of the RAID card failing).
+If you don't have a backup battery you'll lose a chunk of data that was still in cache.
+So if you have write cache enabled on an array, then the data is written into the DDR memory on the controller ... then written do the disk (when the disks are not so busy).
+Generally, everything that's in the cache, has not yet been written to disk.
+If your controller has a backup battery, then the write cache will be retained in the event of a power outage until the next boot, and then written to disk(s).
+I.e., you might read a file and see data on one disk, flush your read caches, and then read the same file again and get the data from the other disk which could be different.
+If power is lost to this cache, it will lose its contents, and by extend, you will lose some data.
+This is a problem with every RAID level, even with RAID1 or RAID5.
+It seems that battery backups are intended to ensure that writes that the filesystem thinks were completed actually do complete in such a way that when the array is reassembled the data that the filesystem thought was written is returned on reading.
+I think (not sure, though) that when I’ve seen Linux’s MD (software RAID) after a reboot it seems to automatically run a scrub and actually refuse to return particular blocks until it verifies that each block is scrubbed.
+I think that, depending on what exact RAID system you’re using, it’s possible that the system will balance reads between both drives.
+Sorry, I don’t have answers, I raise the concerns/questions that would worry me in this scenario.
+But I’m not sure if that was what it was actually doing.
+I assume that the write cache you are referring to lies to the OS about writes actually completing, meaning that any assumptions a filesystem makes about persistence are purposefully being violated for the sake of performance.
+Note that even if this scrubbing happens, if your write cache does not preserve the order of writes to each disk, the filesystem might be corrupted, even if it’s journaled.
+In short: If you use a write cache, you will need a backup battery for that cache.
+Also, I don’t know how hardware RAID controllers handle this situation.
+This problem is more commonly known as a RAID Write Hole.
+BTW: running any spinning disks without write cache is as slow as a wet week.
+In RAID1, if power is lost and some data in the write cache was written to one hard drive but not another, the drives will have disagreeing data for some blocks.
+To summarize: No, it is not required for a mirror.

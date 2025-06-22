@@ -1,0 +1,7 @@
+Whitespace is unconventional e.g. in ( (value_%4==0) && (value_%100!=0) ) ... I would have expected ((value_ % 4 == 0) && (value_ % 100 != 0)). Maybe your code editor/IDE has a "format document" command to auto-format such things.
+Maybe you should throw if a negative int is passed to a constructor, or use an unsigned int type (though you should perhaps allow negative years, but then again things like the Gregorian calendar change makes early dates meaningless).
+The comment precond: month must be normalized; value_ in [1..12] implies something tricky or wrong in the public API. Maybe months should always be normalized; if they can't be, maybe this trickery needs to be private and accessible to friend Date (or something like that). Maybe all the normalize methods should be private.
+Perhaps the Date constructor should implicitly invoke Date::normalize (because I don't like two-stage construction, where user code should remember to invoke normalize on a newly-constructed Date).
+... maybe Month values could be stored internally as 0 .. 11, converted from 1 .. 12 in the constructor, and converted to 1 .. 12 in the stream output. Maybe that would be a good demonstration of encapsulation.
+Sometimes you pass by const reference e.g. Day& operator+=(const Day& other) and sometimes you pass by value e.g. Date(Year y, Month m, Day d).
+This statement return Day{0}; // invalid value_ should perhaps be a thrown exception. Are you able to construct test/user code which triggers that condition?

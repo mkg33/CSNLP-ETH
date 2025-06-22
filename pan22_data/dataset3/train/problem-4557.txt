@@ -1,0 +1,19 @@
+And because rman changes the database incarnation after duplicate process, this file is never deleted during the backup process, as it belogns to the previous incarnation.
+I cannot recall if I had to clean up archivelogs after a clone processes.
+The duplicate database ... from active database is designed to work without any existing backup.
+I could add rm command from asmcmd for the old files, but maybe there is a way to convince rman to do it for me during the duplicate database?
+Try increasing the value of control_file_record_keep_time.
+I would expect Oracle to clean up the archivelogs which were used during the clone process.
+You can also try deleting the archive logs and backups with force before dropping the database.
+Then rman recovers database (via set until scn 666666; recover clone database delete archivelog;), so the archivelog above is applied to the database:
+Well, I can say that I never did delete archivelogs after a db clone because I did not check for any.
+Before running the script I am doing an archivelog rman backup of the CLONEDB (it deletes backed up archivelogs) and DROP DATABASE CLONEDB.
+Of course I would like to do it automatically, with the duplication script.
+Everything is OK, database starts up, users are happy.
+As workaround I would delete them with a script afterwards.
+So from time to time I must do the housekeeping and delete old, orphaned archivelogs directly from the disk.
+But the archivelog file (in this example thread_1_seq_666) stays on the disk.
+I normally clone from backup location without a connection to the primary database.
+While running duplicate database, rman copies datafiles and archivelogs from the source database.
+I am cloning the production database to another one, lets say CLONEDB, in a regular basis.
+For example, I can see that such file has been copied:

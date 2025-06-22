@@ -1,0 +1,8 @@
+If SQL Server is using Named Pipes, then I believe if you're able to access shares on the machine, you have adequate network connectivity. This article says you can go further and try connecting to the IPC$ share:
+A simple test method for SQL connectivity is to create an empty text file, with a file extension of "UDL".  You can create it in Notepad.  And it can have any name.  I use "TestSQL.UDL"
+If it's using a different port, or dynamic ports (common with a named instance), then you'll need to determine which port it's currently listening on. Check SQL Server configuration manager to see if it's a specific port, or dynamic ports. If it's using dynamic ports, then as long as you don't have multiple instances on the server, netstat -abn is probably the simplest way to find what it's using. Otherwise, dig through the Windows event log or the SQL Server error log for a message indicating which port is in use by the instance.
+A "Data Link Properties" dialog box will pop up where you can enter the IP address of the SQL server and also a SQL username and password.
+If the server is using TCP/IP, then the simple way is to just telnet to the SQL Server port and see if it connects. By default, that's port 1433, so this should work:
+For troubleshooting purposes, I would like to be able to check if a client can connect to a SQL Server instance, independent of the application that possibly can't connect to the SQL Server.
+Provided you have the Microsoft.SqlServer.Smo assembly in your GAC on the local machine, this can be easily done with PowerShell:
+Is there an easy way (that means, not having to install 3rd party software) to do this using the default Windows system tools? Perhaps using scripts or network applications?

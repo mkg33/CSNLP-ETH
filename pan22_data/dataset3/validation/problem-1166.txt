@@ -1,0 +1,10 @@
+However, transferring a 500MB file achieves about 50MB/sec, while a 1GB file achieves about 25MB/sec.
+Small files fit in the page cache, thus the test finishes before stuff is on disk.
+When I transfer relatively small files (~100MB) between the two drives, I achieve transfer rates that are (better) than expected, in the 300-350MB/sec range.
+For the 1 GB file, perhaps you're running into some side-effects of writeback resulting in less throughput than the disks ought to be able to handle.
+Finally, when running the command pv < /disk1/output-large.dat > /disk2/test.dat, I initially see excellent transfer speeds, but then the rate drops off to the 1-10MB/sec range, periodically jumping (much) higher.
+I know this is not an particularly useful measurement of disk performance as I'm going through pv, but it is consistent performance with my other tests.
+You could try the dd options iflag=direct and oflag=direct to bypass the page cache and see how this affects the result.
+You can set iflag or oflag to nocache, and retest, this way you'll see a raw, media based speed, not buffer-to-buffer speeds.
+Here are some tests I ran that show this behavior:
+I'm running a Ubuntu Server 11.04 (amd64) on a machine with 1.6Ghz dual-core CPU, 4GB RAM, and 2x250GB 7200 SATA drives (both 3.0Gb/s and newly formatted from a fresh install).

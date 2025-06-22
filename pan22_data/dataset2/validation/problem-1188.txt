@@ -1,0 +1,10 @@
+The rest of the design, the over normalization,  doesn't strike me as necessary for a temporal database,  but I could be wrong about that.
+The mention of EVA and 6NF gave it away, I just need to search for "entry value model 6nf" and Anchor Modelling was amongst the results.
+Note that the end datetime of the first row exactly matches the start datetime of the new row. And finally in March the account is deleted. After the deletion the table holds
+When implemented manually every query that touches such temporal tables must include the "from" and / or "to" columns in the predicate.
+I don't know how that is called, but unless you have a database that uses a column store, that design is horrible:
+That's 6NF. I've never ever seen a DB implemented to this level of normalization. I shudder to think what the queries would look like. The write amplification must be quite huge, too, given that every table will repeat the PK and index it. In today's world I'd much rather use column-oriented storage, let the DBMS handle the decomposition, and enjoy whatever compression it can apply.
+The NULL shows this row is applicable indefinitely. On 2nd Feb that user changed email address. The table then holds
+One aspect of the design you outline reminds me of temporal databases.  It's the aspect that every fact is tagged with a time interval during which that fact is valid.  
+That's temporal tables. Some DBMS provide syntax to declare this in the DDL. It's not difficult to implement manually. Each table to be tracked is given timestamps to show when the value(s) in that row were considered the current value. To use your 6NF email example, the table would be
+The second (i.e. later) rows is closed. The user is logically deleted from the system although the rows are retained. In this way audit and "time travel" queries are possible.

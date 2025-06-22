@@ -1,0 +1,12 @@
+If so, how do you actually want its surface to look like in 2D? Because the user wouldn't really expect the 3D result if he draws in 2D.
+Another method (my imagination) is make the Line Drawing to "modify" the material of the mesh, and then use the same material on the 2D UI Image. Hence when the material is changed, both the Mesh and the Image will change their materials too.
+Currently, I have implemented part 1 by using raycasting and drawing my line on the world coordinates of the returned raycasthit. This works great.
+3) I need to be able to also draw a line on the 2D UI Image component and have the line show up on the 3D worldspace mesh.
+The you can use the Texture2d class which has functions like setPixel to modify or replace the texture (google for "unity modify texture runtime" for more information).
+Now, I'm a little at a loss as how to correctly map the world coordinates of the line to the 2D UI Image component's coordinates. I know if I can figure out how to complete step 2, step 3 would simply be reversing the process for step 2.
+2) As I'm drawing on the 3D worldspace mesh, I need to have a 2D UI Image component that represents the same 3D worldspace mesh surface. The UI Image component needs to show the line drawing update in real-time on the UI.
+Once you have that coordinate you should be able to transform it into the texture coordinate as you know the transformation of the mesh and you also know the UV coordinates of the texture on the mesh (assuming that you assigned those yourself).
+Or is the 3D mesh just a plain, flat wall (like in your picture)? If so, the method I describe should work well.
+Just asign the Texture (which is part of the material) of the 3D mesh onto some GUI element. If I'm not wrong it will actually change both at the same time this way because what you asign is just a reference to the actual texture which is handled by Unity. Otherwise just copy it after every change.
+A cube would probably work too if you display the edges onto the 2D representation as a guidance for the user. Curved figures wouldn't really make sense.
+First you need the coordinate of the mouse on the texture which surrounds this 3D mesh. You can use the Unity's ray class and send one from the camera origin towards the mouse and therefore detect where it collides with the mesh.

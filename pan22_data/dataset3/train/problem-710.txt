@@ -1,0 +1,16 @@
+This wait type is usually caused when you have queries performing huge scans.
+Like I said, checking your indexes and statistics and analyzing your query plans are probably the best way to go about reducing your waits in this case.
+OLEDB waits indicate that your query has to reach out somewhere remotely, usually a linked server.
+This will break down your SP into pieces and you can sort by one of the elapsed_time, logical_reads columns, or total_worker (cpu) columns to decide what specific commands you want to work on first.
+Based on your comment about the "unwieldy" SP I'd almost guarantee that is at least part of your problem.
+By breaking it down like this you can start picking off the low hanging fruit and speed the over all SP a bit at a time.
+Obviously, you're going to want to focus on SOS_SCHEDULER_YIELD.
+Your culprit is likely to be some application pulling data row-by-row instead of pulling the entire result set at once.
+If you're seeing performance issues with this, consider figuring out if there are performance issues on the remote server or making some attempt to bring that data local (replication, etc.
+I'd suggest checking to make sure you have the proper indexes in place and you don't have any out-of-date statistics resulting in an inefficient query plan.
+This one signals that SQL Server is waiting for a go-ahead to send data across the network.
+For example it will help to reduce the speed of a query that's being run a dozen times in the SP, it will help even more if you can figure out a way to run it only once (personal recent experience).
+Try running the following query replacing DBName and SPName as appropriate.
+You can find more info about all of these in this wonderful post by Paul Randal and more in-depth information about SOS_SCHEDULER_YIELD in this wonderful post also by Paul Randal.
+Now to be fair this doesn't answer your original question and it is more meant as a response to the comment and a helpful way to deal with a "problem" sp.
+This doesn't of course take the place of reviewing the whole thing at once.

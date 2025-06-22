@@ -1,0 +1,13 @@
+great performance saving comes from caching geometries and materials.
+Right now I'm creating a map like this (The project's code name is Kuxtal):
+Then do the same for all resources that can be reused - models, textures etc.
+I have a singleton called Kuxtal, from which all the magic happens, I create a Kuxtal.Instance, which holds the renderer, scene, camera, and some functions to work with them.
+I'm working on a WebGL game using Three.js, its been a few days and I found my first issue, render time on big maps.
+In your case, create CubeGeometry and MeshPhongMaterial objects only once and then use them when creating tiles - each tile will be separate Mesh but all pointing to same instance of material and geometry objects.
+And the tiles are added to the scene on this Kuxtal.Instance.loadMap(map) function:
+You can move around with the classic WASD or arrow keys and zoom in and out with the MouseWheel.
+Any suggestions on how to improve the performance?
+Always think about what can you reuse and whether you really need to create a new object instance.
+The game runs great, there are even some AI mobs that run around randomly like crazy, the problem comes when the game has to display many tiles at once (being many around 900 (30x30) on my Computer), if I zoom in the game runs at 60 solid FPS, here's the game demo so you can watch it in action.
+Then I create a Kuxtal.Map, to which I pass the width & height as parameters and it runs:
+and btw - don't call those tile's meshes 'sprites' - it can be confusing as THREE.JS already has a type called Sprite.

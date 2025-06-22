@@ -1,0 +1,7 @@
+Here is a link to the pdns internals documentation.
+Also note that PowerDNS will send NOTIFYs to all nameservers specified by NS records for a given domain entry, however it will only do so if it's run in master mode.
+The SOA serial number needs to be bumped up, meaning it needs to be now > then in order for PowerDNS to notify it's slaves about changes, hence if you overwrite YYYYMMDD01 with YYYYMMDD01 that will not cut it.
+http://doc.powerdns.com/generic-mypgsql-backends.html#AEN5985
+Alex and Roland, with the gmysql backend or any other RDBMS backend you do not need to issue any reload commands, PowerDNS will know the zone has changed by looking at the serial value in the corresponding SOA record.
+I have not tried this myself, but I think you need to run "pdns_control reload" to tell the backend processes that contents have changed, and that they need to be re-read.
+master=yes in pdns.conf, the default is NATIVE mode where it assumes that backend data is synced in the background by mysql replication or other means.

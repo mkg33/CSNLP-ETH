@@ -1,0 +1,46 @@
+Now, if you recall Summary LSA (Type 3) it describes networks external to the area, so basically a T1 from a different area would be described as a T3.
+So a couple of the LSAs requested from Router-A could be router-LSAs, network-LSAs etc.
+Remember that there is a fundamental rule in OSPF, there must always be a leg in the backbone area(A0).
+From the previous answer you can see the information that uniquely identifies the LSA Header which is carried in the DBD packet.
+        communication between neighbors is bidirectional."
+"In a link-state routing protocol, each router maintains a
+A router that connects to the BB area and a different area is considered an ABR (Area Border Router).
+DB packets contain LS Advertisement, LSR contain LSA ID and Link State Type, LSU contain LS Advertisement and LSAck also contain LSA.
+In regards to your last comment I'll post as a separate answer because modifying existing answer changes it a bit.
+From Advance Junos Service Provider Routing, Chapter 2-19, "A router advertises a stub network whena subnet does not connect to any OSPF neighbors.
+But as far i know, the above 5 packets are used during adjacency formation and only after it is formed, they send LSAs to update routers about change in the network or anything of that sort.
+This database is referred to as the link-state database.
+"Im also unable to distinguish between LSA used while forming adjacency and LSA types, as in router lsas, network lsas,etc.
+Strictly speaking LSA T1 has only area scope so say for example routers in A0 will all eventually receive the Router LSA, now for that information to be carried to other area like A1 you would need a T3.
+A/ I'll elaborate with what I think is your doubt, if not please correct.
+For this matter a Summary LSA (Type 3) will be used to represent those LSA's into other areas.
+            connections (i.e., interfaces or links) to the area.
+Before the two routers can become fully adjacent, their LSA DB needs to be fully in sync.
+Router LSA consists of the standard LSA header plus the following below (I will purposefully omit some which don't matter in regards the concern):
+        "The Hello Protocol is responsible for establishing and
+It is in the Exchange state that the Database Descriptor (DBD) packets are exchanged.
+            link is typed according to the kind of attached network."
+For a network that is directly connected to the router (LAN) and not learned from a neighbor, you would need to add the interface from that network as passive in the configuration for advertising, this happens via router-lsa.
+Advertising a stub network occurs for the loopback interface and any passive interfaces."
+If the LSA types are only sent after the adjacency is formed, then how come the different packets used while forming adjacency know about the Link State Advertisements?
+Remember that at the Exchange step the DBD packet has the OSPF header plus the LSA header,  the latter consists of the following:
+Hopefully another way of understanding in regards to your comment:
+Remember that each LSA has a flooding scope, in the case of Router LSA (Type 1)  and Network LSA (Type 2) they have an Area scope, this means they are not flooded across an area boundary.
+The scenario you are putting needs to be in a context, for example you could have  R1--a0--R2 in this case only T1 and T2 would be enough.
+So Router-A would send a list of all the LSAs it had received previously from other routers [and are installed in it's LSDB] via DBD packets to Router-B.
+Now after the adjacency is formed (i.e after fully sync'd), any LSA advertised by a router would go to all routers (unless the LSA type prevents it).
+Database description through LS type from the LSA header and Link-State request packet field LS type, both specify (example: router lsa, summary lsa, nssa).
+"The router-LSA then describes the router's working
+These LSAs are the same what you call "LSA types".
+"If Router A has only directly connected networks in the database and hasn't received any LSAs from other routers, then how can it send the received LSAs to the other connected router, say Router B."
+If you have  R1--a0--R2--a1--R3 and the new adjacency is between router R2 and R3 in area 1, the R2 is considered ABR as it has a leg in the two areas.
+Im also unable to distinguish between LSA used while forming adjacency and LSA types, as in router lsas, network lsas,etc.
+Each participating router has an identical database."
+I'm not sure if this is just your wording "exchange it's LSDB summary" or if you  meant Type 3 LSA's, however let us recall that OSPF routers in the same area need to have identical LSDB, by this I mean that they will share all LSA's they know about and which are permitted as per area type (i.e Stub, Totally Stub, NSSA, Totally NSSA).
+database describing the Autonomous System's topology.
+So R2 knows about R1&R3 in their respective areas, but R1 and R3 don't know each other, hence T3.
+If the LSA types are only sent after the adjacency is formed, then how come the different packets used while forming adjacency know about the Link State Advertisements?"
+This process indeed takes effect with the usage of DBD packets as well as Type 3, 4 and 5 packets.
+Depending on how many areas hence the amount of ABR's
+The LSA "types" is just a field in the LSA header.
+Now Router-B sends LSRs to request the LSA it doesn't have.

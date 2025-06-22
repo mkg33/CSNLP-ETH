@@ -1,0 +1,17 @@
+Currently, we are running with a replica set with 3 instances.
+If you are doing performance or load testing in staging environments, they should be provisioned with the same specs as production.
+For staging you may want to deploy lower spec environments but have similar configuration so you can test realistic failover scenarios.
+AWS guarantees on redundant infrastructure generally only extend to failures across multiple availability zones, so to maximise availability you should also deploy your replica set members into different availability zones.
+There's definitely an argument for having prod-like staging and dev environments, but a typical cost savings would be deploying lower spec environments for dev with less failover than production.
+On top of this, we have both a prod and staging environment (with a third "dev" environment coming soon).
+Assuming you have reasonable time-to-restore from your EBS backups (and trust in EBS redundancy), this may be an acceptable compromise for your use case.
+If you do not specify the wtimeout option and the level of write concern is unachievable, write operations will block indefinitely.
+If you plan (and test) with those caveats in mind, you should be able to land on the side of good experience.
+What I'm looking for is some advice on how to best weigh the trade offs.
+If your code is using MongoDB write concerns higher than the default (w:1) you will want to add a wtimeout value.
+The question is, how necessary are 3 replicas in an AWS environment?
+Ok ok ok, I already know the answer is "it depends".
+Further, these costs stand to explode in the future when/if we move to a sharded environment.
+As far as MongoDB goes, key considerations with only two data-bearing members in a three node replica set are that if one of those data-bearing members is unavailable for any reason (planned maintenance or unplanned failure):
+This configuration has high availability in terms of maintaining/electing a primary in the event of a single member failure, but the arbiter compromises data redundancy if one of your data-bearing members is unavailable.
+I've definitely seen bad outcomes where users failed to consider the above points (particularly with consideration of write concerns & timeouts).

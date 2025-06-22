@@ -1,0 +1,24 @@
+If you are using the latest version of Unity, you can use the SRP Batcher, which batches per shader instead of per material.
+Select the one that fits best in your budget (FPS/memory/etc) and the long-term goals of your project.
+One thing I can do is to tell you the trade-offs between the two methods, and also provide a hint at another possible solution.
+Always profile and compare your solutions, no matter the circumstances.
+Honestly, it is the only way of knowing for sure which method is the best.
+Hence, you can use 4 materials, but have a single batch if all of them use the same shader.
+A batch is considered to be a change in GPU state followed by one or more draw calls.
+Unity specific questions probably are better suited for the Unity Graphics Forum.
+You should build a test scene with thousands of generated meshes and then profile each method.
+If you are targeting consoles or PCs, you can have a much higher batch count and memory budget, so the solution that you think is simpler to implement, expand, and maintain should be your best bet.
+Another solution would be to use textures instead of vertex colors.
+All in all, there are a lot of things to consider in any kind of application.
+Do not fool yourself in thinking that some basic algorithmic analysis is all you need to do.
+In my opinion, the only way of knowing for sure which method is the best would be to implement both and profile them on your target device.
+You could place all textures into an atlas and try to use a single material.
+In other words, if you have four materials, you increase the number of batches when compared to having just one.
+When using the built-in rendering pipeline, Unity batches objects by materials.
+On the other hand, duplicating vertices incurs a cost in memory, and hence you get better batching at the expense of using more memory.
+For this, you would need to compute the uv-map procedurally when generating the vertices.
+If you are targeting mobile devices, reducing the batch count is one of the keys for achieving good performance, and most mobile developers would choose to use a single material.
+However, I'll try to give you an answer as I do have some experience with the engine.
+That is why I started talking about profiling on your target device.
+If you are targeting PCs/consoles, you could even afford procedural textures in your fragment shader.
+Note some devices may not have this capability, especially on mobile.

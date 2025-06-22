@@ -1,0 +1,12 @@
+Especially that the global file settings don't take precedence.
+Remove (or comment out) every SSLProtocol ALL -SSLv2 -SSLv3 line and change them into your SSLProtocol TLSv1.1 TLSv1.2.
+I found this issue on Bugzilla and was going through it when later on someone mentioned that Let's Encrypt has an isolated file /etc/letsencrypt/options-ssl-apache.conf within this file there is a setting:
+I managed to solve this and it was definitely an unexpected fix.
+Using virtualhosts it's keeping the first vhost option for all further vhosts.
+When you have multiple TLS VirtualHosts and use Server Name Indication (SNI) it is an allowed syntax to have a SSLProtocol  directive for each VirtualHost, but unless you have IP VirtualHosts in practice the settings for the SSLProtocol directive from the first VirtualHost are used for the whole server and/or all name-based VirtualHosts supporting TLS1.
+The fact that Virtual Hosts inherit their siblings settings is a bad decision in my opinion.
+No need to specify -all if you only enable what you need.
+Certbot automatically installs a reference to this file in the virtual host configuration, and that cert happened to be installed on the first Virtual Host in my server configuration.
+Only disabling those two would still allow TLSv1.0.
+I changed it to match my previous setting of SSLProtocol -all +TLSv1.1 +TLSv1.2 and it worked perfectly.
+At least this happens in CentOS 7.6 running Apache (httpd) 2.4.6.

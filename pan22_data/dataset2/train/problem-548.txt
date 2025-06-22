@@ -1,0 +1,12 @@
+As far as I know, you cannot start the sequence in random numbers (I don't remember if you should start it at 0 or 1), plus, it cannot have gaps, if it does, ffmpeg will assume the sequence is over and stop adding more images.
+Images generated with: https://stackoverflow.com/questions/3191978/how-to-use-glut-opengl-to-render-to-a-file/14324292#14324292
+Note however that despite the name, -glob this is not as general as shell Glob patters, e.g.: -i '*' fails: https://trac.ffmpeg.org/ticket/3620 (apparently because filetype is deduced from extension).
+I agree with Francisco, but as a workaround you could just write a quick script to move or create symbolic links to the files with the sequence numbers that ffmpeg needs.  The script could then call ffmpeg and then remove the links or move the files back to their original locations.
+In my case, it was a little trickier because of the numbers in the files. Here's how my images look like:
+See also: http://unix.stackexchange.com/questions/68770/converting-png-frames-to-video-at-1-fps/339399#339399
+-r 30 makes the -framerate 1 video 30 FPS to overcome bugs in players like VLC for low framerates: https://stackoverflow.com/questions/19267443/playback-issues-in-vlc-with-low-fps-video-from-images-using-ffmpeg/41797724#41797724 Therefore it repeats each frame 30 times to keep the desired 1 image per second effect.
+It is cool to observe how much the video compresses the image sequence way better than ZIP as it is able to compress across frames with specialized algorithms:
+Also, as stated in the comments to my answer, remember you need to specify the width of your index. Like:
+I know this is an old question but I came across it in Google while looking for the same answer. None of the answers here satisfied me completely so I did more searching and reading and this is a command that I came up with for my own problem.
+GIF generated with: https://askubuntu.com/questions/648603/how-to-create-an-animated-gif-from-mp4-video-via-command-line/837574#837574
+This option was mentioned at: https://superuser.com/a/782520/128124 but here are a few concrete examples of its usage, including of adding audio to the output video.

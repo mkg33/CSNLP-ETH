@@ -1,0 +1,7 @@
+If I start off with a 2 drive stripped ZFS POOL will it automatically become a fault tolerant POOLS like RAID-5 when I add the third drive?
+I can't seem to find anything in the ZFS CheatSheets I find online about adding a third drive to a stripe set and changing to RAIDZ1.
+Does anyone have any practical experience with such a scenario?
+In ZFS you build your storage pools out of vdevs (virtual devices). A single pool can have as many vdevs as you want, and each vdev itself can consist of one or more disks. Redundancy is managed at the vdev level, so your pool will always be striped (concatenated) over all vdevs it consists of. This means you will lose your pool if you lose a single vdev in it.
+To prevent this, you normally do not use single disks as vdevs, but redundant sets: either mirrored disks (2, 3, or more disks which are completely mirrored/identical) or parity-based disk sets (RAIDZ1 with one parity disk equal to RAID5, RAIDZ2 with 2 parity disks equal to RAID6, or RAIDZ3 with 3 parity disks).
+ZFS is not that flexible with parity RAID, therefore you should think about your data and growth and plan accordingly:
+For more in-depth information regarding the choice between RAID types and general pool layout, I suggest reading this blog post and also the ZFS best practices guide.

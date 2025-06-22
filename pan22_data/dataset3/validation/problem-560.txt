@@ -1,0 +1,11 @@
+I'm trying to create a log of an inventory that runs daily
+For example, I use "cron" for all my job scheduling outside of PostgreSQL, so I use it for PostgreSQL as well, using something like psql -f job.sql as the command to run.
+For the query itself, you can't expect the job to run at exactly midnight down to the nanosecond.
+is there a way to fill up my log table without having to do it manually every day?
+How to make this insert to be done daily in an automated form rather than manually?
+If you already have a generic job scheduler in use in your IT environment, I'd recommend making use of that, rather than installing and configuring and learning a new one just for PostgreSQL.
+My log table is id serial, date date, count_of_status1 integer, count_of_status2 integer
+Basically on my log table i want to sum how many units have status1, how many units have status2, etc for every day
+PostgreSQL does not have a built in job scheduler.
+You will have to arrange for the job to be able to connect to the database without a password--there are several ways to do that depending on your security environment.
+So run the job several minutes after midnight (to make sure clock skew doesn't cause it to accidentally run before midnight), and put WHERE clauses in the query that uses a timestamp in the table to pull out the data exactly aligned to date boundaries.

@@ -1,0 +1,27 @@
+ -- Retry this job after waiting for N seconds (where N is determined by cupsd.conf's "JobRetryInterval" directive).
+Intervals between connection attempts are 30 seconds.
+A good configuration for desktop printers and/or home users.
+beh is a wrapper which can be applied to any CUPS backend.
+This retries the job 3 times with 5 second delays between the attempts.
+ -- Retry current job immediately and indefinitely.
+Your problem could be tackled in different ways, depending on the version of CUPS you're running.
+See: http://www.cups.org/doc-1.4/ref-cupsd-conf.html#ErrorPolicy
+You have 4 choices to set as default or to tag to each queue individually:
+This would retry a job 20 times in two minute intervals, and disable the queue only when still not succeeding.
+It's default setting is selected in cupsd.conf, and determines how cupsd should handle print queues which do not behave as expected.
+This setting would be noted in the printers.conf file.
+Assuming your print queue currently has defined a backend of socket://192.168.1.111:9100, and it behaves in the way you don't like (being disabled by cupsd from time to time due to network connection problems).
+This is still the default, unless you define otherwise as per above mentioned alternatives It also was default + only possible behaviour for all queues in previous versions of CUPS (the one you do want to get rid of as per your question).
+For older versions of CUPS I'd recommend to have a look at beh, the CUPS BackEnd Handler.
+ -- Stop current print queue and keep the job for future printing.
+This should be fixed by changing the ErrorPolicy in cupsd.conf or printers.conf:
+You can intentionally delay printing simply by switching off the printer.
+If the job still fails, it is discarded, but the queue is not disabled.
+Overall, there is no need to mess around with bash scripts, cron jobs, lpadmin, cupsenable or sudo in order to re-activate CUPS queues going down erratically.
+Also, it depends on how exactly the CUPS server print queue connects to the real print device: ipp://?, socket://?, lpd://?
+ -- Abort this job and proceed with next job in same queue
+More recent versions of CUPS come with a builtin functionality that could help here.
+Additionally, you can set individual ErrorPolicies to each separate print queue.
+You want to let cupsd try indefinitely to connect to the device?
+(Set it from a commandline with lpadmin -p printername -o printer-error-policy=retry-this-job).
+The job does not get lost when the printer is turned off.

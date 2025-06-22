@@ -1,0 +1,29 @@
+So, the DNS organisation doesn't have anything to do with internals of web server configuration.
+The major advantage of using CNAME is that if we change the IP address of one A record then any CNAME record pointing to that host will also be changed.
+By the time you are sending to it a particular HTTP request, you are already connected to some IP address.
+All it cares for is the host name you place into Host header of HTTP request.
+For the web server the only place where it is ever considers IP address you connected to is if you set up an IP-based virtual hosting, then used server IP must match the IP address on which requested virtual host is set to answer.
+Yes, you can make the two www.domain.com & mail.domain.com work on a single IP address.
+(I.e VirtualHost IP and either ServerName or some ServerAlias must both match for this VirtualHost to be selected to serve the request.)
+Never specify the same domain name in several VirtualHost blocks.
+Was it obtained directly because the host name you used has an A record, or if it was CNAME of another A record, or even DNS wasn't used at all and that hostname was resolved using local "hosts" file - it doesn't matter.
+It is the way to tell a requesting client to seek for another record for requested information, i.e.
+https://httpd.apache.org/docs/2.4/vhosts/examples.html
+This will work exactly same as if you have an A record in place of CNAME.
+It selects a particular VirtualHost for which value of ServerName or ServerAlias is the same as in the Host header of the request.
+DNS is simply the way to know IP address of the server, and the server in general only uses host names and never considers how they are represented in the DNS.
+A machine can have an unlimited number of CNAME aliases, but a separate CNAME record must be in the database for each alias.
+Apache (and any other web server) doesn't care how you resolved a host name to IP address.
+Step 2: Add virtual host entry as per your requirement.
+You don't have to reflect it in the configuration.
+The fact mail.domain.com is CNAME domain.com is completely irrelevant for Apache.
+The DNS resolves the system’s domain name to its IP address, but sometimes more than one domain name resolves to the same IP address, and this is where the CNAME is useful.
+The web server doesn't care at all how you get to know that IP address, was it taken from a DNS A record with that name, from a DNS CNAME which points to some other A record, or from local "hosts" file, or whatever.
+The system resolver returns some IP address for provided host name, and then web browser connects to that resolved address and puts the provided host name into request Host header.
+On the other side, web browser doesn't care how the IP was resolved either.
+Apache VirtualHost is an Apache term, and for name-based virtualhosts it corresponds to HTTP Host header.
+Step 1: Make sure the subdomain1.domain.com & subdomain2.domain.com points to your server IP.
+You configure it exactly as if it was direct A record, not CNAME.
+It is often used for A records, in which case you essentially have two names which point to same IP address.
+You confused two different aspects of domain names.
+If you use "*" in place of IP address in VirtualHost directive, it will not care for specific IP address at all.

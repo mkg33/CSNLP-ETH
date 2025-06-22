@@ -1,0 +1,17 @@
+(The /F overwites any existing gpresult.htm file, or you could just change the file name.)
+I wonder if this is because we have more and more systems running Windows 10, but that feels wrong, as I'm quite sure I've had my Windows 10 also download updates from the local WSUS a few weeks ago - you can sort of tell when that's the case when Windows shows that some settings are managed by a system administrator.
+How could I try and debug these WSUS-related GPOs?
+Recently I've noticed that machines in the company seem to downloading updates from the Internet, rather than our internal WSUS server.
+It is rather similar to the good ol rsop.msc but I find some added benefit in a couple of the settings.
+Start with looking at what group policies are applied, and which are filtered out: (you can leave off the "/S <target PC>" if doing this from the misbehaving computer)
+For group policy you're first go-to on looking into what is applied (or not) and why should be the GPRESULT command.
+gpupdate /force runs without throwing any errors on the client machines as well.
+That will give you a run down of the GPOs, and I find my most common issue is that someone tried modifying the WMI Filtering on the GPO I was expecting to apply, and they managed to exclude the PC (in which case you'll see an "DENIED (WMI Filter)" message)
+Take a stroll through the results and see what values are/aren't being applied to the PC.
+I've got a domain running on Windows Server 2008 R2 - a bit old, sure, but it worked quite well.
+I've started to investigate, and I've noticed that the WSUS policies are not being applied (testing with rsop.msc).
+Then open the gpresult.htm in Internet Explorer (sure, you can use other browsers, but it has an ActiveX component for the handy expand/collapse of sections that does best in IE).
+Also, one specific GPO related to WSUS is still working - it sets up client side targeting.
+The policies are correctly set up - after all, they WERE working before.
+The next thing you can do is actually check the settings of all the applied GPOs to make sure they're what you were expecting them to be.
+That's the easy place to start, and between those two commands you will usually be able to identify your issue.

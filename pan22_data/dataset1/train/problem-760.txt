@@ -1,0 +1,20 @@
+I just did a basic calculation: assuming a row size of 200Byte, you'll create more than one TB raw data per year, 3GB per day.
+What is your strategy for data compression (e.g. get the min/max values per day/month, store it separately and remove/archive the raw data)?
+How will the data be used (what kind of queries, how often)?
+What is the data distribution of devices per controller?
+These are the key question in order to modify the (normalized) design concept, if needed.
+In a normalized form I'd go with the following design:
+Controllers (ControllerId, ConSerialNumber,ConDescription,...)
+Installations (InstallId, ControllerId, InstLocation, InstInstallDate, InstRemovedDate,..) -- to allow a reuse of controllers at different locations
+Devices (DeviceId, DevSerialNumber,DevDescription,...)
+Device_per_Installation (DpIId,InstallId,DeviceId,DevInstallDate, DevRemovedDate,...)
+DeviceData (DpIId, SendDate, Param1, Param2,...) -- I assume you'll shred the JSON data to get the actual values instead of the JSON file as a whole in order to save overhead
+Add a controller can be done automatically (without any manual code or even data manipulation): the new data can be inserted in the controllers and installations tables if the information does'n already exist.
+In order to deal with the data volume I'd use horizontal partitioning (per Installation, most probably)
+Alternatively, you could use a separate table per controller,
+But this would either force you to use dynamic SQL or to modify the code whenever a new controller is added. This will reduce the size per table to about 30GB per year, but the overall data volume will still be about 1TB.
+Your idea to have one column per device indicates that you're not planning to "shred" the JSON data.
+If you ever plan to query those columns to aggregate the values of a specific parameter, it'll take a significant amount of time, since all rows have to be scanned and "shredded" to get the values.
+But if you don't plan to query the data anyway, I'd question the need to store it in a database in the first place. Store it on the file system instead...
+The database design might be influenced by the specific business case due to the data volume. I recommend to get a database expert involved to help you design the best performing solution, not only for the table design, but for the code to insert/query/aggregate/archive the data as well as database maintenance, too. Otherwise you'll end up with major performance or maintainability issues sooner or later.
+We have a relatively large number of controllers deployed to the field (4500). Each of these controllers have multiple other devices connected to them. These controllers are now going to be able to start sending us time series data. The data is not so much from the controllers as it is of each device that is connected to it. The data is sent every 15 minutes and includes all the parameters of the connected devices. Some of these controllers will have one device connected and some will have 10 devices connected. The controllers also have the ability to add devices down the line and devices can be removed.Each of the devices send data in a JSON format. How should we design SQL tables to handle this? We think since the time series data will grow over time, we can created one table for every controller and store associated data. We are looking for recommendations on how to store the dynamic number of device data that is sent. Since each controller can have a maximum of 40 devices connected, should we create 40 columns for each table? Also if a new device were to be added to a controller, how would we detect it from a database perspective? Thanks all for your help.

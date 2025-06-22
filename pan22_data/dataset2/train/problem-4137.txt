@@ -1,0 +1,8 @@
+If on the current step changes to firewall would not allow the next connection to succeed there's no way to recover obviously.
+Summary: plant a script that would not only apply the rules but also would withdraw them back in case those rules would cause connectivity regression.
+Find an out of band way to reboot the host. Use a firewall where saving state is optional, such as the firewalld Ansible module. The first time testing the play, run it with permanent: False. If necessary, use the console or reboot the host to get it back.  Once proven that works, switch to permanent: True.
+I would like to deploy iptables rules in a "safe" way using ansible where for safe I think at something like the shorewall command safe-restart.
+One alternative is to temporarily schedule a revert of firewall rules in the future, such as with at. Which also has an Ansible module. I do not like this implementation as much, because the scheduled command is just a shell script, and not a module directly verifying configuration. 
+Since ansible is agentless it means it would need to open new connection (or re-use existent if configured properly) to host in order to restore the state.
+My goal is to avoid losing control of my machines because of a wrong firewall configuration (that may, for example, block SSH).
+Thus it means you have to put testing-recovery task on the host itself which would try to apply new rules and then wait to see if next step of playbook has been succeeded (typically you need at least SSH accessible, so testing step of playbook could be just killing that script before it restores previous ruleset). It also can do some self-originating testing of course.

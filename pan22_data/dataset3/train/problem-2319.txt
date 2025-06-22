@@ -1,0 +1,15 @@
+There is also a very good howto for Opendkim & Postfix integration.
+One of those enhancements was the ar library (asynchronous resolver, i.e.
+Why am I getting that, and how can I stop it from happening?
+Some addition to Todd Lyons' and Marco Elestra's answers : OpenDKIM can be compiled to do its own DNS resolution (moreover with DNSSEC checking, like in Debian 9).
+dns lookups), where multiple of these weird types of "unable to retrieve record" errors have been fixed.
+I've set up postfix to use dkim-filter as the milter;  However, I'm getting the following in my logs:
+In my experience this also happens if a mail is sent DKIM-signed, but the DNS isn't available or doesn't report the appropriate DKIM key.
+Not specifically documented, but search for "resolver" on :
+Chances are that your distribution has current opendkim packages available.
+So any firewall blocking outgoing DNS traffic from your mail server (port 53 for both TCP and UDP should be allowed) will impede key retrieval functionality.
+In order to fix this issue, I added to the bottom of /etc/dkim-filter.conf the line:
+The same author who wrote dkim-filter forked it and it became the opendkim project, except now it has 2 years of bugfixes and enhancements.
+The dkim-filter project has been abandoned for over 2 years now.
+Please use the updated and current opendkim package to provide this functionality.
+Since this is an inbound connection it means you have misconfigured your dkim filter it is trying to sign instead of verify the message and cannot obtain the keys.

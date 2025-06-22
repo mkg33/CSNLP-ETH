@@ -1,0 +1,40 @@
+If you find the above code useful and have any questions on it feel free to ask in comments.
+You need to build your message while running your command through an intermediate script and send it later.
+  sendemail -f $MAIL_FROM -t $MAIL_TO -u $MAIL_SUBJECT -o message-file=$REPORT_FILE -a error_log-$$.txt -s $MAIL_SERVER -xu $MAIL_USER -xp  $MAIL_PASS
+In my case I am discarding normal output (1>/dev/null) and keeping only the standard error output (2>$error_log).
+MAIL_SUBJECT="[$HOSTNAME] [Backup Report: Databases] %status  [$(date +%Y-%m-%d)]"
+sendemail -f $MAIL_FROM -t $MAIL_TO -u $MAIL_SUBJECT -o message-      file=$REPORT_FILE -s $MAIL_SERVER -xu $MAIL_USER -xp $MAIL_PASS
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%cy_status@NORMAL@g')
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%ug_status@NORMAL@g')
+rsync -azv --chown root:root lp@10.10.10.10::ylatisug/ /mnt/hdd3/ylatis-ug/ 1>/dev/null 2>$UG_ERR
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%lc_status@ERROR@g')
+Maybe it looks like an overkill to a relatively simple question but I think it outlines well what you are trying to do.
+MESSAGE=$(echo "$MESSAGE" |sed 's@%cy_status@NORMAL@g')
+%hostname and %net_config are used to identify which computer the email is coming from.
+If I had errors I want a message with a different subject to point it out, the failed database included in the message body and the error log attached to the email.
+rsync -azv --chown root:root lp@10.10.10.14::backup/ /mnt/hdd3/ylatis-cy/ 1>/dev/null 2>$CY_ERR
+MAIL_SUBJECT=$(echo "$MAIL_SUBJECT" |sed 's@%status@[ERROR]@g')
+MESSAGE=$(echo "$MESSAGE" |sed 's@%ug_status@NORMAL@g')
+All words prefixed by % are treated as variables and replaced by sed later on in the script.
+The first file (/root/templates/ylatis-backup.txt) is just a message body template:
+The variables ending in _status are replaced with the word NORMAL or ERROR so I can know what went wrong.
+  find /tmp/ -name \*.$$ -exec cat {} \; >>$ERROR_LOG
+MESSAGE=$(echo "$MESSAGE" |sed 's@%rw_status@NORMAL@g')
+Note how I am monitoring the exit status of rsync to determine what the message and subject of my email should be.
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%rw_status@NORMAL@g')
+In this scenario I have 4 databases (dumps) I need to backup and if everything went normal I want to receive an email mentioning so.
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%rw_status@ERROR@g')
+MAIL_SUBJECT=$(echo "$MAIL_SUBJECT" |sed 's@%status@[NORMAL]@g')
+MESSAGE_TEMPLATE=/root/templates/ylatis-backup.txt
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%ug_status@ERROR@g')
+if [ $cy_status -eq 0 ] && [ $ug_status -eq 0 ] && [ $rw_status -eq 0 ] && [ $lc_status -eq 0 ]; then
+NET_CONFIG=$(ifconfig |grep inet |grep -v inet6 |grep -v '127.0.0.1')
+You could also adjust to include the log in the message instead of an attachment for convenience if you are reading your mail from terminal.
+You could just use the >> operator if you want to keep all the output.
+MESSAGE=$(echo "$MESSAGE" |sed 's@%lc_status@NORMAL@g')
+rsync -azv --chown root:root lp@10.10.10.10::ylatisrw/ /mnt/hdd3/ylatis-rw/ 1>/dev/null 2>$RW_ERR
+rsync -azv --chown root:root lp@10.10.10.10::labco/ /mnt/hdd3/ylatis-labco/ 1>/dev/null 2>$LC_ERR
+MESSAGE=$(echo "$MESSAGE" |sed 's@%hostname@'"$HOSTNAME"'@g')
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%cy_status@ERROR@g')
+  MESSAGE=$(echo "$MESSAGE" |sed 's@%lc_status@NORMAL@g')
+MESSAGE=$(echo "$MESSAGE" |sed 's@%net_config@'"$NET_CONFIG"'@g')

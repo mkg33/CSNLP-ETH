@@ -1,0 +1,12 @@
+I have seen some posts regarding this but I am still a little hazy on the topic. 
+I have a task to take our VPN solution which is split-tunnel and go full-tunnel with it. I am looking at my config and I see where I would make the tunnel full is under the Policy attributes. Right now it is set to "split-tunnel-policy tunnelspecified"
+When I go into conf t (config) then group-policy-(Policy_Name) attributes so (config-group-policy)# and do a ? then navigate to split-tunnel-ploicy and do a ? I get these options:
+  excludespecified  Exclude only networks specified by
+  tunnelspecified   Tunnel only networks specified by split-tunnel-network-list
+Could it really be that simple to change the policy to tunnelall? Or has people run into issues where that doesnt work as intended? 
+Also, I did not implement the VPN solution that is in place now. So where it says tunnelspecified how do I see what the specifications are through CLI? 
+The configuration also varies with IOS version as well.  There was a great change between versions 8.2 and 8.3.
+Yes, you can switch it to tunnelall, but there are more issues to be resolved.
+The first issue is that devices like printers on the client's local network will no longer be accessible while the VPN is active.
+Using excludespecific would allow local networks to be accessed, if you know what they were.  You might use 192.168.0.0/20 to allow for home networks, but there is no guarantee that a users's network will be included.  It also depends on which IP subnets are in use behind the ASA.
+The user of the client computer will still expect to access the Internet and will expect the ASA VPN device to provided NAT (or PAT) service to the Internet.

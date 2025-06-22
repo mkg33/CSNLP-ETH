@@ -1,0 +1,18 @@
+Since the Pi's other IP 192.168.1.30 is within Switch 2's subnet, by default traffic for this IP will be routed to Switch 2 causing connections to fail.
+Note: This setup does not allow a host on one VLAN to talk through your PI to a host on another VLAN.  That would be IP Routing and is a whole-separate question.
+The OS will see eth0 as the physical interface, and each VLAN will appear in the format of eth0.90 for VLAN ID number 90.
+More info on VLANs: https://www.reddit.com/r/homelab/comments/a94oka/learn_with_me_ep1_introduction_vlans_pfsense/
+https://help.ubnt.com/hc/en-us/articles/222183968-Intro-to-Networking-Introduction-to-Virtual-LANs-VLANs-and-Tagging
+And this can be accomplished WITHOUT A VLAN, only using a static route. The below example is tested and known to work correctly.  If you have a couple of small switches and a Pi, you too can actually try this out quite easily.
+Having multiple interfaces on a host addressed within the same subnet can cause a networking issue called "ARP Flux" and is to be avoided.
+There are several ways we can address our single eth0 interface, discussed after next section "ROUTING"
+The downside is that you will need a managed switch that understands VLANs, or a direct ethernet to a firewall/router device that also understands VLANs.  A home-grade route will not be adequate, you'd need a firewall like pfsense or myriad of other soho devices.
+Switch 1 has a direct connection to router which routes all traffic for switch 1's subnet 192.168.1.0/28 to it.
+Routers route traffic from MOST specific to LEAST specific route: a static route pointing to a host will be used before one pointing to a subnet.
+The above host has 3 networks on the one port.  Untagged (IE normal LAN) is in the zeroconf range.   There are VLAN IDs 10 and 20, coinciding with the third octet of the IPv4 address for neatness.  
+So not only is it POSSIBLE to join different interfaces to different subnets, it's IMPLIED when multi-homing a host not to address multiple interfaces within the same subnet.  And as this example demonstrates, you do NOT require (2) nics each with a different MAC address. 
+Using (2) different /28 subnets- sensibly sized for a pair of 8 port switches- our specimen networking is organized as follows:
+Note we are NOT using router's interface to Switch 1 192.168.1.2, but IP of Pi within routed subnet of Switch 1.
+Since 192.168.1.14 is within Switch 1's routed subnet, no static route is required for this address.
+Once static route added, host can be accessed on either address:  192.168.1.14 (subnet 1) and 192.168.1.30 (subnet 2)
+This will give you anything up to 4096 different logical network interfaces which function the same as physical interfaces, from the point of view of the OS/kernel and software.

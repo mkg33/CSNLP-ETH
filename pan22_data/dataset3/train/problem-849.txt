@@ -1,0 +1,21 @@
+But from my gut feeling 24 spindles even seems overkill for 3 guests.
+Most libraries and executables are cached in RAM and the needs of services like logging, etc are very light.
+Honestly, the root partition of modern OSs has very low IOP requirements.
+For regular/moderate workloads of heterogeneous iops, it wouldn't surprise me to find that this would be adequate for 3 ESX hosts' worth of guests (especially if we're not talking really high numbers of guests per host).
+As you're guessing, 24 spindles of non-FC disk may well be more than fine for your workloads.
+As for where to get this data, I assume you are not buying direct - leverage your reseller to get you a copy of HP's sizing tools (they MUST have something for pre-sales use) which will gather this data for you and aggregate it into some actionable recommendations.
+As joshperry says, it's really a matter of working out your iops...once you know that, you can make an informed choice about whether or not the value-proposition of the FATA spindles works for you.
+This is especially true of virtualized environments where iops are in effect consolidated (i.e., disk i/o for how many dozens or hundreds of servers running against relatively few disks).
+Does anyone has opinion on why this could be a such a bad idea?
+The only way to tell for sure though is to calculate the IOP requirements of your guests and see if the disk can handle it.
+The 450/600GB 15krpm disks are perfect but these 1TB ones were the bain of our lives until we started treating them as they were meant to be treated.
+The first box we had with those in saw an enormous number if drive 'failures' within it's first year, some were real requiring new disks, many just eject/reseats - the root cause of the problems were that we run out data centers at a steady 19C and we were told that this was too cold and also that the disk, being a mid/near-line model was specifically not capable of a >30% duty cycle and we'd been using them 24/7.
+24x1TB in a single RAID5 set strikes me as very risky due to rebuild times and the high probability of another disk failing during that rebuild (and you losing your entire set).
+They want you to buy FC for a couple reasons...one is price...they want to sell a costlier product of course.
+You need read IOPS, write IOPS, and the percentage of sequential to random I/O.
+We are moving to the dataceneter and planning to have  tiered storage on EVA4400 - FC RAID 10 for SQL databases and RAID5 across 24 FATA 1TB disks form VMware ESX guests.HP is describing FATA disks as suitable for near online storage, however I am not convinced that 24 spindles will not be enough for running VMWare for 3 ESX servers.
+All the more reason to measure your I/O as well as I/O patterns.
+However, they also know that if you can afford it and you buy it, FC disk has the least chance of dissatisfaction from a customer based on performance issues.
+The "bad idea" part comes in when there's a customer that spent good money but didn't get the performance they needed either for whatever reason.
+RAID6 is a much, much safer alternative in this case, although you will lose a bit of write performance.
+I'm a big EVA customer and fan, and I have a lot of those exact 1TB FATA disks and think they're great BUT there's something you need to know.

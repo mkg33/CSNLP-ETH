@@ -1,0 +1,19 @@
+The data I use is minutely data, which means the number of DNS queries of every minute.
+You would perhaps need to include other features that contain that information - perhaps even the time stamp would suffice.
+If you see a daily up—down movement, but only provide 20 minutes for a prediction, how will the Model know whether or not it is at a turning point?
+I don’t know if the seasonality will be achievable in your predictions, due simply to the timeframes you we using.
+The terms generated would of course catch the phases where the value changes direction and so be able to model seasonality fairly well.
+(S)ARIMA stands for “seasonal autoregressive integrated moving average”, and represents a common way to look at data over time using previous values (autoregressivej, the differences of current value to previous values (integrated) and a moving average of past time steps (moving average).
+So I want to ask if there is any possible improvement to make my LSTM to understand when it should decrease and when it should increase with the seasonal data?
+Perhaps you could look into some ideas used in common timeseries analysis methods, like separating the seasonality, trend and noise and feeding them separately to the model.
+I am working on a project for predicting the number of DNS queries from the site:
+Once you understand what is happening, you have a chance to teach it to your LSTM.
+If you look at the number of DNS queries from South Korea or any other countries, it has the seasonality and trend characteristics: increase then decrease day by day.
+Search for terms SARIMA, ARIMA, seasonality and cycles.
+The requirement for me is: given the number of DNS queries of every minute, then for the given data of 20 previous minutes, predict the number of DNS queries in the next 20 minutes.
+My problem is: my trained LSTM could not detect these factors, it always predicts my data to decrease everytime.
+It is odd, that the model always predicts a downward movement — I would have expected it to simply continue on the current path (up or down), assuming you have both directoins in your training data...?
+The trend should not be really sensitive on the time scale you use.
+Sound to me as a perfect candidate for a Holt-Winters model with a 24 hours seasonality.
+I have employed some hand-defined features like the minute of the day, period of the day like morning/afternoon...
+An other way to go would be to compute the seasonality by averaging a great number of 24-hours cycle.

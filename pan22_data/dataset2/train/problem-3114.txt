@@ -1,0 +1,5 @@
+I wouldn't worry about orphans if you have your F-key constraints set. In the case of deleting a NIC though, remember reality...did we really set the NIC on fire and crush it into oblivion? If so, then in your example, deleting a NIC will delete the port also...which is good. For making what is plugged in appear for normal "active" views, slot_no IS NOT NULL can be a part of the WHERE clause.
+If it were me, and I thought I might want metadata about the ports (lanes, speed, CPU association), I'd even go as far as having an additional table for slots which are referenced by NICs (some multi-jack cards appear as more than one) by that slot_no column you have.
+For both slot_no and the case of loopback (no NIC), having a NULLable column in InnoDB doesn't hurt anything, maps well to reality, and is made for just such a case. It means "I don't have one" in both columns, which is perfect. 
+Off the top of my head, here are some natural views (WHERE clause with "slot_no IS NOT NULL" would work in your 2 table design too):
+The closer to reality you map, the more flexible the design usually is (and that usually means normalize it!).

@@ -1,0 +1,29 @@
+Thus, unless sectors are damaged and the disk has to reallocate physical sectors, a logical sequential write translates to a physical sequential write on a spinning disk.
+However, when the system is saving the hibernation file, all preconditions are automatically met (all data is page-aligned, page-sized, and pinned) and caching has just become irrelevant because the computer is going to be turned off in a moment.
+In addition to all of the above, I think there are a few other factors at play.
+There are a number of preconditions for this to work (such as alignment, block size, pinning), and it does not play well with caching and there is no such thing as "lazy writeback" (which is a very desirable optimization under normal operation).
+No read-modify-write operations are necessary on the disk when a huge amount of sequential, contiguous data is being written.
+This not only allows hibernation to happen quickly but also allows memory to be made available quickly for new programs (so that they can launch quickly).
+This is, however, something that is very noticeable on SSD where every write means that e.g.
+First, the amount of RAM that needs to be saved is surprisingly small.
+Gather write is directly supported by the hardware and works as fast as the disk is physically able to accept data (the controller will directly pull data via DMA).
+a 512kB block (that is an usual number, but it could be larger) has to be read and modified by the controller, and written back to a different block.
+The swap file and the hibernation file are usually some of the earliest files created and reserved on the disk.
+This is the reason why SSDs fare so much better on huge sequential writes.
+The hibernation (swap) file is pre-allocated, so the directory does not need to be updated (you are not changing the size of the hibernation file, just the contents).
+And finally, your computer has suspended all other tasks - this is the ONLY thing it is doing (I doubt this will make much difference, but it's bound to make some!).
+The Win32 API even exposes a user-level function for this very operation.
+One is that, when copying a file, the file has to be read and written; hybernation only requires the file to be written.
+It will already have a large portion of the RAM already duplicated on the disk.
+Each time you move from one part of the disk to another (e.g.
+Second, contrary to you copying a file, dumping the set of RAM pages that need to be saved disk is a single sequential, contiguous write from the point of view of the drive.
+Therefore it only has to write a small fraction of the 4GB and that can be done in 10-15s.
+While you can in principle write to (but not overwrite) smaller units on flash disks, you can only ever erase huge blocks, it's how the hardware works.
+read file a to write file b, write file b to write the directory, and write the directory to read the next chunk) the disk has to seek - move the heads, allow the heads to settle, wait for the right part of the disk to come by.
+In fact, only the set of mapped dirty pages ("lazy writeback") needs to be flushed, as well as all private pages that have been written to and relocated executable code need to be written.
+Third, doing a single contiguous write is very favorable both for spinning disks and for solid state disks.
+This is one of the advantages of a solid state disk - seeking takes no time at all.
+That is the reason why not every write works like that all the time.
+Closely related to this, when reading a file and writing it at the same time, to save memory, the process is: read a chunk, write a chunk, update the directory (to show the new size); read a chunk, write a chunk, update the directory.
+Even things like memory management and task switching are suspended.
+This problem is less pronounced on a spinning harddisks which can write single sectors that are quite small (Provided that you don't write single bytes, which caching usually prevents, the device needs not fetch the original contents and write back the modified version.

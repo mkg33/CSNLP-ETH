@@ -1,0 +1,16 @@
+That'll leave some room for other stuff and the filesystem cache (mysql on here?
+More than enough to cause your c1.small instance to swap.
+Once you tune that watch the graphs over time and see if you have room to go up or down.
+First off you can lower your maxclients to around 150.
+I'd say the next few things I'd be looking to check are
+ - does the apache error log mention hitting maxclients
+have apache do less (mix of cdn, alternative http servers, and http proxy options) 3.)
+Setup apache's mod_status (probably already there just uncomment it) and point munin/collectd/cacti at it.
+RSS is a rough metric to extrapolate like this its just all we got.
+If you confirm the cause is memory exhaustion and swapping there's tons you can do from there.
+ - is the memory usage growth slow and steady or spiky/rapid-onset
+450 children with an RSS of around 10mb each is over 4GB of potential memory usage.
+ - does dmesg or /var/log/messages mention OOM killer at all
+The third you can do cli but graphs will help, and the fourth you need graphs.
+Swapping is almost always a downward spiral for apache servers.
+skinnier apache children (fewer modules, tighten up the php config) 2.)

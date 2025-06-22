@@ -1,0 +1,18 @@
+Just render the progress bar out of three parts - left cap, right cap and the body.
+Left and Right caps usually get rendered irregardless, and the required percentage is shown with body width.
+If you combine the two stencil buffer never truly multisamples; all samples are treated equally, thus no anti-aliasing.
+Left and Right caps are usually always the same - half-circles with transparency.
+So, suppose you have a texture with three hearts in a row, of width 300 and height 80 say, and you only want to show two-thirds on screen.
+Then you would map texture (0, 0, 200, 80) to your vertices, but make sure your vertices are also reduced accordingly.
+One note about stencil buffer it can be multisampled yielding anti-aliasing for a full frame without application intervention.
+This solution is my favorite for a number of reasons.
+Further reading for stretching without distortions in both axis: google for "nine-patch button".
+Seems obvious, but back when I thought each sprite had to use a separate texture I couldn't see it !
+You could instead use three instances of geometry; one half circle for each end and one rectangle stitched in between.
+Saves messing around with the stencil buffer and is much quicker and elegant.
+Alpha testing (shader or not) however is a fragment operation which is not multisampled.
+(This solution appears to be the same as suggested in comments by wondra.)
+The body texture needs to be stretchable without noticeable effects.
+Note how this does not require custom shader or stenciling.
+In the end I just made use of the fact that OpenGL lets you map any part of a texture to your vertices.
+0% could be an empty bar, 1% is caps with body of 0 width.

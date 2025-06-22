@@ -1,0 +1,10 @@
+Finally, since you always insert an item in a Node, I would make Node's constructor accept the value T to be placed in Items[0], rather than keeping that code in the Add method.
+Because there are multiple nodes you'll need two memory-copy calls per node.
+I don't know the equivalent in C# but assume it's similar to Java's System.arraycopy for moving elements from one array to another or within a single array.
+I would also remove the default constructor and add a default value to the other one
+To wit, I believe the conditional to check the last index in the current node is backward:
+As well, it would allow you to implement the full functionality of IList more easily.
+I have a few other changes I would personally make (for instance, seal the private Node class and not use public fields, but rather make them properties), but the updated version is quite good.
+The implementations of Insert and Delete given this design will be slow because they'll have to shift all of the elements past the inserted/deleted element.
+I would also remove _NodeCount, because you are maintaining it, but not using it anywhere to make decisions.
+Even though you are keeping every node full (except the last) and thus only need to track the number of elements in the last node, the code would be cleaner if you moved the count into Node.

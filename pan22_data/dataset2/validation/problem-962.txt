@@ -1,0 +1,8 @@
+And as others hinted, you could should create a separate init script to help you manage this instance. The stock RH /etc/init.d/httpd script should act as a starting point. 
+Yes, it's quite simple.  You basically just have to start up the second instance with a non-default config file on the command line.  If you do a web search for "apache multiple instances" you should find what you need.
+Having 2 different config files gets you part of the way there.  In addition to the PID files that Kristaps mentioned, you will need to either listen on different ports (other than 80 and 443) or bind to a different interface.
+Copy over the config files under /etc/httpd to another directory.  Modify them, changing the ServerRoot, DocumentRoot and other path related variables in httpd.conf and others.  Then create a separate init script that call httpd -f 
+Another useful option of the httpd command will be the -t option to test the configuration file for errors.
+In a typical environment, you can create a copy of httpd.conf and then modify the following properties on the new file.
+Say for example if the name of the newly copied file is /etc/httpd/conf/instance1.conf, then you can start this new instance using the following command
+And depending on your implementation you may need to modify additional properties like LockFile (if you are running on a NFS)

@@ -1,0 +1,21 @@
+Recently, active, idle, max worker metrics have been added.
+The log servers then catted it back out again into /var/log/myApacheServer/access_log.
+With care, that approach would also work for general syslog files, although an initial sync during system startup might be required.
+One of the things I like about it is that it can log to a relational database rather than to flat files, which makes data crunching a lot easier.
+I can't remember the exact details, but the jist was that they had a small auto-restarting script running on each of the apache servers that basically opened a fifo named pipe named /var/log/apache2/access_log and used netcat to copy it to a unique tcp port on the log servers.
+The full version is probably a more comprehensive solution that maybe in line with what you want to accomplish saving you the time of developing your own in house monitoring tools.
+It is extremely fast and dirt cheap compared to the other solutions in this class.
+It's all filesystem based though, so a bit low tech in today's world, sorry.
+Jason, you mentioned an interest in using Ganglia to monitor your Apache web servers.
+Many webstats packages, like awstats and friends, assume that the log files are sorted, so something like awstats' logresolvemerge.pl might be a useful preprocessor on logServer:/var/log/*/access_log before you run whatever stats you require on the results.
+mod-sflow sends counter and log data as binary XDR encoded structures over UDP.
+I've never used syslog with Apache, so I can't help with that part of your question unfortunately.
+Cacti would draw the graphs you seek using rrdtool, but you'd need to feed it from data grepped from the webstats internal data files, which is a tad unstructured for my tastes.
+If you're ok with semi-real time then I'd pick a much simpler solution of rotating the log files every n minutes and rsyncing them to the central server in [postrotate].
+You can use sflowtool to convert the binary data into standard ASCII logs, or as the basis of your own analysis tool.
+This isn't as general a solution as you asked for, but thinking back to a session from the London PHP conference, the BBC said they had a cunning way of transporting apache log files from many servers to a central server in real time, I think they nicknamed it teleportd.
+While Ganglia is great for trending cluster metrics, you will need to use a log analyzer to report on the detailed log data.
+If you're looking to set up a general purpose syslog server I'd definitely recommend you have a look at rsyslog, it's a very powerful modern syslog implementation.
+This approach is scriptable but would start to get tedious with large numbers of virtualhosts though, as you wind up with a vhosts*serverCount number of TCP streams.
+At my work though we just stick to syslogd, Nagios, and Ganglia for all our monitoring needs as even with the 600 or so machines they are all incredibly stable.
+rsyslog can work pretty well, and if the amount of data that you are attempting to log is small enough you can even get away with using the free version of Splunk.

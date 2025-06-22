@@ -1,0 +1,13 @@
+I see you have binary logging enabled on the Slave.
+You could also try removing the restrictions imposed by binlog-do-db,replicate-do-db etc and see if that helps.
+When i create a new table and INSERT some data to the table in the master database, it does not being replicated in the slave database.
+I followed the steps and all works till the last part when i need to verify the replication.
+This shows that both the IO Thread (Intercepts Binlog Events From the Master and Stored Them in the Relay Logs FIFO) and the SQL Thread (Reads Binlog Events From the Relay Logs FIFO and executes the SQL) and connected and running
+You will not see the binary logs grow on the Slave.
+The first thing I would do is ensure that when issuing the CREATE TABLE and INSERT commands you are actually USEing the database databasename.
+This value should be constantly changing while the IO thread is reading new events.
+This shows that the IO Thread has read 120K from the Master.
+This is my first time setting up master-slave replication.
+You forgot to add log-slave-updates to the Slave's my.cnf.
+If these values are changing, IO threads is up to whatever position is in Read_Master_Log_Pos and the SQL thread has executed up to whatever position is in Exec_Master_Log_Pos.
+You would have to add log-slave-updates to the Slave's my.cnf and restart MySQL.

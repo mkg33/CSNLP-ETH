@@ -1,0 +1,22 @@
+You can even move the character along the partial path while it is still being calculated.
+For Python specifically you can try and use Coroutines to do calculations over multiple update calls.
+Suppose you are have a path finder routine which uses A* to calculate a path through a labyrinth.
+The path finding will continue next time updateGame is called.
+How to split them up, depends on the kind of game you are building.
+Since you cannot know in advance what parts of your game will take the most time to compute and might waste time optimizing the wrong stuff.
+I've done this in DOS before threads were hot, and also on mobile devices that didn't support threading.
+You would need to stop the algorithm after a certain amount of time or after a fixed amount of iterations, keep the calculated path so far and return control back to the game loop.
+This is the same way that Javascript frameworks allow for multithreaded like processing even though Javascript is run on a single process.
+If you are doing any heavy calculation in this method the game will simply hang.
+So you need a way to split up these calculations to run over several iterations of the game loop.
+In updateGame you can iterate over your game objects and update them "a little".
+Thus, stuff like calculating A* for a couple thousand AIs is out.
+Basic infrastructure would be a list of function pointers, all called in a round-robin manner (unless a more sophisticated prioritization is required), and all these functions would do "a little bit of work", small enough not to cause the game to become sluggish.
+The way I understand your question is that basically you're asking about cooperative multitasking.
+Most times you don't need to worry about the updateGame call taking too long.
+Better solution, in my opinion, is to simply yield/sleep, and let the computer's power management do its job.
+PEP-0342 details coroutine implementation in Python.
+You can create your own scheduler and tasks which can simulate multithreading on a single thread.
+If you do hit a performance bottleneck in your update routine, that's the time to investigate and optimize.
+A better question, in my opinion, is what to do while waiting for the player to move.
+What kinds of things would be so processor-intensive that they can't be performed on the fly anyway, while, at the same time, being so optional that if the player just hammers some move key fast enough, the game doesn't have time to process these.

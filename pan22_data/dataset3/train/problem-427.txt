@@ -1,0 +1,31 @@
+Your Program class sets a private AppCoordinator member, but never uses it outside of Main; it's odd to have a class instantiate itself like this.
+(as an aside, your Customer class doesn't include GetItems, but I inferred it from your Main).
+You loop through the same DataTable twice in doing so, which should be a warning sign.
+Your AppCoordinator class is a major code smell; it's a (no offense) terrible name that really doesn't describe what it's doing, and is likely to become a "god object".
+Console.Read will exit at any key; you want to change your message or change that to Console.ReadLine to require an Enter.
+This comment could really be directed to the whole structure, actually - since you really just need a Dictionary<string, List<string>> to solve the problem.
+Hence the rather forced way you first create Customers and then create Items that are linked to that Customer.
+Your naming style is off for C#; you should be using PascalCase instead of camelCase for public methods (eg., AddItem).
+Look at System.Data.SqlClient or System.Collections.Generic etc.
+What kind of namespace is SandpitCreateMultipleLinkedObjects?
+//name property doesn't tell me anything I can't see with my own eyes.
+Not to say the structure can't be useful, but I would consider it overkill unless there's some future plans being made here.
+Use the aliases whenever possible: string instead of String, int instead of Int32,...
+Either would be preferable to going over the Keys just to get to the Value (and you don't check the return of TryGetValue).
+I know you said that this is a "a sort of proof of concept", but that still doesn't mean you should abandon good naming practices.
+Console.WriteLine will take an object and call .ToString on it for you; no reason to use the format overload.
+You should have one class that just converts db data to objects (Customer, etc.
+In this case, you can just use the AppCoordinator as a local.
+Even the code I write for applications only I will ever use is as close to "professional" code as possible for two good reasons:
+I do not want to figure out whether class Customer and List<Item> items; and class Item etc.
+All of that db code in AppCoordinator should really move to a separate layer.
+Or you can foreach over Dictionary.Values and just get the Customer.
+Customer.AddItem and Customer.GetItems don't add much value; they're OK as-is, and are actually a reasonable encapsulation - but they're kind of overkill here.
+Well, to start with, Customer.i isn't used and I don't see how it could ever be.
+Your current db structure looks simple, but in reality it obscuring a far more complicated one.
+So, I'd suggest it'd end up looking something like (it's been awhile since I've written straight ADO.NET, so there may be some minor issues here):
+Since this is your largest class, the meat of my comments are here:
+You can foreach over the Dictionary directly, getting a KeyValuePair<string, Customer>.
+Comments should say why something was implemented that way.
+I would rename that to CustomerRepository or CustomerDataAccess or something.
+I'd also change the name of your dics variable since the trailing s implies that it's multiple dictionaries (FWIW, I'd probably go with just d just so I didn't have to ever read a potentially offensive word over the phone; but that's just me!)

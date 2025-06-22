@@ -1,0 +1,34 @@
+I have created a script in order to backup my files over ssh. The authentication method used is an rsa key without password.
+  rsync --dry-run -r -a -v -e "ssh -i /home/toto/.ssh/backup.id_rsa -v -o StrictHostKeyChecking=no" --delete $1 toto@$IP:$DEST --log-file=$LOG_FILE > /home/toto/bin/cron_output.log 2>&1
+When I try to launch this script, everything is fine, the backup is done, I do not need to add a password.
+The problem comes when I try to use this script in cron:
+debug1: Reading configuration data /home/toto/.ssh/config
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: Connecting to 10.1.0.5 [10.1.0.5] port 22.
+debug1: identity file /home/toto/.ssh/backup.id_rsa type 0
+debug1: identity file /home/toto/.ssh/backup.id_rsa-cert type -1
+debug1: Remote protocol version 2.0, remote software version OpenSSH_8.0
+debug1: match: OpenSSH_8.0 pat OpenSSH* compat 0x04000000
+debug1: kex: host key algorithm: ecdsa-sha2-nistp256
+debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: Server host key: #################################################################################
+debug1: Host '10.1.0.5' is known and matches the ECDSA host key.
+debug1: Found key in /home/toto/.ssh/known_hosts:10
+debug1: Will attempt key: /home/toto/.ssh/backup.id_rsa RSA SHA256:############################################### explicit
+debug1: kex_input_ext_info: server-sig-algs=<ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521>
+debug1: Authentications that can continue: publickey,password
+debug1: Offering public key: /home/toto/.ssh/backup.id_rsa RSA SHA256:################################################# explicit
+debug1: Authentications that can continue: publickey,password
+debug1: read_passphrase: can't open /dev/tty: No such device or address
+debug1: Authentications that can continue: publickey,password
+debug1: read_passphrase: can't open /dev/tty: No such device or address
+debug1: Authentications that can continue: publickey,password
+debug1: read_passphrase: can't open /dev/tty: No such device or address
+debug1: Authentications that can continue: publickey,password
+toto@10.1.0.5: Permission denied (publickey,password).
+rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+rsync error: unexplained error (code 255) at io.c(226) [sender=3.1.3]
+A ssh command tries to use the xxxx.pub file for authentication when it exists. 
+For example, if your backup.id_rsa.pub was not created from your private key backup.id_rsa properly for some reason, the publickey authentication would be failed with the following lines:
+What will be happened if you rename or delete /home/toto/.ssh/backup.id_rsa.pub?

@@ -1,0 +1,14 @@
+Upstream polling is used to determine how to modify the drift rate.
+The daemon keeps track of how the time-rate of the hardware clock drifts from the time reported by the upstream sources.
+Different time daemons have different defaults for what it'll allow the maximum poll time to be.
+I've seen it go as long as a couple of days between polls of upstream servers, and others where it never goes past about 20 minutes.
+If you are sure you won't be affected and need a quick sync for a clock that's way off, stop the ntpd service and use the ntpdate command.
+It works by speeding up the length of a second or slowing it down to bring the time into sync gradually.
+The actual poll-rate is a power-of-two in seconds.
+Neither the openntpd nor the ntpd.conf manpage have this information.
+A sudden change in time can be problematic for many services / daemons.
+It is very important for the NTP daemon to not hard-set time, instead it just increases the length of a second by a tiny amount for a while until the local time converges with the time reported by the upstream time servers.
+You can query this information through the ntpq command.
+The minpoll and maxpoll values on your server lines in the ntpd.conf file itself will provide, if set, the exact power-of-two for that upstream server.
+It polls the upstream sources based on an algorithm and can change.
+It's widely considered better practice to correct it this way.

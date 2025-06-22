@@ -1,0 +1,17 @@
+Microsoft Network Monitor will show you the process responsible for the traffic flow.
+It doesn't give you the contents of the packets, but it does show what hosts the app is talking to.
+Given that you are using Wireshark, your port numbers aren't automatically resolved to an application name, so you will need to do a little more to refine the information you are looking for.
+Now in wireshark, you need to tell it to display packets that originated from or are destined to that port by using one or more of the these filters:
+Add an additional or tcp.port == xxxxx for each connection you want to show.
+Clients connecting to a server application on a specific port will be dynamically allocated a port number from a dynamic range.
+I found Microsoft Message Analyzer very useful for exact the same purpose.
+It allows to capture network traffic and aggregate it by process tree.
+at the command line will give you a list of connections with the name of the executable that created the connection.
+Every application using TCP/IP to communicate across a network will be using ports, so that the network stack knows where to deliver segments to (I like to call it an application address).
+I don't test it on windows 7. but it works on Linux.
+Each executable has one or more connections listed as 127.0.0.1:xxxxx, where X is the local port number for the connection.
+If your application appears to be communicating with just one server, you could just use the IP address of that server to filter by:
+If you use Process Monitor from Microsoft, you can change the filters to show only network communications from specific processes.
+So you first need to find out what TCP/UDP connections your application has open:
+This will allow you to see all the traffic for the connections your application has open and Wireshark will not include just raw TCP/UDP segments but it will include the various application layer protocols (eg.
+Just replace My_Application with your application's PNAME or PID

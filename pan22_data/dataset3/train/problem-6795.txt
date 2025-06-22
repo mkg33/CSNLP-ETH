@@ -1,0 +1,20 @@
+It allows you to share a single texture between many sprite objects (something you can't do easily with inheritance).
+To get a child class involves either an expensive copy operation, or overcomplicated changes to the content pipeline to get it to return your child class instead.
+Later you can use this class as base for other components like AnimatedSprite, Enemy, Player, Background, ...
+Although, in the majority of cases you will find that you have either:
+A better argument could be made for storing per-sprite source-rectangle and origin, though (useful for a texture atlas).
+If this were not the case, then a child class wouldn't be unreasonable.
+Object composition (as suggested in both Roy T and Blau's answers) is a good alternative.
+I ask this question for 2D games, where many texture2D objects are used, updated and drawn.
+And in these cases you should pass either the constant or the result of your animation calculation directly to SpriteBatch.Draw.
+It's quite unusual to have many different, fixed-per-sprite values for rotation, scale and colour.
+There's pretty much only one reason you can't reasonably do this, and that is that you generally get your textures from either Content.Load<Texture2D> or Texture2D.FromStream.
+However I would suggest using composition in this case because that makes more sense.
+As you know to draw a Texture2D mostly an Origin, scale-factor, rotation-value and color is necessary.
+To inherite a new class ATexture2D from Texture2D with adding this parameters, can cause performance problems if many of them are called ?
+I think performance wise the same applies although you do add some extra look ups for methods.
+Usually there is no problem with having many sprite objects... but is known that changing too many times the drawed texture can cause a penalty... but is easily solved ordering by texture with SpriteSortMode.Texture in your spritebatch.Begin() method or using testures atlas to avoid using too many textures.
+The benefit of this is that you keep your type hyarchy shallower, and conceptualy it makes more sense because adding information on how to draw a texture does not make something a specialization of a texture for which (conceptually) inheritance is intended.
+You will need to store scale, translation and rotation somewhere so memory wise there isn't really a penalty by inheriting from Texture2D and adding this data.
+This is useful for, for example, having different sprite objects refer to individual sprites that are on a single texture atlas.
+http://msdn.microsoft.com/es-ES/library/microsoft.xna.framework.graphics.spritesortmode(v=xnagamestudio.40).aspx

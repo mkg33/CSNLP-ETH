@@ -1,0 +1,14 @@
+What I suspect you have is a regular NIC that supports iSCSI boot - I'm used to seeing these on IBM's servers.
+So if this is your case, you need to use ESX's iSCSI software initiator.
+You then bind this port to the dependent hardware iSCSI adapter, so that your host can direct the iSCSI traffic through the NIC.
+IPv6 offload is currently only suported for (some) Qlogic iSCSI HBA's but since it is supported within Guests using the VMXNET 3 Network adapter I'd expect to see support at the host level NICs soon.
+If so, it has iSCSI BIOS/UEFI support so you can boot via iSCSI, the card provides enough functionality to get your OS loaded.
+I can't find any documentation that indicates that iSCSI Offload functionality is supported by ESX for hybrid devices like the Broadcom 5709 which I've always understood is not a HBA (at least according to Dell's tech folks).
+Once you get that far, it's the OS's responsibility to do iSCSI via software.
+The only hardware iSCSI HBA's that ESX 4.0 U1 supports are listed here
+Their own iSCSI software is however 100% supported.
+The ESX 4 Software initiator is substantially better than previous versions, it has substantially lower CPU utilization, better multi-threading, multi-pathing and Jumbo frame support so the advantages of using HBA's for iSCSI are much less significant than they were with earlier ESX versions.
+You can check that it is enabled by looking at the MSS result from esxcfg-vmknic -l to see if the NICs used by the iSCSI VMKernel ports have TSO enabled.
+Historically, ESX has very limited support for hardware-based iSCSI HBA's.
+ESX 4 does support IPv4 TCP Offload, specifically TSO (TCP Segmentation Offload) and LRO (Large Receive Offload), on all supported NIC's that support it AFAIK and it is enabled by default.
+After you determined the name of the NIC, create an iSCSI port on a vSwitch connected to the NIC.

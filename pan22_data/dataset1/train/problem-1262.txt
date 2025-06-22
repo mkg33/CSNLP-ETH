@@ -1,0 +1,7 @@
+I've encountered a similar issue, the fix is easy, just run Xvfb as a daemon and configure the Apache user (in its environment or in the startup script) with DISPLAY and the appropriate xauth.
+This behavior is a recognized bug, let's hope it's gonna be fixed in the next release:  https://bugs.launchpad.net/inkscape/+bug/666272
+In the meantime, my google-fu suggests to run vnc-server instead of Xvfb. It can run at the same time as your X server. You can run it as apache user, so apache will have no problems displaying X applications on that buffer. 
+This connection is only password authenticated, so it doesn't matter what user is connecting with vncviewer. Note however that the VNC protocol isn't necessarily safe, so be sure to use it locally only and configure your firewall appropriately.
+vncserver :2 -geometry 1024x768 - This is to be done only once
+In the script run by apache, only run the application; don't start any vncserver or vncviewer:
+Google found the answer here: http://www.linuxquestions.org/questions/programming-9/can-php-script-execute-x11-applications-811779/

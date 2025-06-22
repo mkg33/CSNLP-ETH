@@ -1,0 +1,7 @@
+The Perfmon counters for Transactions/Sec and Batch Requests/Sec are cumulative counters, meaning they keep going up after the SQL Server starts up.
+To get a count per day since startup, divide the counter output by the number of days that the server has been up. An easy way to do that is to check the creation date of TempDB - here's an example query, but keep in mind that rounding will be a problem if the server's been up for less than a day or two:
+To get daily numbers going forward, consider saving the contents of that counter to a table. Then you can take a day's metric, subtract the day before, and you'll get the counter delta for that one day. (I use sp_BlitzFirst and the Power BI Dashboard for DBAs to do this with 15-minute granularity. (Disclaimer: those are open source tools that I wrote.))
+Unfortunately, if you try to do daily sampling, it can be inaccurate due to:
+I have to migrate my SQL Server on a particular public cloud, which is charging/licensing on the basis of number of transactions happening on the SQL Server.
+I am aware of the Performance Counters for SQL Server:Databases - Transactions/Sec AND Batches/Sec.
+Do I simply convert these transactions per second data to hours, or is there some other method to find out total number of transactions going on in SQL Server.

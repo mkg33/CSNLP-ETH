@@ -1,0 +1,7 @@
+When you change an object's parent in Unity, the editor automatically adjusts the object's local position/rotation/scale values so that the global appearance stays the same (or as close as possible)
+So for instance, if I take an object with scale (1, 1, 1), and add it to a parent with scale (2, 2, 2), Unity will adjust the child's scale to (0.5, 0.5, 0.5) so that the net result of its transform hierarchy is the same (1, 1, 1) it started with.
+Unfortunately, there are a few cases where this breaks down, and Unity can't maintain the object's global appearance. One such case is if any of the parent's scale axes are zero. Trying to compensate for a zero scale results in a division by zero, so there's no right answer.
+It looks like in this case, Unity sets the scale of the object to zero as a fallback.
+The best way to avoid this complication is to not use non-uniform scaling on parent objects. Uniformly scaled transforms are easy to nest & re-parent without loss or distortion.
+In order to get around this programmatically you can do 
+What this does allows you to keep the local values the same instead of leaving the global values the same, idk if this will give you your intended affect since it will move the object but it is an option.

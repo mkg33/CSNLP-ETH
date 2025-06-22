@@ -1,0 +1,13 @@
+Some tweaking would be required to keep the DHCP domains isolated -- since this creates one broadcast domain.
+And place each guest lan into an isolated, local-only VLAN.
+when a packet with vlan-id goes into an IPSEC tunnel which is an interface actually to a router(it is a forwarding action for a router), typically a router will strip the vlan-id and put the rest of packet into tunnel.
+Then let routing and VPN(s) (tunnel or not) handle everything.
+This is why you cannot make it on most of the routers(not just Cisco) unless you clearly tell the Router not to do this stripping which is a functionality should be implemented.
+(as could several other methods) Bridge "VLAN 10" (whatever interface that may be) and the tunnel interface, and it should work [tunnel and vlan remain layer-2 interfaces; the BVI handles layer-3.]
+VRF and/or ACLs can isolate and restrict guest access.
+That implies a layer-3 (IP) transport between sites.
+If the packet's destination address belongs to the IP subnet on VLAN 10, then the router will forward the packet onto that VLAN.
+Based on your diagram, 10.0/16 is the subnet on both sites.
+A better solution would be to segment each site into it's own subnet.
+For that to work, one would need a bridge between sites.
+I am assuming that the IP subnet for VLAN 10 is different at each site.

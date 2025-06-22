@@ -1,0 +1,12 @@
+What you are describing is not a load balancer, but rather a reverse proxy.
+Either set up 2 * HAProxy instances as a master/slave pair.
+Load balancers are most effective when the application is clustered on multiple servers.
+Complexity isn't really too big of a deal, just make sure that your reverse proxy adds an X-Forwarded-For header, and that your client software respects the header (otherwise all your analytics will be filled with the IP address of your proxy).
+I work for a web design agency where we have maybe 30-40 small to medium websites for clients.
+Additionally, this reverse proxy does not need to be a beefy machine.
+My idea is to use a beefy virtual server and point all domain names to that, the software load balancer would then route the requests through to one of many (15+) virtual servers in the background.
+Its cheap, fast, transparent and has health checks.
+Nginx should be able to run a reverse proxy for 25 sites on a pittance of hardware.
+A SPOF is a worry, but you had SPOF for your customer sites anyway if they were only ever running on a single host, so the SPOF you are adding here certainly does need to be considered, but you have to look at everything in context.
+A load balancer is a special type of reverse proxy (well, most are anyway).
+Is there any reason not to use a software load balancer / proxy in front of many small websites for admin purposes.

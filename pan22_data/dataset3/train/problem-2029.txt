@@ -1,0 +1,13 @@
+The output of w just shows the first (actual) username, not root if the user has done su.
+To get a list of all people who used su, you can check /var/log/auth (depending on your distro).
+You can check which pts'es are still active by checking if the pseudo-terminals are still active with ls /dev/pts (you would have to do this quickly though, because pts'es get re-used).
+You can find the modify time of the pts with stat /dev/pts/.
+You could also use the modify time of the pseudo-terminal and cross-reference it with the time in the auth.log file.
+This should give you a list of user names who are running 'su -' to be root:
+If a user does su to another program (shell) it will not display because it is not a login shell.
+I want to know which of logged in users currently has root access, i.e.
+The main problem here is that you are trying to correlate date which was not designed to be correlated.
+You can use ps to check which user is running a su process.
+Admittedly, it's not perfect, but I think with some scripting you would be able to get a list of users who su'ed.
+You have to get information from several sources and then cross-reference it.
+I know I can see the list of logged in users with w or similar commands.

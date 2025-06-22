@@ -1,0 +1,18 @@
+You haven't implemented escaping strings and comments in the source; also C++ macros in the text being parsed could mess it up, e.g.
+One place you could potentially use a map (for simplicity) is in errorsFound,
+Nothing makes more fun as manually parsing a very long line for a tiny mistake, similar to parsing a huge file for a certain line.
+That way the user doesnt have to manually scan a possibly huge document by hand.
+Also i would strongly recommend to keep track of the position of the error.
+This has the added benefit that if you want to add another token, you only have to add it to your tokenList, instead of having to add another else if statement.
+I would say, that you should put the error checking into one single function.
+So you might as well have that code inline instead of as a subroutine, perhaps with a comment // push opening brackets.
+This might obviously be an overkill, but i used it for a parser I wrote and naturally the number of different errors increases.
+However, with the typedef, that ends up being Brackets stack, which feels unfortunately backwards, since I expect stack to be a type rather than a variable name.
+where you want the associated closing brace with an opening brace:
+This could also be used to simplify your check at the bottom of main in a similar way.
+You can fix that by making a subroutine, char getCloseOf(char) { ... } and/or by defining it in data using a std::map or similar container.
+In your existing code you have three different places where you define the pairs: e.g.
+First, to make it really useful add the original line that you parsed into the mix
+Without the typedef, your stack would probably have been declared as
+For example pushOpeningBrackets is only called once and its implementation is short (and it's easier to understand it by reading its implementation than by reading its name).
+Now you can add a custom exception to tell your user what is wrong with the code and standardize your error warnings.

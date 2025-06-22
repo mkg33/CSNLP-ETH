@@ -1,0 +1,9 @@
+This is pretty much SPOF, when the nginx controller is down, or the EC2 node is broken or something, there is no way to access the services.
+Normally, I'd deploy keepalived and setup it to reassign the EIP to the standby proxy node when the primary nginx proxy fail.
+Your best bet is to front your k8s cluster nodes with the ELB.
+ELB doesn't support http2 per se, but it does support TCP.
+I wonder how to solve a highly available proxy/ingress to my web services running on Kubernetes cluster on AWS.
+What the pattern to implement this with Kubernetes?
+I'd go for AWS ELB, but it doesn't support HTTP2 for example :(
+Right now, I have a nginx-ingress-controller deployed on a node, this node has assigned EIP and this acts as an edge reverse proxy to access web services deployed on the cluster.
+If you want fancier load balancing features, you could front an HAProxy or nginx cluster with an ELB, and rely on HAProxy or nginx to do whatever additional rewrites/inspect/routing/etc prior to hitting your k8s cluster.

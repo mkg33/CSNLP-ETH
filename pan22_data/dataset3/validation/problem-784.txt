@@ -1,0 +1,14 @@
+Another option is to run one process per user - you can add new users without terminating existing processes, but the resource requirements are significantly higher (and, for 1000+ users aren't likely to be practical).
+I don't believe there is any way to add a pool without restarting/reloading (as per this).
+None of the above are exactly ideal, and the only practical solution to no downtime would be the multiple server approach.
+If you can't afford any downtime the only option is to add redundancy
+Since it is a graceful reload it should wait for the processes to finish.
+EDIT: it is very well possible to run a setup like this with just one piece of hardware.
+So, you modify the conf - and reload - shouldn't result in noticeable downtime.
+low load period, or when you have multiple users to add).
+I do think that redundancy is the best approach to this, I do believe, that you might accomplish what you want with reload.
+If this option makes sense for your use case isn't up to me to decide.
+This would reduce downtime, but still bring up the new user's subdomain immediately.
+One more option is to create a temporary php-cgi process for the new user, and delay reloading the server until later (i.e.
+Just add more instances of nginx running on different IPs and create a failover setup between those.
+Essentially, pass the SIGUSR2 signal to php-fpm, and it will gracefully reload all workers + reload the fpm conf/binary.

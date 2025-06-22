@@ -1,0 +1,7 @@
+Be consistent, and use reasonable datatypes:  If you won't have more than, say, 64K users, declare user_id in both tables as SMALLINT UNSIGNED.
+For multi-million row tables, you really need to consider normalizing columns wherever practical.  For example, there may be only a few thousand distinct user_agent values, you you are saving dozens or hundreds of bytes for multiple copies.  using a SMALLINT UNSIGNED linked to another table would shrink that to 2 bytes.
+Do the math.  When will you run out of disk space?  Will you drop "old" data after some period of time?  If so, let's talk about an efficient way to do that -- else you will come back with a problem of a huge DELETE.
+IP addresses, even IPv6, can be compressed into BINARY(16) (16 bytes) instead of the up-to-39 you currently have.  (And 255 is overkill.)
+What will the PRIMARY KEY be?  What SELECTs will be applied to the dataset?  These need to be discussed to talk about indexes, and whether you will have performance problems when reading.
+Max number of records?  You will run out of disk space before you hit any database limit.  I think there is a limit of 64TB.  I've seen a billion-row table in action.
+The service I created will increase the number of API call, actually we only insert on our log table arround 200k entries every days.

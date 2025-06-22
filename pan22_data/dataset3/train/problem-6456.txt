@@ -1,0 +1,8 @@
+Firstly I had converted US7ASCII  to intermediate character-set WE8MSWIN1252.
+For data dictionary we have to handle the VARCHAR type lossy data as CLOB type lossy data is handled itself by oracle.
+The advantage to convert into the intermediate character-set is that  it will be converted to WE8MSWIN1252 without any problem(lossy data)  the previous lossy data from US7ASCII to AL32UTF8 will not create a problem when we convert it from WE8MSWIN1252 to AL32UTF8 as AL32UTF8 can be a strict superset of WE8MSWIN1252(means for every character in WE8MSWIN1252 can be converted  to AL32UTF8 )  or the lossy data will reduce for the conversion from WE8MSWIN1252 to AL32UTF8 .
+Mostly the objects which have lossy content have to be dropped by taking their backup and are recreated after the rest of character-set migration is complete.
+For application data we have to export the data objects and then drop them and import it again when the character-set migration is complete.
+Was finally able to migrate the character-set of the database from US7ASCII to AL32UTF8.
+Based on what I'm reading in this manual, that's hands-down the safest and easiest way to do this migration.
+One should take help from Oracle support while character-set migration if you face some lossy data  as it is critical activity and might lead to database corruption

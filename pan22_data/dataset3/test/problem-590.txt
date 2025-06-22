@@ -1,0 +1,18 @@
+Agree with ironchef regarding that configuring your sshd with AllowUsers or AllowGroups alternatively DenyUsers or DenyGroups might be a good solution, depending on what you are specifically trying to accomplish.
+Since you seem to want to keep the account around I assume you might be using them for something else?
+If the user have a SSH public key, you might wanna disable it too :
+If you have a /sbin/nologin available that might be preferable to /dev/null or /bin/false.
+The downfall of this flexibility is the configuration is a bit more complex, which may not be needed.
+Depending on what that is, the locking of accounts may or may not be a good idea.
+Pam_access provides a good method to restrict access to a subset of users.
+Using /sbin/nologin will basicly have the same effect (non-zero exit), but with the extra bonus of the user getting a short message about the login being disabled.
+For sake of expediency, if you only allow ssh as the access method, you can limit who can login by using AllowUser (only users explicitly in AllowUser will be allowed by sshd to login).
+You could also explicitely restrict allowed users with sshd's AllowUser directive (in /etc/ssh/sshd.conf).
+I've actually gone as far as running two separate access.conf like files, using one for shell access, and one for ftp/rcp access.
+Most of the configuration happens in /etc/security/access.conf.
+The restrictions can be applied across all services, or just to particular services, depending on where pam_access is included within pam.
+This module is pretty flexibly in restricting access to just particular users, or users who belong in particular groups.
+I would aks what you're trying to do to get a better idea.
+As already stated, please let people know what problem you are trying to solve, etc.
+Pam_access allows us to maintain separate policies for various protocols.
+You should set it to /bin/false instead of /dev/null.

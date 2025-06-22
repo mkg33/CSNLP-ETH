@@ -1,0 +1,11 @@
+Looks like an issue with the IPv6, though, I do allow all keep state-kind connections in my ipfw file.
+Also: I started having this problem after upgrading to FreeBSD 10.3 (9.2 earlier).
+I'm having an issues loading https websites (google, facebook, amazon) through my PHP scripts using functions like fsockopen, file_get_contents.
+I have enabled logging and this pops out in the log file while trying to execute the PHP script:
+Also, all of your out rules are pre-empted by rule 270 anyway.
+I do not understand your existing rules, and you may have separated in and out rules for diagnostics purposes, but:
+I do not use IPv6, but I notice from /etc/rc.firewall and /etc/protocols that ICMP has a different symbolic name for IPv6 which is ipv6-icmp.
+If your server needs to use name service, you are missing a rule to allow responses from the remote DNS server over UDP:
+So this is an issue definately related to my IPFW configuration.
+So I started looking through my system settings and noticed that when ipfw service is being stopped, it works like a charm.
+If you need to pass IPv6 ICMP packets, you may want to add a new rule:

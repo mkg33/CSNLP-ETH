@@ -1,0 +1,14 @@
+But if you consider the menu part of the exercise then you should consider maybe building a "proper" small framework to make the menu system more readable and maintainable.
+Finally a few short words the menu system: The nested ifs and long conditions ((cypherMethod.equals("1") || cypherMethod.equals("caesarcypher"))) makes the code very unreadable. 
+It would be more sensible to have a class that, once instantiated, is used multiple times. Something like this:
+The next problem would be the interface. Passing the information if you want to encrypt or decrypt as a String is very problematic, especially since those strings are tightly coupled to your menu. 
+My first observation was - without actually reading anything - WOW that's a lot of code for such a simple task.
+Then after the first read-through I was confused because I couldn't say if this was due to over-engineering or under-engineering.
+Instead you should be using a parameter that only allows two possible values to represent encryption and decryption, for example a boolean or an enumeration:
+If the goal of this exercise was to show case the Caesar's cypher, then you may want to "cut back" on the menu system and use tests to demonstrate your code.
+Your outer loop would be nicer as for (int i = 0; i < userSentence.length(); i++) { - just as you did in the inner loop. And don't forget proper formatting: a space after the for keyword and before the opening bracket.
+It looks over-engineered because it includes a lot of (possibly unnecessary?) functionality (things like a "huge" menu system and Unicode normalization) just for demonstrating Caesar's. OTOH it looks under-engineered, because there is a lot of very verbose code and repetition.
+A glaring problem here, is that you are missing the point of object-oriented programming. Having a class that you just instantiate to do one thing and then destroy it again isn't really the point of OOP. 
+Imagine this were a real production encryption system: The menu is changed in some way (for example, menu items are renumbered or translated), but the developer doing it doesn't know that requires changing the encryption class, or there is simply a small typo in one of the strings, then there will be no way to know something is wrong. The class doesn't report any errors, instead it just sends out everything unencrypted, which is potentially catastrophic.
+And even is you do use a String, then you shouldn't be calculating the "integerDependOnAction" inside the loop, but just once at the start.
+A StringBuilder isn't really needed here. Internally a StringBuilder is just a char array, that is "automatically" extended if needed. But since you know how long the resulting string will be you don't need the automatic extending, so either at least initialize the StringBuilder with a capacity (new StringBuilder(userSentence.length())) or (because you are working character by character anyway) just use a char array of the correct length.

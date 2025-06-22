@@ -1,0 +1,10 @@
+Why is there a default for tonerLevel but not amountOfPaper? Also, it might be better to call it pagesOfPaper so that its clear what the units are.
+If you aren't required to have a particular order to the output, I'd group the toner prints together and the paper prints together.
+Since you have methods to reload the ink and toner, you probably shouldn't have these methods. Generally, its makes sense to either have smart method that encode logic, or dumb ones that let you set them. Both is usually not useful.
+You could have easily reduced this duplication, simply by having this function check the even/oddness of number to print instead of requiring this code to call different functions.
+Now, when it comes to printing, check the calculated values to determine what needs to be printed. If tonerLevel == 0, you've run out of toner. If amountOfPaper == 0, you've run out of paper. If actualPagesPrinted != physicalPagesRequired, you didn't manage to print everything.
+Secondly, the logic of this function is more complicated then it needs to be. Everything is repeated three times. They key to avoid the duplication is to seperate your calculations from your output. Like this:
+Firstly, don't check == false. Instead say if(!isDoubleSided). It is already a boolean, there is no need to compare it to false.
+If you are keeping track of a percentage, I actually recommend that you keep the value between 0 and 1, with 0 being 0% and 1 being 100%. Math tends to work out more straightforwardly that way.
+As others have noted, the name of the function is a bit confusing, it doesn't check if the printer is out of toner, but if it can print a certain number of pages.
+Generally, its a bad idea to automatically correct input. If you receive invalid inputs, its a bug in the code using this class and you should throw an exception to get somebodies' attention.

@@ -1,0 +1,10 @@
+It seems that some network infrastructure vendors are heavily pushing their InfiniBand solutions and claiming to support Hyper-V over InfiniBand, even though Microsoft doesn't support it.
+Outside of these two scenarios, there is no InfiniBand support—which means no support for VMs.
+In this scenario the IP over InfiniBand (IPoIB) miniport device is used by a Hyper-V virtual switch, to which VMs then connect.
+The only currently supported use of InfiniBand is RDMA over InfiniBand for SMB traffic and user-mode RDMA over InfiniBand for HPC communications.
+Hyper-V virtual machines (VMs) need to connect to networking via a virtual switch or through Single-Root Input/Output (I/O) Virtualization (SR-IOV).
+However, some organizations I work with have tried this method and have reported problems - sometimes very strange problems that were very hard to hunt down.
+It's important to remember that RDMA wouldn't be exposed to the VMs via the virtual switch with this method, nor does this approach use SR-IOV to directly map VMs to the InfiniBand card.
+Leveraging InfiniBand connectivity typically means using Remote Direct Memory Access (RDMA), which currently isn't supported via a virtual switch and therefore isn't available to VMs.
+But until Microsoft tests and supports this approach, I would be very hesitant to use it.
+The only benefit at this point is a very fast connection, which Windows Server 2012R2+ would be able to take advantage of using its virtual Receive Side Scaling (vRSS) feature.

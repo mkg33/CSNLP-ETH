@@ -1,0 +1,18 @@
+It did an initial sync of 10GB in less than 60 seconds.
+I put together something in PowerShell that works in principal but it's slow and heavy handed.
+It involves deleting the staging and dev containers, then copying the entire production container twice.
+Probably due to improvements in the Azure architecture or infrastructure, this transfer is also incredibly fast.
+I know it's a bit of an old post but I just came across it and thought I'd throw an idea into the pot, is there a reason it needs to run daily/weekly?
+The flag is AzCopy Sync and there are a number of control options as well, such as deleting destination files which don't exist on the target.
+For just 20k items, this whole process takes over an hour.
+That would trigger instantly so the storage accounts are always in sync.
+I'll likely end up writing my own tool but wanted to see if there are any out there currently.
+Has anyone seen a tool or method that can do a delta copy between Azure Storage blob containers?
+I revisited the AzCopy tool today and found it's come quite a long way and serves this purpose perfectly.
+My goal is to sync staging and development on a daily or weekly basis so they match production.
+The other option would be to use the triggers to insert a delta into a storage account/database and then process the changes en-mass daily/weekly
+You could use something like a Logic App with a blob storage trigger or a function with a blob trigger?
+You could do something yourself in PowerShell that ran through the blobs and checked if they exist in the destination and then compare something like the modified date or file hash, but I can't imagine that will be particularly quick either unfortunately.
+I have three different Azure Storage blob containers that are used to serve website content, one for production, one for staging and one for development.
+As you have already seen tools like AZCopy will move the files for you, but they won't do a delta copy or sync.
+Considering only a couple hundred items may change in a week, a delta operation would likely be done much faster.

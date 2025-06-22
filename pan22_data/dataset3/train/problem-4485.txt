@@ -1,0 +1,21 @@
+With debugging on, I can see that pam_unix.so checks and accepts the password from the user, but then fails anyway.
+As "required" means the stack is processed till the end, maybe it breaks after pam_unix.
+I have setup FreeRADIUS, PAM and the Google Authtenicator.
+You might also think about using another two factor auth backend, which handles these two factors by itself...
+First, the pam_google_authenticator module extracts the TOTP and verify it.
+https://www.howtoforge.com/two-factor-authentication-with-otp-using-privacyidea-and-freeradius-on-centos
+Since this is through RADIUS, I can't prompt for both passwords, and need to combine them in one.
+It's really hard to tell, though, without seeing all auth entries in your pam config file.
+If you are changing "auth" to "account" then pam_unix is not used for authentication anymore.
+And then I can put the password and OTP at the same prompt, e.g.
+According the Google Auth README, and various blogs I found, I should do this in PAM:
+If I remove that second line, or change 'auth' to 'account' (one suggestion I found), auth works, but the local password is simply ignored.
+Lot's of Googling lead me to https://bugs.launchpad.net/percona-server/+bug/1274821 which describes a similar problem.
+FreeRADIUS calls PAM, which in turn calls the Google pam_google_authenticator.so libary.
+It specify that the next line must be skipped if the module return success.
+Second, the pam_unix module verify the password and if it succeeded skip the third line.
+Although why that works remains a mystery to me, as the MySQL issue is about using PAM as non-root, and I have FreeRADIUS setup to run as root.
+To get two 2FA, I want to use the local Linux password.
+If you use pam_deny.so after pam_unix.so you have to change your config to:
+However, that's not really 2 factor auth, as all one needs is the OTP from the Google App.
+How does your pam configuration for this service look like?

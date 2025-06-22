@@ -1,0 +1,5 @@
+I'm doing a proxy_pass in nginx on port 80 to 8000 on my remote server, and then a port forward from 8000 to 80 from the remote to my localhost. This works great, but I'd also like to do it with https but it seems like nginx needs a valid cert to pass the traffic on.
+You could just let nginx handle the SSL and forward to the port 8000 on the backend server. The means nginx is the SSL enpoint and there is no SSL between nginx and the backend.
+While nginx probably has a third-party module to deal with raw TCP connections, I'm pretty sure that by default everything has to be either HTTP or terminated HTTPS. I think in your situation I'd do port forwarding at the network level:
+Probably the best option is to do as @cperrin88 says. But if you really do not want to decrypt https on your nginx you could just forward this as TCP traffic and then decrypt it later on backend.
+Is there a way for my remote server to simply forward the trafic from port 443 to say 8443 (and then I'll forward remote 8443 to local 443). Then terminate ssl on my development machine instead instead of needing to do it on the remote server?

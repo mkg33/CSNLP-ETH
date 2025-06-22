@@ -1,0 +1,12 @@
+The easier way would be just to set up an SSH tunnel with the built-in methods of SSH; look at the -D switch in the manpage and just forward some port to the other server's ssh port.
+I want to copy a file from my machine A to server C, but only have access to server C through server B.
+If you want to be really wicked, you could chain ssh and tar, something like tar c mydir | ssh server "ssh otherserver | tar x", but this can run into all hands of problems.
+The command below will copy files from a remotePath on server2 directly into your machine at localPath.
+If you use the same user credentials in both servers:
+Instead of first transferring to server B, log in and then transfer to server C, Is is possible to transfer the file directly with SCP or similar programs?
+If you use password authentication instead, try with
+Internally the scp request is proxied via server1.
+(Emacs tramp-mode has this feature for editing files remotely).
+You can add -o options to scp instead of .ssh/config.
+scp -o 'ProxyJump jumpboxname' somefilename.txt finaldestinationhost:/tmp/.
+It's possible and relatively easy, even when you need to use certificates for authentication (typical in AWS environments).

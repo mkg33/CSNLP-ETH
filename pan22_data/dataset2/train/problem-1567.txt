@@ -1,0 +1,16 @@
+You can flatten this and save a level of indentation by reversing the order of the conditions and using elif. While we're at it, the preferred way of testing if a set (or any other collection) is empty is just if needed_items:
+This part is an if in an if in an if in a for in a for. Not only is that ugly, it's not idiomatic in most languages. The moment you go deeper than 3 levels you should be asking yourself if this is really the way you want to go.
+The localization and producing the text is too important and warrants to be put in separate function. (single responsibility principle)
+The above is valid for all values above minimum and up to and including maximum. However, with the current data flow it's not possible to just lump the latest two if statements together. There's a bit more work involved.
+Since the length of your print statements is quite long, you could define functions for that instead. It would definitely increase the readability of your code. You could even make it generic enough so the function covers both cases. You could even pass the len(needed_items) as an argument to that function and let it figure out what to print.
+Are you sure that this does the right thing, by the way? I would have expected either needed_items should be the asymmetric difference (vleft - vright), or the condition to be vleft.is_disjoint(vright).
+This might be correct from the problem statement as you've presented, but it's not how it works in "real" factorio. You need a smelter to make steel plates. You need an assembler to make pipes.
+Personally, I dislike heavy nesting, so I would rewrite the main loop to use continue to continue early:
+But since that's kind of clunky, and you do it every time you update the dictionary, use make recipes a defaultdict(set), and it's just recipes[key].add(value).
+The code was also buggy because of using the symmetric difference. The difference is calculated with operator -, but I find >= to be less readable than issuperset, so I didn't use it.
+You define dependents = {}, but you don't seem to use it. I'm guessing that you'll be expanding the script later and you plan to use it then, but it's better to leave it out until you are ready to write that code.
+The kleft, vleft, kright and vright variable names aren't descriptive enough so instead of iterating over dict.items() and unpacking the tuple I iterate over dict and use operator [] of the dict.
+Those for loops iterate over the same items! You're also calling the same function for each loop, while once would suffice. Even if you'd the value of that function twice, you can store it in a variable and look up the value of that variable instead of calling the function. This is more efficient.
+You thus might want to revise your input script to either filter such recipes, or add an extra column for factory types.
+The one thing I can improve yet is to provide a better name for the "get the localized text" function.
+I suspect (but I will leave the implementation and thinking about the consequences as homework for the OP) the following construct may be of use in shortening the if statements:

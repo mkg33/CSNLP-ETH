@@ -1,0 +1,15 @@
+Alternatively, you could create a filesystem within the target disk, use a file-level command such as tar or cp -a to copy the data across, and then install a boot loader.
+I want to clone an 8.1gig bootable disk to an 8.0gig disk and have the clone remain bootable.
+Mind your trailing slashes and use --dry-run in rsync until you are sure you have everything lined up right :)
+There are plenty of others to choose from as well.
+rsync arguments you want to use are definitely -a and probably -v and --progress to give some status as it goes.
+No, in this case cat will not give you anything that dd can't do better.
+If you need a bootable environment for this sort of work I can recommend sysrescd as it has all of this stuff available in a bootable cd image.
+And the you'll need to reload the bootloader using it's tools (grub-install, lilo, etc) because of the different partition tables.
+Typically I'd just manually duplicate the partition layout on the target disk (as close as is this case) and then rsync all of the files over between disks or across a local network connection.
+You can use which ever fdisk you prefer from sfdisk and cfdisk up through qt-parted (so can use the mouse!).
+And yes I am not copying the drive I'm booted into.
+dd causes problems because the destination disk is a few mb smaller than the source.
+You could try using a tool such as GNU Parted to resize your source filesystem and partition  to smaller than 8GB, use dd to clone it to a partition on the target disk, and then install a boot loader.
+Cat puts (concatenates) files (or things like files) together and dd duplicates disks.
+If you were going from smaller to larger disks you could use dd and skip all of the rest of this, but to go from larger to smaller you have to be a bit more careful.

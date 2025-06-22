@@ -1,0 +1,21 @@
+Data gets partitioned off, especially if it is user-generated; but frequently that's because it's on high-speed and/or redundant disk arrays of some kind.
+Don't mix it up with hardware failure - those should be handled by hardware redundancy (RAID)
+But I can count on one hand over my entire career the number of times something's filled up / and brought down the system, while I can count one hand the number of times so far this year that I've been staring at a system where someone's decided /var would never need to be more than (say) 1GB and been wrong, leaving me staring at a full /var and '00s of free GB elsewhere on the system, all of which might as well have been on the moon for all the good they do me.
+But separate partitions for /var and /usr and /var/spool etc etc etc?
+On the other hand, over-doing this only means more work (for you and your team) at the end - just do it in moderation and when it make sense...
+The reason for this is because no matter how big you guess your /var or /usr or whatever tree might get -- you'll either be hilariously wrong or you'll ridiculously over-commit.
+In a home environment, same thing -- /home should probably be on a separate disk/array, so that one can install/upgrade/break/fix whatever OS flavors are desired.
+So hopefully offline fsck will go away at some point...
+Then "big" 50MB disks started costing less than the moon program, and suddenly it became possible to put an entire system on one disk with a usable amount of user space.
+(1)  So you had a tiny / partition, a /var disk, a /usr disk, a /tmp disk, and a /home disk.
+In today's world of big disks, I don't see that there's any real reason to partition the OS tree.
+Today, in an enterprise situation, I don't partition the OSs.
+Still, with the disk sizes being small compared to what it was possible for the computer to generate, isolating /var and /opt and /home so that filling one didn't bring down the computer was still a good idea.
+However /var and /usr all live in the same partition as /.
+Having said that, filesystems these days fails less often - ome even do online integrity checks (like ZFS).
+If you needed more space, you bought another disk.
+In the really old-school days, you didn't have filesystems on separate partitions -- you had them on separate disks, because disks were really small.
+Everything in moderation is a good thing - it can be a good tool to isolate problems when there is a fault - such as disk filling up or filesystem corruption.
+All of the arguments that Zoredache puts forward are valid; one might quibble with the details a bit (having a machine up faster so you can do other things while fsck'ing other file systems doesn't do you much good if the system's reason for existing in the first place is on those other filesystems); however they are all a bit of justification-after-the-fact.
+(1) = and I know just by picking that size, I'm going to get someone in the comments saying 10MB?
+One of my old(er)-school collegues swears by partitioning, and I always get grief from him when he ends up sitting through a 180-day-fsck on a system I've created.

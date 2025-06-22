@@ -1,0 +1,28 @@
+Worse - or it feels worse - is to write "x.a = LEFT(y.abc, 2)".
+If you want to know - for instance - which pallets have packets of lithium-type batteries on board (these batteries are an air safety problem), you'd write a query that selects those Lpn freight items, uses ID to find corresponding rows in Uld, and then reads the pallet UldNo held in Uld.
+Now, does that require a second row in table Uld, for the same wooden pallet, used for a separate task?
+In this case, UldNo would not necessarily be stored in the Lpn table at all; only ID is duplicated in Lpn.
+And maybe you can make that a constraint, although that reminds me that I've had poorer performance using a boolean column value in query logic: it actually worked better when I used a whole byte column (type tinyint) to store 0 or 1.
+For instance, you could use an arbitrary integer as a table row identifier and a clustered index, although the "primary key" is, say, 100 bytes.
+I think of a pallet as a wooden table with no legs, on which freight is carried.
+And so, yes, definitely UldNo is not suitable as the key of table Uld.
+There's probably some philosophical description of the ideal true meaning of "primary key" as opposed to some other property that happens to be unique or is made unique.
+It isn't forbidden by this design  to have UldNo as another column in Lpn and to write a simpler query to get it out - in real life your query may involve twenty tables, and using one fewer is a relief - but the actual key relationship between tables relies on ID, and Lpn.UldNo is now an unnecessary duplicate copy of that data.
+If I get a new row in table Uld each time I send the same pallet on another journey, the different company name isn't a problem, or, it isn't so much a problem.
+I think I've benefitted instead by altering a table design to contain columns a, b, c, and abc all together - or to add column a where column abc already exists, so that I can refer to whichever one is appropriate in a task.
+I expect that the cost of adding char columns together in the query result output is meaninglessly small.
+One year later, pallet BIG00001RC is now carrying my shipment of Donald Trump Souvenir Calendar Of Year 2017.
+Instead, I would use your "ID" column as the entire key of Uld.
+I'm currently waiting for my customer to confirm that an order for item 7762200 was meant to be for item 7762020 - we don't have a 7762200.
+On the other hand, it may be useful to you, as it is to me, to hold columns of the sub-strings of UldNo and also the whole - obviously, to compare one set of pallets to another (pallets which should be in the airplane, and pallets which are in the airplane when someone counted them).
+Also, is there a BIG00001 and a WEE00001, or is the number itself unique... and, if unique, are numbers often misread, so that the other data becomes useful confirmation?
+(These aren't the real numbers, but this is how they have been confused - I'm fairly sure.)
+Actually, about composite keys, I believe I've had depressed performance with them, but that is specifically in a design of tables where in some places the key is columns a, b, c - 2, 2, and 3 characters - and elsewhere the same identity is represented in column abc, 7 characters.
+I agree with others that it is logically acceptable for a table "primary key" to be composite, in separate table columns.
+Let's say I own a pallet named BIG00001RC as its UldNo, and I use it to ship 1000000 copies of Donald Trump Souvenir Calendar Of Year 2016 from the printing press in Mexico City.
+In your case, it's different, if using UldNo, one column containing composite information, as a key is eliminated.
+Incidentally I suppose that I may have changed my company name from "Mexico Calendar Company" to "Trump for President Calendar Company" in the meantime, and I haven't decided yet about next year.
+I'm writing conditions like "x.a+x.b+x.c = y.abc", and this seems to not run well; no error, but it isn't efficient.
+Perhaps a table doesn't have a primary key at all.
+Of course UldNo should be unique in the set of rows with DeliveryCompleted = 0.
+In that case, you may have an actual use for separate columns of UldType, UldNumber, UldOwner, with UldNo never used inside the database but only output.

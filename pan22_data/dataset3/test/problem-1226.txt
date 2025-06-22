@@ -1,0 +1,14 @@
+Are you intersecting many lines with many triangles, one line to many triangles or many lines to one triangle?
+The bIg question here is what does your outer loop look like?
+If they are intersecting, it will return the intersection XY position.
+If after traversal you know that the line segment intersects the bounding box of a triangle, then it also implies that an intersection is likely, which means that early out segment or edge sideness tests are likely wasted computation.
+AFAIK you can check collision of each edge of triangle and even if one of the was true, the line segment collides the triangle.
+then you have to check if the collision point is a part of both line segments, it's also easily done:
+according to wikipage you can easily compute intersection point of two lines, in the rare case that you have divisor is zero it means two lines are parralel so they can't collide at all!
+It is used in our PolyPoint Collision System where it can auto trace a sprite image and put a polygon outline around it, then using this routine we walk the line segments of the colliding sprite outlines checking for intersection.
+Only the last case (which sounds to be the most unlikely case) will best be accelerated by a faster segment to triangle intersection test.
+A grid, quad-tree or kd-tree will allow you to test multiple triangles or multiple line segments simultaneously.
+It can check if two line segments are not intersecting, intersecting or just parallel to each other.
+I should add, that the above will also dictate what type of primitive intersection test is the most efficient.
+If you really do have just one triangle and one line segment, performance shouldn't matter.
+Depending on what the scenario is, you may want to put your triangles OR your line segments into a spatial tree structure of some kind (if your segments are very long (relatively speaking), you can consider a spatial wtructure built on a duality mapping of gradient and offset).

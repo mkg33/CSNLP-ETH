@@ -1,0 +1,15 @@
+Honestly, you could sit there trying to reinvent the wheel for spam reduction spoke-by-spoke, but lots of other people have done lots of other good work in this field already.
+For point (1), is there any valid reason not to reject all mail from outside claiming to be from your domain?
+Assuming that name of my domain is my.domain.com, I want to use following rules:
+If not, this is best done by defining SPF records and using spf-milter to reject all incoming mail that violates a published SPF record.
+in the m4 config file in order to get sendmail to accept email from invalid domains.
+I agree with most of the other posters about some of these being better done with milters.
+There's no way the amount of effort you'd have to put in (and continue to put in, as spam trends change) to maintain a halfway-useful ruleset would be worth the result.
+For point (3), this should be done already, as it's standard in sendmail.
+Can anyone help me with constructing sendmail rules for limiting spam?
+If you want to run MIMEDefang together with sendmai you can do most of what you write by providing the appropriate routines in mimedefang-filter.
+Have a look at milter.org for a catalogue of excellent, community-maintained rulesets, and consider SpamAssassin for more heavy-duty spam filtering at the Sendmail level.
+For me, sendmail without the line above, plus milter-greylist and spf-milter, plus spamassassin-via-procmail on delivery, has reduced the spam in INBOXes by well over 99% (and the greylisting was the cheapest, biggest win of all).
+However, your best approach would be to use SpamAssassin first and then see what more filters you can implement yourself.
+Check your m4 file; if that line is there, remove it and regenerate your cf file.
+SpamAssassin can be executed via MIMEDefang which means you can combine it with custom rules of your own.

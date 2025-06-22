@@ -1,0 +1,31 @@
+All credit rightfully belongs to the GitHub user "solso".
+While searching for a solution to this problem, I came across a small GitHub repository called insomnia that illustrates a simple and elegant approach using Lua.
+See the insomnia repository for futher commentary and some additional functionality.
+I think that this is acceptable, because these users get something like a blank page on their browser, wonder what the heck happened, click reload, this time it works, and they don't bother any more; they don't even remember the incident a few minutes later.
+additionally, if your backend service ever goes down unintentionally, this may double as an HA solution to not lose api calls.
+Now you can fire off a request to enter suspend mode:
+If steps 2+3 don't take too long, clients will retry and eventually manage to connect in step 4.
+I would recommend you to use a backup server to hold the request for required seconds <20> (or) even <100> and redirect to original URI once the application is restarted.
+And to release all of the buffered requests to the backend, just replace go2sleep by anything else:
+two servers plus an IP address that can be moved from one server to the other.
+I guess you are handling a maintenance scenario with minimal downtime.
+I'd probably need to script the solution, which would go like this:
+Next, in your server block, set up a secret location for telling the server to suspend/resume:
+When you move the IP address from one server to the other, the users that have a connection open are disconnected.
+A client could manage to get the main page, and then it might not be able to proceed to get the static files (whereas with what you have in mind, it could).
+Then, in your http block, set up a shared Lua variable to track the suspend/resume state:
+(error when your backend service is not available).
+This will not be a problem, however, if you serve your static files from another machine or CDN.
+In any case, I think that high availability has so many issues that this would get such a low priority that it would never be done (unless you are Google or something).
+And in your main location block, add one more bit of Lua:
+I have never done it, but if I ever tried I think I would use a firewall.
+set up a jenkins/cron to automagically check and process any beanstalk queue.
+In addition, I believe that someone would normally worry about what you are worrying only after they would already have set up some high availability solution, e.g.
+then, after backend upgrade, pop the reqs off of beanstalkd, and process them to your backend service.
+Using the firewall trick to avoid this disconnection would create more problems than it solves, because step 2 would need to be modified to wait for nginx to finish serving requests to clients, and this might take too long if a user has a slow connection.
+You can follow below nginx thread, where solution is shared.
+you could configure nginx to exec a script so as to massage and pass the http call to some queue process as such as beanstalkd, by using error handling on 502 BAD GATEWAY and/or 503 SERVICE UNAVAILABLE.
+If they do take too long, clients will time-out, but that is not a problem since the users' patience will have timed out earlier, no?
+Note that each suspended request will have its own worker, so you'll need to have enough worker_connections to handle the anticipated backlog.
+A similar, but more elaborate approach, can be found in Basecamp's intermission repository.
+Assuming you've got the Lua module installed, you'll first want to enable it at the top of your nginx.conf:

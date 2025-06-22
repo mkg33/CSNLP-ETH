@@ -1,0 +1,13 @@
+After working with Google we finally resolved this issue. The short version is that we had to create a new node pool running GKE 1.12.8-gke.10 and transfer all our pods using persistent volumes to this pool.
+Here's something I wish I would have thought about right away when debugging this, but I have to give credit to Francisco and Lynn over at Google's support team for this. 
+A key moment in the process of troubleshooting was when we segmented our load. At one point we designated a specific node pool to each kind of pod we had. This allowed us to answer the question: is the problem specific to a certain kind of pod? We had a suspicion that mounting activity was related to the issue, so it was of particular interest to see if pods with persistent volumes were correlated with node performance degradation.
+This turned out to be true. Only nodes running pods with volumes ran hot. 
+The hypothesis from Google's GKE team is that a change in Docker between versions 17.03 and 18.09 results in massive amounts of systemd activity whenever something is exec'ed in the pods. In particular, one of their engineers identified a change in runc which causes all mount units to be reloaded as part of an exec liveness probe. 
+So three ingredients are the recipe for this issue: 
+We run about 40 Redis pods per node. As is customary, our Redis pods use an exec based liveness probe. Also each pod has a mounted volume for permanent storage. The liveness probe ran every minute. So we had 40 volumes being reloaded 40 times per minute.
+To resolve the issue we isolated all the Redis load using node taints. We created a new node pool dedicated to Redis, running GKE 1.12.8-gke.10. While GKE does not allow you to downgrade a cluster, it does allow you to create new node pools running older versions. Naturally we disabled auto-upgrade for this new pool.
+Then we forced all the Redis pods to migrate over to this new pool.
+The results were immediate: we can now run as much load with 6 CPU cores as we could with 24 before and the situation appears to be stable.
+Use for example journalctl -u kubelet to analyse kubelet logs.
+If there are no errors and there still is a problem with the resources you may need to use autoscaling:
+Use one or combination of the above to scale your cluster dynamically and without the need of manual setting. 

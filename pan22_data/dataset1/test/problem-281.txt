@@ -1,0 +1,11 @@
+I am trying to set up a double-ssh tunnel between two hosts, so I can proxy traffic through it.
+Using the normal SSH command, I have gotten the following to work:
+My understanding of this command is "forward my local port 2000 to port 2000 on the first remote host, then treat the local port 2000 on the first remote host as a SOCKS proxy to the second remote host". I have copied the relevant public keys to each host so that each step requires no password.
+This works fine, until one of the connections drops. I then tried using autossh to get around this, eg:
+I did get a shell prompt from the second host however, but the tunnel was not working. I then tried using different ports between the first and second hosts like so:
+This produced no errors, but the resulting tunnel still did not work.
+works perfectly. I would, however, like to do it all using one command so I can script it.
+Can anyone help me get autossh to perform the same behaviour as regular ssh?
+Very good question. I've just done a bit of testing and it looks like ssh and autossh treat the final "command" part of the command line differently. For example:
+autossh is parsing the final command and interpreting the flags, rather than leaving them alone like ssh does. In this case, it interprets -l as the flag to specify the remote user. In your case, it is interpreting the -D as an option to the first autossh, not the second.
+You can get around this by putting the command part in quotes. In your example:

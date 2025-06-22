@@ -1,0 +1,27 @@
+/home/morgan/rtl8822bu/os_dep/linux/os_intfs.c:1170:22: note: (near initialization for ‘rtw_netdev_ops.ndo_select_queue’)
+But I'm wondering if they were on an older kernel than I am.
+In file included from /home/morgan/rtl8822bu/include/osdep_service_linux.h:84,
+                 from /home/morgan/rtl8822bu/os_dep/linux/os_intfs.c:22:
+I have an ASUS AC53 Nano wifi receiver that I'm trying to get working on Solus Linux.
+I'm following the directions found here as they were said to be working for this person here and it's the best lead I've had so far.
+./include/linux/ieee80211.h:1444: note: this is the location of the previous definition
+{USB_DEVICE(0x0B05, 0x184C), .driver_info = RTL8822B}, /*  ASUS USB AC53 */
+  CC [M]  /home/morgan/rtl8822bu/os_dep/linux/os_intfs.o
+make[2]: *** [scripts/Makefile.build:277: /home/morgan/rtl8822bu/os_dep/linux/os_intfs.o] Error 1
+to the os_dep/linux/usb_intf.c file as per the instructions and attempted to run make.
+/home/morgan/rtl8822bu/include/wifi.h:1005: warning: "IEEE80211_MAX_AMPDU_BUF" redefined
+In file included from /home/morgan/rtl8822bu/include/drv_types.h:35,
+                 from /home/morgan/rtl8822bu/include/osdep_service.h:41,
+/home/morgan/rtl8822bu/os_dep/linux/os_intfs.c:1170:22: error: initialization of ‘u16 (*)(struct net_device *, struct sk_buff *, struct net_device *, u16 (*)(struct net_device *, struct sk_buff *, struct net_device *))’ {aka ‘short unsigned int (*)(struct net_device *, struct sk_buff *, struct net_device *, short unsigned int (*)(struct net_device *, struct sk_buff *, struct net_device *))’} from incompatible pointer type ‘u16 (*)(struct net_device *, struct sk_buff *, void *, u16 (*)(struct net_device *, struct sk_buff *, struct net_device *))’ {aka ‘short unsigned int (*)(struct net_device *, struct sk_buff *, void *, short unsigned int (*)(struct net_device *, struct sk_buff *, struct net_device *))’} [-Werror=incompatible-pointer-types]
+After that it started working for me (You might need to restart).
+I was having this exact same error trying to install the ASUS AC53 Nano.
+make[1]: Leaving directory '/usr/src/linux-headers-5.0.7-114.current'
+                 from /home/morgan/rtl8822bu/os_dep/linux/os_intfs.c:22:
+For my machine, I was POP!_os with a linux kernel of 5.0.0.
+make ARCH=x86_64 CROSS_COMPILE= -C /lib/modules/5.0.7-114.current/build M=/home/morgan/rtl8822bu modules
+I had no internet on my machine, so I cloned it onto a machine with internet, transfered the repo via USB to my PC, copied it onto my PC, cd'ed into that repo on my PC, then ran make to compile and sudo make install to install the firmware, then sudo modprobe 8822bu.
+After trying several repos for the RTL8822BU Wireless Driver for Linux, jeremyb31/rtl8822bu repo did the trick perfectly.
+Bus 001 Device 004: ID 7392:7811 Edimax Technology Co., Ltd EW-7811Un 802.11n Wireless Adapter [Realtek RTL8188CUS]
+make[1]: Entering directory '/usr/src/linux-headers-5.0.7-114.current'
+                 from /home/morgan/rtl8822bu/include/drv_types.h:32,
+make[1]: *** [Makefile:1576: _module_/home/morgan/rtl8822bu] Error 2

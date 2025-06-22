@@ -1,0 +1,13 @@
+Change directory to the partition/area of the disk you'd like to stress.  The more free space the better.
+So you would want to divide the amount of memory you have by 256MB (roughly), to hit all of it.  This will flush out any obvious errors, you'll likely see EDAC's or MCE's (depending on your processor/motherboard), or a kernel panic/hard crash.  Ideally you can let it run for a few hours to get the to heat up under load.  You can check syslog for those errors.
+You'll want n to be the number of cores in your system.  The same concept here applies as far as letting it run for a while.
+These are sectors that had to be reallocated to another part of the hard disk because the previous sector wasn't healthy.
+To kill all stress processes, yes you can run memory, CPU, and hard disk checks simultaneously, but it makes isolating the components a bit tougher:
+There are many ways to stress and benchmark your servers, this is just a way I'm comfortable with and have had great results with.
+Below is some sample output of the full command, I'll specify what you should really be looking for farther down the page.
+I used to do a good deal of hardware troubleshooting in large datacenters, I would recommend find a bootable Linux distribution, any will do.  Be sure to find one with a 64 bit image if you have a 64 bit CPU.  Stresslinux contains a whole suite of tools to stress your servers, and force any hardware failures out into the open.
+This should be less than 55, the command itself will have a min/max in some cases - but sub 55 is where we saw healthy disk operation.
+This is not part of the stress suite, but obviously you know it exists.  Definitely make sure you're using memtest86+ (emphasis on +) - it handles 64 bit systems and large allocations of memory far better than the original memtest86.
+You'll just want to check syslog for things like, Machine Check Exception (MCE), Error Detection and Correction (EDAC), Out of Memory (OOM), etc.
+This is probably the easiest to detect more than any other component, smartctl is usually installed on most *NIX operating systems, it's a part of the smartmontools package.  The following command requires root access:
+This requires the hard disks to be formatted in someway, if you are using RAID you'll get better results if you've already set that up prior to mounting the drives and stressing them.

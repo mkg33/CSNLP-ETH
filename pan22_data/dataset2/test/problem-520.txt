@@ -1,0 +1,8 @@
+I've got an (externally hosted) production server running Ubuntu LTS. It serves webpages (rails) and has an svn repository accesible through Apache, and a PostgreSQL db.
+My 'var' partition, which holds most of the interesting part, is only 4.7G big. The /home/ partition, on the other hand, is 221G, but it is mostly unused.
+SideShowCoder has the right idea. Its going to require some acrobatics and possibly moving some items off the server or to another drive while things are being shuffled.  
+Ideally I would need /var/ and /home/ to be "switched" - /home/ should be the one with 4.7G, and /var/ the one with 221G.
+Well as I see it you copy the contents of home to some Temp directory (using rsync maybe to be sure to get all oft it) than you delete everything in home and rsync var to current home. afterwards copy the temp copy of home back to current var and unmount and mount both partitions to their new locations, if everythings works, change the fstab to reflekt the changes and reboot. Of course this will cause some downtime. but you don't have to reinstall anything. 
+Most of the "interesting" stuff is located in /var/ : svn repositories are inside /var/svn, web pages under /var/www, etc.
+You could always just move the important stuff from /var (/var/www, /var/lib/postgres, /var/svn etc) to /home and put symlinks back to /var.
+For future set ups, I would highly recommend looking at LVM. It makes solving problems like this relatively simple and everything can be done without any downtime. 

@@ -1,0 +1,14 @@
+If your server is not under high load, consider an IDS like Snort or Prelude.
+(BSD has been doing transparent bridging longer than Linux, Linux may have caught up by now and work sufficiently.
+http://wiki.wireshark.org/CaptureSetup/Ethernet#Capture_using_a_machine-in-the-middle
+Or do it with a transparent bridge using OpenBSD, netBSD or FreeBSD and port mirroring, a standard setup for packet analyzing.
+In high traffic the MITM can lose packets or possibly change the data stream because of the overhead of decoding.
+You could also try a monitor port on a managed switch but again you will lose packets.
+High load throughput, either packets per second or bytes per second, is usually where you'll see differences.)
+If you're not expecting udp traffic at all I might recommend just dropping it (except for your DNS servers, of course!
+Three NICs, one connected to Internet, one connected to internal network, the third mirrored and connected to a packet analyzer and/or intrusion detection system.
+If this is a production server use port mirroring and send packets to a dedicated IDS/packet analyzer machine rather than installing the IDS on the server itself.
+Open up a traffic sniffer like tcpdump or wireshark as follows:
+Use a "machine in the middle" with a packet analyzer like Wireshark.
+I would also double check as Sameer said above to see if you are running any services that listen for UDP by running:
+Either simple method, MITM or managed switch monitor port may be enough to determine the problem even without an exact packet capture.

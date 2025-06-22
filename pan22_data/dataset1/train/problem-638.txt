@@ -1,0 +1,9 @@
+I have a Mac OS X 10.6 server that acts as an Open Directory master and allows file sharing from the Open Directory users' home directories. Today, for unknown reasons, it's stopped permitting our printer to connect via SMB for users who only have an Open Directory account (as opposed to a couple of admins with local server accounts). The SMB log used to show this for authenticating Open Directory users:
+Now it doesn't do that second step, where it converts it to a lowercase name; it just does the initial failure and then apparently stops trying. However, for users with local accounts (at least that's the only cause/effect link I've found so far), it still does the upper-to-lowercase conversion and lets them in.
+The printer allows scanning to a user's home directory, so that's the share they're trying to connect to. They can still access the share by connecting via SMB from the desktop, where they enter a lowercase name (or even their full name, which the check_ntlm_password line happily converts to the correct username).
+What else can I try to get to the bottom of this problem?
+In your Windows, open "Local Security Policy" and navigate to
+On the left pane, find and open "Network Security: LAN Manager Authentication Level"
+Send LM & NTLM - use NTLMv2 session security if negotiated 
+Then on the left pane, right click on Security Settings and choose "Reload" to update your changes.
+Alternatively you can update your changes from Command line (CMD) by issuing:

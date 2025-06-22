@@ -1,0 +1,17 @@
+There is no way for one location to tell the difference between the other location being completely down and the other location being up but the network connection between the two being down.
+Having three locations will be sufficient if you make assumptions about the behavior of failures.
+This requirement follows from one of the key theorems in the area of byzantine agreements.
+If I deploy a MongoDb replica set across only 2 data centers, if one entire data center fails, can there be automatic failover to the other data center?
+So if each location independently could elect a primary when the other location was down, the consequence would be that in case of a network outage it is possible for two primaries to exist simultaneously.
+Adding a third data center to house the arbiter is not an option.
+Having two primaries is an unacceptable scenario, and this is why only one of the two locations would be able to elect a primary.
+In reverse, if data center 2 remains up and data center 1 goes down, there will only be 2 members left out of the 5 member replica set.
+If data center 2 goes down, there will still be 3 members in the replica set in data center 1.
+If this isn't possible, please let me know so I can explore other options.
+Consider the situation where 1 data center has a primary, secondary and an arbiter, and the second data center has 2 secondary members.
+The answer to your question is that it is not possible to do with only two locations.
+That is not enough to have either secondary vote themselves to become primary.
+The reason it is not possible can be explained like this: If both locations are fully functional, but the network connection between the two is faulty, only one of them may remain functional.
+It is not acceptable for both locations to simultaneously elect a primary in this case.
+One possible option is to have a primary and secondary in the first data center, 2 secondaries in the second data center, and you can have the arbiter in a third data center.
+Any solution that works without making assumptions about failures will require at least four locations in order to tolerate the outage of a single location.

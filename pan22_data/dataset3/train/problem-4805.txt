@@ -1,0 +1,14 @@
+You can't have multiple registry values in the same key with the same name.
+You're going to have to append a string to the "PATH" value and, if you care about uninstallation, you'll need to parse the "PATH" variable to back it off when the user uninstalls.
+Finally, what you want to do w/ adding-on to the PATH variable won't work.
+If you create values of type REG_SZ Windows will refuse to "expand" other environment variables you might reference in them (i.e.
+"FOO"="%OTHER_VAR%\bar" as a REG_SZ will create an environment variable FOO with the literal string "%OTHER_VAR%\bar" as its value).
+If you create a value named "PATH" then there will be no "%PATH%" for the new "PATH" to expand.
+You're basically right re: the user and computer environment locations.
+Creating values as REG_EXPAND type will cause Windows to expand the variables.
+Appending to the PATH is a real shortcoming of how the path is stored in the registry.
+This mechanism can be loosely thought of similiar to different runlevels in an inittab if you're familiar with SYSV *nix.
+If you boot with a different hardware profile you'll get a different "CurrentControlSet".
+"CurrentControlSet" is a symlink to the ControlSetXXX instance being used.
+To demonstrate that "CurrentControlSet" is really a symlink just create a new key under "HKLM\System\CurrentControlSet" and go look for it under "...\ControlSet001".
+It's a quirky behavior because and REG_EXPAND types aren't actually "expanded" by the registry APIs.

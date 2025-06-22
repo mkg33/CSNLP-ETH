@@ -1,0 +1,26 @@
+Objects are streamed dynamically from a database or generated procedurally depending on the object.
+For a local player I could use the "worldIndex" to hide objects that aren't in the local player's current "world".
+However I would then need to have at least one layer per world - and I already use multiple layers for various different interactions.
+Unity's Layers could be used to mask physics interactions between objects.
+I've built an online game with Unity with a very large open world.
+So my question is: what is the best method for essentially running multiple, parallel simulations within a single Unity scene?
+Every world needs to be simulated in the same coordinate space.
+But I still need to simulate physics for every world.
+Overall I think something along these lines is probably the best solution.
+The issue is the server would still need to render and handle physics of multiple worlds but could now potentially have conflicts with objects and/or people on one world appearing in other worlds.
+Of course it is impractical if not impossible to have global coordinates shared across all of these different worlds due to floating point limitations.
+I could run one server per "world" and have a hand off process to make it transparent to players.
+There would still be a problem on the server itself.
+The server (which can be a local player, or run as a standalone application without a local player) simulates everything around players - so for example if there is an object or NPC at coordinates (100,34,20) but there aren't any players nearby then the object is not simulated.
+This would work for clients since the server would be able to tell the clients only about objects that are on their world.
+A partial solution would be to have some sort of indicator, such as an integer (I'll call it "worldIndex") on each object to indicate which "world" that object exists in.
+My thoughts are I would need something like a layer I could specify on each GameObject or some way to group a bunch of GameObjects together and instruct the physics system to only allow interactions within the group.
+But as far as I know no such mechanism exists within Unity.
+But then I'd have to run multiple server instances and players would not be able to host their own server - at least not without a lot of additional overhead.
+Even if each world is extremely large, it is not necessary to use the entire Unity coordinate system around each player - a few thousand kilometers is more than enough.
+Essentially I need a way to divide up these "worlds" into parallel dimensions that are executed simultaneously on the same server (in one Unity scene).
+Each player would be in their own subspace, unless a player physically enters the same space that is already being simulated by another player, in which case that player would join the same subspace.
+I'll have to share the limited coordinate system for each simulated world.
+I would also have to generate subspaces dynamically as players enter new areas that are not currently being simulated.
+But then I would have shift around the coordinate systems and it would increase complexity of merging players into and out of these subspaces.
+Another thought I've had is rather than using the Unity coordinate space directly, I could slice it up into "subspaces" or pockets.

@@ -1,0 +1,9 @@
+We do this, the environment varaiable is at the user level, so the user for each environment that runs the SQL agent jobs is different. So on the the dev environment our agent user is something like SQLDev and on the QA environment it is something like SQLQA.
+2) If you go the scripting route you may not need to have the env variable at all. You could just override the connection string using /CONN
+3)Depending on how many jobs you have you could use Set values in the properties of the job step that runs the SSIS package. I know this is how others have handled this.
+If you are not running from jobs (which I highly suggest doing except on dev while doing actual development), yes you have to change the enviroment variable to the correct one. We have created cmd line scripts to do that easily and placed them on our desktops, so that we can easily switch the environment variables.
+One solution, albeit kinda sucky, is the convert the Agent jobs from SSIS tasks to CMDExec tasks and then call DTExec directly.  If you do this you can set the environment variable in the batch file before the package is executed.
+Wrap it with a batch file that sets the environment variables and then kicks off the job.  This lets you set up the wrapper file on a per-environment basis and hold as many environments on the machine as you want.
+If you have a lot of jobs you could use T-SQL to add the jobs to each environment and have a variable for the connectionstring depending on the environment you want to create the job for.
+Example Code: DTEXEC /FILE "C:\example.dtsx" /CONN NameofConnMgr;"SERVER=yourServer;Initial Catalog=Example"
+1) Instead of a Env variable you could use an xml file (dtsconfig) to point to the SQL Server config database for each environment. If you use the built-in SSIS deployment utility you can manually override the connection string at deployment time. Not a great solution, but a solution.

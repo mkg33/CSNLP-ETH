@@ -1,0 +1,11 @@
+Just type stats at the blank prompt; if it's working you'll get a load of output.
+You can find the benchmarks and write-up here - although it is for WordPress it should work for Drupal as it is very likely a permissions issue.
+Took a while to figure out the right settings, and how to connect to a unix local domain socket via busybox.
+as mysql does), but only root can write there, so create /var/run/memcached and chown it to nobody, then set /var/run/memcached/memcached.sock as the socket path.
+Memcached drops privileges before it creates its socket, though after it's written its PID.
+I benchmarked the performance boost of using memcached unix sockets, it is 33% faster to use unix sockets in my tests using the php cli.
+You can check it's working by using netcat to connect to it:
+You may find that just setting the socket path doesn't work.
+Writing it to /tmp would work too, but by its very nature that could get trashed; sticking it in /var/run is a bit more permanent.
+I found that it is important to add the memcache user to the www-data group and give the unix socket 775 permissions, this way both the php handler and memcache user can execute it.
+Note if you are using an alpine container in Kubernetes the pod spec with health probes would look something like this:

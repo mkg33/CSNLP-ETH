@@ -1,0 +1,10 @@
+You seem to be asking for a software RAID solution. There's two ways you can do this:
+First, you can use RAID and LVM separately. You configure software RAID on Linux with mdadm. You'll want to create a RAID array across all of your drives, and then create your LVM setup on top of the RAID array. See https://raid.wiki.kernel.org/index.php/RAID_setup for more details on this solution.
+Second, LVM does actually have some mirroring support. You can get what's effectively RAID 1 by passing -m1 when you do lvcreate. https://www.centos.org/docs/5/html/Cluster_Logical_Volume_Manager/LV_create.html#mirror_create explains this in a bit more detail.
+If you're wondering about the pros and cons of each of these approaches, see RAIDing with LVM vs MDRAID - pros and cons?.
+I currently run a small home media server on a Windows machine. I'd like to swap it to a small compute stick of some sort running a thin linux distro.
+However, the reason I chose Windows to begin with was because of the Storage Spaces feature. Many will say "it's just LVM" but from what I've read on the features of LVM, it's lacking at least this feature I want:
+Slices of data and that store a parity slice on some drive other than the 2 drives they're stored on for data access.
+This effectively allows me to mix-and-match drives of different sizes/types any-which-way I want and still have at least a parity backup of my data. This being just a media server, I don't really care about whether raid 10 levels of resilience or how fast the storage really is (so long as I can stream a 4k compressed video off it reliably via the single USB 3 connection to the external enclosure with multiple drives, I'm good).
+What I care about is that if I add another drive to my pool, I don't have to add 3 identical drives. This is true of Storage Spaces since it'll find some way to distribute the 256MB slices+parity across many drives.
+Is there any such feature in Linux? From what I've read, LVM can't really do this.

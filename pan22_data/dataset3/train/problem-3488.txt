@@ -1,0 +1,12 @@
+As written, it'll typecheck, but the type signature of your mempty is a -> a, while it should be just a.  mempty is a value in the monoid.
+In general, haskell's type system is very nice -- not only can it catch type errors, but it can serve as documentation, provide a bit of heuristic guidance and help you organize your thoughts.
+If you have any difficulty understanding it, keep in mind that the mempty and mappend functions are for different monoids on the left hand side than they are for the right hand side.
+When something doesn't typecheck, it means what you're trying to do doesn't quite make sense.
+Something nice about hackage help/documentation pages like the one you linked: you can go straight to the source code by clicking on the links on the right side of the page.
+It uses a nice trick where it implements this monoid in terms of the other monoid.
+You could try to make a constant function that just returns some particular b, but since you have no idea what type b will be, that's not possible.
+I'd be tempted to change the definition to mempty = id, but id :: a -> a not a -> b.
+I can think of 2 ways of getting 2 a -> bs to combine: throw away the first one, or throw away the second one.
+Looking at the source, there is an instance for Monoid b => Monoid (a -> b), which is not quite exactly what you're trying to do, since it restricts b to types with a Monoid implementation.
+Neither seems similar to what you're trying to do (or particularly useful).
+as an implementation of mappend won't typecheck, there's another problem: mempty.

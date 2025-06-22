@@ -1,0 +1,22 @@
+This would be better if it were passed in to the method that creates the route data:
+Now that we've encapsulated the route data, the constructor of the Router class also does too much.
+It's only responsible for turning an HTTP request into a RouteData object.
+Something else in the system needs to take the RouteData, get a controller object, execute an action on the controller and perform error handling.
+In fact, renaming this to createRouteValues and passing in the $_GET array would be better:
+You should provide all values in the constructor so the object is immutable.
+Notice that the Router does not do any error handling, nor does it try to resolve a controller name to a class, create the controller or execute the action.
+Now it's just a matter of pulling out the necessary pieces of the array and creating the RouteData object:
+Everything happens in the handleRequest method, which orchestrates the interaction between the router and controller factory, and is responsible for invoking an action on the controller.
+What you have is the name of a controller, the name of an action, and an array of values to pass into the controller action:
+The "Application" has a big picture view of things, and is an ideal place to do error handling, hence the try-catch block in the handleRequest method.
+The Application class has two dependencies: a controller factory and a router.
+It also provides a public getErrorController method that will be used to return a generic "error controller object" if one is needed.
+Lastly, let's write a quick PHP file (index.php) for your site:
+The splitUrl method should return an array of values instead of setting properties on the Router object.
+Really a router should only be responsible for item #1: Extracting relevant information from the HTTP request, and return that information in the form of a concrete object.
+It should be refactored so that it doesn't do anything but take in the data it needs to do its job.
+The last thing we will do is create an "application" class that glues all the pieces together:
+The route data should not change once it has been created.
+One that creates the controller object, and another that invokes an action on the controller and does some error handling.
+Both of these are passed in to the constructor, and have PHP Type Hints ensuring that you pass the correct kind of object.
+The controller factory does a little error handling, in that it will return an ErrorController object if the route does not resolve to a controller class.

@@ -1,0 +1,14 @@
+I keep running across servers that don't have basic things that improve your website speed turned on by default.
+This leads me to two options: everyone who makes webserves packages it poorly, or I just don't understand why they've done this. It's much more likely that I don't know why they don't do this.
+Another factor is server-side performance. It is better to let the developer turn on compression when this developer knows the impact on the CPU and the pros and cons of ZGip for a specific content.
+Could someone enlighten me as to why you would ship webservers with disabled features such as gzip, and various cache control headers? 
+Having played with several web servers online, I've seen things such as goDaddy not enabling gzip by default. Same with a few IIS drops, default installs of apache, and so forth.
+I thought faster websites were a result of this, as per what ySlow and PageSpeed tell me all the time. What are the drawbacks?
+If your page is larger than that the rest will be cut off without explanation. But here's the funny part: It only happens if the page was loaded from file cache, not if it's received over the network, making the whole mess hard to debug.
+Not sure if all versions were affected or only some, but the above was the reason the website I work for had gzip off for a long time.
+gzip compression takes instructions to execute, so it slows it down.  If you want it you can turn it on.
+A possible explanation is that there is no need to compress everything. Why would you compress a ZIP file, or a JPEG image? At best, the size will be the same. At worst, it will become larger.
+My answer might be silly and controversial, but can you imagine how much in revenues companies like Amazon are going to miss if HTTP compression was enabled by default? Traffic is a significant part of the monthly bill, and all those restful APIs transport tons of data.
+One reason could be IE6 compatibility. While IE6 supports gzip, it only does it up to 65535 bytes compressed size.
+It can be worked around by processing the headers of the request, but sometimes there will be a transparent proxy using IE6, eg. virus software. The proxy does not alter any User-Agent header so you're pretty much out of luck. Good thing that IE6 is almost eradicated.
+You may think that it is because GZip is not supported by every browser. This explanation is wrong: a server can be backward compatible based on Accept-Encoding header of the request, which indicates whether the browser can accept GZip-compressed content.

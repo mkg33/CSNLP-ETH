@@ -1,0 +1,9 @@
+If you google overscan Vizio, you will see quite a few articles with help on this.  I have an E260MV.  The solution is in the TV settings.
+...this should list the properties available, and report the status of things like underscan, if it exists. 
+Our Intel Celeron J1900 (SoC with graphics on chip) appears to be  using the i915 kernel module and does not have many features on offer at all, according to xrandr. 
+After a bit of experimentation it turns out that the Vizio unconditionally overscanned when it saw one of the 720 or 1080 modes (labeling the output as e.g. 720p or 1080p), and it would NOT overscan for other modes (which it labeled as e.g .PC W x H), moreover it would easily recognize most modes (including e.g. 1280x768 and eve funky ones like 1200x700), as PC no-overscan modes, even if they were not advertised in its EDID.
+FWIW, I have a 2008-vintage Vizio 32" plasma VP322 (VP322HDTV10A), which did not have any usable option in the TV menus, did not expose an overscan property in xrandr --props, and only advertised a few modes in its EDID (either low-resolution 4:3 modes such as 800x600, or 16:9 higher-res modes with either 720 or 1080 lines).
+So the following reuse of a mode that my laptop's LCD panel output already had (you can also define your own custom mode using cvt and xrandr --newmode) did the trick nicely, no overscan:
+Other people elsewhere had luck with different TVs by creating modes with non-standard pixel clocks (scan frequencies), but the principle was the same: circumvent "automatic" overscan decision logic in the TV that is not otherwise exposed via HDMI or TV menus.
+It may be that your Intel graphics do not support the xrandr  underscan  -  you can check this by trying:
+Convincing the TV not to overscan should result in a much better image quality than xrandr --transform, which can cause visible aliasing and loss of effective resolution.

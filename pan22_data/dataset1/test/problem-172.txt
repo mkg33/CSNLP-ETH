@@ -1,0 +1,11 @@
+The indendation looks off - assuming it's not a paste glitch with tabs vs spaces, the scope-opening brace should line up with the method's signature:
+Also, C# type names should be PascalCase, as well as any public members: 
+The get_Xxxx methods in the COM Interop interface aren't following this convention, but they're COM Interop methods, with their own conventions - they're not an example to follow for typical C# code.
+I like that you're wrapping your StreamWriter in a using block. I don't understand why you're not doing the same with the StreamReader in the deserializeXml method - the reader.Close() call could then be removed:
+I would give mcfx a meaningful name: as it stands it looks like it's just a shortened version of the return type's name - I like having a result for these kinds of things. Identifiers should have a pronounceable name that carries their meaning.
+One thing to note is that anytime you're creating an instance of Excel, you need to wrap that code in a try...catch...finally. You take in a string file path, but what if it's not a valid file? Then this line
+will throw an error and you're left with an invisible instance of Excel left hanging. 
+All of these variable types declarations could probably be replaced with the var keyword. I know the last one could. 
+myClassFromXsd tells me almost nothing about what that class is. It's enough to guess that's it's serialized from an xsd file, but that's about it. Even then, it's a name that tells me about implementation details instead of what the object represents. 
+Do yourself a favor and generalize your Serialize method a little bit. It should be generic and take in a file path as an argument. 
+And then you could easily reuse that method serializing any object you ever may need to. 

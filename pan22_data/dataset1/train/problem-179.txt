@@ -1,0 +1,13 @@
+I'm currently writing a WebGL HTML5 game, and large part of the game initialization involved loading assets streamed over a websocket, and saving them to disk using the FileSystem API.
+As part of optimizing the code, we're trying to eliminate as many memory allocations as we can, which means cutting down on the use of closures, object/array creation during the main game loop and so on.
+One of the biggest uses of closures left is our interaction with the FileSystem API, namely the part where we write the assets to disk:
+As you can see, this code involves the creation of something like six new closures for every file write, which isn't the greatest when we're trying to cut down on memory allocation.
+I initially tried to pull each of the closures out into standalone functions, but obviously I then needed to be able to get references to things like the filename and onSuccess callback function from those standalone functions (whereas previously they would have been able to have access to them from their outer closures):
+The problem is that the onFileWrite callback is only supplied with the event object, which contains a reference to the target fileWriter, but nothing higher.  Crucially, there seems to be no way to link the fileEntry with the fileWriter that it creates, as the createWriter callback only gets given the FileWriter object - with no meta data about what created it.
+My question is this: is it possible to rewrite this without using quite some many closures - or ideally none at all?
+Edit: I'm convinced that it is (unfortunately) impossible to do this without creating some kind of container for the details of the request, be it a new function whose closure includes the request details, or a new object whose properties have the details.  So, this question really then becomes about the best way to achieve the file write with the smallest amount of memory churn.
+I think that you will always need some closures, but you can limit what they carry.
+I guess that your intention was to define a function for each case and then assign it.
+So your example transforms into this (I'm just reorganizing your code and fixing a function declaration).
+This is actually an optimization because you can reuse things, the problem now is how do we get the filename. Well you can write a function that gets the filename and return a new function that only has the filename in its closure and nothing else. Like this: 
+Note that this way you just pass what you need, variables, functions but always controlling the closure "size".

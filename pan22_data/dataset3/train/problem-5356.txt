@@ -1,0 +1,21 @@
+If mysql has binary logging enabled, get the timestamp of the last binary log after shutdown.
+Before shutdown -- Well, if the server crashes (due to bug or power failure), there is no way for any code to be activated.
+You cannot write a shutdown time to a table when mysqld is shutting down.
+The best I could suggest is to capture the shutdown datetime with one of the four(4) aforementioned methods and write it in a script.
+Create a file called /var/lib/mysql/startup_stuff.sql
+Just get the timestamp of the error log after the shutdown is complete.
+At any point, you can get the "startup" time by taking NOW() and subtracting the number of seconds from startup:  SHOW STATUS LIKE 'Uptime';.
+If you have innodb_buffer_pool_dump_at_shutdown configured, look for the timestamp of the file that was written.
+Mentioned this back on Dec 06, 2017 (Control InnoDB buffer pool allocation in MySQL (5.7+) ib_buffer_pool is usually written in folder set by datadir, you can run the following after shutdown:
+Just mentioned this three(3) days ago (Make MySQL print a timestamp at each time it starts)
+For anyone running MySQL 5.6 and prior, or MySQL 5.7 in MySQL 5.6 compatibility mode
+(Your title and your description ask different questions!)
+The other three(3) methods will simply tell you the last time mysqld did any kind of writes, whether it was a clean shutdown or a crash.
+"Before" startup -- Well, TRIGGERs clearly cannot run before MySQL is running.
+This will produce the date (YYMMDD) and time (HH:MM:SS)
+Run chown mysql:mysql /var/lib/mysql/startup_stuff.sql
+Write inside that script in such a way that the datetime is written to a table
+You are probably saying, "I DON'T WANT TO LOOK INSIDE THE ERROR LOG !!!"
+Method #1 is not any good to you if mysqld crashes.
+First off, a trigger is not needed nor would it fire off on shutdown.
+Add this line to /etc/my.cnf (see MySQL Documentation on init-file)

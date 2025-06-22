@@ -1,0 +1,5 @@
+Most other types of indexes have some degree of "locality of reference".  That is, two (or a thousand) consecutive references will be "near" each other, hence the caching of the buffer_pool can help avoid I/O, even if the table/index is much bigger than the buffer_pool.
+Let's say the index (or table) is 4 times as big as the buffer pool.  Then the 'next' lookup (either for SELECT or for adding a row, hence updating the index), has a 3/4th chance of being a disk miss.  That is 75% of such operations will incur a disk hit.  If you are using an HDD, that is (a Rule of Thumb) 10ms.  (SSDs are faster, but still not free.
+The size and makeup of an index, composite or not, does not make a lot of difference to performance.
+More discussion on why UUIDs suck, plus a partial remedy for Type-1 UUIDs, which are time-based and it is the type that MySQL uses.
+You can mitigate the problem by shrinking the table size.  This can be done by shrinking datatypes.  Don't use INT (4 bytes) for a Yes/No flag, use TINYINT (1-byte).  Don't store the MD5 as CHAR(32) (32 bytes -- or 96 if utf8); use HEX() and UNHEX() when fetching and storing into a BINARY(16) column.

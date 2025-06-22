@@ -1,0 +1,11 @@
+I have a Comcast modem with an embedded WiFi router.  I didn't wish to use their WiFi router, and had them "bridge" the device.  Downstream, I have a Netgear router, and I am using port forwarding to direct traffic to a Linux server on 192.168.0.200 for SFTP and HTTP (Yes, I know I am not suppose to be running a public webserver through Comcast, however, it is for development purposes only and password protected so no one ever visits it).
+Everything was working great until I lost power which caused me to lose Internet.
+I contacted Comcast, and the individual I talked to couldn't get it working as being bridged, and ultimately reset the router to its factory defaults, and did not enable bridging.  This brought back Internet to clients on my LAN, but I cannot remotely access the server.
+I could access it directly from another client on my LAN (both a browser and a FTP client) using IP 192.168.0.200, so I know it is not iptables.
+I can ping my server using myDomain.com, so I know my domain name is pointing to my server.
+See the below output from nmap and nping.  Note that I am not forwarding Port 81, and it surprised and confused me that it looks the same as port 80 (not my question, but would like to know why).
+My only thought is it relates to no longer being bridged, however, I don't really understand the implications of a router being bridged, and Comcast is not much help.
+Comcast Router/Modem > Netgear Router (port forwarding) > Internal LAN
+So the Comcast router in bridged mode basically disables NAT which translates your external IP 12.345.103.53 to your internal IP range of 192.168.0.x. What your seeing now is that the Comcast is doing the translation which means the port forwarding on the Netgear Router is not able to fulfill its duty because its being supplied with an internal IP range of 192.168.0.x rather than having the external IP passed through to it.
+Depending on the make and model of the Comcast device will depend on how you enable 'bridge' mode and if its true bridge mode or another version of a similar function called transparent mode. 
+Are you able to log on to the router's web interface? Does it have any further details of the make and model for me to guide you getting this configured again?

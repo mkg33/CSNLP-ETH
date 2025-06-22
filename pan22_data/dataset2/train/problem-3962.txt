@@ -1,0 +1,12 @@
+We are facing a weird problem in our data center. Our Backup server (running EMC Networker) loses network connection every alternate day around 3:00 AM (Backup schedule starts at midnight). After 2 hours of outage, the network connectivity recovers automatically and back to normal.
+c) Switch interface status is always up. But there are lot of packet drops during the outage period - Can be attributed to high interface utilization of the backup server (near 100%)
+Are other devices on the same switch experiencing any communication problems when this specific problem is occurring? Though rare and improbable, you may be exhausting finite resources on that switch and in a sense DOS'ing yourself.
+If network utilazation is high, meaning to the point where it's fully saturated, you might see what appears to be dropped connection.  However its tough to tell based on your description.  My guess though is your backup job is maxing your pipe.  Do you have a backup job that run every other day :)
+How are you figuring that it loses network connectivity?  What do you exactly mean by that?  Do you have something monitoring it that tells you it can't be reached?  Is there anything in the event logs, if so what?  
+a) If it were a switch related issue it is unlikely that both the network ports go down, since they are connected to different switch.
+I suspect driver problems or a duplex mismatch. Try to upgrade the drivers and check the duplex on each ends to be the same. Check also the ethernet statistics from the switch (if you have errors, collisions etc...).
+It is unlikely to be network issue, since it is directly connected to server farm switch (layer 2 connection without any intermediate hops). Further, the server is connected to two different switches for Load balancing using Broadcomm Teaming. 
+What means loses network connectivity? It is not reachable, but the interface is up? It is reachable but has a lot of packet loss?
+Next suspect is resource utilization on Windows server. Both CPU and Memory have rarely exceeded 80%, but NIC card utilization is alarmingly high (near 100%)
+This is a longshot, but maybe another device on your network has the same IP address?  That would definitely cause traffic problems.
+Also, if you have mechanisms in place to prevent DOS'ing, they could essentially blackhole'ing your problematic server until use-patterns return to normal.

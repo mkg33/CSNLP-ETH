@@ -1,0 +1,28 @@
+If you want to limit table size, I'd suggest to split single large tables into a few distinct separate tables.
+If only the current season is what is relevant, create 2 tables:  currentSeasonMatches and oldMatches.
+mysqldump the old data and put it in a cloud somewhere.
+I am by no means a qualified database admin, and have simply found the above to work well for my needs based on experience.
+Top 100 lists have worked for me in the past, although nowadays I just do Top 10 of specific categories.
+Web site has around 200-600 users in different times and exists almost 8 years.
+Keeps everything in tiptop shape, and also makes it really easy to edit the database structure between seasons, as there is no data in there to worry about conflicts.
+The central game element is a soccer match, each team plays around 40-50 matches per season, there are roughly a thousand of teams.
+Question: what is good practices for keeping/archiving data in general and for online games in particular?
+As for past users wanting to view data, simply make a few 'top 100' static lists for previous years.
+Only concern is the code changes that might be necessary.
+of course, it all matters how accessible you need that older data to be.
+From one side, I don't really want to delete aged data (that is more than 5 years old) as potentially users could be interested in looking into them.
+from another side, 5 years old and older data are not really concerning and COULD be deleted.
+My problem is that tables size is growing constantly.
+Or, you could break the data by year: matches2011, matches2012, matches2013.
+Assuming it's not, put it in a directory that is part of your regular file backups.
+It is not the problem on its own, but when I do some data maintenance (add new fields into existing tables, change field type, etc.)
+It is split into 'seasons' each of them takes around a half of a real year.
+For example, say you have a Matches table that records all matches that ever took place.
+Each match has a lot of match related data: game moments description, amount of experience earned by each team player during each match, etc...
+I do this after every 'season' and purge the previous seasons data from the database.
+After you do the backup, I also recommend you load that backup back into mysql and verify it isn't corrupt.
+Or selectively copy only the data in tables that are required to start another 'season'.
+When a season is over, move all the old matches to oldMatches and clear currentSeasonMatches.
+After that, simply delete the data from the database you don't need.
+This is from my personal experience with my browser rpg's.
+If database server size is an issue, render all the data to an HTML tabular format that viewers can view, and save that on a static HTML page on your website.

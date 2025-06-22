@@ -1,0 +1,10 @@
+As client application makes repeated requests the number of TIME_WAIT connections on server grows and settles on ~150 sockets being in TIME_WAIT constantly.
+There's a single client application that makes frequent TCP (HTTP) connections to the server.
+It is also difficult to change client app in order to pick source port manually as I am using a 3rd party library to make HTTP requests.
+Connection lasts for the duration of one request and then server closes the connection so socket on the server ends up in TIME_WAIT state for few minutes.
+Increasing ephemeral port range would only slightly decrease probability of collision.
+I have no control on the server so reducing TIME_WAIT delay or changing behavior is not an option.
+Is there a way to change ephemeral port selection strategy on a client (Linux) to avoid such collisions?
+Occasionally new connection from client chooses a recently used ephemeral source port that is in TIME_WAIT state on the server and connection fails.
+Exact scenario is also described in RFC6056 section 2.3
+With 32k ephemeral port range and 150 sockets in TIME_WAIT there's >10% chance of this happening.

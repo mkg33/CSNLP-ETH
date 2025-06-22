@@ -1,0 +1,22 @@
+You could try 'sg apache' before changing any files or you could just set the sticky bit on the directories (forces new files to be created with the group ownership of the directory) e.g.
+I would add my user and any other users that need to manage "web" files to the apache or www-data group.
+These settings are fine but sometime I got annoyed because I need to re-set the file permission by doing
+If you're having to change permissions then presumably 'apache' is not the primary group for ssh-user.
+Everytime I create new file/upload using FTP, I need to execute those commands.
+To solve the problem we modified upload scripts so that they also change permissions of file after upload to 777 so that users who use SSH can modify/delete/move the files.
+We had issue where file uploads where getting created with apache:apache and hence users were not able to delete move files if they were logged in using SSH.
+This is the same user who I use to login using SSH.
+For upload folder, I setup 770 which group users able to write stuff inside.
+All this is off course that you have a very trusted environment otherwise 777 permissions are very bad choice.
+Then make sure that group has write access to the files/dirs.
+However a simpler solution might be to just set the files and directories as readable by 'others' (including apache) and not worry about the group ownership.
+- do you use any tools to manage this file permission?
+I have Apache running on Centos OS, I put my root directory under /var/www/html
+I could not find out what is the best way to setup your web files under UNIX OS.
+We can't tell you that - it depends on your policy.
+If you write / modify file upload scripts such that they set appropriate permissions like 777 or 750 then it may solve problem.
+Its also worth checking whether your FTP server allows you to change your umask.
+I've seen too many messes created using ACLs to recommend them for use in filesystem permissions.
+I setup full control to the owner (ssh-user) and only read access to group users (apache group).
+But if that's not a consideration for you, then it may be a reasonable approach.
+But I wouldn't have gone with this model because it does not allow for multiple users to manage files.

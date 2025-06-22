@@ -1,0 +1,20 @@
+Depending on the peers server setup and software this means that mail delivery to your system will either fail permanently or that it will retry without TLS.
+Sometimes it could be because of your mail client application.
+relay2.uni-heidelberg.de is willing to negotiate and switch over to an encrypted connection but can't negotiate a suitable cipher.
+tls_medium_cipherlist = AES128+EECDH:AES128+EDH and only allowing  TLS 1.2 you have traded off security over compatibility.
+For example in Outlook you need to set its encryption from Auto to SSL explicitly in the settings of outgoing smtp server to get it working.
+However, emails from other mail servers (Gmail among others) have gotten through, so it seemed this issue was restricted to this particular client.
+You have configurered Postfix to use strong crypto with the recommended TLS security settings such as found on https://cipherli.st/
+Is there anything I could do to fix these issues or to allow the emails to be delivered?
+The same is true for the cipher set: while preference of stronger ciphers is fine you should also include some non-DH ciphers and some just strong enough ciphers like DES-CBC3-SHA to you cipher set.
+A couple weeks ago, I noticed the following lines in my logs after moving to a new server with up-to-date software (which, among others, allowed me to finally disable deprecated SSL/TLS versions):
+Support for TLS 1.2 was only added with version 1.0.1 which was released about 4 years ago.
+By only accepting two strong ciphers with the security settings smtpd_tls_mandatory_ciphers = medium and
+Thus in case of mail transfer you should be less restrictive and accept at least TLS 1.0 and maybe even SSL 3.0, because bad encryption is in most cases better then no encryption or even than no delivery.
+But today I noticed similar log messages when the Amazon and Facebook mail servers connected.
+A major part of the mail servers uses some kind of UNIX with OpenSSL as the TLS library.
+And although the setting smtpd_tls_security_level = may allows your server the fall-back to an unencrypted clear-text connection, apparently relay2 is not willing to fallback.
+Either you need to support some weaker ciphers as well, or relay2 needs to be upgraded to support modern strong ciphers.
+(Though, interestingly, they immediately reconnect afterwards – sometimes from a different host – and then it works.)
+You have overly restrictive settings by restricting the protocol to TLS 1.2 only.
+This means that there are lots of servers which use an older version of OpenSSL and which thus cannot fail to connect to your server with TLS.

@@ -1,0 +1,12 @@
+I'd be curious to find out what your /etc/named.conf looks like.
+I setup a BIND9 DNS server in the LAN as a backend to Samba4 service.
+I don't want dc.foo.bar binds to 192.168.122.1, neither do I know how it is added into the DNS service.
+Could you also include the output of dig @192.168.2.144 +trace dc.foo.bar and dig @192.168.2.144 +trace foo.bar
+They are in different network, the network address of the virtual bridge is 192.168.122.0/24.
+However, when I query the DNS information with host -t A dc.foo.bar, two entries are returned, one is 192.168.2.144 while the other is 192.168.122.1.
+The network address of my LAN is 192.168.2.0/24 and I statically specify the IP address of DNS server as 192.168.2.144.
+How could I trouble shot the problem and remove the erronous DNS address entry?
+Unfortunately, there is another MIC on my DNS server (in fact, the DNS server is a virtual box, the extra MIC is the virtual bridge).
+I bind a domain name dc.foo.bar to the static address 192.168.2.144 in /etc/named.conf.
+Inside the zone file you would then add an A record for a host called dc.
+Usually you would first make the DNS server authoritative for foo.bar (i.e.

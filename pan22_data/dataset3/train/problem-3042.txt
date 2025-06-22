@@ -1,0 +1,26 @@
+I want the PCs access internet through them and set iptable rules to build a firewall on the ubuntu server.
+this example rule will drop any traffic from 10.0.1.2 which enters router through eth0.
+Use iptables -m physdev --help to see all its capabilities.
+Linux Netfilter is capable of passing bridged traffice into iptables rule tables for checking.
+It is basically an ubuntu server acting as a router with 4 interfaces.
+These keys appear only after bridge kernel module is loaded, for example, with modprobe bridge.
+It seems that the returning packets are routed to eth2 only (1st entry in route -n for 10.1.0.0/16 subnet) regardless of originating PC1, PC2 or PC3.
+Also i have setup ip routes on 3 interfaces eth1, eth2 and eth3 as shown below for eth2.
+You can use the network bridge solution in Ubuntu to just bridge all the interfaces, and then you would use the server as a transparent firewall, without any layer 3 interfaces involved in traffic from the PCs to the Internet.
+There are also other features in Netfilter designed specifically for dealing of bridge traffic.
+I know it is insane but i have to work on this configuration only.
+There are special expressions to match against specific physical interface (because logical interface you specify in -i or -o will always be bridge interface in this case).
+Alternatively, make it an actual router, but in that case split your /16 into smaller subnets such that each PC is on its own subnet, and then have a final subnet between the server and the Internet gateway.
+(Also I have kept rp_filter=1 as I want to use corresponding outgoing interface only.)
+So my question is how to route return packets to corresponding interface or how to access internet on the PCs from corresponding interface only.
+They allow for, for example, MAC address masquerading and translation, brouting and so on; read ebtables manual for details.
+with above configuration i am able to connect to individual interfaces eth1, eth2, eth3 with PC1, PC2 and PC3 (resolving arp flux issue).
+These features are uncovered with another userspace utility called ebtables.
+After that, you may filter your traffic using physdev module:
+I have solved the ARP flux problem with following arp configurations.
+It looks like you are trying to force a router to do a switch's job... but why not turn the server into an actual switch ?
+However i am not able to connect to the internet on PC1 and PC3.
+Note you don't need to have multiple IP addresses of the router.
+To enable this feature you have to set up these sysctl variables as needed (in sysctl.conf, some file in sysctl.conf.d, echoing 1 into some file in /proc etc.
+3 of them (eth0, eth1 and eth3) act as gateways to PC1, PC2 and PC3 respectively.
+See here : https://help.ubuntu.com/community/NetworkConnectionBridge

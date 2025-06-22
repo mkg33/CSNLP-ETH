@@ -1,0 +1,14 @@
+New-MailboxExportRequest -Mailbox mailboxname -IncludeFolders "#SentItems#" -ContentFilter {(Sent -lt '07/31/2011') -and (Sent -gt '07/01/2011')} -FilePath \servername\folder\SentItems.PST
+You would pipe a list of mailboxes to that command, include only the folder you want, then push those messages to your SPAM recipient mailbox OR you could output them directly into a PST file using the same command.
+Reference: https://social.technet.microsoft.com/Forums/exchange/en-US/c10240b4-1272-41c9-b9a5-ff7123db1691/how-to-export-single-folder-to-pst-for-specific-dates?forum=exchange2010  for one mailbox:
+PS: If would be possible to modify the Full Access mode, this should be better.
+Then your next stop is this command:  http://linux.die.net/man/1/readpst (which I haven't used but seems like what you need) to make the data in the PST readable by SPAMAssassin.
+Get-Mailbox | New-MailboxExportRequest -IncludeFolders "Junk E-Mail" -FilePath \servername\folder\JunkMail.PST
+I've created a "spam crawler" account with full access to all mailboxes in an Exchange 2013 environment to get messages in the junk folder to feed the Bayesian filtering running on SpamAssassin in a Linux Anti-spam machine.
+So to get things more secure I would like to restrict connections with this account only from the Linux machine.
+After that runs, you'll want to clean up the ExportRequests:
+I just need to download the Spam messages, so reading permissions is sufficient.
+This account does not have a mailbox, but have permissions to access other mailboxes.
+Okay, turns out I was thinking of the wrong command (sorry about that).
+(Note:  this has to be a UNC, local folder won't help.)
+Get-MailboxExportRequest | Remove-MailboxExportRequest

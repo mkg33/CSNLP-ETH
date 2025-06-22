@@ -1,0 +1,12 @@
+Second, you most likely have configured Apache with mpm_prefork and are running PHP as an Apache module.
+Consider setting the sysctl vm.oom_kill_allocating_task, which will cause the process that asked for the memory to be killed instead.
+It has been a long time since my old friend the OOM killer came to visit me.
+This will give you better performance and visibility into what PHP is doing (as it is most likely what is eating up all your memory).
+If you're routinely running out, then your VM just may be too small.
+Modern web server setups use php-fpm and either nginx or Apache with mpm_event.
+This setup is slow, underperforming, not thread safe, and when PHP fails, the failure gets blamed on other components because PHP is well hidden inside of Apache.
+But because the mysqld process was using the most memory at the time, it was the process that got killed.
+Now it is coming by once a week and I cannot figure out why it’s triggered.
+Finally, your droplet appears to have 1GB RAM and 1GB swap.
+First, the OOM killer was triggered by apache2 asking for more memory than was available, not by mysqld.
+What is causing that and what can be done to prevent that?

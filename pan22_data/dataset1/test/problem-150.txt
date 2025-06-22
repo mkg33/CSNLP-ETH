@@ -1,0 +1,13 @@
+Say I was creating a hosted application like wordpress, where people manage their blog.
+The key point I am focusing on is sychronizing the template pages between all my servers.
+So each customer would have 5-10 templates, and say I am running 10 servers.
+Any time a customer modifies a template, it would have to be synch'd to the 10 servers.
+Say I keep a backup of the templates so they can revert to a previous version, that is now 200K files.
+I want to avoid having the template files on a NAS or something because I want to use ec2 for this.
+Anyhow, my real question is, is keeping 200K files synchronized between servers something that is manageable or is that allot of files?
+I don't have experience with managing files as I normally put this sort of thing at the database.
+In reality the templates won't be changed that often, but really I have no idea at this point how often they will be changed but I would imagine early on people will change them until they get their layout setup as they want it.
+Have you looked at using version control for the templates?  Users would update their templates and commit their changes.  Then either periodically, or via a triggered process, the templates would be updated. 
+Given the size of your infrastructure, it might be appropriate to provide a development server where users can edit and test their templates.
+This would making tracing which changes were made simpler and provide better reversion capabilities than a singe backup file.  It could also be used to scan for some code injection issues on the production servers.
+This should scale better than copying files as only changes are transferred.

@@ -1,0 +1,7 @@
+If each query needs 75MB then are they running in parallel or serial? If parallel you must be using more than 100MB today.  If serial than I do not see why you need multiple tempDB files.  
+Does this mean that a query when processed cannot make use of all the tempdb files? If I had a single tempdb of 100MB and most queries needed 75% of this file to process. 
+Then I decided to split the tempdb into 4 logical files of 25MB each (giving me the same 100MB in total). If a query cannot work with mutliple files at the same time, then it won't take long before all the tempdb files are grown to 75-100MB each and I've effectively quadrupled the space requirements.
+There are a lot of blog postings about splitting tempdb into multiple files, and I understand the logic and reasoning behind this, but there is one question that never seems to get asked about a multi-tempdb architecture. TempDB file growth and disk-space consumption.
+The argument is always to grow tempdb files at the same rate to prevent undoing the benefits (and I may be about to answer my own question here).
+If all queries combined need 75MB then you can have multiple smaller files and you will not increase overall space because those files should not grow.
+And the more files you add to tempdb the more overall disk-space you have to commit. IS that correct or does the query processor use any combination of files if needed?

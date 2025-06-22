@@ -1,0 +1,7 @@
+Regarding the 2. point, here is an answer that don't require to modify the server nor require to have root/administrative privileges.
+For me, the culprit was IPv6 resolution, it was timing out. (Bad DNS setting at my host provider, I guess.) I discovered this by doing ssh -v, which showed which step was hanging.
+With named down everything was slow, from ssh logins to page serving from the local web server, sluggish LAMP apps etc, most probably because every request would time out on the dead local server before looking up to an external, secondary DNS that is configured.
+Make sure the IP address match your server IP. One cool advantage is that now ssh will provide autocomplete for this server. So you can type ssh lin + Tab and it should autocomplete to ssh linux-srv.
+Remarkably, a package update of bind on CentOS 7 broke named, now stating in the log that /etc/named.conf had a permissions problem. It had worked well for months with 0640. Now it wants 0644. This makes sense as the named daemon belongs to the 'named' user. 
+Note: Bastien Durel already gave an answer for this issue, however it lacks the debug information. I hope this is helpful to someone.
+ssh -vvv connection went really fine until it hung on the system trying to get the terminal for at least 20 Seconds:

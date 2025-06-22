@@ -1,0 +1,17 @@
+Although it is possible to accomplish writing files to ext, ext2 and ext3, using F/LOSS software, I would advice against it, because it will probably lead to more complexity, low performance and other problems.
+So in short, you will not be able to easily empty /dev/sda3 from Windows, without jumping through numerous cumbersome hoops.
+Possibly the easiest way will be to use a Linux live CD. If you're willing to spend some pennies, personally I used to be a big fan of the Acronis tools (including the boot CDs), but I haven't bought an upgrade in some years.
+/dev is the directory that contains special device files, such as /dev/sda3, which is the third primary partition on your first SCSI hard disk.
+If you want to keep the partition, with it's ext? file system, but without the files and folders, you can install an appropriate filesystem driver in Windows. This will allow you to create/modify/delete files in that partition the same as in any Windows partition, except there will probably be minor issues because Linux filesystems follow slightly different rules to Windows filesystems (e.g. different permissions flags).
+Now you have successfully created space to make an attempt for the Mint installer again. If I were you, I would take a look at the official Mint documentation and also read this blog post on partitioning, it seems to me that you might need some guidance on that.
+I believe the ext2fsd project supports the ext-family filesystems in Windows, though I've never tried it myself.
+These file-systems generally cannot be read and written to from a Windows based OS, without loading special drivers, like Ext2Fsd
+In order to write to a volume — also called partition — in Windows, you need to either mount it in a NTFS folder, or assign a drive letter, like C: to it. Windows also needs to be able to be compatible with the file-system of a respective volume, otherwise it will not be able to write to it.
+Emptying /dev/sda3 is done here with a delete and recreate. I assume all of the data on the partition is either backed up or unimportant. Following these steps will erase all data on /dev/sda3.
+Use the menu's to delete sda3 and create a new partition equal in size. Use Linux as file-system (often number 83). You have now successfully removed all pointers to the data on sda3. Keep in mind that the actual data isn't erased. This post at HTG details it good enough for you to figure it out on your own, if you feel the need to securely wipe your data. I suspect you do not, though.
+However, it's probably much easier to delete the whole partition, then recreate it (or resize another partition to re-use the space). Windows may or may not refuse to delete a partition it doesn't understand, but there are third-party tools to do the job, including free ones.
+Everything on UNIX-systems is a file. It is a paradigm you'll need to get used to if you are diving deeper into Linux.
+Linux can be installed on a variety of different file-systems. ext?, BTRFS, ZFS, JFS and XFS are just a small subset of file-systems that can be used for a Linux installation.
+Use a live CD or boot a live distribution from USB stick, empty that partition => done. Otherwise you would need access to the linux filesystems (guess ext4 or btrfs) which is not very well supported within windows.
+The cfdisk program will now be started. If you get an error similar to "Partition ends in the final partial cylinder", use fdisk or parted.
+Using Linux to solve this problem isn't that crazy, after all you used a Live Linux system to install Mint.

@@ -1,0 +1,10 @@
+The question probably wasn't asked because you don't need an alternative. For me, it's:
+Tile tiles[MAP_HEIGHT][MAP_WIDTH]; if the size is fixed.
+std::vector<Tile> tiles(MAP_HEIGHT*MAP_WIDTH); otherwise.
+I'll explain what I do for a specific case of tiled maps: this is for effectively infinite maps, ones where the world is generated on demand but you need to save modifications to it:
+I define some cell size "N" and split the world up into squares/cubes "NxN" or "NxNxN"
+A cell will have a unique key. I generate mine by hashing or using directly the formatted string:"%i,%i,%i",x,y,z (where x,y,z are the world coordinates of the start of the cell divided by N)
+Storing the tiles indices in arrays is straightforward as you know you have NxN tiles or NxNxN tiles. You also know how many bits your tile type takes up. Just use a linear array. It makes loading and saving/releasing the cells simpler to handle too.
+Any accessor merely needs to generate the key for the cell (to make sure it's loaded/generated, then get the pointer to it), then use a sub index to look inside that cell. to find the tile value at that specific point.
+Extracting the cell by its key, I currently use a map/dictionary as generally I process whole cells at once (wouldn't want to know how bad a hit it would be to do a dictionary lookup per tile, eek).
+Another point, I don't keep mobs / players in the cell data. The actively dynamic stuff needs its own system.

@@ -1,0 +1,16 @@
+That way you can have more restrictions in place for outside messages, more strict spam/attachment control, and less restrictive rules for internal mail (for example you might consider larger message size on internal server).
+Nice idea is to have two separate machines (physical or virtual) for incoming and internal/outgoing SMTP traffic.
+The reject_non_fqdn_hostname option catches a lot of servers, but your mileage may very depending who you receive mail from.
+My first line of defense is my firewall, and I put it to good use since it provides the highest ROI and is exceedingly simple to implement.
+This way if a mail server is unknown to your SMTP, it will have to wait a couple of minutes before trying to deliver a message again, thus relieving your spam filter and greatly reducing UBE.
+Since I do not wish to make my network accessible to the entire world, I unapologetically block most of it (your mileage may vary, obviously).
+Use SPF, SpamAssassin, Razor, Pyzor, DCC, Graylist and use a setup like the other answer example:
+Next, replace Sendmail with Postfix -- yet another high-ROI modification.
+I can count on one hand the number of daily UCE attempts to my mail server, and, along with some of cop1152's suggestions  (to which I would add no domain catch-alls), I average less than one successful delivery per month.
+Using greylisting (for example postgrey) can be an excellent idea, if you don't want to use SpamAssassin.
+Check out http://www.gabacho-net.jp/en/anti-spam/anti-spam-system.html - its a set of regex block rules for Postfix that block a high-amount of dynamic IP addresses without catching too many legit servers.
+I also run postgrey (http://postgrey.schweikert.ch/) which helps catch what the regex doesn't.
+Just put it high on smtpd_recipient_restrictions list, like that:
+Finally, I used Jim Seymore's Postfix Anti-UCE Cheatsheet (minus some RBL and other external UCE list sites) to choose what would work best for me.
+And remember to change default delay time from 300 to something higher, preferably random (but not higher than 1200-1500).
+I also suggest acquiring good blacklist of popular spammer CIDR classes, filter out incoming server SMTP traffic (not client) from ppp or dynamic domains.

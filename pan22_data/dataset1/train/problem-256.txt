@@ -1,0 +1,10 @@
+Your premise is incorrect: it is not postfix, or the machine, that sends email without identifying host information; it is the process sending the mail.
+That said, not all processes can properly set the hostname on submission; for such non-compliant clients, set myorigin to a decent value for your environment, and add 
+For instance, if each VM's postfix instance has myorigin = $myhostname, this will convert ANY addresses without host or domain information to user@$myhostname.
+This uniquely identifies both sender and recipient.
+HOWEVER, each VM does not need to run postfix, and truth be told, probably should not run postfix.
+Instead, configure a nullclient to submit mail to one MSA (which may be postfix), and deal with all mail on the one centralized server.
+I have several ubuntu servers / desktops running on the same machine using kvm (under ubuntu server 12.04)
+With postfix on each virtual machine I've redirected each root's mail to my gmail account. 
+The problem comes that some daemons send notifications without identifying the machine name. So, when I get the email, I dont know which virtual machine has sent it.
+Is there any way with postfix conf to add a custom text like "asterisk_server:" before the subject, to identify the comoputer from the email has been sent?

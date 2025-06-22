@@ -1,0 +1,11 @@
+I have a cluster of machines running Centos 7.3, and I am using Kerberos / LDAP for authentication. Kerberos / LDAP are as packaged in FreeIPA 4.4.0.
+Some hosts have an address in 192.168.2.0/24. I'll refer to this as the "secondary" network. For hosts that have this second interface, there are corresponding extra A / PTR entries in DNS that associate a secondary hostname and the secondary IP address. In all cases, the secondary hostname is <primary hostname>-eth1.
+I have observed that there are no SSHFP DNS records being generated for the secondary hostnames. All of the same SSH host keys should be associated with the secondary hostname as are associated with the primary hostname. However, this is not happening.
+Where I am having trouble is on the secondary network. For example, I can SSH to host-1 in a passwordless manner (i.e. SSO is working on the primary network), but I cannot SSH to host-1-eth1 in a passwordless manner (i.e. SSO is not working on the secondary network).
+As with the server installation, I also had to manually add DNS PTR records for the clients. The forward A records, as created by FreeIPA, have been fine in all cases.
+I do not get prompted for a user password when I SSH to a host using its secondary hostname. It is the prompt to accept an unknown SSH host key that I cannot get around when attempting to SSH to a host using its secondary hostname. And this is happening because...
+I am working on getting SSO implemented across our cluster. SSO is working fine on the primary network, but not on the secondary network.
+How must I use FreeIPA to get the needed SSHFP DNS records generated for the secondary hostnames? Obviously, more than the ipa-join I am doing is needed.
+I have to do this since, apparently, the --auto-reverse flag to ipa-server-install does not work (or, perhaps more likely, I don't understand it).
+After the server installation completes, I also have to manually add the following PTR record to DNS:
+As before, this created forward DNS A records, but I had to manually add corresponding DNS PTR records.

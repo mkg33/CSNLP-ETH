@@ -1,0 +1,11 @@
+If those systems used the same type of battery-backed NVRAM as most desktops tend to do as EFI variable storage, those systems probably would have been/will be just as bricked when the system board's battery runs out.
+These variables are not located in the EFI partition, but in the non-volatile memory of the motherboard - the same place that holds the system's BIOS settings.
+But the presentation style hides the fact that there can be many more of these variables.
+In /sys/firmware/efi/efivars, Linux offers an interface that reveals all those variables and allows the root user to modify them (as much as the firmware allows).
+If your system supports Secure Boot, there will be some standardized EFI variables related to that; if your firmware vendor so decided, all the "BIOS settings" might be accessible as UEFI variables.
+In Windows, if you have a system that is booting in full UEFI mode, you can open a command prompt as an administrator, and then type bcdedit /enum firmware to see the some of the boot-related EFI variables and their values.
+So the firmware bug that results in bricking actually works as a planned obsolescence implement too - unless an UEFI firmware update fixes it before the batteries get critically low.
+But if you have a system model which is known to have a buggy UEFI firmware, I'd check the firmware versions, and if newer versions are available, would probably upgrade first just to be safe, especially if firmware release notes say that the new version fixes important bugs.
+Your first two links are not about formatting the EFI partition, but about deleting the EFI NVRAM variables.
+Formatting the EFI partition should be safe, as the system should certainly remain usable even if a failing system disk needs to be replaced.
+And turns out that some early UEFI firmware versions will obey the command to delete all the UEFI variables, but aren't programmed to recover from the aftermath of such a situation.

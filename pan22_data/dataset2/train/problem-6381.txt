@@ -1,0 +1,10 @@
+https://forums.intel.com/s/question/0D50P00004905stSAA/hardware-limitations-on-usb-endpoints-xhci?language=en_US
+I tried connecting multiple usb 3.0 enabled devices to my ubuntu 12.04 machine. But found out that at a time not more than 9 devices could be seen connected. I tried monitoring the kernel logs at /var/log/kern.log, where i found out that on connecting the 10th device, the below error was there:
+Some forums have suggested disabling the USB 3.0 support should force the devices to work in USB 2.0 mode, and it should solve the problem. And this was true. Disabling xHCI support from BIOS did the trick for me.
+I assumed this should be a bug on the older Ubuntu 12.04 setup(or the usb driver may be). Therefore, i upgraded my system to Ubuntu 16. But here also the same problem exists. What if i want to use my devices with USB 3.0? What if the option to disable xHCI support from BIOS is not present on some motherboard?
+2) you lose further endpoints due to hubs, using a USB2 cable to a USB3 hub gives you a few slots back
+There are reports that the Intel 8 Series USB 3.0 XHCI host controller only supports 96 endpoints, and practical limits can be hit earlier.
+3) more generally you should disable USB3 if you can do without it (remove the USB3 kernel driver, or easier if you can, disable USB3 in your bios). Using a USB3 chip in USB2 mode does not help, you have to disable the USB3 so that your motherboard reroutes the port to a USB2 controller that doesn't have that endpoint limit
+Using a USB2 hub does not fix that however because you're still using the USB3 chip in USB2 mode, and the endpoint limit remains the same, sadly.
+I dealt with this problem too and it took me a while to find the real problem and solutions. It's a long page, so you can go read it there http://marc.merlins.org/perso/linux/post_2018-12-20_Getting-Around-USB3-xhci-32-Device-Limit-Max-number-of-devices-this-xHCI-host-supports-is-32.html 
+4) if you cannot disable USB3, get a USB2 only PCIe card and that one will truly give you 120 devices or so.

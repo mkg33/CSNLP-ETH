@@ -1,0 +1,5 @@
+mv is most definitely not atomic when the move that it performs is from one filesystem to another, or when a remote filesystem cannot implement the mv operation locally. In these instances mv is implemented by the equivalent of a cp followed by rm.
+Now, moving on to the question of atomicity across multiple files. mv is at best atomic only per file, so if you have a number of files to move together, the implementation is such that they will be moved one at a time.
+No. mv dir1/* is the same as mv dir1/file1 && mv dir1/file2 && mv dir1/fileN. Each individual move is atomic, but not the full set.
+If you really need a group of files to appear in a destination simultaneously, consider putting them in a directory and moving that directory. This single object (the directory) can be moved atomically.
+For any individual file, the move or rename performed by mv is atomic provided that the file is moved within the same filesystem. The atomicity does not guarantee that the file is only in one place or another; it is quite possible that the file could be present in the filesystem in both places simultaneously for "a short time".

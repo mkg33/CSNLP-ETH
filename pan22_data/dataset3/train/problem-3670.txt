@@ -1,0 +1,15 @@
+I'm not quite sure what they're doing...or if I need them...
+A port scan would reveal any network accessible services
+Typically this gives you a pretty good picture of the long-running processes on the box, which are commonly its main function.
+Hope that helps; let us know if you run into something in particular we can help identify!
+Notable exceptions include mail - see local syslog and mailq for details on what's being processed by sendmail - and inted-type run-on-demand services, for which /etc/xinetd.conf is a good bet, at least for most recent Redhat-based Linuxes.
+ps -ef for processes, netstat -a for services listening and tcpdump to see what traffic is going back and forth are great suggestions.
+How would you guys and gals go about finding out the purpose of these machines?
+I would start by seeing what services are running... Then attempt to match those to what they are hosting.
+Of course, what firewall is there is another thing to be checked out, try lsmod to look for firewall modules and check out /var/log
+I have a bunch of linux virtual servers left over from a previous IT department.
+Or you can tell nmap to scan a certain subnet/mask
+Do NOT under any circumstance power off what you have no idea it's doing as you could break what ever it is running an if its mission critical( if that is the route your dying to take, pause them)... You should also check to see if there any sort of documentation.
+I'd then compare my process list against lsof run as root to see which processes are listening on the network, and which are holding open files.
+In addition, since it's Linux, there's a good chance there's a firewall running - check out the rules set-up for it, should give you a good clue what services are expected to be used on this host and remote hosts that this host connects to.
+I was surprised to see that the first answer suggested wasn't ps -ef, so I'll add it: if you want to know what a system is doing right now, read the process list, paying particular attention to what root is up to, and whether there are processes owned by conspicuously-named users (mysql, named, etc).

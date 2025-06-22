@@ -1,0 +1,6 @@
+The easiest way to do that is to paste the entire code into a (text) file and save it as something like gpio_poweroff.py, it will be helpful to mark it as executable with chmod u+x gpio_poweroff.py and place it in /sbin with sudo mv gpio_poweroff.py /sbin.
+So you will need to wire a switch between the GPIO pin that is 26 (physical pin 37 IIRC) and rather than rely on an internal pull-up I'd also connect a 10K Ohm resistor between that GPIO pin and 3.3V.
+Finally you need it to be run when the Pi is started up, and that varies on something that I do not know about your system.
+However I am not certain that your system will have such a file - if it does then it should be Ok to use it.
+If it was my system I would insert the command to run it: /sbin/gpio_poweroff.py & into the file /etc/rc.local {the & is important, it means let it run in the background, don't wait around (for until that button gets pressed otherwise) for it to finish}.
+Then you need to get that code to be run as a user with permission to use the GPIO pins - for this the root user is a reasonable choice because you do not want a normal user to interfer with it, and you want it to start when the Pi is booted up and to be running until (it tells the Pi to) shutdown.

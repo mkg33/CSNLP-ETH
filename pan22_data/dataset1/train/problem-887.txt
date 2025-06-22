@@ -1,0 +1,15 @@
+Looks like the advskew on the primary is saying that (0|primary) should be MASTER versus (20|secondary) should be BACKUP. Implicating(?) a lack of communications between the two carp0 interfaces.
+You may already have checked these, but some general diagnostics procedures on OpenBSD.
+As it seems you are using FreeBSD (i.e.not using OpenBSD) I hope my answer is clear enough for you to adjust and make useful.
+Do you have net.inet.carp settings similar to the below ?
+One CARP interface working, while the other doesn't seems to indicate that the correct system configurations have been made. It doesn't hurt to confirm, sometimes we make the changes with a command-line setting and forget to set in the system configurations.
+Carp packets need to be recieved for the firewall to adjudicate whether it needs to become MASTER/BACKUP
+Revisit your firewall configuration to make sure that proto carp is passed in and out on both carp physical interfaces.
+You can confirm through adding block log all at the beginning of your firewall ruleset, and then using tcpdump on the pflog0 interface to confirm whether the carp packets are being allowed through  or not.
+An additional check, that pfsync packets are allowed through the firewalls, to ensure that firewall states are being shared between the two hosts.
+I have two machines, each configured identically as a firewall/load balancer for a busy website. I have set them up with CARP and pfsync on both the internal and external interfaces. The internal interface is behaving as expected (primary listed as MASTER and secondary listed as BACKUP)
+On both machines, the network interfaces are as follows:
+I've rewritten the IP addresses and MAC addresses below. The networks are as follows:
+And here's the /etc/rc.conf excerpt from the primary:
+And here's the /etc/rc.conf excerpt from the secondary:
+What I don't understand is, the carp status on carp0 is MASTER on both machines when the status on carp1 is as it should be (MASTER on the primary and BACKUP on the secondary). What am I missing? Where should I be looking for clues?

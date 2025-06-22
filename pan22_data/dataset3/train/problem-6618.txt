@@ -1,0 +1,9 @@
+We noticed that when we made this change, all of our code that did any sort of ssh root@thisismyhostname "shutdown -h now" would hang, when previously it would initiate the shutdown, return EXIT_SUCCESS and close the connection.
+The problem that now happens is that probably 1/20th of the time, there seems to be a race condition that happens where the shutdown will get enough CPU to take the system down, which causes SSH to return 255 (the return code for connection closed) instead of returning EXIT_SUCCESS for the shutdown command run from SSH.
+With systemd however, it seems that the connections remained open.
+We (unfortunately) have more than one place in code that calls shutdown, and I feel like checking for either EXIT_SUCCESS or SSH's 255 is somewhat of a hacky workaround.
+We had an old version of Ubuntu (12.04) that used sysV.
+One of the major changes was the change from SysV to systemd.
+Does anyone know of a way to get Ubuntu 16.04 with systemd to return EXIT_SUCCESS after calling systemctl poweroff?
+Due to LTS running out for it, we needed to switch to 16.04.
+I found the fix to that, which was that we needed to install and enable PAM and had to change from shutdown -h now to systemctl poweroff so that systemd would iterate through the connections and close them prior to shutting down, the functionality we want.

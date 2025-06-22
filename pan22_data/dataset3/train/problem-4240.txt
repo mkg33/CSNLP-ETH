@@ -1,0 +1,18 @@
+First, make sure you haven't just made a mistake interpreting the reports you are seeing.
+No, DMARC is designed to only require either DKIM + ADKIM or SPF + ASPF to pass.
+(Forwarded messages will fail SPF, while a DKIM signature can survive forwarding.)
+Are they DKIM signed, but with a domain that's not yours?
+Most likely, the messages that are failing SPF but passing DKIM (signature valid and aligned) are messages that have been forwarded.
+Is there a way to enforce DMARC to fail/reject mail that doesn't pass BOTH DKIM and SPF?
+If third parties are able to pass DKIM tests as you, and you did not authorise them, then you have a security problem, and this is what you need to fix.
+Take a look on how the identifiers must match up here: DMARC Email Identifiers
+I find it hard to understand how DKIM passes the alignment test, if the d= key doesn't match the from then it will fail the ADKIM test.
+A pass for either of the two is enough to confirm this.
+DMARC is working as designed; if at least one of SPF or DKIM passes (and is aligned), the message passes DMARC and is delivered.
+But if emails not authorised by you are DKIM signed with your domain, this indicates you're doing something wrong.
+Thus there is no way to force DMARC to require both pass, and there should be no reason to do so.
+Under the basic assumptions underpinning DMARC, nobody should be able to pass either a DKIM or SPF test as your domain, unless the mail is coming from a server you control.
+Our end goal is that unless it is fully aligned (both DKIM AND SPF), the message will be rejected
+Even if you didn't specify adkim in your DMARC record, it's defaulted to "Relaxed" which still wouldn't line up.
+The domains that we do recognize are fully-aligned.
+We have been narrowing the number that are failing, but there are some domains in our aggregate (rua) report that are passing just DKIM and we would rather that they fail our DMARC because we don't recognize them.

@@ -1,0 +1,9 @@
+Other users reported that having IPv6 enabled in the network adapter can cause delays, but IPv6 is disabled.
+I am unsure where to continue my investigation. Does anyone have any insight? I can provide any required information.
+Explicitly specifying credentials on the CLI makes no difference. I also tried disabling the system's 'Detect network settings automatically' as some users reported that this impacted SVN performance, but no impact.
+I used Wireshark to inspect the packets, and no traffic travels between the server and SVN server during the 30 second delay. After the 30 second delay, the server sends two packets that wireshark identifies as Application Data, to which the server responds promptly.
+I enabled verbose logging (using --config-option servers:global:neon-debug-mask) and the last thing that happens before the 30 second delay is the SSL identity is confirmed.
+The issue occurs 100% of the times that I have observed, across all of our internal repositories I tried. I cannot test this issue with an external repository as the server does not have internet access.
+If I update a specific file on my workstation, the operation takes less than two seconds. If I try it on the server, it seems to connect, wait 30 seconds, and then perform the update.
+It doesn't seem to be related to network issues, as I can browse the repository from the server through a web browser without any delay. The issue also manifests across both SlikSVN and TortoiseSVN.
+I would like to add more info to a possible solution.  We have had a very similar problem with subversion for a long time, our delay is about 18 secs.  All of our Dev work is disconnected from the internet.  We captured some traffic using wireshark and found that some app is requesting Windows Updates.  Since microsoft.com is not accessible the requests always need to time-out.  We believe subversion is requesting the updates but we are clueless as to why subversion would do that.

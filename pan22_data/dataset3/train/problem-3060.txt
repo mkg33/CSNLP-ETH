@@ -1,0 +1,8 @@
+The closest I've found is sharded cluster, but that would require setting up multiple shards and each with replica-set and criss-cross where each replica-set is located between site A and B.
+I am looking for a method to configure MongoDB servers across 2 different datacenters where they remain in an active-active configuration.
+This would also mean that regular writes to a shard with the primary Mongo instance located in the other datacenter to be traversing networks and be considerably slower.
+What you are asking for is "master-master replication"; MongoDB does not support this, it only supports primary-secondary replication:
+Furthermore, site B should also be able to accept any writes and replicate that to site A.
+I've done quite a bit of searching and I have yet found a solution.
+In the DR situation, and site A is gone, site B would have the complete data set and be switched to instantly (DNS only most likely) and nothing would need to be changed via the application.
+Site A is the normal Production environment that customers access and all writes are sent here, but all data writes are also replicated to site B, which is the backup.

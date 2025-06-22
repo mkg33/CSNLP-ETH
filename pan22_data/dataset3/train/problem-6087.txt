@@ -1,0 +1,14 @@
+Where 172.16.xxx.xxx is the IP addresses assigned by openvpn.
+I don't think memory usage limits are possible, maybe you could pre-approve queries within the proxy layer?
+My main fear in using it is that as a non-expert I have no idea what the possible vulnerabilities are and how to close them.
+I guess you would need to create an in-between HTTP proxy with all this "business logic", and only allow ElasticSearch access from the localhost.
+I'm guessing some of this has to be done at an application level and I can't expect you to write this for me, however the default configuration is far too open and even if I provide a custom API layer to this someone could easily bypass it and communicate directly with the server.
+I did something similar using Nginx running in front of ES.
+There appears to be a serious lack of information on this despite the fact that as installed elasticsearch is extremely exploitable.
+Can someone explain to me a method of locking down elasticsearch so that I can do the following within a secure environment:
+In my opinion the only way to secure ES in the way you ask is to lock it behind another application layer and have that layer handle https/ssl transport, authentication and authorization control.
+It is possible to setup "authorization" in Nginx based on the keywords in the URL.
+This way direct access to ES is blocked and you get to determine and enforce any policies you'd like (yay!
+On ES side of things there was a jetty ES security plugin developed, do not know if it was successful, when I was deploying ES first time the plugin was about to be released so look at it:
+"even if I provide a custom API layer to this someone could easily bypass it": they cannot if ES only accepts connections from the localhost.
+Refer to the use case defined in this document: http://www.elasticsearch.org/blog/playing-http-tricks-nginx/

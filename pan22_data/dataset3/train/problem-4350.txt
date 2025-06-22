@@ -1,0 +1,17 @@
+The final two lines remove the VPN gateway from the default routing table, and add back my local network gateway.
+Make sure you give it an S number higher than the openvpn link!
+The top portion sets up the variables, with some perl and awk statements used to pick up the dynamic IPs and gateway addresses.The second section cleans up the tables that you setup in ipruote2, and copies the current routing table to them.
+I'm not convinced the next 2 lines are necessary, but they enable ip forwarding for use in iptables.
+You can give these tables other names that make more sense, just be consistent.
+So, most of this is above, but the whole solution was as follows:
+My connections out that don't go to ports 80 or 443 are using my local connection, but all web traffic is going over the VPN, and bypassing the controls put in place by my ISP!
+The POSTROUTING and PREROUTING ensures that traffic originating from an address gets the reply!
+It then creates two new routes, and two default gateways for them, with the VPN one going over the VPN, and the internet one going over my local network.
+Edit /etc/iproute2/rt_tables and add 2 lines at the bottom:
+The VPN is started as the machine comes up, and this script is run a few seconds later (I may add a sleep statement just to ensure the VPN is fully initialised before running this script).
+Then you need to create a script (I called it rt_setup) in /etc/init.d
+Next the script creates some rules on where to look for traffic originating from the relevant IP address, and where to look if the traffic is specifically marked.
+Then, obviously, link it from /etc/rc2.d (I use ubuntu, runlevel may differ for you).
+As I said in my comment under my question, I wouldn't have even started looking at this route without the suggestion of @anttir.
+Off the back of that suggestion, the sites http://blog.khax.net/2009/11/28/multi-gateway-routing-with-iptables-and-iproute2/ and http://linux-ip.net/html/adv-multi-internet.html have been very useful (even if the code is not 100% complete!)
+The final iptables PREROUTING is the part the tags the traffic, and ensures that anything going to ports 80 or 443 is marked to use Table 2 (VPN)

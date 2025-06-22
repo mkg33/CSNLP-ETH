@@ -1,0 +1,11 @@
+about a month ago, Samsung unveiled a 16 TB drive (technically, it's 15.36 TB), which is also an SSD: http://www.theverge.com/2015/8/14/9153083/samsung-worlds-largest-hard-drive-16tb
+(I'd use rsync -a -P and add --compress if your network is slower than your drives.)
+Generate the file list with find -type f (this should finish in a couple of hours), split it to small chunks, and transfer each chunk using rsync --files-from=....
+If the old server is being decommissioned and the files can be offline for a few minutes then it is often fastest to just pull the drives out the old box and cable them into the new server, mount them (back online now) and copy the files to the new servers native disks.
+tar zcf - <your files> | ssh <destination host> "cat > <your_file>.tar.gz"
+Modern (3.0.0+) rsync uses incremental file list, so it does not have to build full list before transfer.
+You'd still have to copy all the files, but since you don't have network latency and probably can use SATA or a similarly fast technique, it should be quite a lot faster.
+Splitting the transfer per top or second level directory will optimize this even further.
+With that, I mean transfering everything onto the same drive, then physically moving that drive over.
+tar zcf - <your files> | ssh <destination host> "tar zxf -"
+So restarting it won't require you to do whole transfer again in case of trouble.

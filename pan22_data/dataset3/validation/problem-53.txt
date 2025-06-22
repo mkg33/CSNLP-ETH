@@ -1,0 +1,26 @@
+Additionally you have a further piece of infrastructure you need to monitor.
+Yes you can, but profiling without using a client-based profiler requires that you pass the requests through something that can catch them -- In this case, that's going to be MySql-Proxy.
+We mark queries with comments, as mibus suggested above.
+Once you are armed with that information you can go about deciding what to do.
+Caching and adding slaves will increase performance but will add some additional complexity to your network and application.
+But you still can't see system load caused by the queries.
+Another method that's not so complicated but may work is to set your slow-query timeout to a very low value, and then make sure you turn the slow query log on.
+SHOW FULL PROCESSLIST provides a list of all queries and tasks the MySQL is currently doing.
+If you are read bound, there are things that can help.
+Indexing tables properly can give a significant boost to read performance in many cases.
+Can be helpful anyway, and you could hack your monitoring tools to graph the data to look for correlations with your performance.
+If you have a lot of identical queries adding a cache may help.
+That way you'll see anything that takes longer than a few seconds.
+This won't help you if the developers (or their ORM) makes a bunch of basic queries and then summarizes the data in the application, of course.
+Both of these will tell you what commands are running, where they are coming from and how long MySQL has been trying to service them so far.
+It needs to be run as a user with either 'PROCESS' or 'SUPER' priveleges in the database.
+I would be careful with running MySQL Proxy on a production system.
+mytop is very good for showing what the server is doing on an ongoing basis.
+One possibility is to make sure the different processes use different credentials to connect to mysql.
+There's instructions on their website on how to set it up to snag and profile queries, and then you can run explains and other operations against the ones that seem to be spending a long time.
+We then regularly write the FULL PROCESSLIST output to files.
+When we have performance problems, we import these files into the database and munge the data to see long queries.
+If the the system is write bound you may need to partition your data.
+To differentiate the source, you can use different logins for each 'realm', OR prepend the realm in all queries.
+I'm pretty sure mysql logs the username that executed the query in the query log.
+Have you tried logging into the mysql service and issuing a SHOW FULL PROCESSLIST or using mytop to see which queries are running?

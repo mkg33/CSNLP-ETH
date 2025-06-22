@@ -1,0 +1,15 @@
+If you want to select all the unread messages and see their dates, create the index on the READ column and include the DATE column.
+And of course, if there are any other predicates on the query, and the clustered index if any.
+So which is better, a BIT and a DATETIME or just a DATETIME for performance?
+How big are the message bodies and are they stored inline?
+Are you expecting most messages to have the flag, or most messages not to?
+If you were asking the opposite question, how to efficiently query the not-NULL rows, I would have said use a filtered index.
+Performance of a particular design depends on the distribution of data to a large extent, and the access path.
+Look into creating the index with included columns.
+You will have to benchmark with some representative data and access patterns to find out.
+But you can of course create the table with the boolean in and just not use it if you find the latter is better - it only adds an overhead of 1 byte per row.
+For example, are you likely to want to access all unread messages within a certain timeframe?
+Also, you can set the Boolean READ column with a default value (lets say 0) that corresponds to unread, instead of using NULL.
+I'm afraid this one can't be answered with just theory.
+I am not sure if there will be any performance benefits to this though.
+If you want to select a date range and count the number of read/unread messages, then create the index on the DATE field and include the READ column.

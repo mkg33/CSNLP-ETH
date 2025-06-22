@@ -1,0 +1,12 @@
+But my recommendation is to use CREATE TABLE #x syntax.
+SQL will place a lot of locks in system tables as long as your query tries to fetch your data to insert into your temp table.
+If you use a where clause that obvious will not return any rows or the create table syntax, the locks will be held for a short period of time.
+Essentially, contention on this resource indicates contention with DDL operations in tempdb and is caused by creating/destroying too many temp tables or temp table variables.
+This will cause locking on several tempdb system objects until the SELECT INTO statement has completed.
+Do you have a lot of SELECT INTO statements in your SQL Code?
+The key is to either reduce the use of temp tables and temp table variables or to evaluate the context of their use to see if they are being cached.
+There used to be an performance issue with traceflag T1118 in SP2, but Ms released a hotfix, and it should be fixed in SP3, like in your case.
+I blogged about this at http://www.mattwrock.com/post/2011/09/10/Latch-waits-on-21103-You-are-probably-creating-too-many-temp-tables-in-Sql-Server.aspx Contention here is not going to be alleviated by trace flag T1118 or adding files to tempDb.
+I realize I'm late to the party here but my team had a run in with 2:1:103 this week.
+I agree with mrdenny about how the temp tables are created, you should never create a temptable with SELECT * INTO #x FROM TableA unless you have a WHERE clause like this :
+See http://technet.microsoft.com/en-us/library/cc966545.aspx for good details here.

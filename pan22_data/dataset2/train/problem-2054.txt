@@ -1,0 +1,8 @@
+I know on my Gentoo box, the following line in /etc/pam.d/su allows users in the wheel group to su without a password:
+I created an AD group called LinuxAdmins and I'd like to have a way for people in that group to either be able to su on certain Linux servers without the root password or sudo on those machines using their own passwords. 
+The way openSUSE configures AD, it sets the username with the domain prefixed. So my username would be MYDOMAN\djsumdog. If I try adding either of the following lines to the sudoers file, I still can't sudo with my user. I keep getting "MYDOMAIN\djsumdog is not in the sudoers file.  This incident will be reported." I've tried both single and double slashes for the user and group names.
+I'm using openSUSE 11.4 which has Active Directory configuration built-in to Yast (which does all the pam_winbind, Kerberos, nss, Samba-client stuff for you) and I can successfully authenticate against my AD domain. 
+...and saw that my group was actually MYDOMAIN\linuxadmins, all lower case. I then added the following to my sudo configuration:
+I know sudo with the user's password is more secure, but I would happy if I could get either su or sudo working by validating the user against his or her AD group.
+But this doesn't seem to work in openSUSE (even with local users), much less AD users. I tried using the pam_winbind.so module as well:
+But I don't think that will work as the require_membership_of parameter seems to be for the primary authentication against the entire machine. 

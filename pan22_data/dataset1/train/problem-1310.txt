@@ -1,0 +1,5 @@
+I am not seeing this in the documentation, but what happens when the Oracle 10.2 audit trail is full? Does it just not making any more audit records? Overwrites the oldest records? Shuts down the database? And is there any way I can change that?
+Yes, I know 10.2 is not supported, but I don't have control over that. And yes there are procedures in place that should never need me to find out first-hand. But in cases of emergency failure of the auditing operations, what is the default behavior if the audit trail becomes full?
+Your database essentially freezes and does not allow any new connections or transactions that would be writing into the audit logs.  Your only bet would be to connect directly on the server, e.g. "sqlplus / as sysdba" and then add space (or truncate it if auditing is not important to that database).
+For this reason we have scripts to backup aud$ and truncate it regularly.  We don't want horrible freezing going on in production...
+You also want to move aud$ away from SYSTEM, something like this:

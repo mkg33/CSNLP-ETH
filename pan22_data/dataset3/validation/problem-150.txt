@@ -1,0 +1,12 @@
+$nsm = New-Object 'System.Xml.XmlNamespaceManager' ($document.NameTable)
+Go to Microsoft SQL Server Management Studio, right click on any of the server that you have already connected, click "Register" and select the server, password should be populated already if you have this server saved password.
+$nsm.AddNamespace('rs', 'http://schemas.microsoft.com/sqlserver/RegisteredServers/2007/08')
+    $connString = $server.ConnectionStringWithEncryptedPassword.InnerText
+$attr = $document.DocumentElement.GetAttribute('plainText')
+Then click "Save" Now go to Main Menu -> View -> Registered Servers, you will see the server you just registered, now right click on it and Click Tasks -> Export, specify a file name and uncheck "Do not include user name and passwords in export file", the exported server will have an extension like: ".regsrvr" now by using the following script you will see the connection string decrypted:
+    if ($connString -inotmatch 'password="?([^";]+)"?')
+    throw "The file does not contain encrypted passwords."
+$servers = $document.SelectNodes("//rs:RegisteredServer", $nsm)
+    $connString = $connString -ireplace 'password="?([^";]+)"?
+    return [System.Text.Encoding]::Unicode.GetString([System.Security.Cryptography.ProtectedData]::Unprotect([System.Convert]::FromBase64String($base64String), $null, [System.Security.Cryptography.DataProtectionScope]::CurrentUser))
+The Answer is a simple version based on previous answers in this post with some necessary fixes.

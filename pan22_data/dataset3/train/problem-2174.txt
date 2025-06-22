@@ -1,0 +1,27 @@
+If the CPU isn't pegged, fire up some more threads on the same machine until it is pegged and see how the DB scales.
+But when I filled tables with dummy data (200 of millions each), speed of inserts dropped to 250 - 300 per second.
+Your only option now is to introduce more DB machines (shards) and split the work.
+It is critical to figure out that bottleneck first, then we can optimize the hell out of it.
+On the app side, go all the way back to your single-threaded batch-insert solution (1/2/3k at a time) and begin running it and login to the DB machine and run a 'top' -- see how much time the DB process is taking AND how much (if any) wa% time the machine is showing.
+Then, go to the client machine running the batch insert and check the CPU load -- is it pegged?
+TIP If hardware changes are out of the question, depending on the filesystem you are running (Linux) you can try disabling logging or metadata writing for the DB to slightly improve performance at the filesystem level.
+It doesn't matter how much CPU the DB was taking or how saturated your app client was; if you are hitting I/O latency issues on the host DB, that is as fast as it will EVER go for you.
+This gave me about 1k rows per second, but on empty tables.
+I have a table of 500 millions of rows (and growing)
+Let's say you had next to no wa% time but your CPU is pegged fully by the DB process.
+Basically I want to understand what is (what could be) the bottleneck first.
+Do not commit in the middle of the inserts, just at the end.
+Creating more tables on the same host machine isn't going to help, if anything it will increase your disk seeks (to get to the other tables on disk to append to) and will slow things down.
+You can do something similar on NTFS, but this will only give you a little boost.
+You would need to explicitly address a different partition with each insert ...
+Table is partitioned by insert date, table has about 60 columns - most of columns are VARCHAR2(2000 BYTE)
+Again, you're done with your research if this is the case.
+I think you may have already tried that, so my guess is that either your client host was already pegged (and more threads isn't going to make a difference) or the DB was already hitting its limit and can't scale any farther.
+Doing raw inserts on an unindexed table that has no garbage in it is essentially an APPEND operation which should be going as fast as the disk can handle the writes.
+If so, fire up some more machines doing the exact same batch inserts and see if you can get a linear ramp.
+I did the following to improve performance of inserts:
+Invoking direct path insert with the append hint causes an exclusive lock to be taken against the entire table, so having multiple threads performing the insert will not help.
+You won't be able to do that with a table partitioned on insert date, most likely, but you could use composite partitioning (not subpartitioning) to get multiple partitions per unique range of insert dates.
+Just saw the update, 60-col table with mostly VARCHAR(2k) fields -- that is (potentially) a monster table.
+Could anyone suggest what else can I do to speed-up inserts?
+If top is showing you ANY wa% time, that means your DB is I/O bound and you likely need to consider multiple DB machines (shards) or consider throwing SSDs on the host machine.

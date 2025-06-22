@@ -1,0 +1,21 @@
+Also bear in mind that chkdsk not only will take ages if it comes in effect, but ALSO may need more RAM than the VM has available.
+While you shouldn't have any issues with larger than 4Tb disks you have always got the option to just move entire directories to other disks and to create hardlinks to them.
+Then you can safely expand the original disk without having to worry about this.
+If the legacy stuff is running on the server itself, depends on a certain disk-layout and won't deal nicely with a change of path you can always mount the extra volume on top of the original folder on the larger disk.
+The question is how low your application will be layered when accessing the filesystem.
+The big worry with legacy applications is that they go haywire on checks for free disk-space.
+Move the folders for the legacy stuff onto this drive.
+The rule of thumb is roughly 1 GB of RAM for each 1TB of disk-space, to be on the safe side.
+Normally they're should be no issue if Windows can handle it as your applications should use the Windows API to access the filesystem on a lower level.
+(common practice prior to writing a new file) it may get an answer it's not prepared for.
+Old Borland C/C++, Pascal, Object-Pascal en Delphi programs are a bit notorious for this.
+I would setup an extra separate drive less than 1 TB in size on this VM.
+But if it asks Windows "how much free disk-space is there?"
+The Borland runtime libraries that these programs share are a bit flaky in this regard.
+This will only work if you have directories of files and not one huge 4Tb file.
+If you have multiple directories you can move any of these to another disk and have the space on that other disk accessible.
+Just reading/writing files is usually OK because that goes through the Windows systems-calls and the application itself won't be creating anything bigger than it can handle (hopefully...).
+Of course better be safe than sorry, so put it to the test before moving to production.
+If the legacy apps approach the data via shares they won't even notice they are now talking to another disk.
+I personally don't like such huge NTFS volumes due to chkdsk issues.
+Of course it may also be that you legacy applications never trigger this behavior.

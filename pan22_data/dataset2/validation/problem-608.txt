@@ -1,0 +1,9 @@
+Not quite a solution to the actual problem at hand, but it is quirks like this that cause me to always buy my SSL certs from Thawte.  
+Looking around the web, it seems that others have experienced this issue as well (http://blog.boxedice.com/2009/05/11/godaddy-ssl-certificates-and-cannot-verify-identity-on-macsafari/) But no solution seems to fix the issue.
+Verify that the correct intermediate certificates are being given out by the server at http://www.sslshopper.com/ssl-checker.html
+That gd_bundle.crt chain has a "Go Daddy Class 2 Certification Authority" that verifies up to a Valicert root. I don't think this is valid anymore - GoDaddy seems to issue certs that are signed by "Go Daddy Secure Certification Authority" that is in turn signed by a different, self-signed "Go Daddy Class 2 Certification Authority" - not the Valicert-issued one in your chain, so it has nothing to  do with your actual certificate.
+We just got a new SSL certificate from GoDaddy.  And, while all browsers are fine with the certificate, Safari gives the following error:
+You may be using the wrong cert chain. I assume your "gd_bundle2.crt" is the same as "gd_bundle.crt" on this page: https://certs.godaddy.com/anonymous/repository.seam
+Go to the page referenced above, download "gd-class2-root.crt" then download "gd_intermediate.crt". Concatenate the two files (they're just plain text files) into "mybundle.crt" and specify this new file in SSLCertificateChainFile. See if that makes a difference.
+For some reason Safari doesn't stay up to date with the latest trusted root certification authorities.  You can contact customer service and ask them to reissue you a certificate with a different trusted root certificate.
+Does anyone know why this would be caused, or have experience with this happening, and how to fix it?

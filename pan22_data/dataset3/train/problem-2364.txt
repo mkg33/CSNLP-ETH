@@ -1,0 +1,8 @@
+re: require(/home/server/public_html/dirty-briefs/site/protected/config/main.php): failed - coffee stained meeting briefing notes, or something else?
+If you have other sites running from the same Apache install (and so also running as www-data) and you want to keep them separated s one site is to some extent protected by the others, then look into using suPHP (as provided by this package in Ubuntu).
+You can give Apache the right to access the files without setting them to world-can-do-everything (rwxrwxrwx or 777), you would only need to give it permission to read the files so that the PHP executable can read them.
+You may need to give execution rights too if PHP checks for that.
+Each script gets run by a process acting as the user that owns it, so a php file owned by user1 gets run as user1 and no other user (even www-data or what-ever scripts usually run as) needs to have any access to it.
+You may encounter other permissions errors from suphp until you have things set right, as it defaults to insisting certain security checks pass (like directories and scripts not being world writeable) before running any script.
+It is less efficient than the bog-standard mod_php (though not by much unless you are on severely constrained hardware) but gives you that extra layer of protection between users/sites by making it harder for them (accidentally or otherwise) to affect each other or read each other's stuff.
+The better way would be to change ownership with chown www-data:www-data <file> then you can give Apache full rights and no rights to anyone else (except root) with chmod 700 (or chmod u+rwx <file>; chmod go-rwx <file> if you prefer to use mnemonic codes rather than the bit-pattern based ones).

@@ -1,0 +1,80 @@
+It's not super-clear to me what's going on here but this stands out as cell-by-cell data transfer, which is pretty slow:
+Would be faster if you set all 25 values in a single call:
+Also as John suggests, switch calculation to Manual, and call Calculate on your formulas sheet when you're ready for the next set of values to be created.
+You are missing Option Explicit at the top of your code module. Add it. From the menu Tools>Options to display the Options dialog.
+In the Options dialog>Editor tab>Code Settings group>Require Variable Declaration ensure it has a check mark next to it.
+Your future-self will thank you for doing so. This mandates you declare any variables Dim foo as Long before you can use them anywhere in your code foo = 10. You will save yourself so much frustration by doing this.
+You're using unqualified Ranges objects. This leads to a two-fold issue. First what is an unqualified Range? Range("Foo") instead of specifiedSheet.Range("Foo"). By not fully qualifying the sheet the range is using whatever-happens-to-be the ActiveSheet to get that Range. This is a problem because you then need to use Worksheet.Activate method to first activate the sheet then hope/pray/wish that another sheet doesn't get activated while your code is running. Activating a sheet is a liability and isn't needed.
+An example of this is the ambiguity it causes with named ranges. Is Range("Start.Nodes") scoped to the worksheet that is active or is it scoped to the workbook? I can't tell from the code itself. My refactoring is going to assume that they are scoped to a worksheet.
+You are using the default member of the Range object. What's this? Using specifiedSheet.Range() or specifiedSheet.Cells(,) instead of specifiedSheet.Range().Value2. In the first you're implicitly using it to get the value of the cell, the second it's explicitly shown. You can see this in the Object Browser, shown by pressing F2 in the VBE. Making sure hidden members are shown and navigating to the Range class then to Default. The teal icon indicates it's the default member.
+If your curious why Value2 is used read up on TEXT vs VALUE vs VALUE2 – Slow TEXT and how to avoid it by Charles Williams.
+'DETERMINE NUMBER OF ROWS OF DATA FOR LOAD RATING SUMMARY
+Comments should say why somethings done that way. The what should be apparent by using adequately descriptive names. This applies to all names whether they are for a variable, Function, Sub, etc. A clear name that states what it is, or is doing makes your code self-documenting. You have an example of this with your variables. Dim startRow as Long states that it is the start row. Then you also have q, k, j, s, nrows, etc. That's not helping readability at all.
+You can also create a specific function and return what it's named. This lets you break down the steps into small modular pieces. An example follows.
+Private Function GetCheckNodes(ByVal topLeftCell As Range, ByVal numberOfRows As Long) As Variant
+    GetCheckNodes = Application.WorksheetFunction.Transpose(topLeftCell.Resize(numberOfRows, 1))
+Application.WorksheetFunction.Transpose is used to transpose the array from a 2D array to a 1D array. Where this function is used you provide arguments to the parameters.
+checkNodes = GetCheckNodes(outputSheet.Range("Start.Nodes"), numberOfRows)
+Be sure to limiting the information that's provided to these function to only what it actually needs to know in order to achieve the task. This takes a bit of refactoring and examining what the code is or should be doing but in the long run helps clear things up a lot.
+When you have contiguous ranges that span multiple rows or columns don't pick up each one individually. Think of a bag marbles on the counter top and picking them up one at a time. That's what you're doing. Since you know the start and end rows you ---can--- should get the entire range all at once and store it in a variable. The example refactoring above shows just this. You originally had
+    check_nodes(q) = Cells(startRow - 1 + q, Column)
+Rewritten as topLeftCell.Resize(numberOfRows, 1). It uses the Range.Resize property to resize the range selection and get it in a single step. Instead of picking up 1, 5, 100, or 10,000 cells you get a single range object. Much faster.
+You use underscores _ in variable names. This is the convention that you use when an object implements an interface done by using the Implements statement.
+These were caught after my refactoring with https://github.com/rubberduck-vba/Rubberduck, of which I'm a contributing member:
+Your Sub statement for Sub Perform_Rating_Check() doesn't have an access modifier. Because of this it is implicitly public.
+Your calls to Sheets are implicitly referencing the ActiveWorkbook.
+Taking all the above into consideration I came up with the below code. The variable names are descriptive and let you know what they are for. There are subs that are specialized to do one thing, and only that one thing.
+As I'm not sure about your named ranges I assumed they were on specific sheets. If that's wrong and they're scoped to the workbook then ThisWorkbook.Range("foo") will get them working.
+    Set outputSheet = ThisWorkbook.Sheets("Output") 'Can be referred to by its code name
+    numberOfRows = outputSheet.Range("Num_Checks").Value2
+    checknodes = GetCheckNodes(outputSheet.Range("Start.Nodes"), numberOfRows)
+    Set ratingSheet = ThisWorkbook.Sheets("Rating") 'Can be referred to by its code name
+    numberOfTrucks = ratingSheet.Range("Num.Trucks").Value2
+    namesOfTruckSToCheck = GetNamesOfTrucksToCheck(ratingSheet.Range("Start.Truck"), ratingSheet.Range("Num.Trucks").Value2)
+        PopulateTruckSheet ThisWorkbook.Sheets(truckName), checknodes
+    MsgBox "This code ran successfully in " & SecondsElapsed & " seconds", vbInformation
+Private Function GetCheckNodes(ByVal topLeftCell As Range, ByVal numberOfRows As Long) As Variant
+    GetCheckNodes = Application.WorksheetFunction.Transpose(topLeftCell.Resize(numberOfRows, 1))
+Private Function GetNamesOfTrucksToCheck(ByVal firstTruckCell As Range, ByVal numberOfTrucks As Long) As Variant
+    GetNamesOfTrucksToCheck = firstTruckCell.Resize(numberOfTrucks, 1).Value2
+Private Sub PopulateTruckSheet(ByVal truckSheet As Worksheet, ByVal checknodes As Variant)
+    'Unable to definitively determine which sheet named range is on.
+    'Assuming it's on scoped to each worksheet. If scoped to workbook
+    truckSheet.Range("Choose.Truck").Value2 = truckSheet.Name
+    truckInfo = GetTruckInformation(truckSheet, checknodes)
+    Set populationArea = truckSheet.Cells(PR_row + 1, 1).Resize(UBound(truckInfo), UBound(truckInfo, 2))
+Private Function GetTruckInformation(ByVal sourceSheet As Worksheet, ByVal checknodes As Variant) As Variant
+    ReDim tempArray(LBound(checknodes) To UBound(checknodes), lowerBoundColumnTransfer To upperBoundColumnTransfer)
+    For counter = LBound(checknodes) To UBound(checknodes)
+        sourceSheet.Range("Check_Location").Value2 = checkNode
+        truckInfoForRow = GetTruckInformationForRow(sourceSheet, checkNode)
+        For columnTransfer = lowerBoundColumnTransfer To upperBoundColumnTransfer
+            tempArray(counter, columnTransfer) = truckInfoForRow(columnTransfer)
+Private Function GetTruckInformationForRow(ByVal sourceSheet As Worksheet, ByVal checkNode As String) As Variant
+    'If these are workbook scoped named ranges the parameter sourceSheet can be deleted
+    ReDim tempArray(lowerBoundColumnTransfer To upperBoundColumnTransfer)
+    tempArray(2) = sourceSheet.Range("RF_INV_Axial").Value2
+    tempArray(3) = sourceSheet.Range("RF_INV_Major").Value2
+    tempArray(4) = sourceSheet.Range("RF_INV_Minor").Value2
+    tempArray(5) = sourceSheet.Range("RF_OPR_Axial").Value2
+    tempArray(6) = sourceSheet.Range("RF_OPR_Major").Value2
+    tempArray(7) = sourceSheet.Range("RF_OPR_Minor").Value2
+    tempArray(8) = sourceSheet.Range("RF_INV_Axial_My").Value2
+    tempArray(9) = sourceSheet.Range("RF_INV_Major_My").Value2
+    tempArray(10) = sourceSheet.Range("RF_INV_Minor_My").Value2
+    tempArray(11) = sourceSheet.Range("RF_OPR_Axial_My").Value2
+    tempArray(12) = sourceSheet.Range("RF_OPR_Major_My").Value2
+    tempArray(13) = sourceSheet.Range("RF_OPR_Minor_My").Value2
+    tempArray(14) = sourceSheet.Range("RF_INV_Axial_Mz").Value2
+    tempArray(15) = sourceSheet.Range("RF_INV_Major_Mz").Value2
+    tempArray(16) = sourceSheet.Range("RF_INV_Minor_Mz").Value2
+    tempArray(17) = sourceSheet.Range("RF_OPR_Axial_Mz").Value2
+    tempArray(18) = sourceSheet.Range("RF_OPR_Major_Mz").Value2
+    tempArray(19) = sourceSheet.Range("RF_OPR_Minor_Mz").Value2
+    tempArray(20) = sourceSheet.Range("RF_INV_Shear_P").Value2
+    tempArray(21) = sourceSheet.Range("RF_INV_Shear_My").Value2
+    tempArray(22) = sourceSheet.Range("RF_INV_Shear_Mz").Value2
+    tempArray(23) = sourceSheet.Range("RF_OPR_Shear_P").Value2
+    tempArray(24) = sourceSheet.Range("RF_OPR_Shear_My").Value2
+    tempArray(25) = sourceSheet.Range("RF_OPR_Shear_Mz").Value2
+There may be more that can be done I've already speculated too much regarding your named ranges.

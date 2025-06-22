@@ -1,0 +1,18 @@
+This of course depends on many factors but in Windows and IIS it's quite easy to enable NLB on multiple IIS servers so if one goes down the others are serving content.
+You'll also need ways to replicate your database, your files, and your users' session states between the datacentres in realtime.
+There's something called Network Load Balancing and VIP = Virtual IP.
+On large websites, you might return multiple IP adresses for each hostname and have them ultimately pointing to load balancers doing MAC-forwarding to a cluster of webservers.
+BGP essentially advertises how to reach your network.
+If you want no single points of failure at all, you need to do global server load balancing -- you obviously can't rely on a single datacentre, and even with a redundant BGP configuration, your BGP tables constitute a single point of failure that can be messed up if someone pushes a bad config.
+What you do is configure DNS to advertise multiple IP addresses for the A record for your domain name, pointing at copies of your site that are in different datacentres (preferably in different cities), and the browser will pick one (usually at random, but watch out for Windows Vista which implements the stupid bits of RFC3484 and is thus not random), and will store the others.
+Depending on the browser, it will generally use one of the other addresses if the one it's using becomes unavailable.
+Your DNS servers have to continually monitor all of the sites and stop advertising any that go down.
+Usually the load balancers themselves have a notion of takeover/failover as well.
+You may mess up the configuration of a single DNS server or datacentre, but that won't bring you down completely (unless you push your DNS updates automatically to all of your DNS servers).
+You'll obviously also need to get network diagrams and supplier lists from all of your ISPs to make sure that all your network routes are fully geographically diverse and the ISPs don't rely on the same upstream supplier.
+It's probably worth making sure they're not on the same power grid, as well.
+You create one VIP for 3 webservers and traffic goes to the working one.
+Your failover won't be quite as fast as BGP failover, but you won't be able to bring your site entirely down with a single bad BGP config.
+You would want to multihome that IP (in reality you need to advertise an entire subnet no smaller than a /24 with BGP
+Yes, there is only one way to do proper instant failover here and that is at the network layer (not at the application layer ala DNS requests).
+See here for more information on global server load balancing (although it's a bit old and out-of-date): http://www.tenereillo.com/GSLBPageOfShame.htm

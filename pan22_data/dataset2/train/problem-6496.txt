@@ -1,0 +1,5 @@
+Since m_Controls is a pointer to the global controls struct, the gameplay code will automatically use the right key if the player for an example rebinds keys from the pause menu.
+Disclaimer: Following answer is in C++ but most of the concepts should be applicable to other languages as well.
+Every input  device (you could use inheritance to a struct ControlsBase and add a similar struct for controller buttons) holds an instance of the controls struct. When the device is initialized, you could load the keys from a file to the members, and at shutdown you could write the keys to the file. Your settings menu can build displays for each input device, and alter the values of the control keys.
+Gabriele's answer provides a pretty neat way to handle input generically, but for rebindable keys I don't personally prefer the callback approach, since I don't like having to maintain that map of callbacks whenever keybindings change.
+The abstraction of "input device" is not necessarily necessary, since your input manager could perhaps just map the controls to an index (std::map<PlayerID, Controls*> m_Controls), and query those from the gameplay code:

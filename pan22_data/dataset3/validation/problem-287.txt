@@ -1,0 +1,24 @@
+You'll get no help with loading drivers from "point and print", either.
+I agree with Evan that offloading to the built in print servers on standalone printers introduces some longer term administration headaches.
+Our DC is running windows 2003, and we have a mixture of Windows XP / vista / windows 7 work stations.
+This is currently slowing down our domain controller, and causing problems with performance.
+If you are having performance issues on your DC due to the print queues then the easiest solution might be move the spooler folder to another drive (that isn't too busy) or worst case add a cheap fast drive to the box and use that to offload the print spooler folder.
+It has been my experience that some embedded print server devices get flaky when a large number of clients are talking to them directly.
+The "PrintUI.dll" functionality in Windows will get you started, but it won't create "Standard TCP/IP Ports" for you, so you're going to have to script that, too.
+I can't cite any specific manufacturers or models, as the experience was so long ago as to be fuzzy in my mind.
+If you really want to setup each client to send jobs directly to each printer you're going to have to script the installation.
+Currently, they are all set up on our domain controller - DC_Main
+Since that's what you're saying is the crux of your problem, it doesn't help you much.
+It seems over-kill to do it the above mentioned way - all the printers have built in print servers?
+Microsoft added functionality to deploy print queues to user profiles via Group Policy in Windows Server 2003 R2: http://technet.microsoft.com/en-us/library/cc722179(WS.10).aspx  (I don't much care for it and use a script of my own creation to do a similiar thing, albeit based on the location of "printer objects" in the AD relative to users or computers... perhaps someday I'll publish it somewhere, if I ever get around to cleaning it up.)
+The Microsoft group-policy contrivance that I mentioned above, though, relies on the "point and print" functionality exposed by creating a shared print queue on a server and directing clients to that queue.
+I can add the printer as a network printer, by its ip address... but is there any way i can "expose" this printer in Active directory, and add it automatically to users pc's?
+It surprises me a little bit that you're seeing performance problem caused by hosting print queues on a server computer.
+Personally, I prefer queued printers over having clients print directly to the on-printer LPR / direct-print servers.
+The printers are then shared, and all of the users workstations connect to, for example, "printer x on DC_Main"
+I just don't chance it anymore because, once bitten by a problem, I am nearly forever wary of the situation that caused the problem to begin with.)
+(In fact, it was so long ago that modern print server devices may have solved those problems...
+In addition to the comments here, you can create printQueue objects in AD which feed the Find Printers dialog.
+I've got one particular file server computer (a vintage 2004 machine) that hosts print queues for roughly 30 printers and user home directories for 400 - 800 logged-on users at any given time, and the box is regularly able to fill its gigabit Ethernet pipe with traffic w/o CPU or memory bottleneck.
+Centrally queued printers, when combined with something like Microsoft's Group Policy-based printer deployment tool, makes add / moves / changes of printers extremely painless.
+Perhaps you have some overly inefficient printer drivers, a really high printing volume, or a severely under-powered server hosting the queues.

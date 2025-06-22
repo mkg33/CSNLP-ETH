@@ -1,0 +1,23 @@
+The main point is that you must be using SNAPSHOT, not SNAPSHOT READ COMMITTED isolation as you stated, and you could fix this by using SNAPSHOT READ COMMITTED.
+When deleting from the parent table, SQL Server must check for the existence of any FK child rows that refer to that row.
+The only way you can get SNAPSHOT is by setting the isolation level to snapshot at the beginning of your transaction.
+When you delete a parent row, the engine needs to enforce whatever ON DELETE rule is defined in the foreign key -- regardless of whether you know you have by then deleted all child rows, the engine has no way of knowing that.
+Note that foreign key checks under row versioning isolation levels take shared locks (for correctness) as well as detecting update conflicts.
+If you had an index on the foreign key column of the child table, the server would be able to selectively access only the potentially affected rows, that is, no rows (since you have deleted them by then), thus avoiding the snapshot conflict and the clustered index scan.
+With a suitable index, SQL Server can locate and test just the rows in the child table that could match the to-be-deleted parent.
+When there is no suitable child index, this check performs a full scan of the child table:
+For example, the internal hints on the child table accesses above are:
+Snapshot Read Committed isolation uses locking (AND obtains row versioning information before each statement) making a snapshot update conflict impossible.
+A full scan will obviously touch every row in the table.
+You must be using Snapshot isolation, not Snapshot read committed.
+Snapshot update conflicts happen only when using Snapshot isolation and do not happen when using snapshot read committed.
+When these particular rows have not been modified, no update conflict occurs:
+Since, as you say, you don't have an index on the foreign key column in the child table (for performance reasons), the engine resorts to a clustered index scan (I'm assuming you do have a PK in the child table) and as soon as it stumbles upon the first stale row it aborts the transaction, because it cannot know the foreign key value inserted outside the snapshot it is looking at.
+I came across this reply by a guy at Microsoft on a thread asking a similar question, and, I thought it was quite insightful:
+To use SNAPSHOT READ COMMITTED, you must enable it in your database, and then do not set the isolation level in your query or sproc to anything.
+Sadly this is not currently exposed in execution plans.
+If the scan encounters a row that has been modified since the delete command's snapshot transaction started, it will fail with an update conflict (by definition).
+If you are able to use Snapshot Read Committed, then that would be a very easy fix for this problem.
+Given the scenario you outlined, its difficult to understand exactly why you are encountering this problem and perhaps it is related to a table scan vs. what would be an index seek if you had an appropriate index on your FK.
+Snapshot update conflicts happen in snapshot isolation (not snapshot read committed) simply because your transaction, when it attempts to commit its changes, is attempting to commit a change to some data whose version has changed since the beginning of the transaction.
+I'm speculating but I think this is what's happening.

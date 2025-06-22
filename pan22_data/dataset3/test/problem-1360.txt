@@ -1,0 +1,14 @@
+2) Setup /etc/keepalived/keepalived.conf like this:
+Setup a couple of servers as your loadbalancer/proxy servers (for HA if you want it).
+So your backend server is going to be serving up https.
+x.x.x.a, x.x.x.b, x.x.x.c, x.x.x.d are the IP's of the load balanced servers.
+If you went with the HA option make sure you set this option in /etc/sysctl.conf:
+I terminate SSL at the load balancer and then serve unencrypted traffic from the backend.
+This works for me, although my setup is slightly different.
+These can safely be behind a firewall if you prefer.
+If you want https you could install stud or similar in front of this (on the same server).
+Just confirming, you don't want the SSL to terminate at the load balancer?
+They don't really need to be super high end but reasonable.
+3) Set the /etc/haproxy/haproxy.cfg with a config like this:
+Some users may get broken connections when that happens, but a refresh should fix that.
+If one of the haproxy servers goes down or the haproxy service is stopped, the other server will step in.

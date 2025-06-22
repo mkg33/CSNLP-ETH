@@ -1,0 +1,12 @@
+I also noticed that crl.pem has new timestamp so it was updated indeed.
+Here's my regen-crl script, which is run in /etc/openvpn/easy-rsa --- notice the option -crldays 180:
+Lately I had to revoke one certificate and after using easy-rsa revoke-full, I saw that in  index.txt that specific user has been revoked.
+I have configured my OpenVPN and it is working properly so far.
+So my question is, if I used easy-rsa 2.x script revoke-full  and I can see that index has marked this specific certificate to be revoked.
+I also had to modify /etc/openvpn/easy-rsa/openssl.cnf to match by changing this line in the [CA_default] section:
+Sure I can remove verify-crl, but that is not the point.
+The problem started after 1 month that all users were blocked as I had in server.conf line added to verify-crl and path to crl.pem
+If I also found that time stamp of /keys/crl.pem is current time stamp, and after I restarted openvpn service (for the good measure), how come that it is still getting blocked.
+I can see that next update is scheduled for 31.May, so I would like to know step by step procedure how to revoke certificate, perhaps I missed something.
+I found that openVPN+easy-rsa, by default, only generates a CRL valid for 30 days, and when that CRL expires then openVPN will not allow any connections.
+Since I don't revoke certificates that often, I simply (1) created a script to re-generate the CRL, and (2) changed the CRL expiration time to 6 months.

@@ -1,0 +1,17 @@
+However, df only displays the free space apparent to regular users (even when run as root).
+This is where the data storage capacity information begins:
+Here you can see that I have 121,179,648 blocks total... with a block size of 4K (4096), that multiplies out to some big number (462-ish GB).
+I'll provide my system's info for reference, I'm going to remove extraneous lines not important to this question:
+By using the command tune2fs (found in /sbin/tune2fs), you can easily determine the reserved space: (and more!)
+You could pull the actual reservation from tune2fs -l <device> and combine this with the above in a script.
+df the root, grep for the line with dev in it (to remove the header), cut the size and available fields, then use an awk script to calculate 5% of the disk size added to the available.
+And the reserved blocks... by looking at the number above, and the number below.. you should be able to relatively quickly figure out I have 1% reserved.
+There's lots more information available here, but this should give you an ability to quickly ascertain how much is available, and how much more is reserved for root.
+By default, Linux reserves some fraction of a filesystem for the root user, at least on ext4 (to prevent ordinary users from filling the drive completely and crashing the system, and to reduce fragmentation).
+I am not sure there is a tool built in, but assuming you have left the reserved at the default 5% then this will tell you:
+These lines say WHO the blocks are reserved for... user 0, root, in this case
+How do you display the "real" free space, that would be accessible to root?
+The header... and volume name, I label all my drives, makes them easy to identify if needed.
+REALLY want this to say "clean" while the system is running.
+This displays free space in bytes in partition related to "/path"
+BTW I do not quite understand what is the difference between

@@ -1,0 +1,11 @@
+The odds of those 81 packets producing something with the same checksum as the original is about 1 in 1,000,000,000,000,000,000,000,000,000,000,000.
+As has been noted by others, there are many possibilities for data corruption where any checksum at the transport layer cannot help, such as corruption happening already before the checksum is calculated at the sending side, a MITM intercepting and modifying the stream (data as well as checksums), corruption happening after validating the checksum at the receiving end, etc.
+If, for example, you were downloading an 8GB DVD image across a noisy link with a 1% corruption rate, you'd expect 81 undetectably-corrupted packets.
+Validating the data using a strong hash, or preferably a cryptographic signature, is on a whole different level in terms of ensuring data integrity.
+This means that any corruption that balances out when summing the data this way will go undetected.
+It's also helped by how the L2 layer also does integrity checks (eg CRC32 of Ethernet frames), albeit only for the transmission on the local link, and many cases of corrupted data never even get passed to the TCP stack.
+In practice, it catches many typical errors but does not at all guarantee integrity.
+There are a number of categories of corruption to the data that this will allow but just as a trivial example: changing the order of the 16 bit words will always go undetected.
+If we disregard all these other possibilities and focus on the specifics of the TCP checksum itself and what it actually does in terms of validating data integrity, it turns out that the properties of this checksum are not at all comprehensive in terms of detecting errors.
+This means that, in the absence of other checksums, one out of every 65536 corrupted packets will be accepted as non-corrupted.
+The way this checksum algorithm was chosen rather reflects the requirement for speed in combination with the time period (late 1970's).

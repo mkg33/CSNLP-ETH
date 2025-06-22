@@ -1,0 +1,19 @@
+Are the examples being overly cautious by pushing the use of SOFTFAIL?
+Or put another way, is using v=spf1 a mx ~all recommended over using v=spf1 a mx -all?
+All of the examples I have seen online, however, seem to use SOFTFAIL.
+The standard says we must accept emails from them because of ~all.
+Well, it was certainly not the intent of the specification for it to be used instead - softfail is intended as a transition mechanism, where you can have the messages marked without rejecting them outright.
+I therefore think it would be recommended to use SPF in softfail-mode in order to allow it to enter into the greater algorithm of mail analysis.
+I personally don't follow the standard on this, because i've realized most of you have setup your SPF records incorrectly.
+I find that with SOFTFAIL, incorrectly configured SPF records are allowed to persist indefinitely, since no one notices.
+What made me question my choice was when I saw the Google Apps instructions for configuring SPF:
+To not use it is opening yourself up to someone spoofing your domain name.
+Because of this, the less draconian softfail is recommended in a lot of cases as a less-painful way to still get a lot of the help that SPF offers, without some of the headaches; recipient's spam filters can still take the softfail as a strong hint that a message may be spam (which many do).
+As you've found, failing messages outright tends to cause problems; some legitimate services, for example, will spoof your domain's addresses in order to send mail on behalf of your users.
+In my understanding, Google relies not only on SPF, but also on DKIM and ultimately DMARC to evaluate e-mails.
+If either is valid, Gmail will accept the e-mail but if both fail (or softfail), this will be a clear indication that the e-mail may be fraudulent.
+If you're confident that no message should ever come from a node other than what you've specified, then by all means, use fail as the SPF standard intended.. but as you've observed, softfail has definitely grown beyond its intended use.
+Are there good reasons that make the use of SOFTFAIL a best practice?
+The RFC does not appear to make any recommendations.
+My preference has always been to use FAIL, which causes problems to become apparent immediately.
+DMARC takes into account both SPF and DKIM-signing.

@@ -1,0 +1,8 @@
+This discussion doesn't apply to TLS, by the way.  TLS, an extension of the SSL protocols, explicitly allows a connection to be made in plaintext and then negotiated up to an SSL connection by one end, that end having established that the other end is TLS-capable.
+In order for iptables to know that the TCP stream contains SSL, it would need to analyze the content.  It doesn't do that.  What you would need is a layer 7 firewall, like the l7-filter project:
+Note, that's a completely lawful POP command; it's just that at that point in the conversation, the daemon requires that I build an SSL connection first, because that's what it's been configured to do.  I fed it something that's not SSL, and it dropped me like a leprous potato.
+Run a daemon on port 12345 that mandates the use of SSL (ie, isn't TLS-capable) and your job will be done.
+SSL-enabled daemons listen on a port, and expect to negotiate the SSL connection before doing anything else.  If you connect and try to do anything other than negotiate SSL, given where you are in the code path, this constitutes an error as surely as does connecting to a web server and typing MAIL FROM: fred@example.com.  The connection will simply be dropped.  Try connecting to an HTTPS web server on port 443 and issuing a normal GET request:
+And that's fairly friendly, as SSL kiss-offs go.  Here's a similar experiment with a POP/S server, on port 995:
+Let's say I want port 12345 open on my box, but I only want to allow a connection through a secure socket (SSL). Is there a flag I can add to the following command:
+Nope.  Unfortunately iptables only knows about the layer 2/3 stuff:  ports, IP protocols, src/destination IP or ethernet addresses, etc.

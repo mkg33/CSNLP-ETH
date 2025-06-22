@@ -1,0 +1,29 @@
+If a make a change (to an entirely unrelated page), and commit it to the repository, then export, the bug usually goes away.
+I'm not using any kind of caching (no php caching, browser caching, or apache caching).
+Have you sniffed the traffic when replicating the bug to ensure its not due to redirection or caching?
+I'm currently exporting from an svn repository (just a simple svn export http://server/repository target command).
+Once you can see both files with no problem start testing for your issue.
+How hard would to be to check that the contents of save.php has not been replaced with save.php?
+After saving, I can make the same exact request and it serves up save.php like nothing was ever wrong.
+However, the same thing might happen with two different pages (also unrelated to the changed page), or it may not.
+Check your modules in Apache and unload any caching module.
+There exists a page called view.php and another page called save.php.
+Technically there should be no difference between checkout and export except that checkout is more usefull as it allows in place updates.
+Then, add simple config changes to be able to serve the PHP files.
+Start testing and when you notice the buggy behaviour do svn stat to see if anything has changed.
+Backup config and reinstall your Apache/PHP packages.
+Aside from suspecting svn is where something is going wrong, I have no idea.
+It happens consistently unless - and here's the strange part - I open up the file and save it.
+Request headers say save.php, and it happens in Firefox, IE, Chrome, Opera, Safari.
+But with checkout you want to have something like following in your vhost config.
+Make sure APC extension in PHP is not loaded (phpinfo)
+This may get rid of any faulty redirect/inode confusion (maybe).
+To preface: this has got to be one of the strangest bugs I have ever seen, especially since it comes and goes.
+Rename both files, add some kind of prefix and try again.
+If I export after not making any changes, the bug re-manifests.
+But that in itself would not explain why it occurs randomly.
+Then gradually start adding config parts from your saved config until it starts failing.
+The bug manifests when I request save.php - I instead get view.php.
+Certianly I've never heard of anything like this despite running several small and medium LAMP sites.
+SVN versions: 1.6.9 w/ AnkhSVN on a Windows machine (the development machine), 1.4.2 on both the repository machine and the test machine (where I run the export command).
+What do the access and error logs show after serving up the wrong content?

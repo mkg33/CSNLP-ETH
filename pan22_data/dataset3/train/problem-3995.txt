@@ -1,0 +1,12 @@
+If your script faces some unfavourable circumstances, you will not understand what went wrong.
+So you are better off explicitly without a terminal.
+And while at that, forget the -o LogLevel=QUIET solution suggested by Leo - it hides error messages too.
+Where is the  'connection to xx.xxx.xx.xxx closed' message coming from?
+Could not comment on Fran's answer which is the correct one.
+As Fran mentioned, this is coming about because of the -t switch.
+Keep in mind all error messages that may be raised will also be redirected to /dev/null and so will be hidden from view.
+In scripts you probably want to use -o LogLevel=ERROR - this suppresses the remote machine's banner if it has one, but lets error messages through.
+Traditionally, SSH displays that message to make it clear that you are no longer interacting with the shell on the remote host, which is normally only a question when SSH has a pseudo-terminal allocated.
+Longer syntax which I prefer in scripts to make them more self evident and readable would be: -o 'RequestTTY no' vs. -o 'RequestTTY yes'.
+Just wanted to add that your code fragment looks like a script, which means you are likely calling remote stuff which is not depending on an interactive screen (unlike for example mc or top which make little sense without a keyboard and a screen - you will therefore not use these programs in scripts).
+You see it because you gave the -t switch, which forces SSH to allocate a pseudo-terminal for the connection.

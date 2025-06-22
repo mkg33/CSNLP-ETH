@@ -1,0 +1,13 @@
+You can learn more about it here: Dynamic Search Conditions in T‑SQL.
+Right now you have no statistics and thus seem to get a nice - totally non workign query plan.
+ALso not there is a added overhead on this on temp db and memory but compare the performance and do the test.
+you can use Temp tables and No locks with the tables and can also use Option fast
+The idea here is to load all corresponding ids to each temporary table and join them back to the main query.
+It generally is not needed and makes thigns really slowish.
+To generate a good plan thus avoding the scalar function from the select function.
+Your sp now depends on the first input parameters that were sniffed, i.e.
+Get rid of your Split_dn functions and use table valued parameters there.
+You can add OPTION (RECOMPILE) at the end of your query if you can permit recompilations, or you can rewrite your query constructing it dynamically by analyzing your search conditions and adding them to your query only if they are NOT NULL.
+Try to add # tables to your code and see if there is perforamnce benefit .
+the plan that is used was built based on the parameters passed to this sp at the first execution, i.e.
+it's not optimal if the first time some parameters passed were null and now they are not null, or other parameter are null.

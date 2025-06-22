@@ -1,0 +1,14 @@
+No - but if the links between subnets are low speed and/or high latency (e.g. WAN links) then local DNS, DHCP and WINS may make sense. 
+One thing that has popped up is that I am concerned with being able to see all computers in "my network places" or "network neighborhood" (whatever they are calling it these days) :). I know that NetBIOS only works on the local subnet because it is a broadcast protocol and does not cross routers. 
+So I want to make sure my WINS infrastructure is ready to handle this change, even if we aren't actually using WINS for anything at the moment. The truth to that is that I don't know and I can't afford for it to break at the moment, so we have to maintain this ability to browse across subnets and see all of the computers.
+1) A master browser is elected amongst each computer on each subnet (uses broadcast traffic), NetBIOS name resolution works just fine within the subnet (uses broadcast traffic)
+I wouldn't say any of this is a problem, as long as you go through the applications/services you want to run, and then consider what traffic has to flow around your network in order to facilitate that, in advance.
+2) that master browser uses a direct IP protocol (which crosses subnets just fine) to connect to its WINS server (which must be properly configured in its IP settings) and tell the WINS server what it sees.
+It is a Windows network, active directory integrated, standard Microsoft stuff. Client machines are Win2k, Win2k3, Win2k8, WinXP, Vista, Win7.
+Anything like workstation deployment via PXE boot or NetBoot or whatever will also need some thought.
+Additionally, are there any other considerations? I am only aware of NETBIOS as the only microsoft networking service (aside from DHCP, which we're aware of) that requires broadcast to work properly. Anything else that should be on my radar?
+A single WINS server is sufficient. Just no backup, if there is a failure. No different than DNS in that regards.
+What I haven't quite figured out is whether I need a WINS server on each subnet or just one in the entire network. I think this is how it works, but I'm not sure...
+3) it follows that only one WINS server is needed across the entire network, as long as all hosts are configured properly to look at it... or not? Do I need WINS servers on each subnet?
+We are moving our network from a flat 192.168.x.x/16 to a routed network to be composed of several /24 subnets and a layer 3 switch. 
+In a LAN environment it might still make sense to have two WINS servers for redundancy, but both these WINS servers can be in the "server VLAN"

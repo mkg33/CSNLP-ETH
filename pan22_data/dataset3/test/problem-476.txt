@@ -1,0 +1,16 @@
+This should be fairly easy to do since they are different processes with different executables.
+While sFlow is intended to be the vendor neutral implementation of NetFlow, during the process and intervening years, enough got changed so that while they both serve the same function the protocols are not compatible.
+To do this the daemon also locks the entire directory.
+So you define your retention schedule (in days, years, bytes, & of disk) and whenever the daemon closes out a log file it will automagically delete logs in accordance with your schedule.
+Cisco developed NetFlow specifically for their own product, then a standards body got together and developed sFlow.
+Also keep in mind that both nfcapd and sfcapd assume they completely manage the directory structure under which the logs are stored.
+I can't really help you configure the flow exporting, although it's documented exceptionally well on the Internet and somewhat well in the nfdump documentation itself.
+Netflow and jFlow have an interesting relationship.
+That means they create files and directories as needed as well as maintain their own built in log retention processor.
+Since, you must use two separate daemons to collect the different log sources, you will also need to have them run on two different ports.
+That is, if you tell nfcapd to save logs in /opt/netflows then a lock file gets dropped and sfcapd will not use that directory.
+They are used the same way and accept the same configuration parameters but where nfcapd is used for collecting and storing NetFlow logs sfcapd is used for collecting and storing sFlow logs.
+The Juniper jFlow is an offshoot of sFlow and is almost completely compatible with it, as such you can use the sfcapd process to collect those logs.
+I do, however, have some good experience with the flow collection itself.
+So if you run both you must have them save into different locations.
+The daemons sfcapd and nfcapd are shipped as part of the nfdump.

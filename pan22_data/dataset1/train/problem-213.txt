@@ -1,0 +1,7 @@
+According to http://tldp.org/LDP/abs/html/exitcodes.html a 127 code means "command not found."  
+As francs suggested, when you run the command normally you are implicitly relying on one or more environmental variables that exist for your login shell, but which do not exist when you run a cron job.  The solution is to give absolute paths to every command. 
+For example, type "which pg_dumpall" in the terminal and use the resulting output where you currently have "pg_dumpall" in your scripts.
+I have this simple script to backup all my databases in postgres
+The dump status is 0 and the tmp.txt file is properly created when the script is executed from the command line.
+However, if I execute this script as a cronjob in my crontab, my tmp.txt is empty (the dump of all databases failed) and my status.txt file contains a dump status 127.
+A strange behavior I noticed is that pg_dumpall will pipe the information into the file but also print it on the terminal.  I'm thinking this behavior might be the cause of the problem.

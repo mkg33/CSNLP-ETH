@@ -1,0 +1,16 @@
+Something that I have not seen mentioned in the tutorial you've linked to: onEnter and onExit methods.
+And I generally use a hybrid method: delayed switch.
+Once you know you have to change the state, instead of asking the state machine to change state immediately, you place a request to change the state to another state.
+This means that even if you have an event (in handleEvents) that would make it change state, delay that until the update().
+Each state has some code that needs to be executed once when you enter it, and once when you exit it.
+This allows to see quickly where one state can go from there.
+Before doing so, it calls the onExit method on the current state, then changes the state to the new requested one, then call the onEnter method on the new (now current) state.
+If that state realizes that it has to go to another state, it requests a change of state to it's owning state machine.
+I generally try to have a single location where the state can change: from the update() method of the state.
+I call it the 'steady-state' (yeah, that's a lot of "state").
+The state machine does not change the state now, but waits until the current state's update method is done to change the state.
+Your main loop is calling the update method of your state machine, which is calling the onUpdate method of the current state.
+This allows you to finish running State1::update(), and cleanly go to State2.
+The update() method is there for what's done every frame.
+For instance: the graphics/data that need to be loaded/unloaded for that state, etc.
+This way, the next frame will be in a 'steady-state': no initialization to do, no set-up to do, and your 'render' method will correctly display stuff that relates to the new state, even if no update has been done in this new state yet.

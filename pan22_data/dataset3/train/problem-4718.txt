@@ -1,0 +1,58 @@
+You are trading CPU cycles for memory, but a list of pointers is pretty small so even with a few thousand objects in it that should not be much of a problem.
+This way, you can keep those elements in tightly-controlled arrays or lists.
+Now, ECS is a big concept, and it's tough to get right.
+NextPosition(int entity), and it can return a null position for entities it doesn't care about.
+The solution, is to split the separate parts of your Character into sub-classes, that the Character owns an instance of.
+Additionally, an "AI" system that can tell a character what to do, where to go, etc.
+This system needs to recall that info, regardless of what the state of the character is.
+If an entity doesn't belong to a system, then the system won't track it.
+You can use smaller, struct types, which can help you keep components in smaller, contiguous memory blocks, which can make system updates much faster.
+In your code, you can keep references to the objects in something like a List to save you from using Find() and its variations all the time.
+I'll draw this to a close, but the idea here is to give you some background on ECS, and how you can really leverage it to give you a better design on your game.
+We no longer need a special list for trees, since rendering a tree is no different than a character, aside from paperdolling.
+However, it's unlikely that all the information and functionality of your alive characters, is still needed just to display them in a family tree.
+You can increase performance, decouple unrelated elements, and keep things in a more organized fashion.
+Once you've split the character up, you no longer need to check an Alive/Dead flag in the update loop.
+Note, how the CharacterInfo is likely the only data actually needed for the family tree.
+We also apply this to our NameSystem.GetName(int entity), it returns null for trees and rocks.
+Before we can do that, though, we need to define the terms.
+This means we can create our "Tree" objects, store them in the Sprite and Movement systems (the trees won't move, but they have a "Position" component), and keep them out of the other systems.
+It's worth mentioning that this paradigm is the one Unity was built to use - and is why it handles things with lots of separate scripts.
+By decomposing your classes into smaller pieces of functionality - you can more easily keep that small object of data after death, without needing to keep the entire AI-driven character.
+First and foremost, create an ID for your characters.
+We can now fully separate these concerns, and reason about them more effectively.
+This should interact with many of the other systems, and make decisions based on them.
+This system will have the responsibility of determining what sprite the character needs to be displayed with, and how to display it.
+Second, start thinking about the different behaviours you have going on.
+Likewise, we want to build a system for "Is the character alive or dead?"
+(This also pairs well with functional languages / setups, like F# and LINQ, which I highly recommend checking out F# if you haven't already, it pairs very well with C# when you use them in conjunction.)
+To "kill" the character, you simply remove the parts that are no longer relevant (such as the CharacterController) - it will now not waste memory, or processing time.
+You'll build out a "Sprite" or "Drawing" or "Rendering" system, for example.
+They may for example, simply need names, date of birth and a portrait icon.
+Instead of modeling that as attributes on the entity, build a system that holds all that information.
+This is where we start getting into what makes a game run efficiently.
+Things like the "Family Tree" — that's a behaviour.
+A while back I was just like you, I had a bunch of different types of things that had similar properties and I built out various objects and tried to use inheritance to solve it.
+I'm going to speak from a little bit of experience, going from a rigid OO-design to an Entity-Component-System (ECS) design.
+In your Pathfinder system you'll probably want a Vector2 NextPosition(int entity).
+As you are doing this in Unity, the easiest approach is this:
+But, and I cannot stress this enough, now an Entity is just an ID, including tiles, objects, etc.
+Building large god-objects is rarely the best way to handle your data in Unity.
+Now our NextPosition can be slightly rewritten: Vector2?
+As you progress through your game, you will find that having individual game objects gives you tons of advantages, including navigation and AI.
+It also gives you more creative leverage: you can build a "Pathfinder" system that can handle the calculation of a path from A-to-B, and can update as-necessary, allowing the Movement system to say "where do I need to go next?"
+Movement doesn't need to find the path, it just needs to get you there.
+Again, dead characters can probably be removed from this system, since they're not really doing anything anymore.
+(Which the Sprite system can control, or the Paperdoll system can control.)
+Some systems can delete the "dead" characters (such as the "sprite" system), other systems can internally re-arrange things to better support the new status.
+For example, you note that the dead characters are still required - as they're used in the family trees.
+You'll want to expose some parts of a system to the outside.
+Your "Name" system and "Family Tree" system should probably keep the character (alive or dead) in memory.
+This also gives you the benefit of changing when a system reacts more efficiently: the system has it's own timer.
+We don't need to recalculate the weather every millisecond, we can probably do that every 5 or so.
+A very smart person told me don't do that, and instead, use Entity-Component-System.
+This is one of the most important systems in your design, because it influences all the others.
+(Especially if external influences to a system are minimal, now it only needs to care about it's internal state, such as Name.)
+In this case, it sounds like your Character class has become god-like, and contains all the details for how a character operates at all stages of it's lifecycle.
+Instead, you'd simply make an AliveCharacterObject that has the CharacterController, CharacterEquipment and CharacterInfo scripts attached.
+There's a lot of work that goes into it, properly building entities, components, and systems.

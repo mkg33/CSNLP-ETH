@@ -1,0 +1,15 @@
+It sounds like all you really need to do is to migrate a certificate from an Apache site to an IIS site. The instructions from Network Solutions (for Apache, but would be similar for nginx or any other webserver) will let you do that:
+openssl pkcs12 -export -in certificate_file -inkey private_key_file -certfile intermediate_file -out CertificateAndKey.pfx
+Copy the resulting 'CertificateAndKey.pfx' file onto the IIS server.
+Click 'Start', choose 'Run'. Type 'mmc', press 'OK'.
+In the MMC console, click the 'File' menu, and choose 'Add/Remove Snap-In'.
+Click the 'Add' button, then select 'Certificates' from the list and click 'Add'. 
+From the next menu, select 'Computer account'. Click 'Next', select
+'Local computer' then click 'Finish'. Click 'Close' then 'OK'. You will be back at the main MMC console. 
+Expand the tree 'Certificates (Local Computer)' and click the 'Personal' sub-folder. Right-click and choose 'All Tasks' > 'Import'. 
+Follow the wizard through, selecting the default options. You will need the password from the second step. The certificate will now be imported and available to IIS.
+Load the IIS Management Console, right-click the website you require the certificate installed on, choose 'Properties' and 'Directory Security'.
+Click the 'Server Certificate' button, choosing 'Assign an existing certificate' from the options. 
+Select the newly-imported certificate from the list. Complete the wizard.
+The certificate will be installed and working on the site. A restart of IIS may be required to complete the process.
+You should be able to revoke the current certificate and ask your certificate provider to provide a new certificate for your new private key without any extra cost.

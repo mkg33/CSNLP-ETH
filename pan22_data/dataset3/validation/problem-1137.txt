@@ -1,0 +1,27 @@
+An obvious, and most secure, solution, would be to create a new privileged daemon application, food, that handles the things your foo app should do as root, and then the foo app communicates with food using eg.
+Write a script called start_foo which performs some input validation on the passed program such as size and name and then starts the passed in foo.
+A person belonging to a particular group can issue a chgrp command on files, another people won't be able to.
+This option still includes the security hole of being able to write over the users foo program with another root requiring program but hopefully the size check would catch some malicious cases.
+/home/central/[scriptname]  <---- root writable directory only, world readable.
+That presents a huge problem because then the user can EDIT the script at anytime.
+This may not be well supported by each and every programming language and you need to know a bit about the effective permissions (check man seteuid).
+Even if the file is read-only, they will have write privs on the directory it is in.
+If not which of the above or possibly other solution is the best way to handle the problem?
+I have been researching the sudoers file and have basically 2 ideas.
+And scriptname is a wrapper for /home/central/[scriptname]
+List all paths the program can be at in the sudoers file.
+The reason this program can be at any path is because our company is developing program foo and each user may have a personal version of the program in some personal directory while they work on it.
+The most secure way to handle it would probably be to give each of your developers their own little dev/test environment, perhaps a virtual machine.
+foo needs to be able to be run by any user and can be located at any path.
+Additionally, you may check a sUID byte solution, instead of depending on sudo.
+Is there a "cannonical" way to solve this problem I haven't found or thought of?
+That way, they can only break their own development instance.
+I have some program called foo that needs root privileges when it executes.
+start_foo could live in /usr/bin and owned by root but runable by anyone.
+My question is this, what is the most secure way to handle this?
+Possibly creating them on the fly as required with various files that the application needs to run.
+And /home/[anyuser]/scriptname would be something like
+For that reason, you need the root-priv script to be somewhere under your control
+If you trust your co-workers, you can add each of them to a unix-group foodevel, use solution 2), and then allow only executing the foo programs if they are owned by this group.
+This is problematic because it requires frequent editing of the sudoers list and also still poses a security risk since non root users will own their individual copy of foo and could copy some system program over foo and then use it as root.
+If your foo app gets compromised, the attacker would be able to only communicate with the food, which would have a limited command set.

@@ -1,0 +1,27 @@
+Once you've identified the location, you can look to the cause (check port stats on both sides of the link in question to see if there's queueing or some other problem); you're not dropping packets (well, not excessive numbers of them -- 21 pings isn't exactly statistically significant) so you're probably not overflowing buffers anywhere.
+FYI, pathping, like tracert, can provide deceiving path information simply based on how packets might be routed one way forward and a different way backward based on network congestion.
+If you only have a 10Mb link to the other datacentre and you are pulling back even a 1MB query, it will take almost a second to arrive.
+Is it possible that the site is slow for other reasons ?
+Once you determine where the slowdown is you can continue to troubleshoot.
+Unless you're doing something incredibly latency-sensitive (like high-speed trading), I'm struggling to imagine how that could be "very slow" in any meaningful sense.
+It may be the end nodes themselves are the slowdown if they are under heavy load or improperly configured in some way.
+Perform a pathping from the web server to the database server and see where the slowdown is reported to be.
+10 packets transmitted, 10 received, 0% packet loss, time 8998ms
+However, those are extraneous topics at this point.
+It's also worth checking how much traffic you can see on your database port overall.
+Then, confirm by performing a pathping from the database server to the web front end.
+Plenty of people use "SELECT *" even when they only need one field.
+It might be worth checking how much data you are pulling over from the database in each query.
+Setting up a slave read-only database in the second datacentre can also help as read-only queries can be done locally.
+If latency is actually your issue rather than bandwidth, using persistent connections can help because it avoids making a whole new tcp connection for each query.
+As Womble pointed out, it could be rDNS slowdowns.
+Traceroute (mtr is even better) the path between the two machines, looking for particular hops that add a lot of latency.
+You can use mtr to see if it is failing on some point?
+You can use traceroute to see if there is a point along the path that is slowing everything down.
+Use the IP address of the nodes, and not DNS names.
+If you are hosting two websites in two different datacentres with only one database, the bandwidth between the two datacentres could be the limiting factor.
+If you find out what the slow node is, update your questions with the proper information.
+It's not unusual to see 10MB come back in a database query only to have the scripting language parse/mangle/throw away the data until there's only a few KB left to send to the user.
+However, you're still only seeing 1.8ms of latency for the "slower" link, which really is excellent over any sort of WAN link.
+You state in your question that the site has become slow and then ask about ping times.
+Also, the forward path is not guaranteed to be the same with each increased hop.

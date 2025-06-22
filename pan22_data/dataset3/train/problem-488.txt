@@ -1,0 +1,17 @@
+The primary cause of too many DNS requests is TTLs that are too low.
+Secondly, providing this is perfectly normal, is there any way to sidestep this?
+For the cdn.digitladawn.net subdomain, even if you set that TTL to 86400, only that line in the above output will be cached for 24 hours.
+If the wpc.7b5c.edgecastcdn.net response changes, all clients should have picked up the new value after a maximum of one hour (ignoring for now those DNS servers that ignore your TTLs.)
+I think I can sidestep half of it by hosting each domain on a static IP and setting the origins to static IP addresses, however this is far from ideal as I have quite a few sites.
+The other two causes of too many DNS requests that I have seen are too many clients (say, thousands of edge CDN servers that are all hitting your authoritative name servers) or a single misbehaving client (possibly a script on your own server) that is doing lookups dozens of times per second.
+I have 10Million managed queries through DNS Made easy and at the current rate I'm going to be up a certain creek without a paddle...
+Heres the situation, I recently setup a few of my sites on a a CDN (specifically MediaTemple's ProCDN via Edgecast).
+You can go higher if you can be confident of having at least the time period in the TTL of advance waning that you might need to change the IP address.
+Firstly, would my setup account for this excessive increase in DNS queries?
+(I've seen 60 and 1 as TTLs in production systems.)
+Unless you are changing the IP address that these domains point to more often than once per day, you will be better off changing the TTL to something like 86400 (24 hours).
+If you can get hold of better statistics for your name servers (such as the IP addresses of all the clients that did lookups) then you might be able to diagnose this sort of problem.
+Setup went perfectly normal but a couple of days later I notice this: (15K a day Average to 600K)
+(The sites that have CDNS setup currently get minimal visitors (Probably less than 10 per day)).
+An example of this could be a reverse proxy that uses backend.digitaldawn.net as its upstream server and makes a DNS request for that domain for every HTTP request it has to proxy.
+Adding DNS caching to that server or running your own authoritative name server inside your production environment can solve this problem.

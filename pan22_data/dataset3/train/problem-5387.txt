@@ -1,0 +1,21 @@
+The devices participating in LACP aggregation do not exchange information about forwarding decisions either, it's done independently per conversation on each switch.
+If you run out of bandwidth on an edge switch link, the only thing you need to do is connect another cable between the devices and they will form an aggregated link without any other configuration.
+"How this will help" is a bit of an open question.
+So that's one advantage of LACP - it's a standard, so you know how devices are supposed to behave.
+I do not understand how will the switch do load balancing, using which hash algorithm,please explain with an example?
+These tend to work together between manufacturers, but there is no standardization.
+LACP does not have actual load balancing intelligence, it does not take existing link load into account when deciding where to forward the traffic.
+The actual algorithm is proprietary to the manufacturer, and normally device design including functionality is confidential to the company.
+It standardizes the connectivity and communication between devices but it does not describe how the device internally handles the packets.
+You can configure your switch to static LACP and connect it to another switch with similar configuration (or to a server NIC team - they also usually have LACP capability) and if everything is correctly configured, you will have a working aggregated link.
+However the more conversations you have running in the network, the more evenly the traffic usually gets distributed.
+For example you can configure all your core switch ports for active LACP and your edge switch ports for passive LACP.
+If it isn't you're likely to find it in the device manual or other documentation.
+A dynamic LACP link usually drops to the default VLAN.
+I have grouped two ports of a switch into a channel and specified load balancing based on source and destination MAC address.
+Many manufacturers offer their own, proprietary aggregation method, which usually is protocoll-less.
+This is normal behavior, since existing load isn't taken into account at any point.
+In this mode you have an active and a passive partner.
+Note that we are now in a situation where 2 conversations are flowing on leg 1, 4 conversations on leg 2.
+Another advantage is that you can configure LACP to be dynamic.
+The downside in dynamic mode is that since the aggregated link doesn't actually exist until the cables are connected, you can't assign it to a given VLAN.

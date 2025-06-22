@@ -1,0 +1,7 @@
+My questions are: those separate servers must have the PHP files accessible within their filesystem, right? If yes, how do I configure the root directory for PHP to find the files, given that it's something usually done in nginx's config (in my case). Is it via chroot and chdir parameters in the pool config or whatever I send as SCRIPT_FILENAME from nginx?
+The easiest way to do this is to place all the files in shared storage (i.e. an NFS mount), which is then mounted to the same mount point on all of the servers. Then, you do not need to do any sort of rsync or other copying.
+From what I've seen in various docs and example configurations, you could have PHP-FPM set up on a different server/hardware, separate from your webserver (nginx in my case).
+Now the most interesting part (for me): if having the files on that server isn't necessary (and nginx provides the file to the ip:port in fastcgi_pass), how do includes work?
+The files need to exist on the PHP backend server as well, and they have to be in the exact same path as on the webserver itself. PHP doesn't know anything about translating script file paths, so it uses the path as it is passed from the frontend server.
+You could have fastcgi_pass redirect to any IP address (192.168.1.10 to be safe or 200.55.35.40, go crazy!), thus delegating PHP processing to a different server.
+I was just thinking about setting up a bunch of PHP-FPM servers and let them bear the processing load of a Wordpress Multisite node, without having to rsync tons of stuff back and forth.

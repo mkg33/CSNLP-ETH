@@ -1,0 +1,27 @@
+The size of this example volume was 1024 and it was located on /dev/somedisk starting from extent 30720.
+For example, the volume section might look like this:
+The size of the volume is in extent_count of the segment1 (or sum of segment*/extent_count values if it had several extents).
+(As answered by thermoman earlier) the easies way to recreate a deleted LVM volume is by creating it with lvcreate without zeroing and making sure it will be in the same position on the disk.
+Today I had a customer cancel her account, then change her mind about an hour later.
+a) which extents the LV was residing in (EFROM, ETO)
+I believe the backup is automatic anytime the metadata changes.
+You may also want to consider contacting your Linux vendor for support/guidance if you're under a support contract before proceeding as I've never had to do this myself.
+Just find the backup of your metadata in /etc/lvm/archive and figure out
+Position is in the stripessection after the physical volume alias (e.g.
+I have a large volume group that I create logical volumes on using lvcreate.
+b) which PVs your LV was residing on and which extends on that PV it was using (PFROM, PTO)
+Make sure you make a current copy of the existing working configuration using the vgcfgbackup command with the -f flag to specify a different file for the output so that you don't alter any files that are in the /etc/lvm/backup or /etc/lvm/archive folders.
+Unfortunately I had already removed the LVM her Xen image resided on.
+LVM does backup it's metadata to /etc/lvm/backup and /etc/lvm/archive.
+After you have this info you create a new LV of the exactly same size on the exactly same PV extends without wiping the first 8kB of the LV:
+Make sure you diff the current configuration with the configuration you wish to restore to verify that the only changes you're about to apply are to recreate the recently deleted LV.
+The following can be dangerous and destructive so be very careful and if possible have a full backup.
+Calculate the last extent as start + size -1 = 30720 + 1024 - 1 = 31743.
+Is it possible to "undo" a lvremove, or recover logical volume?
+At the top of each file it will tell you the time/data when the file was generated so chances are you'll have a copy of the older metadata as it was before you deleted the LV.
+There has been no other LVM activity on this disk since then (nothing else added or deleted).
+Check the size and position of the deleted logical volume as they were before deletion by reading the files in /etc/lvm/archive.
+The easiest thing to recover from lvremove (assuming you didn't write to the extents the LV was residing in) is:
+The command to restore these volumegroup metadata backups is vgcfgrestore.
+Having a full backup of your data probably isn't a bad idea either.
+(The command from thermoman's answer didn't work.)

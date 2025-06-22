@@ -1,0 +1,19 @@
+Basically, it was their solution for how to pass parameters (which tend to be references to columns external to the current table expression) to functions called as table expressions in the FROM clause.
+Does your query language have a FIRST() aggregate function?
+But functions have the drawback that the query plan will not show what is going on inside them and I believe it will always choose a nested loop join, even when that might not be best.
+unless you're intending to return the fields as special_price.price and date.date why not alias the names inside the subquery?
+Note that the "cross apply" mechanism from SQL Server would solve this, but it isn't available in PostgreSQL.
+So, that is in fact a handy solution (in 9.1 at least): make a function to extract your highest priority row by doing the limit inside the function.
+left join (select * from product_special ps where ps.id = p.id order by priority desc limit 1) on true
+Assuming combination product_special.id, product_special.priority is unique
+(With separator, or formatting col1 and col2 to specific length.)
+But it turned out to be useful for all kinds of situations where you want to avoid another level of subquery nesting or moving things from the FROM clause to the SELECT clause.
+Inspired by dezso's answer https://dba.stackexchange.com/a/222471/127433
+I just want to put this here for last resort, for everyone who uses database engine that does not support one or more of the other answers...
+I'm solving the problem in PostgreSQL using arrays, like this:
+PostgreSQL made it possible to do this by making kind of an exception -- you can pass parameters like that if the expression is a simple function call but not strictly speaking an embedded SELECT.
+left join highestPriorityProductSpecial(p.id) on true
+you MIGHT be able to remove the ORDER BY clause entirely and use HAVING MIN(psi.priority)
+Not sure if you could make the PK of product_special a composite between id and priority (both ASC sort) and change the ORDER clause to GROUP BY id, psi.priority
+Admittedly it's still just one column, but in my code, I can easily access the two values.
+even though the definition of the function is precisely that.

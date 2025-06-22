@@ -1,0 +1,10 @@
+The only other thing I can think of is maybe piping the log output to a symbolic link and updating the links to a secondary location with a batch file. 
+LVM (Logical Volume Manager) supports snapshots. Since all Linux distribution has LVM builtin, it is the easiest for you. The only downside is you need to recreate your file system.
+However, if you retarded the I/O processes buy leveraging another management process between the disk and the files as they were changing, the overhead may not matter. What I mean is, you could run the process in a VM (if this is possible), try snapshots with rsync, or even subversion. 
+Here is a good tutorial http://rhcelinuxguide.wordpress.com/2006/06/03/what-is-a-logical-volume-manager-lvm-snapshot-and-how-do-i-use-it/ 
+Some filesystems provide snapshot facilities.  Creating a filesystem (on an unused area of drive, or in a dedicated data file [loopback]) using one of these filesystems and then mounting that where your logs are written would allow you to snapshot the logs filesystem.
+A different way of doing it would be to use Logrotate to archive the logs every week/day/hour, then you essentially have snapshots at that interval.
+Frankly, for what you're asking for the only thing that has worked for me is ZFS-FUSE.  There is also a native ZFS for Linux but it's not really usable yet.
+You might even be able to write a batch file to update the link, count to 45 seconds, and then switch it back - thus isolating the data you need. 
+Snapshots don't copy the data, rather the freeze the data at a particular moment in time and create a virtual filesystem containing that data that can be mounted and used like any other filesystem (albeit read-only).  The original filesystem continues to function as if nothing had happened.
+If cp is taking too long to provide the results you need, you're most probably not going to be satisfied with other options. Unix copy is about as basic as it gets for I/O overhead. 

@@ -1,0 +1,71 @@
+Another way is binary, which is more efficient in terms of shipping, but can incur more cost in other situations.
+Moreover when your game goes live, it'll crash way more than you expect it to.
+In either case, the client is aware of the error, and will log it along with all that the player was doing.
+Transactions won't be atomic unless you make them so.
+The database's ACID properties allows the entire massive and complicated database to always be kept in a consistent state.
+An MMORPG that keeps player data in memory and periodically checkpoints it has to implement this atomicity itself.
+A badly designed database can perform poorly and lead to inconsistencies.
+It is good for accessing the data, even though it is bad for doing joins and aggregations... but they won't be doing that with the data that is in there.
+Note that most MMORPGs use SQL databases for account related information even if they don't for actual game data.
+EVE Online is an example of an MMO where everything is stored in an SQL database.
+That is, the database transaction that removes the the item from one player's inventory and adds it to the other player's is atomic.
+Then, on logout, if there was an error, the client sends the logs to the server.
+With 1,000 clients, you could start with, and easily store 10 MB per client and only use 10 GB of effective RAM + add some system administrative RAM for managing that data, say another GB or two.
+Worst case for the game database getting corrupt is that you have to restore the database from a daily backup.
+Which one is more resource intensive in which situation, etc.
+Using a document based database turns out to be a good idea for performance in this case.
+That way you can more easily be dynamic in how it you can chunk it up.
+EVE's database guarantees that even in the event of a crash or power failure that the item ends up in only one player's inventory.
+You'll want to minimize the transactions as much possible, for something like player current hitpoints you might only want to periodically save them to the database since stats like these don't necessarily need to be consistent.
+I heard there are special logs of all transactions that are kept for some time (to solve issues when somebody complains), I do not know more of how that part works.
+On the other hand if you're not an SQL wizard you might find keeping all data in memory much simpler to get working reliably.
+Your server that was operating perfectly under testing, will suddenly expose numerous bugs under full load and players doings thing you didn't expect them to.
+However there is a simple solution: put the database on its own server.
+CCP (EVE) has (or at least had) a network of SQL servers, I am not sure how they do it now.
+When you're developing your game its going to crash a lot.
+The data of the character exists both on the client and on the server, and the system is designed to keep them in sync, doing the same operations on both sides.
+Maybe start by creating an agnostic "data broker mechanism", to handle various game data transactions?
+And load/save dynamically, depending on who is online, in various frequencies depending on activity, etc.
+Meaning, concentrate on how, from the host application, you are going to handle this.
+It has the advantage of being fairly simple to implement and scaling fairly well, but making it reliable is completely up the to the developer.
+if you're worried about IO stalling during logout, give each logout it's own thread, don't do it in the main/game thread (actually i keep a dedicated player thread for every online player, it made the networking code so much easier than doing the async network io approach)
+Since you are just testing anyways, create a mechanism that enables you to not need to care too much about the storage, from a standpoint of the game itself.
+You could keep that in RAM on the host already in data structure ready for use.
+You could then either "store" the XML as XML (in SQL), and/or have SQL distribute it in a more transactional fashion from the XML, to how you want the data actually stored.
+You don't want have to track down why items are disappearing and/or duplicating, not when the problem is an unrelated bug is causing the game to crash at a bad time.
+They are also the opportunity to swap server versions for an update.
+Having 1000 simultaneous users probably won't push the limits of what an SQL server can handle on a commodity PC these days, but a lot will depend on the nature of the transactions.
+The transaction either fully completes or doesn't happen at all.
+Now, when a player does a transaction with the system – say exchange an item for another via NPC or similar – this has these stages:
+That scheduled maintenance is often used to reset counters, timers, run database procedures.
+You can't end up in a state were the item exists in neither players' inventory or in both.
+Personally I think it would be a great asset if you could switch the actual store, without having to rewrite the game and the broker itself.
+Worst case for account database getting corrupt is that you go bankrupt because of all the chargebacks.
+SQL databases make consistency and reliability easier, but its not automatic.
+Keep *online* players in ram, and push em to a database (SQLite?
+One character vs multiple characters, or one item vs a collection of items, etc.
+If you don't use parameterized statements religiously you'll open yourself to SQL injection attacks.
+It depends on how often you need to update the database.
+I had a peek at how the database system works a game that people would call an MMO-Lite – which one I will not disclosure – yet I can tell it consistently has more than 1000 players, this is the abstract:
+Storing data in itself is likely not going to be an issue, per se.
+I think it peaked at something around 60,000 simultaneous users, and has had to dedicate some expensive hardware to the database servers over the years in order keep up with the load.
+You could even store each client's information in a separate file, and so on.
+Even more important than keeping the game state in consistent state is keeping the billing state consistent.
+Of course, different studios often use different ways.
+This game does not use the traditional daily or weekly maintenance down time that most MMORPG has.
+For example, consider the case when someone gives an item to another player.
+(In PvP game they might though...) Don't store things like monster HP in the database at all, in most games only player related data is persistent.
+Keeping everything in memory and periodically check pointing it to disk seems to be the most popular option, at least for older games.
+Just switch to another module with the same interface for the broker to talk to.
+On the other hand, when they need to do something like change an object with another object for everybody, the need to run a background script that goes character by character and updates them one by one, it takes noticeable time.
+One way to do this would be checkpoint every player's data at the same time, ensuring that new checkpoint is fully committed to disk before its considered the most recent checkpoint.
+Sometimes something goes wrong, this has two possible outcomes:
+SQL databases provide ACID properties that make reliability easier, but are overall more complicated to implement well and can have problems with scaling.
+Often, game companies create some way to do this, and most of their games use the same way.
+Trades between players are handled similarly, with extra rules to prevent players scamming other players, and extra traceability in case a transaction need to be undone.
+The game would also have to ensure that player data can't change while it's being checkpointed.
+However EVE stores a lot more data per user than than most MMORPGs and has a lot more frequent and varied transactions.
+With a large amount of active players, the challenge becomes doing all this without causing a delay long enough that the players would notice.
+If you're familiar with SQL and relational database design then this can work for you.
+Efficiently shipping data, to/from that store, between host and all the clients, could be trickier.
+Do I ship the entire player data set, or if I break it down into parts, what granularity do I choose to partition by, etc.

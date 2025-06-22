@@ -1,0 +1,7 @@
+Ok. Maybe you're not gonna like it but there are some things you can do.
+replacing localfile, container/file and /mnt/kube-volume with appropriate values; you build the container image locally -on your machine, so it can contain the file-  and upload it to the (secure) docker repo along with the app container image.
+Another method is to upload the file to a (secure) location and have an init container or a bootstrap process that download the file when you start your main application container  in the pod.
+So, for your init container, you will have a Docker file  like
+The third option is to create a docker image that contains that file and use it for the app container in your pod.
+One and most simple is to use a volume mount, eventually on a persistent storage but I think an emptyDir can work as well (or even better depending on the nature of the file you want to copy) and use an init container  to copy the file to the volume before the app container start.
+I don't know how you generate that file and I can't speculate about the security implications but the file needs to be in the docker image used for the init container.

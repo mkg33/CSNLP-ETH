@@ -1,0 +1,15 @@
+With linux, look at Committed_AS in /proc/meminfo, this is the amount of memory (real + swap) that the kernel has actually promised to running processes.
+Look at what the kernel has committed itself to providing .. and dirty (swap) usage, this gives you a better overall picture.
+Below is the output pulled from one of my boxes. Free memory is 147Meg with almost 4G cached for file system access requests. 
+Linux uses memory very efficiently, any blocks not promised to some process is used to cache recently/frequently accessed files. So, it is typical for Linux to use 90% of all available physical memory not long after boot.
+Don't confuse free memory with unused memory. Free memory, in the unix world is a page of physical memory that has no logical data mapped to it. Unused memory does have some data mapped to it, but it is currently not in active use by a running process.
+Saying that, if this is a modern version of Redhat Enterprise Linux (or CentOS) - v3 onwards - the default 32-bit kernel will have this enabled.
+This is the standard MO for Linux.. some distros tweak memory management to suit their needs via sysctl. However, what you report is pretty typical amongst all.
+Linux will actively cache file system accesses into memory to give faster disk access times. It is nothing to worry about.
+Linux (and all Unix OS'es) try to have as little free memory as possibly. Instead they use memory which is not actively mapped to processes in the running OS for things like file cache and buffers for various IO transfer operations.
+If you could post the output of the 'free' command detailed above, we will be able to see whether or not this is the problem.
+What kind of kernel are you running on the system? A 32-bit kernel will only report around 3.6GB of memory, unless compiled with PAE enabled.
+I've noticed that when checking system counters using tools like NMON and TOP that the total system free memory is relatively low (on the order of a few hundred MB), while the active memory for the database and web server is still low (only consuming a combined 3 GB). Even when including all other running processes the total consumed memory is less than 4 GB.
+Something else that may be confusing you is you cannot simply add up the memory in use by all running processes to get a total memory in use figure. If you attempted this you would quickly discover that you applications appear to be using more memory than actually exists on the machine. This is for two reasons
+Why does Red Hat Linux report less free memory than the total memory minus the sum total of used memory of running processes?
+I have a relatively small home Red Hat Linux server (about 8 GB RAM). I don't use it for much other than running some home grown apps to keep track of various things. The only real things running on the box are a database and a web server.

@@ -1,0 +1,12 @@
+The script in question (net stop spooler is redundant if the service is set to manual start, I know)
+Windows is capable of starting services (on demand) without your intervention.
+For compliance reasons, we can't have this happen.
+We need to have the print queue purged on EVERY start up.
+The real question is why is the print spooler spitting out the queued jobs if: 1. it's set to manual
+We have a powershell script scheduled through task scheduler to run a powershell script on both Startup and User Login as NT AUTHORITY\SYSTEM
+I’m not sure of the significance of the spooler service being set to manual.
+Additionally, you could disable the print spooler service on shutdown or logoff and only enable it after you perform some task on startup or login, if there is a scenario I’m not aware of.
+It sounds like the easiest way to solve the scenario described is to run the script on shutdown or logoff, rather than on startup or login.
+Add Arguments (optional): -File "C:\production\Printer Queue Clear\printqueueClear.ps1"
+The issue: if a job is queued with the USB connected printer unplugged from the computer, the computer is shut off (with print jobs still in the queue), the printer is reconnected, and then the computer is started, the print jobs all get sent through as soon as the user starts logging in.
+2. the code in question is only starting the spooler after the printer spool drive is purged.

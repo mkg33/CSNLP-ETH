@@ -1,0 +1,8 @@
+I'm having trouble getting a cache system to work with Joomla 3.x. This is especially a problem since the server should enforce HTTPS/TLS-connections. 
+This is taking SSL from port 443, decrypting and passing it on to localhost port 80 . It is adding the X-Forwarded-Proto https header which indicate that this is(was?) SSL traffic. The config also adds other other headers that help in reading logs etc.
+All of this together should mean that Joomla figures out what is going on and behaves appropriately.
+Popular SSL termination proxies are Pound, Stunel, Nginx and HAProxy. The range of features you require should determine which you use. Recent versions of Nginx and HAProxy enable you to use SPDY and after a quick search I would say that there are currently more up to date guides for using Nginx and Varnish than the other balancers.
+Is there a clean way to put a cache are even a load balancer in front of Joomla without those redirect problems that stem from the SSL termination happening on another server?
+With Varnish listening on localhost:80 it will process the request just like normal traffic, passing it to Apache & Joomla. 
+As you mentioned. while Varnish does not handle SSL it is possible to use a SSL termination proxy which passes to Varnish. The SSL termination proxy can add or remove headers and change ports so you should be able to create a flow that avoids redirect loops.
+I've tried to setup Varnish but noticed Varnish can't terminate the TLS traffic, so I would need to route it back to Apache or HAProxy. But if I do that, Joomla will get confused with the request headers that are rewritten while the request is handed through all those layers and Joomla either ends stuck in a redirect loop or replies with server errors.

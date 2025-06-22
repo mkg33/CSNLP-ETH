@@ -1,0 +1,16 @@
+dbcc checkdb had thrown errors which were resolved after doing this.
+I have had this problem recently too and after mountains of research it appears to be common when a database is set to AUTO CLOSE.
+Yes, I too got this same issue, it was regarding the tempDb error 9001 i.e log not available.
+I was able to solve this by taking the database offline in Management Studio then immediately bringing it back online.
+The issue behind this was SAN or storage issue, while I/O write operation, it was unable to write for more than 15 secs.
+When you take the affected database offline/online MS SQL will enable the affected database logs until the error reoccur.
+Yesterday, I had received the same error "the log for database '%' is not available.
+I checked the 'TempDB' but it was not accessible similarly rest of the system databases.
+I simply restarted the SQL Server Instance Service instead of restoring databases.
+MS SQL will take the logs of an affected database offline to avoid database corruption.
+http://sqlmag.com/blog/worst-practice-allowing-autoclose-sql-server-databases
+Then before going for repair option I simply restarted the SQL services for that instance and issue got resolved :) :)
+I can't say why this worked only that it did work.
+Another way to solve this is to change the Auto_Close option to OFF
+Another way to fix the symptom is to take the problematic database offline and bring it back online again.
+This started with one database then went over to two and the next it was on all of them.

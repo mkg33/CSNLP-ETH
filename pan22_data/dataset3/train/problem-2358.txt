@@ -1,0 +1,14 @@
+I have suggested moving most of the website-serving services back into the DMZ and locking these services down, but have been told that the developers cannot make the distinction between what is a "LAN" application and what is an internet application.
+certain LAN API's are running as "SYSTEM" level privs, and no control over what systems the developers speak to (as they have domain admin credentials)
+web01/02 at this point is just acting as an aggrigator.
+I have a team of developers who are writing both an intranet and external website.
+The problem is that the developers have put all of their services on the LAN - including those that only run the website.
+The website consists of two servers and a load balancer, inside a DMZ.
+Anyone got any suggestions on how to deal with this?
+The developers do not want to split their API's to have an "internal" and "external" view, and these API's currently have no authentication/authorisation.
+It looks like a security nightmare waiting to happen.
+WAN -> haproxy -> web01 (+web02) -> pinhole -> LAN Services (haproxy -> lan01/lan02)
+There is now a dependancy on the entire internal corp infaststructure (DNS,AD) to allow the external website to function.
+some services also only run on 'lan01' and not 'lan02' due to using local file storage - i.e.
+The DMZ has a pinhole open to the LAN (http/80), to expose API services from the LAN.
+To make matters worse, the LAN services have been tied into our AD infastructure - and internal API's exposed to the DMZ - as both internal/external API's are running on port 80.

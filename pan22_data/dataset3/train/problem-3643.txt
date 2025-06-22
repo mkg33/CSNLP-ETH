@@ -1,0 +1,18 @@
+Also note that add/remove features did not work with this share.
+For whatever reason, my optical drive shows the files on the disk, but the DISM doesn't like it, but copying the files to C: seems to have worked.
+I had the same issue when I mount the Windows install disk or use the physical DVD, and here's how I fixed it:
+The only difference from yours is the /LimitAccess, but I believe that is the important part, as it prevents it from attempting to contact Windows Update or WSUS.
+The command I use to install .NET Framework 3.5 on Windows 8.1 and Server 2012 R2 is:
+I finally pointed it at a share of the the winsxs folder on another fully patched server that did have .net 3.5 (c:\windows\winsxs) and it worked:
+We just make sure we install 3.5 on all servers before adding to the domain.
+Option 1 did not work for me either, option 2 completed successfully.
+For whatever reason, this aspect (contacting Windows Update) is totally broken for .NET Framework 3.5 on Windows 8/8.1 and Server 2012/2012R2 and will always cause it to fail.
+See also: http://blogs.technet.com/b/askcore/archive/2012/05/14/windows-8-and-net-framework-3-5.aspx
+Got this info from http://www.danielclasson.com/install-net-framework-35-server-2012/
+Even when pointing at various copies of the sxs folder, it still would get a variation of the "source files not found" error.
+There's lots of stuff on the internet on this and most of it was summarized in the answers here.
+I know there are other articles pointing to the removal of two particular KBs, but those did not show up in our list of installed patches.
+My theory is that the install process was looking for source files that matched the current KBs on the server.
+I'm sure it has to do with WSUS at some layer, but that solved it for us.
+I've been able to solve this by using the server manager add features wizard and there specifying an alternate source there.
+My resolution was to remove the server from Active Directory, Install .Net 3.5, then add back to AD.

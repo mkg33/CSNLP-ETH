@@ -1,0 +1,16 @@
+It may also be worth looking into this blog entry for some information on cleaning this up and making it more reasonable to use.
+Further, unit testing is, by definition, not black-box testing; it can and should be aware of implementation details.
+I don't agree that unit testing should apply only to public methods.
+In Objective-C, you'll merely get a warning if the file you're in can't see the method you're trying to call, and if it really doesn't exist, you'll get a runtime crash.
+Decomposing public methods into more restricted pieces is not just useful design, but is often critical to testability.
+Despite the way we talk about "methods", Objective-C doesn't really do... methods...  they're all messages which invoke underlying C functions.
+If somehow you were to accidentally import this .m directly, you would then expose these private details and could accidentally use them somewhere.
+So as for a general review of what you've written, I can't attest much to that.
+And if the object implements the method that matches the message, it will execute the code.
+But the fact remains that you can still compile the code and you can still pass the message to the object.
+But as to the idea of creating a class category just to sorta-kinda exposed "private" methods for the sake of testing and testing only?
+In other languages, if you try to call a non-existent method, your code won't compile.
+This blog discusses this in more detail, but here's an example of doing this with one of your methods:
+It's important, for example, to test internal boundary conditions, even when those boundaries are invisible to the caller.
+In the end, this allows you to still test private details of the class, but these details aren't exposed anywhere to anyone.
+So even without the class category, we could still call the methods on the object--we'd just have a bunch of warnings.

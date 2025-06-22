@@ -1,0 +1,14 @@
+This is a different issue from the certificate one.
+Apache has no way of knowing which one you wanted, since the Host: header is not sent until the secure channel is established, and to establish the secure channel, apache has to select a certificate to use.
+If you really want this to work properly, each vhost needs to have its own IP, which you use in the Virtualhost definition:
+In the case of redirecting HTTP to HTTPS, you create as many HTTP (port 80) virtualhosts as you have SSL vhosts, and then Redirect to the SSL version for each one.
+Rule #0: do not, EVER, use hostnames in a virtualhost definition.
+But apart from that, you are trying to access HTTP content over an SSL connection, which produces the error you reported.
+Now the SSL portion will at least stop causing errors, but you will get the certificate warning for every SSL virtualhost that is not the canonical CN for the certificate chosen (apache will always choose the certificate defined in the first SSL vhost.)
+You cannot run multiple SSL name-based virtualhosts on the same IP:port combination.
+I've been having some problems setting up my apache webserver to only serve pages over https.
+Rule #1: DO NOT use rewrites when anything else will do.
+You seem to have implemented 80% of this and then gave up and thought using rewrites was a proper solution :)
+I think I nailed it earlier this week, but after some tinkering it seems like I broke it again and I don't know when exactly I broke it.
+My setup produces this output, and thus my configuration syntax should be ok:
+When I visit my sites, I get this error in Google Chrome:

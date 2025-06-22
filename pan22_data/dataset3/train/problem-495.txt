@@ -1,0 +1,17 @@
+Just toss it in your code and then you don't have to worry about it again.
+Now for a rendering thread, I'm not sure what the consequences would be.
+It really just depends on what all is happening in your rendering thread.
+If you simply killed the thread, you could potentially cause data corruption if it was in the middle of writing to disk.
+Imagine if it was a thread that did a lot of heavy IO.
+I'm not sure that your code needs to wait the end of renderingThread but it is a generic approach or a Best Practise.
+However all examples I've seen wait for the thread to finish, usually something like:
+So to me it seems that it's not necessary to wait for the rendering thread to finish.
+I believe for the most part it is  just good practice.
+And also that the SurfaceHolder holds a lock internally until SufraceHolder.unloackCanvasAndPost() is called, which prevents calls to SurfaceHolder.Callback methods.
+One reason to follow what most of the examples do is because just because the current implementations allow for this usage, it doesn't mean future implementations will.
+It's better to code defensively and to what the API is documented to do rather than what a particular implementation does.
+I just wrote a simple Android app that uses SurfaceHolder.Callback interface to communicate the state of the SurfaceView.
+I did this because in the Android documentation SurfaceHolder.lockCanvas() it states that   a null will be returned when the surface is not available.
+In the Callback.surfaceDestroyed() method i just informed the rendering thread to terminate and returned, like so:
+I use renderingThread.requestStop() too without problems.
+In this case, you already have working code that's been implemented the correct way.

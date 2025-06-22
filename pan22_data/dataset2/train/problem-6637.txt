@@ -1,0 +1,8 @@
+I/O operations with regards to disk storage by an application are usually system calls to the operating system and their size depends on which system call is made...  
+Of course once such a system call has been made by the application and is received by the OS, the call will get scheduled and queued (depending on wether or not the O_DIRECT flag was used to by-pass the page cache and buffers and direct I/O was selected).  
+On a spinning disk the performance of those calls is mainly dependant on how much the disk actuator needs to move the arm and read head the correct position on the disk platter.  
+On the other hand the size of a  read() and write() calls is initially set by the application and can vary between 0 and 0x7ffff000 (2,147,479,552) bytes in a single I/O request...
+The abstract system call will need to be mapped to/from operations on the underlying file-system which is ordered in discrete blocks (the size of which is usually set when the file-system was created) and eventually the disk driver operates on either hard disk sectors of 512 or 4096 bytes or SSD memory pages of  2K, 4K, 8K, or 16K. 
+(For benchmarks typically the read and write calls are usually set to either 512B or 4KB which align really well with the underlying disk resulting in optimal performance.)
+Yes there is a limit, on Linux as documented in the manual a single read() or write() system call will return a maximum of 0x7ffff000 (2,147,479,552) bytes. To read larger files larger you will need additional system calls.
+A single  read() system call counts as 1 I/0 event and neither X nor Y IO's regardless of how that system call get translated/implemented to accessing X blocks from a filesystem or reading Y sectors from a spinning hard disk. 

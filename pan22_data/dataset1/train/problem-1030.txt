@@ -1,0 +1,19 @@
+Ola Hallengren's solution is based on beset practice and years of experience. There are some quirks though. Take a look....
+Before you run the initial script, check the first few parameters and the database used:  
+The solution is deployed as one script named MaintenanceSolution.sql, which itself will create stored procedures, tables and jobs . 
+Out of the box Ola's MaintenanceSolution.sql script will create the following jobs:
+Now if you know that these jobs belong to Ola's solution, then you can leave them as is. Otherwise if you would prefer to mark them, then you might consider prefixing a string inside the MaintenanceSolution.sql before you execute the script. Do a regex search for the string SET @JobName[0-9][0-9] = ' with a suitable text-editor and add a prefix to the job's name
+e.g. OLA Database Backup - SYSTEM_DATABASES - FULL
+Ola created his IndexOptimize stored procedure according to the following Microsoft recommendations:
+The backup job create sub-directories for each level of the database's instance. So if you are running the script on a server MyServer on an instance named MyInstance and the database is named MyDatabase and you are looking at a Full backup, then the backup file will be stored in the following directory with the following name:
+Consider deploying the solution to a development server as is (ok, modify the database you will be using) and then have a look at the individual scripts, jobs and tables. Familiarise yourself with the solution and then modify according to your requirements.
+And of course consider reading Ola's documentation on his site:
+We use the entire Maintenance solution provided by Ola Hellengren i.e.Backup, Database Integrity and Index Optimization.
+What we do is create a new database for DBAs and then use it deploy the maintenance solution. This keeps the system dbs separate from any other user /DBA created objects. Just need to change the script a bit for that (Use databasename).
+1.Important parameter Values which I need to modify? 
+For Index Optimize check the SP and configure it according to your need for Index fragmentation in the script itself.
+2.Where will these commands create the SP and related Command Execute and Command Log, all in Master Database or MSDB?
+Yes, if you use the script as it is it will use master to create all objects. This can however be customized as per your requirement. We do use a different database to get this deployed.
+3.Series of code execution - Which code I need to execute first?
+Once the solution is deployed ,it will create jobs and then you can schedule it from there.
+This is the best available solution with lots of freedom to customize. Once you start using it, it will reduce a lot of burden from your daily activity.

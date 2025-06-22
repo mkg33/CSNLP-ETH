@@ -1,0 +1,11 @@
+My answer is very late, but I'd like to suggest a couple of improvements to your code.
+Furthermore it is of course always good to check whether it actually gives the speed increase that you are looking for.
+If you're just writing some quick code, this doesn't really matter, but for larger applications it's typically better to be writing reusable, modular functions with their own workspace rather than scripts.
+The next suggestion assumes that the instructions for opening and closing the pool are within a function.
+Firstly, I would use the functional form, rather than the command-dual form:
+This creates an onCleanup object cleaner that will execute the supplied code (in other words matlabpool('close')) when it is deleted.
+This is correct, but I would recommend you to use matlabpool open local.
+This lets matlab decide how many workers are used, 12 might require to much memory.
+as it's easier (if you later need to) to parameterize the number of workers or the cluster used.
+It will be deleted when it goes out of scope, which happens either when the function completes and exits, or if the function exits due to an error or Ctrl-C.
+The only things you need to try are whether 12 is the best number for you, and whether it makes sense to close the matlabpool earlier (you might not gain anything from it for a postprocessing part).

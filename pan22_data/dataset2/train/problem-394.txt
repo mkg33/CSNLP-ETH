@@ -1,0 +1,5 @@
+So, in an application where the client talks first, there is zero delay added by the third step in the handshake.  In an application where the server talks first, the final ACK step really is necessary - the server can't start sending data packets until it knows that the client is expecting them.
+The third packet is needed client-to-server to tell the server that the client received the second packet. Otherwise, the server would have no way to know that and it might just wonder why the client hasn't sent any data.
+By the time the client gets the SYN ACK packet from the server, it considers the connection fully open (and sticks the ACK info in the header of its first data packet, too).
+The second packet is needed server-to-client to tell the client that the server has accepted the connection.
+No fourth packet is needed. If the third packet gets through, both sides know the connection is open and are fully ready to send data if they wish. If the third packet does not get through, the second packet will be retransmitted, prompting a repeat of the third packet to be sent.

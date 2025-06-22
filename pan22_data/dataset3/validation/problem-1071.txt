@@ -1,0 +1,15 @@
+Also another solution (though not good), would be to run something like rysnc every 3 seconds, but there would be sync lag, and not to mention all that extra network activity.
+If dynamically generated you should consider storing the content in a database shared by both machines and recreating them as files if the database version is newer than the physical file (compare a timestamp field to the file timestamp).
+An alternative is lsyncd: http://code.google.com/p/lsyncd/
+Gluster uses FUSE, so it might be easier to run in a VPS environment.
+The problem with incron is that it does not monitor sub-directories and folders.
+Do your source files change so frequently that you would even consider rsyncing every 3 seconds, or are these dynamically generated files?
+I was thinking an optimal solution would be using shared storage (NFS) and mounting the storage on each server, but I don't have experience with this.
+The problem, is that the actual web files need to exists on both the web server and PHP worker and need to be synced.
+Nginx proxies all PHP requests off to the PHP backend and this works great.
+http://www.csync.org/ is similar to rsync, but designed with this particular situation in mind; I think you might still need something to trigger it though, like incron
+We have a similar setup with nginx in front of ruby app servers.
+The load-balanced web servers are the gluster servers, with the app servers as the gluster clients.
+Just stumbled upon this answer while researching for my own solution.
+If these are indeed source files you would be best off triggering a resync upon detecting a change in the file/folder last modified time.
+I have setup a web server running nginx and another server running php-fpm on Linode VMs.

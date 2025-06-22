@@ -1,0 +1,6 @@
+The best theory I have (which seems impossible to me, unless they would be doing some really funky stuff) is that somehow the requests are closed on my server but not on theirs.
+I run a website that technically acts as a proxy to another website (I make HTTP requests to it), and I needed to make sure not too many simultaneous connections were made, I thus limited it to 29 simultaneous connections with iptables:
+Yet, the other website which I’m proxying reported to me that they saw 1499 simultaneous connections at peak. Wow. This made their website unstable and they had to ban my server’s IP, which they said got their website back to stability.
+I’m running Debian stable, nginx and php, and the connections are made through PHP’s cURL functions. I don’t reuse connections because PHP makes that impossible with its cURL implementation.
+I tested that rule against another server of mine, and I was seeing only a maximum of 29 connections in iptables on that other server.
+iptables -A OUTPUT -p tcp --dport 80 -m state --state NEW -m connlimit --connlimit-above 29 -j REJECT

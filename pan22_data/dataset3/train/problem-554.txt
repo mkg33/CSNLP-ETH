@@ -1,0 +1,11 @@
+However, depending on the number of updates and the order in which they come out of the queue, you might get only one update, then one select, then one update... and no parallelization of SELECTs at all.
+This kind of mess is eliminated when using InnoDB.
+Switch to InnoDB, or another system which holds your cache table in RAM.
+At some point, one of the queries needs to wait on IO, which is slow.
+Or you do another query (like a JOIN) which uses this table and locks it for a little while.
+(I find profiles and traces to usually be useless.)
+Table is MyISAM, so writes block other writes and reads.
+When a MyISAM table takes lots of read/write queries, this always eventually happens.
+CONTEXT_VOLUNTARY and CONTEXT_INVOLUNTARY indicate how many voluntary and involuntary context switches occurred (source) which confirms you're waiting on locks.
+UPDATEs lock the table exclusively (blocking out other UPDATEs and SELECTs).
+You'll get random slowdowns with lots of locking, at a traffic level which should intuitively be fine.

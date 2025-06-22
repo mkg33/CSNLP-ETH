@@ -1,0 +1,35 @@
+The use of 'shading' here is a bit off from the typical renderer meaning.
+First, you are misunderstanding the point of the article;  these are not two different kinds of fragment shading.
+The simplest form of lighting calculation is float lightAmount = clamp(0,1,dot( -light_direction, surface_normal ));, where 'light_direction' and 'surface_normal' tell you the direction the light is shining and the direction the surface faces.
+I do this for my triplaner mapping and blend mapping:
+The result is as illustrated in the following image:
+This is just an illustration two different coordinate systems.
+Nobody does fog calculations in world-space, either, even though it'd be easy to do.
+In a realtime renderer, you tend to always have your artist-authored texture coordinates fixed as vertex attributes up-front.
+Specialist modes like view/world-sourced texture coordinates don't really occur, unless such an effect is explicitly designed into a shader.
+In practice, it's awkward to convert the light direction into every object's local space, and so people don't tend to do that.
+But if you wanted to, you totally could, and there'd be no visible difference.
+The author appears to talk about how texture coordinates are computed.
+But for certain projects it may be simpler to do them in world space.
+: uniform) fog is implemented by simply blending a fragment's color toward some constant value, based upon the distance from that fragment to the camera.
+As above, you can do fog calculations in object-local space, in world-space, or in view-space;  just take the camera's position in that coordinate system, subtract the fragment's position in that same coordinate system, and find the length of the resulting vector.
+Folks on the Internet seem to have mostly settled on doing lighting calculations in view space (that is, relative to the camera), so that's mostly what you'll see in online tutorials.
+In the second case, texture coordinates are computed from the position of the vertices in eye space.
+The author goes on with a brief explanation claiming that the image on the left is a result of shading in model space coordinates because the stripes follow the vx value running from the tip of the spout to the handle while the image on the right is based in eye space coordinates, with the stripes following the vx value from right to left.
+Pointing out that there are these different coordinate systems available to you, and you can use whichever ones you like depending upon which is most convenient for whatever you're trying to do.
+What this looks to me is just sampling form a texture using texcoords.xy and then texcoords.yx or using world space coords like worldpos.xz or worldpos.xy.
+worldpos.xz will make the strips go horizontal and worldpos.xy will make them go vertical.
+While reading on shading, I came across a section in which the artist provides 2 different kinds of fragment shading:
+Of course, the same problem as with Lighting happens here;  converting the camera position into object-local space for every object you render is a pain, so nobody actually does that.
+If you're just doing regular texture mapping, you don't need to think about any of this at all;  your fragment shader doesn't need to know where a fragment is in space;  just the coordinate to use to sample from a texture map.
+That's really all that's going on in that article.
+I have been spending hours trying to understand why and how the effects would be different in both cases (why are the stripes different in both cases?).
+And so if you're doing the fog calculation in view-space, you don't have to subtract the camera position from the fragment position, because the camera position is 0;  you can just use the fragment position in the fog calculation directly.
+But if you really wanted to do your fog calculations in object-local space, or in world-space, you totally could, and it'd work, and nobody would be able to tell you weren't doing it the conventional way unless they actually read your shader code.
+No, everybody does fog calculations in view-space for one simple reason;  in view-space, the camera is, by definition, located at coordinate (0,0,0).
+In the first case, texture coordinates are assigned based on the model space positions of the mesh.
+And it isn't about different "kinds" of fragment shading which you must make a hard decision between;  it's not unusual to use each of these different coordinate spaces in different parts of a single shader.
+Which one you use will depend upon which one is more convenient for whatever operations you're doing.
+In addition, is there any particular case when we need to perform shading in the model space coordinates and likewise only in eye space coordinates?
+It doesn't actually matter whether you express these directions in object local space, in world space, or in view space;  the math works out exactly the same, as long as both vectors are in the same coordinate system.
+Feel free to do whichever is simpler, or makes more sense for your program.

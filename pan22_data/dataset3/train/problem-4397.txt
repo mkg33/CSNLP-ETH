@@ -1,0 +1,14 @@
+By replacing the entire set of files in one big update you can also rest assured that removed files are removed on the replicas.
+That may or may not be balanced out by the reduced size thanks to compression.
+Clients in each location would contact their local server, so read access to files would be fast.
+I would use an S3 Backend and then just mount that on all the servers that I need - That way, everyone is in sync instantly anyway
+The downside is of course that you are transferring a many files unnecessarily.
+1 replica/brick per server), so that each replica would be an exact mirror of every other replica in the volume.
+For this particular use-case, one could build a 10-server GlusterFS volume of 10 replicas (i.e.
+Consider using a distributed filesystem, such as GlusterFS.
+Also I have no idea how long it would take to compress that many files.
+This should reduce the total size significantly and remove all the overhead you get from dealing with millions of individual files.
+GlusterFS would automatically propagate filesystem updates to all replicas.
+Being designed with replication and parallelism in mind, GlusterFS may scale up to 10 servers much more smoothly than ad-hoc solutions involving inotify and rsync.
+An option that doesn't appear to have been mentioned yet is to archive all the files into one compressed file.
+The key question is whether write latency could be kept acceptably low.

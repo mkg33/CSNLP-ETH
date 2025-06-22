@@ -1,0 +1,17 @@
+Without the rights to login via ssh, would the user have shell access?
+/bin/true will work just like /bin/false, except that it returns zero.
+In other words, which problem are you trying to solve?
+Alternatively, you can have your user environment script set as the user's shell, and put the user AllowGroups or DenyGroup setting at sshd_config.
+Then it won't be necessary to set user shell to /bin/false.
+It's not unusual to set a users shell to /sbin/nologin, but it will result in the same thing as setting the shell to false.
+/bin/false always returns a non-zero value, which can cause problems.
+It is possible, but if you take away their shell, then no, they can't execute shell scripts.
+Try using /bin/true instead of /bin/false and see if that affects it.
+In the first place, why would you need to have /bin/false as the shell of the user?
+Of course, your script must be a locked down script.
+You may want to completely block a user from logging in remotely using PAM:
+Most other ways of limiting access are less obvious than just configuring the access protocol to deny them.
+This solves the user environment problem and the ssh login problem.
+Why not simply have /bin/bash as the shell, and AllowGroups or DenyGroups setting at sshd_config?
+Use the DenyUsers or DenyGroups settings in sshd_config.
+The most straight forward answer that was proposed was editing sshd_config and limiting shell access there.

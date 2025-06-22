@@ -1,0 +1,22 @@
+This happened to me twice on Windows Server 2012, and it was due to one of the following reasons:
+https:// server_fqdn:443/ReportsServer/ --> SQL Reporting Server
+  TCP    0.0.0.0:443            0.0.0.0:0              LISTENING       4
+http://* :2869/ --> Simple Service Discovery Protocol service (SSDPSRV)
+https://* :5358/ --> Web Services Dynamic Discovery (WS-Discovery)
+https:// server_fqdn:443/Reports/ --> SQL Reporting Server
+http:// +:80/ReportServer/ --> SQL Reporting Server
+In my case it was DataManager from F5 Networks which uses Tomcat 6 internally to serve its web pages.
+First off, I will answer this question directly and anyone reading this can ignore any answers talking about 3rd-party, non-Microsoft applications using the System Process.
+I had the same trouble while trying to install a VMware update.
+There will be a list of URLs (with the port numbers) which can lead you to which application is running and holding which ports:
+You can then find the corresponding service on the system and stop it and see that wanted port is released by confirming with another netstat -aon | find ":443" command.
+Get the process number of the port that you are looking for (443 in this case):
+http://* :5357/ --> Web Services Dynamic Discovery (WS-Discovery)
+Running tasklist to find out what is running in the process proves unhelpful:
+Using netstat -ao | find ":443", I found out that port 443 is being used by PID 4, which was the System process.
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\HTTP\Parameters\UrlAclInfo
+...from a non-mapped drive of Windows to avoid "Access Denied":
+Or TCP Monitor: http://www.itsamples.com/tcp-monitor.html
+This might not be a solution for everyone, but it may help some.
+Output should look like the following for the System process:
+  TCP    [::]:443               [::]:0                 LISTENING       4

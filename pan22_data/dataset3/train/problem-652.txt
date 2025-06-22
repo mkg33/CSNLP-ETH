@@ -1,0 +1,17 @@
+I suspect that you cannot interrupt the program while it writes a block and writing 10GB takes significant time.
+This way I can interrupt dd almost instantly (this is the gist of the already mentioned answer).
+Of course this all depends on how much RAM you have and how much swap space you have, and on what other processes do.
+With bs=10G the tool will try to allocate 10 GiB of memory.
+My personal preference is to use bs of a size that gets transferred in 0.1-1 second; or smaller bs if RAM usage may be an issue.
+If hardware limitations allowed dd to exceed 10 GiB/s and I had more than 40 GiB of free ram, I would consider bs=10G.
+Suppose I have a drive that has a bad superblock (or block) in some random location.
+One usage case where bs=10G may be useful is when you want to process exactly as much data and you use count=1 (or e.g.
+However in practice with large bs you may get less, unless you use iflag=fullblock (see this answer).
+In the real world the plateau actually collapses for some large bs.
+Because of memory usage I would recompute to a smaller bs anyway.
+It won't format to ext3, so I'm writing it full of zeroes so that I can properly format it.
+The underlying issue (bad blocks) should be approached with smartctl and badblocks, not dd.
+True, but it's just a "bs near zero" part of the story.
+Performance improvement with block size plateaus fairly quickly in my experience, so I would stick to more reasonable sizes (4MB...).
+This another answer mentions "performance improvement with block size":
+In the context of the question we should tell the "bs goes to infinity" part.

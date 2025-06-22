@@ -1,0 +1,12 @@
+When searching for this problem I see a reference to a "ip-mac-binding disable" command on WLC setups, but can't find if that maps to a setting on a single AP.
+I had the same problem and found a solution: enable DHCP relay agent on the AP and it works.
+Try adding "[no] dot11 qos mode wmm" to the AP config.
+If so, the DHCP Discover is reaching the switch, and the broadcast Offer is being sent back, but dropped by the AP.
+Replace x.x.x.x with the IP address from your DHCP server (typically the Internet router located on the same network / broadcast domain.
+I had a similar issue at work and my solution was to configure the VM to use NAT instead of bridged mode.
+However on my laptop I have VMware running, and a guest with NIC set to bridged mode is unable to DHCP, however IPv6 works fine.
+I recently replaced wireless at a site from the internal AP on an 877-WM with a (standalone) 1262 running 15.2(2)JB.
+The host machine will receive the actual IP address and then when the VM is spun up it tries to request a separate IP but the source MAC is the same.
+Although it seems unrelated, this behavior can be caused when the the AP and client don't support the the same WMM QOS parameters.
+If you check the "sh ip dhcp bindings" table on the switch is a lease shown for the VMs MAC address?
+I've configured the AP pretty much the same as I always do for Cisco AP's for single SSID operation (single bridge domain, BVI1 also management), and things seem to work.

@@ -1,0 +1,9 @@
+As you say the performance is tied to TABLE_B this is probably OK, though again the query plan would be helpful information to provide.
+Which indicates the update statements accessing TABLE_B are inefficient - because of missing indices.
+That would imply the updates do not have appropriate indexes available, or are unable to use them for some reason, on TABLE_B or the tables that it is joined to.
+Depending on how TABLE_B and TABLE_C are getting joined (again, provide the index details and query plan) this could be forcing a table scan of TABLE_B.
+Without more detail about the table layout (what indexes you have on each of the tables) and the query plan that SQL has decided to use we can't help you in much detail, so I suggest you update the question with that information.
+For maximum efficient for this specific statement TABLE_C should have an index covering UNIQUE_ID & USER_ID and TABLE_B one covering UNIQUE_ID & USER_ID and including ATTRIBUTES.
+With the right indexes/keys this should not be an issue either.
+Presumably you have an index on TABLE_C.UNIQUE_ID or it is the primary key or subject to a unique constraint.
+The expense of that operation would grow at linearly with the number of rows in TABLE_B.

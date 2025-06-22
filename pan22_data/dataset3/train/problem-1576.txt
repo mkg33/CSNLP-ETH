@@ -1,0 +1,9 @@
+As I say, my memory of this might be shaky, so read the docs for the tools to make sure you understand what they're doing, and test this in your test environment.
+Then you run mk-table-sync --sync-to-master from the slave, which will get your slave rows consistent by updating rows in the master such that they replicate through to the slave.
+This writes checksum data for both master and slave tables.
+I know my slave is at least a little out of sync from the master... and reading I found that many places say that mk-table-checksum + mk-table-sync from maatkit are the tool I should use to fix this.
+It's been a while since I had to do this, but if I remember correctly, you use mk-table-checksum against the master, and use the --replicate option.
+I would add that on the replica, you should also add the --replicate option to mk-table-sync so that it takes advantage of the work mk-table-checksum has already done.
+If you're able to use LVM snapshots then even better - but this won't be possible unless you've configured your filesystems with this in mind.
+If your dataset isn't huge, you might be best to shut down for long enough to take a copy of the mysql data directory on the master and recreate the slave as this is the safest way to ensure you definitely get a consistent replica.
+The issue is that I can't find any good example about it:

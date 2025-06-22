@@ -1,0 +1,10 @@
+Once I pinged my laptop from the pi I could also ping the pi from the laptop. If I waited 60 seconds and then tried to ping the pi again, it still worked. If I waited 120 seconds instead, I could no longer ping the pi. At that point I had to once again ping my laptop from the pi.
+As soon as I could ping the Pi I could also connect to it using ssh.
+Both the laptop and the Pi was on wifi. Putting the Pi on a wired connection instead fixed the pinging/ssh issue.
+Keeping the wifi, but configuring my router to put the Pi IP-address in a DMZ I could ssh to the Pi using it's new IP (same IP as whatismyip.com reports from any computer on the LAN).
+So it looked like a router issue, not a Raspberry issue.
+The final resolution to the problem was to install a custom firmware (dd-wrt) on the router. After that I've had no more ping/ssh problems with the Pi. The router in question is a Netgear Nighthawk R7000.
+From my tests with a similar setup (pi networked via USB wifi) I can confirm your observations in the edit. At some point no arp request packets reach the pi, while other devices can see them. The pi can still send them and receive replies, that's how a pinged host can learn the address of the pi. 
+I suspect the pi stops seeing all broadcast packets maybe due to some power saving gone wrong, but I haven't tested that. Could also be that a different wifi dongle (with different driver) helps.
+For me it always works after a reboot of the pi, or after a fresh re-association on the wireless network. Like so:
+I have that as an hourly cron job and it seem to makes the situation better for now.

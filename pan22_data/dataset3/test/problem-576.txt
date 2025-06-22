@@ -1,0 +1,20 @@
+If you are going through NAT, chances are the NAT timers are disconnecting you.
+It could possibly be any filtering device on the way between your VM and the FTP server.
+This will cause a keepalive to be sent on all TCP streams once every minute regardless of activity on the socket.
+If the FTP server is Vista goto the FTP site properties and increase the timeout from 15 mins (default).
+There are firewalls around which close the data connection, if they see that the command session is closed.
+How big is the file that you are trying to transfer?
+Regardless if the data connection is idle or carrying traffic...
+Most firewalls (including home routers) have a state table where idle TCP sessions are reset after certain timeout.
+I see this from hotel rooms where I ssh into a machine and fail to do something for some time (as short as 5 minutes sometimes!)
+It's likely that it's the NAT state tables on the VM that are causing the timing out the control connection because of inactivity on that socket.
+The NetBSD FTP client (lukemftp) may be available, and is the best command-line FTP client I've seen to date.
+If that fails, perhaps installing another FTP client would work better.
+You may be able to get around this by enabling "Active FTP" on the VM system which hopefully will cause VMware to actively watch FTP sessions and keep the control socket alive so long as data is still flowing.
+If these TCP keepalive hacks above don't fix it, either the client will have to send some command periodically (NOOP, etc) or the administrators of the FTP server will have to change their end.
+You could change the VMs NIC to bridged mode (instead of NAT) to sort out the host OS.
+It is something that the application must request.
+Note that the ftp client may not actually USE keepalives.
+It's also possible the remote end is closing the connection due to inactivity.
+Then, make sure your FTP client sends NOOP commands periodically to keep the command channel open.
+FTP uses two sockets - one for control, and one for data.

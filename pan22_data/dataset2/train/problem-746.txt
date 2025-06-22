@@ -1,0 +1,8 @@
+It is unclear what magic you are performing to get a key in AuthorKey when if (key < 1). Methods should be self-explaining. But this one needs comments. Why should key < 1 be able to get remapped to a valid key? Also, prefer proper string interpolation over string concatenation.
+Using magic string literals is a design smell. If you must work with such strings, declare them in a dedicated class DataSchemaConstants.
+If you put Models, Views, Controllers folders people will understand you are following a pattern, especially if it is the IDE default. 
+The classes that reside in the model don't require to be *Model classes or even to be in the same layer. You have distinguished between (1) data table models
+ExperimentSimpleBkLibInvTool.ModelInMVC.DictionaryTabelBaseModel doesn't follow naming conventions. 
+If you are following an obscure pattern, document it with the sources where others can learn about it and the reasons you chose it in the README.
+Given the fact you have implemented your own base classes to provide custom ORM (as explained by the OP), I find this complexity within reasonal bounds.
+Here's a blatant offense against single-responsibility. Don't use representation logic in your models. MessageBox should never be called here. Instead, throw an exception, and catch it at the top most layer, at the view-model. Also think about how to test this code. A unit test with a prompt in it, is not the best idea.

@@ -1,0 +1,27 @@
+So instead of invalidating the cache for entire page because you have added a comma, the browser will reload only the HTML page.
+As others have mentioned, the current HTTP protocol provides limited support for this.
+Also do not forget that most of the web sites and browsers are using HTTP/1.1 with KeepAlive on.
+The advantage of having separate resources is that they are cached separately by various parts of the chain web application to web browser:
+I think those two together do about the same as you suggest, but all based on negotiating between client and server about capabilities and wishes.
+- separate sites for static files (images, JS, etc.)
+Google's mod_pagespeed Apache extension performs this trick, amongst others, automatically for objects of 2k and less.
+Tests have shown around 50% reduction in page load times, so I'd definitely keep an eye on this project.
+If all the objects on one particular page were served by the same server, I suppose that would be possible.
+Ofcourse it would give a little overhead at first, but with smart caching I'd say some improvements should be possible?
+There's the DATA URI scheme that allows you to encode binary objects like images into base64 and inline them, effectively combining the HTML and object into one file.
+See http://code.google.com/intl/nl/speed/page-speed/docs/filter-image-optimize.html
+HTTP Pipelining/keepalives are useful but, as Koos van den Hout mentions, only work on objects with known size.
+Is there a webserver that packs all content (or as much as possible) and send it to the client?
+It also compresses the entire stream , including headers and cookies.
+I'm wondering why HTTP servers do not pack a webpage request to a single file, which would then be read by the browser?
+This means that the objects from the same web site will get loaded on the same TCP connection.
+Answers from webservers do not get packed into an archive, but two things do happen
+This reduces cache-ability but can still be worthwhile for small objects by reducing the number of short-lived connections and by reducing the transfer of uncompressed headers.
+Many different servers are involved with serving different parts of each page and if you required one "front end" server to gather all the resources, package them, and send them along, performance would be drastically worse than they way things work now where the browser is in charge of fetching all the page resources.
+Furthermore, pipelining and gzip compression do nothing about the uncompressed transfer of headers and cookies.
+In the majority of cases, though (especially with large multi-million user websites), that is not the case.
+You can find some internal diagnostics by entering about:net-internals in the location bar.
+Google's Chrome browser is already using the SPDY protocol when communicating with Google sites like Gmail and Search.
+An interesting development is Google's research project called SPDY, which does almost what you suggest.
+As far as I know, the amount of requests made for each webpage (CSS/JSS/images + HTML output) combined makes loading a webpage slower and also puts load on the webserver.
+Among others, it interleaves multiple HTTP requests over a single TCP connection, interleaving and prioritizing the resources.

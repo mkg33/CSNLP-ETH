@@ -1,0 +1,17 @@
+Here is another useful example (I just boiled down the above to illustrate what appears to be a common trap for young players like me; I did not realise that the parentheses are important).
+Let's say tmpItem is a file dropped onto a droplet.
+The same program will process a dropped file and yield its container.
+Or, with System Events (whose item objects actually have a POSIX path property):
+Technically they are «class bmrk» objects in Snow Leopard, which seem to work mostly like proper alias objects (though there may be some differences from true alias objects).
+Note: Nothing in my versions (or in your original formulation) is specific to processing folders.
+ParentPath will be a Finder folder object which does not have a POSIX path property.
+The open handler’s parameter gets a list of alias objects1.
+The curly braces ({}) in your error message indicate that the error happend while it was trying to operate on a list object.
+set the destination to the POSIX path of the container of tmpItem as alias -- This will FAIL
+set the destination to the POSIX path of the container of tmpItem -- This will FAIL
+set the destination to the POSIX path of (the container of tmpItem as alias) -- This will SUCCEED
+Usually the easiest way around this problem is to have Finder convert its item object (folder is a subclass of item) into an alias object and then extract its POSIX path (alias objects do have a POSIX path property).
+Thus, you need to use something like set FolderPath to first item of the_dropped_folder to work with a single item instead of the list (and probably give the parameter a plural name while you are at it so it “reads better”).
+That should let your set ParentPath to container of FolderPath statement work properly.
+set the destination to the POSIX path of tmpItem -- This will work
+If you put all this together, you might end up with something like this:

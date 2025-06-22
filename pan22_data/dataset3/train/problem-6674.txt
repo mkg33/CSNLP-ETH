@@ -1,0 +1,28 @@
+So I was thinking of writing some scripts that synchronise /etc/passwd and /etc/shadow and checks if homedirectories exists.
+I couldn't imagine that I'm the only person in the world that would need something like this.
+Both can function well transiently separated from the rest of the authentication network, over slow WAN links, and function in spite of the usual hang/reboot/rebuild process that marks all IT.
+Apparently they use MySQL to scale an OpenLDAP installation and replicate it.
+Branching out a bit, if you do have an Active Directory environment to work with Samba comes with ways to work with AD that'll do multi-master identity processing.
+Normally I would think of something like LDAP, but we don't want to rely on a global server to which we need to authenticate, in case of downtime or broken connections.
+Centralized authentication single-point-of-failure is a problem that's been known for some years, which is why Windows got rid of the PDC/BDC model of WinNT and went with a multi-master distributed model as of Active Directory.
+Novell's eDirectory (a very fine LDAP server among other things) has been doing multi-master for over 15 years now.
+Having the LDAP server there and maintaining the information allows you to go ahead and use or create the tools you need for provisioning and user management, so if you ever do decide to trust your network/set up redundant servers, you have a very simple migration path.
+If the LDAP server is unavailable, the local passwd file is still there to fall back on.
+So that when one of them dies, you're not screwed.
+If you really want local passwd files, though, consider generating them from the LDAP.
+OpenLDAP does have replication between multiple LDAP servers which gives you your fault tolerance.
+Please, reconsider centralized authentication for your own sanity.
+I think Kerberos can also be set up to be distributed.
+Including the posibility to exclude some users at some of the servers.
+I need some usermanagement for a serverfarm of +/- 30 linux servers.
+If you've got a user base of any size, you do not want to rely on de-centralized management, even if it is through something like puppet.
+If you're not afraid of the still in development Samba 4, you can even set up a completely linux-based AD environment, and use winbind on your client servers to handle distributed auth.
+This is why Active Directory requires (well, nearly anyway) multiple servers.
+You could either generate them somewhere centrally and then distribute them (puppet, rsync, etc.
+Just not as much in the open-source space, that I've seen.
+So does someone know an opensource project that does such a thing?
+Plus, without centralized authentication, you'll need to manage local accounts, samba accounts, htaccess accounts...where as you /could/ centrally authenticate everyone at once.
+This is an older article that discusses a little about it.
+), or you could have each client generate its own.
+I don't know if you have any Windows AD systems in your network, but if you do you can set up modules for authenticating against that.
+With the exception of extended downtimes (day or more) this is a largely solved problem.

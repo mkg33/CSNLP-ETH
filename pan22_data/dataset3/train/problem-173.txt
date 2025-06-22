@@ -1,0 +1,16 @@
+Or, as others mentioned, you can turn off StrictHostKeyChecking.
+I do a lot of reinstalls on machines which changes their host keys.
+Alternatively, you can use some configuration management tool like CFengine or Puppet to distribute an authoritative /etc/ssh/ssh_known_hosts to all clients on your site.
+(OpenSSH consults /etc/ssh/ssh_known_hosts if there is no matching entry in ~/.ssh/known_hosts.)
+Perhaps you would like to save the host keys before reinstalling, then restore them afterwards.
+I have also considered creating a daemon that would fetch the latest host key from a machine on a whitelist (there are about twenty machines that are being constantly reinstalled) and replace the old host key in known_hosts.
+You want ssh-keyscan, which is distributed with openssh.
+This necessitates going into ~/.ssh/known_hosts on my machine and blowing away to old key and adding the new key.
+Depending on the resons for the reinstall/IPs stay the same I would look at setting up "StrictHostKeyChecking" in ~/.ssh/config for specific Host/IPs/Patterns.
+That opens you up to man-in-the-middle attacks, though that may not be a worry in your environment.
+I have considered creating a wrapper around the ssh command the will detect the error coming back from ssh and present me with a prompt to delete the old key or quit.
+Just to get this out in front so I am not told not to do this:
+This is a massive pain in the tuckus, so I have started considering ways to automate this.
+As part of your reinstall have a machine with an up-to-date list of keys run this, then distribute the updated known_hosts file to the rest of the machines.
+If that's not possible then look at automating the loading of keys on the hosts, perhaps in the reinstall process.
+I don't want to just blindly accept any host key, so patching OpenSSH to ignore host keys is out.

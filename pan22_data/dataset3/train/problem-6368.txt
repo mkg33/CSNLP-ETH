@@ -1,0 +1,11 @@
+I would personally use fgets() (or some other library function such as readline()) to read a string.
+The function get_strings() reads input char by char as long there is no new line (\n), no EOF and all chars are passing the isalpha() test.
+It looks really clunky to me, and clunky is always bad.
+This results in an \$O(n^2)\$ time to read a string, because every time you call realloc(), it may need to copy the current contents to the new buffer.
+fgets() does pretty much what your loop does without all the handcoded logic.
+You should either just allocate a buffer of size MAX_DATA and then use realloc to shrink the allocation at the end, or change to a reallocation strategy where the reallocation size is increased by a multiplicative factor each time (such as 2x).
+Your indentation is strange because your nested while loop is on the same indentation level as the outer while loop.
+The problem is that I want a sane implementation that is robust to errors and restricts the user to a certain input and doesn't suck in terms of complexity.
+Some points that (I think) deserve special attention during the review:
+Currently, you call realloc() on every character you read.
+This also applies to your array of strings, where you do the same thing.

@@ -1,0 +1,12 @@
+When you see CXPACKET waits you need to look at the other threads of the SPID and see what other waits are besides CXPACKET.
+To your specific issue, the reason that the run times are so crazy is probably because the SQL Server is generating a different plan on some days because the statistics are out of date (making the job run long).
+Just because you see a lot of CXPACKET waits doesn't mean there's a problem with the query, it means that there is a problem somewhere else.
+Once you've solved the stats problem you can start looking at other reasons why the job is running slow.
+What CXPACKET means when you see it is that that thread of a parallel query is waiting for another thread of that query to do something.
+The fact that you only have a single disk is not helping any for sure.
+There is a lot of misunderstanding about CXPACKET.
+CXPACKET isn't the cause of your problems, it is a side effect.
+I'm going to allocate a huge size for the tempdb, templog, and db/log and see if that works.
+I think what is happening is when autogrow happens the process hangs with this error message.
+I think it is related to the amount of size I allocate for the db and log.
+Then you either manually update statistics (or via a job) or auto stats kicks in and then the plan gets better and the job runs quickly again.

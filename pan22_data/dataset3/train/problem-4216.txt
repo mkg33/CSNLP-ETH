@@ -1,0 +1,17 @@
+However, if I run nmap against this host I get this:
+However, my server is running on port 8053 so I somehow need to direct those outside requests going to 53 to 8053.
+However, I didn't realize that it really was kind of closed because nothing was listening on it.
+You can use the strace to troubleshoot activity of your app.
+My DNS server is kind of specialized and testing it properly takes a bit of setup.
+So it turns out that things were working all along.
+I incorrectly assumed that things wouldn't work because nmap was reporting that port 53 was closed.
+Check rule counters with iptables-save -c (prefered way) or iptables -t nat -L -n -v. Counters should being incremented when you make checks.
+I would check that traffic is reaching the device in the first instance - fire up an SSH session to the box and run:
+Instead, any packets received would simply be redirected.
+Then I set up a comprehensive test in my complete environment and saw things worked perfectly.
+if there is no traffic coming in then I'd check your AWS VPC security groups and permit through TCP/UDP 53 in the inbound direction - check both the network and NIC levels
+I'm pretty sure I need to update iptables, but can not find out how.
+I did try some of the tests suggested here and found that things looked good.
+$ dig @your_dns_server_ip -p 8053 somehost.somedoomain
+I've modified my security group to accept UDP and TCP connections on port 53.
+If there is no traffic - then it'll be your iptables and we can look into that, if you do see traffic then your DNS server is the issue

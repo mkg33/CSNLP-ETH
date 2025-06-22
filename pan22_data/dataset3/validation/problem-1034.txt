@@ -1,0 +1,20 @@
+-VM Network (Connects to the ESXi server NIC, Master IP and Internet IP are used directly with this)
+I have been stuck like this for 2 days now and can't fine an answer :/
+Even if that's right, the gateway is not in the subnet of the local IP.
+first off I am a bit of a network newb, I know the basics but that is about it.
+They all use it to connect to the internet via the Public IP.
+Problem is that the few machines that are also on the VM Network using the Service IPs are not responding on that network, only the internal VM Local network.
+-Internet IP (for general use, accessing the net and VPN etc)
+Did you perhaps mean NETMASK=255.255.255.0 which is a /24?
+-VM Local (Hosts the internal network, as well as Internet IP)
+You've configured a single /32 with that subnet mask, it's not able to route anywhere.
+You need to configure a subnet which is a /29 or larger, and to use both a local IP address and a gateway within that subnet.
+http://i.gyazo.com/9a9c603eb138719453d9d06485581e8d.png
+There is a DD-WRT router in a VM on both networks.
+Now the VM Local network works fine, I have several machines on it that are internal only and external.
+70-persistent-net.rules config, the MAC address match the ones set in the VM settings, as well as the eth1 matching what the server host gave me to use (generated vMAC for VMWare)
+Here is a screenshot of the networking configuration.
+Also you don't need BROADCAST, the network scripts are smart enough to figure that out.
+The communication to the gateway (and elsewhere within the local subnet) happens at Layer 2, and then the gateway is responsible for routing traffic with a destination outside the local subnet at Layer 3.
+-Service IPs (several for use on hosting websites, these are publicly known)
+It allows the VM Local network to access the internet via the VM Network using the Internet IP.

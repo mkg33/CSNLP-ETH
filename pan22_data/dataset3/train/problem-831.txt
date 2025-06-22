@@ -1,0 +1,22 @@
+Which goes some way to explain why all the big boys use Oracle.
+For example a couple of million customer accounts per database server with logic in the application so that it knows which server you are on based on your UserId.
+There is a problem with this sort of solution, if you have a query for example you want to know how many items do you have globally then this won't work very well.
+You can use various algorithms to divide up your requests evenly.
+And as far as I know the only DB engine that has so far implemented this in a reliable way is Oracle.
+http://dev.mysql.com/doc/refman/5.0/en/mysql-cluster-nodes-groups.html
+http://dev.mysql.com/doc/refman/5.0/en/mysql-cluster-overview.html
+https://en.wikipedia.org/wiki/Shard_(database_architecture)
+Having said that, MySql does support multi-master replication, although (AFAIK) not in a full production release.
+In most cases the best way to solve the problem is to rethink how your site works to cut down the number of writes/make them batchable.
+You can use Sharding to divide your data so for example you have 26 database servers one for each letter of the alphabet.
+Some pieces will have a single write server, which will then replicate to a bunch of read servers.
+All the users with name beginning with A go to one server.
+Another solution can be: use DNS level partition based on your client GEO location resolv different IP addresses where to connect to and basically separate the data by this info.
+This answer does not answer the title of the question because it makes no attempt to keep the DBs in sync but it does answer the body of the question to do with distributing requests for high scale websites.
+You can use more complicated methods of storing the data basically to denormalise and segment it into chunks that you can load balance across servers.
+See http://dev.mysql.com/doc/refman/5.1/en/mysql-cluster-replication-multi-master.html for more detail.
+Unfortunately this DBMS has lack of support for the distributed writes, only the NDB supports that.
+It's a complex solution that shouldn't really be used until other options have been exhausted.
+Other pieces of the site will have lots of servers each holding a small part of the data in them.
+The general answer seems to be to make the single writing DB machine more and more powerful for as long as possible before you move to those other methods though.
+I presume you are talking about MySQL, based on your terms.

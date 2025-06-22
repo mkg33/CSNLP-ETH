@@ -1,0 +1,18 @@
+Insert- and update triggers and stored procedures might play a similar role.
+http://www.notesbit.com/index.php/web-mysql/mysql/mysql-tuning-optimizing-my-cnf-file/
+From other databases, not MySql especially, I know, that it can improve your speed, if you delete indexes before importing, and recreating them afterwards.
+That way I could import my 40G Database within 20 minutes, just depending on the bandwidth of your internet.
+Some people have seen some significant improvements.
+The Maatkit tools were rolled into the Percona toolkit however I can't find these two tools in the docs.
+You can attempt to increase value of key_buffer_size variable in my.cnf to 20-25% of available RAM.
+That way the files under /var/lib/mysql won't be changed.
+I import a database, and when i run mytop i see only one thread running an insert.
+The best scenario for that would be, if you had a slave running.
+On a big database of 80G that will take really big time, is there any tools or may be an option to increase number of threads ?
+You could try the Maatkit parallel dump and restore tools.
+You may see no improvement in speed depending on how your disks are configured.
+This one you could just stop and shutdown the mysql service.
+My limited knowledge doesnt cover multithreading, so I cant help you there.
+Of course this depends on mainly 2 questions: Can you take the database offline while importing, and is the data you try to import proven not to violate restrictions, which are guaranteed by the indexes.
+Its normally set quite low and increasing it will allow for much faster import/dump rates.
+You could also just rsync your /var/lib/mysql folder to any other machine.

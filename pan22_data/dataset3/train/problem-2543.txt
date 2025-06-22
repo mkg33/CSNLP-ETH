@@ -1,0 +1,12 @@
+However, making some convenience routines to help enforce some consistency in your input and output formats, as you have done, is a good idea.
+However, even that synchronization could be avoided, since you would only mutate formats during initialization.
+Depending on whether your web application's users are geographically concentrated, that may or may not be appropriate.
+"Imposible parsear" is redundant with ParseException and therefore uninformative.
+When you throw a ParseException, it would be better to include the malformed date in the exception message.
+In the Java date-time API, a Date isn't really what most people think of as a "date" — it's actually a count of milliseconds since the Java epoch (1970-01-01 00:00:00 UTC), analogous to the time_t type in C.  Therefore, converting a String such as "2014-02-04" into a Date isn't just an act of parsing (as in textual analysis) — it also involves interpreting that timestamp in the context of a particular time zone (the time zone of your server process, by default).
+Joda-Time supports a timezone-neutral date/time representation; the Java API doesn't.
+Forcing all of your parsing and formatting routines to be synchronized is an unnecessary burden.
+If you perform the initialization in a static initializer block, then the initialization will happen exactly once at class-loading time, in a thread-safe manner (JLS 12.4.2).
+As it is currently written, getFormat() does need to be synchronized, because formats might change while you call formats.containsKey() or formats.get().
+To start with, dateToString() and stringToDate() don't need to be synchronized.
+Writing your own code to parse dates (as in performing calculation and validation) would be reinventing the wheel, and therefore a bad idea.

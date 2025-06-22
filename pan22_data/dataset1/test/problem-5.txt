@@ -1,0 +1,19 @@
+For backups I want to use an external USB3 Drive: two HDD with RAID 1 (mirror) in one 2-bay enclosure. As filesystem I'll use btrfs because of subvolumes and checksums. Performance isn't important, but data safety. For use of RAID1 
+USB to HW RAID? That seems rather exotic. I am under the impression that most dual external enclosures (/NAS boxes) which offer RAID do so in software.  In which case using mdadm yourself gives you much more control.
+(Tough less performance. Data only needs to be transfered once via USB if the enclosure takes care of the mirroring).
+If it does proper HW RAID then I would not use that unless I had a spare compatible HW RAID card/spare enclosure.  HW RAID is nice, but RAID cards become the next single point of failure. Not recommended unless you have spares or can do without for a longer period of time.
+(Which I guess is an option for some backup cases.)
+I have no experience with btrfs, mainly because I heard rumours that it was not yet stable enough. The latter is fine for a lot of things, but (for me) rules it out for safe backups.
+I would use this since I would not use the other two.
+It also grant the option of moving the disks to another machine should the need arise.  
+Option 3 for control, portability and known stability.
+Most HW RAID will drop a disk if it does not respond within a few seconds.
+A spun down disk takes longer than that to spin up. So power down and HW RAID is a bad idea. For more infor on this google for TLER.
+if you are really set in btrfs then you can always use that on top of HW RAID or mdadm RAID.
+My advice: Do not use USB. eSATA has less overhead and there is at least one fewer step in translations (back from USB to SATA for the disks in the enclosure).
+Or better, use Fibre, wireless or Ethernet.  Or store the backup enclosure in a different location.
+The last is best since an offsite backup does not only protect against electrical failures (potentially taking out you main data and the backup) but also protects against fire, flooding and similar area disasters.
+I would use one local backup (fully under your control). No RAID or mirrors needed. A Simple generic USB enclosure with a SATA disk will do.
+AND I would use an encrypted backup in the cloud. Or atleast somewhere off-site.
+Beside the points you've already mentioned, a hardware raid with your USB shelf will probably be bounded to this exact model, as a lot of hardware raid controllers are writing metadata information about the raid on the disks - therefore it would be hard/impossible to move the disks to another shelf in case of shelf failure without destroying the raid.
+From my experience USB is not the best solution for this case but at least suitable to do the job. Keep in mind, that a permanently connected drive does not provide electrical separation from your backup source, so if anything fails because of overvoltage, you backup could be affected too - A better option would be to use a 2 bay nas and have at least the ethernet wiring as "protection" between source and target even tough fiber would be better. 

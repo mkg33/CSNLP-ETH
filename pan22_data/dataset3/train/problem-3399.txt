@@ -1,0 +1,14 @@
+Here is an example from the Apache 2.2 documentation about port-based virtual hosting:
+Is there a firewall like iptables that is blocking it?
+If so, turn it off or better yet add a rule to allow 1234 through.
+You also don't need the NameVirtualHost because you're doing virtual hosting by port (although it's not harmful to include).
+As a troubleshooting step, make sure IPTables is fully disabled (assuming this is Linux), and verify that by doing "iptables -L -n -v"; look for each table to be empty.
+http://httpd.apache.org/docs/2.2/vhosts/examples.html#ipport
+You might also make sure SELinux is disabled; see your distro's documentation for how to do that properly, as the procedure varies.
+Adding the name/address mapping to your client's hosts file should get you around the name resolution problem in development scenarios.
+The ServerName should not include the port number.
+ServerName directives do not need to be unique in your situation where you have each VirtualHost on a different port.
+There's also the option to set a wildcard record in DNS if your DNS provider allows it.
+In your example, just make it "domain.com" for every VirtualHost.
+If either of those is shown to be the issue, you can either choose to keep them turned off, or configure them correctly to allow Apache to listen on these ports.
+As soon as the thing goes beyond developer scope I'd strongly recommend setting up proper DNS resolution for it, though.

@@ -1,0 +1,16 @@
+Using a logical drive will actually hurt performance, albeit only slightly.
+Bear in mind what is your strategy to recover the array should you lose your array?
+It seems a bit daft to me given that disk storage is so much cheaper than physical memory, not to take advantage of RAID to make the swap go faster - I'd go with RAID 1
+For me, If you're considering this it makes just as much sense to put the pagefile on one well performing single disk.
+Yes its only a page file but you will have to recreate your array and add it (disk) back into Windows before you can do this (add your page file back in).
+For the same reason it is more efficient to use a single logical drive per physical drive or array, rather than partitioning it off.
+If you can allow for total failure from one drive failure, then yeah fine.
+Of course that doesn't take into account other reasons you may have for partitioning.
+If this is acceptable to your business, then you might want to try force a drive offline to see if you are happy with what you now need to do.
+Using a physical drive for the swap file will give a performance increase.
+Kind of yes, certainly there's enough single-disk windows boxes out there and as Posipet states you should try to minimise swapping where possible but what strikes me is how you intend to do this given your setup - essentially you're using all four disks for one R10 array, so I don't know HOW you think you can present a logical R0 drive, certainly you could have a third 'swap-only' logical drive but given this will be in a different part of each drive from the regular boot volume you'll only make the system slowers via more head movement and it'll still be R10 anyway.
+If anything you'll probably see better performance than having it sharing the same physical disks as the data - and if you're paging enough that you're really actually worried about the performance benefits then you're probably paging too much and need to address that bottleneck by other means.
+The reason the use of a physical drive for swap helps is because you reduce the head movements required for both the swap drive and the system/data drive, where the swap would otherwise be.
+Let me know if I've misunderstood something please.
+As head movement is the slowest part of disk access you should take steps to minimise it.
+When using a logical drive for swap you actually increase the amount of head movement, as the head assembly needs to charge back and forth to satisfy the requirements of all logical drives on that physical drive (or array).

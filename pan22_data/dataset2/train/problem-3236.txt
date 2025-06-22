@@ -1,0 +1,12 @@
+That depends entirely on if your oracle server can move data fast enough to keep the LTO3 drives streaming.  I do not multiplex Oracle data because the large files get served up fast enough to keep the drives running at an acceptible speed.  
+My question is... what multiplexing factor in NetBackup is recommended / do you use for Oracle RMAN backups over 1Gb/s management network to LTO3?
+I strongly recommend testing both ways and seeing if you can keep your LTO3 drives moving fast enough without multiplexing. 
+As overall restore speed is mostly determined by the messing about (log incident, determine if tapes are available, recall from offsite, load, inventory, etc. ) than by the actual tape restore speed, I feel confident using a high factor for filesystem backups.
+Before we replaced the Oracle servers however, and they only backed up at about half their current speed I did in fact multiplex them.  
+The number of simultaneous client data streams interleaved is determined by the Multiplexing factor. The higher the multiplexing factor, the more data fed to the tape drive, but the slower any restores.
+Multiplexed backups are more likely to span tapes, are harder to import or use outside netbackup, are slower to restore, and are an all-around ugly hack created to prevent shoe-shining tapes.
+I found the simplest way to solve this was to write the initial backup to disk then duplicate the backup images to tape.  
+With enterprise backup tools like NetBackup, there is the concept of Multiplexing which is the combining of data from a number of backup clients simultaneously in order to feed modern high speed tape drives as quickly as possible.
+It is important to note that restores are slightly slower when multiplexed with NetBackup, but not much slower.  I know for certian you can de-multiplex on a restore.  We do it all the time both to do restore tests, and on rare occasion to actually replace lost data.
+Oracle backups with large datasets, which are more often restored all together, pose a different challenge to filesystem backups.
+Netbackup has really nice direct-to-disk functionality and the CLI tools make it pretty easy to script up image duplication mechanisms.  

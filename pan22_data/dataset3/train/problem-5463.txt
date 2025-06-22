@@ -1,0 +1,19 @@
+I haven't tried it, and presumably that only works if you've already got an ldap infrastructure set up.
+Another solution would be exported resources and puppet.
+You could mount your home directory through automount.
+I'm not sure if any ssh implementations have this built in, but you can use patch OpenSSH with OpenSSH-LPK to make that work.
+One way to address this is by storing your public ssh keys on an ldap server.
+This way you will have one copy of your public key following you to what ever server you log in to.
+So that i don't have to copy my public key to each of the server i login and if that is possible how do i use ssh-agent and keychain to use in combination, to reduce the number of times i need to punch in to login to the servers.
+EDIT: Just read in the comment above/below (depending on your sorting) you don't have control over everything.
+Fabric might be an alternative since you can run commands on a ton of hosts with a single password entry, therefore entering you password only once and distribute the key, then run fabric even without password if you find further uses for it.
+But once you manage your hosts you'll aks yourself why it all started with ssh keys, you won't need to log in after all (in a perfect world)
+I don't want to use password-less private key as i am very much worried about my credentials falling into wrong hands.
+I would like to know if it is possible to have the public key used for ssh login to be stored on a centralized server and have all the servers i login to point to this centralized server for obtaining my public key.
+Exported resources are only available with a puppet server (which by coincidence is the default setup in nearly all of the howtos and documentation)
+Also: This is not a 5 minutes and I'm done solution.
+This requires a centralized puppet infrastructure with a server.
+I'd prefer that over patching SSH since you can work with you default distro package this way without having to resort to you package (which then introduces the problem of installing that on all hosts, even with a repository you need to configure yum or apt to know about it).
+But only one time, after that you can manage everything from you workstation.
+And yes: it could be done with chef, bcfg2 or cfengine (or a fancy ssh for loop) I just happen to like puppet more than the other options.
+I suggest you take a good look at it and decide wether it's worth the effort of introducing something like this.

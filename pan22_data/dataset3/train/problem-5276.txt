@@ -1,0 +1,12 @@
+I always use a negated pattern, so anything that matches the Virtual Host, but doesn't match the canonical address, will be redirected.
+The very best way to solve this doesn't involve mod_rewrite at all, but rather uses the Redirect directive placed in a virtual host for the non-canonical hostname(s).
+I personally have always found a simple 301 redirect to be more than adequate for this purpose:
+You can alternatively accomplish this using the <If> directive:
+And I just tested, and typing http://oakalleyit.com/user redirects correctly to http://www.oakalleyit.com/user
+There are docs on Apache redirects available here: http://httpd.apache.org/docs/2.2/mod/mod_alias.html#redirect
+The Apache documentation page Redirecting and Remapping with mod_rewrite says:
+It's simple, easy to read/remember, and get's the job done right.
+This has the benefit of an unlimited and unspecified number of ServerAlias directives (eg, *.example.net, *.example.org, *.example.asia etc) to all redirect correctly to www.example.com)
+For example, if you wish to force the use of www.example.com instead of example.com, you might use a variant of the following recipe.
+This is actually copied from my production web server, so I know it works.
+Description: The goal of this rule is to force the use of a particular hostname, in preference to other hostnames which may be used to reach the same site.

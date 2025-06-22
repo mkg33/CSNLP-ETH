@@ -1,0 +1,15 @@
+You implied you'd checked with with Connect As, but just to be sure please check this in Server.app -> Users -> Right-click a user and select Edit Access to Services.
+There is a set of presets in Workgroup Manager for correct default Group (staff vs students), home directory path, etc.
+Old accounts (created pre-May) still can, and not just with cached credentials (clients wiped and restored).
+Also compare user records in Directory Utility (/System/Library/CoreServices/Directory Utility.app) -> Directory Editor -> Viewing: Users in node: /LDAPv3/127.0.0.1; pay special attention to the AltSecurityIdentities, AuthenticationAuthority, HomeDirectory, and NFSHomeDirectory attributes.
+Another possibility is that something has gone sideways in the kerberos setup.
+For more control, install the appropriate version of the Server Admin Tools, and use Server Admin -> server name in sidebar -> Access tab -> Services subtab.
+I have a Mac OS 10.7 server, and a number of 10.6.8 clients in a school.
+For the last year and half, network accounts could log into the clients with no problem.
+An OS 10.7.4 client CAN log in with the new account, just not the 10.6.8 ones.
+Since about May, all new accounts cannot log into the 10.6.8 clients.
+I have checked all of the usual subjects (DNS issues, path issues, file permissions) and the logs - nothing.
+The first thing that comes to mind is service access lists -- if the new accounts aren't allowed to use the AFP service, they can't mount their home directories, and hence cannot log in.
+I can connect to shares using the new accounts (Connect As...), just simply cannot log in.
+I do find it interesting that we started having issues at the same time as the 10.7.4 update.
+Compare what appears in the KDC log (/var/log/krb5kdc/kdc.log) in a successful vs. failed login, and maybe also the password server log (/Library/Logs/PasswordService/ApplePasswordServer.Server.log).

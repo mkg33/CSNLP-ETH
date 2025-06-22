@@ -1,0 +1,22 @@
+You want to be able to select an appropriate method based on a pair of classes, not just one.
+You don't want to make your derived classes aware of each other, and you don't want to put things in the interface that don't make sense.
+When the physics engine calls collide, that gets overridden by Player and Bullet.
+Unless you think that should do damage, it doesn't make sense to give Entity a DamageValue- because not all Entities have damage or do damage to the player upon collision.
+Unfortunately, most OOP languages like C++ only support single dynamic dispatch (which is what virtual methods and overriding are).
+Dynamic casting is really not something you want to design your code around.
+And somehow the language would magically pick the right one based on the two Entity* objects that collided.
+Those overrides dispatch on the first of the colliding objects.
+That method does the second dynamic dispatch and you ultimately select one of four methods based on the types of both arguments.
+It is not the best design in many situations, but in some, it simply is the best, and in this kind of code, dynamic_cast is the right way to go.
+Instead, virtual functions on your Entity/Player/PhysicsObject/etc classes are your best friends.
+You can make that magic work using a combination of overriding (for the first dispatch) and the visitor pattern (for the second).
+Aside from using virtual functions as others already mentioned, you should also store an enum in the "base" class that specifies the type.
+Have the base class constructor take in an eEntType which sets it at the get-go.
+All the deriving subclasses should use the member initializer list passing a 'hardcoded' value of its type to the base ctor.
+Bullet collide with an object ( whichever ) and sends a message to the object.
+bullet.sendMessage( other_object, BULLET_IMPACT,16); the bullet doesn't need to know the details of the destiny object.
+This is a quicker way of differentiating these objects, and it's good on the go/any time.
+They immediately call another virtual method on the other colliding object.
+If you can live with those, this pattern works pretty well.
+For example, what if a player collides with a wall?
+The tricky part is that the way a collision is handled depends on both of the things that are colliding.

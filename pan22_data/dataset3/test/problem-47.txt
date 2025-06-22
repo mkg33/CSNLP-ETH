@@ -1,0 +1,11 @@
+Here's the sequence I see -- a temp directory and some temp certs being made and then deleted when the challenge fails, but never tls_sni_01_page
+If I watch /var/lib/letsencrypt while certbot-auto runs I don't ever see a tls_sni_01_page being created.
+I've tried running tcpdump -n port 443 and I do see some sort of connection attempt from the remote machine:
+and it consistently times out during the TLS-SNI-01 challenge with the following message:
+I've also changed /etc/letsencrypt/options-ssl-apache.conf to set the logging level to DEBUG and to have that temporary virtual host log to its own error and access logs.
+Looking at /var/log/apache2/error.log I do see a suspicious warning about (I assume) the docroot that certbot-auto is temporarily trying to set up not being found:
+In /var/log/letsencrypt/letsencrypt.log I see the following, which looks totally reasonable:
+I see output but no problems in the error log, but don't see anything at all in the access log.
+I have verified that inbound TLS is not being blocked by running openssl's s_server command and successfully connecting to the s_server "server" from external locations.
+Anyone ever get this working with Ubuntu 14.04LTS and apache?
+I have grabbed certbot-auto from the EFF website since certbot isn't in 14.04.

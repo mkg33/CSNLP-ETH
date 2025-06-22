@@ -1,0 +1,16 @@
+Consider this as a hill profile (seen from the side):
+Check the javascript code by Jake Gordon, he explains a lot of the math that is going on here: http://codeincomplete.com/posts/2012/6/22/javascript_racer/
+Keep in mind that the roadside objects are also drawn using the painter's algorithm, the screenY you kept recording should help you clip the sprites at the right point for objects that are just behind the apex of an hill.
+For this section the calculated vertical position is actually ABOVE the scanline we're at.
+So after drawing section 6: we're at, let's say, scanline 110.
+I'll try to explain the process with some ACII art :-)
+The perspective calculation should come up with a screenY below the previous one, thus the section is drawn on the screen.
+We keep track of the 102, it is the screenY coordinate of the nearest part of the road section you're drawing.
+The idea for the rolling hills is as follows: you use the painters algorithm to draw your road; so basically it means you start at some distance in front of the the car and work your way back to the car.
+We still however keep track of the scanline that results from the perspective calculation.
+For both sections perspective calculations will make the scanlines go down further, it's just a bit steeper.
+For each segment you draw keep track of the vertical position of the segment on the screen.
+Section 8 is flat, so your perspective calculation that section would end up at scanlines 102-104.
+It becomes iteresting at section 3: this is where the hill goes back up (remember we're working back to front; from the car's perspective this section goes DOWN and therefore is hidden from view).
+Section 9 is a flat section in the distance and will be drawn as a triangle let's say screenY 100-102.
+Now at section 2 the road is flat again and should appear.

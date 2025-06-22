@@ -1,0 +1,29 @@
+That's confusing, as the first condition takes precedence.
+This allows for an object-oriented design, extensibility, and drastically decreasing the amount of boolean flags in the game.
+To allow the game to get more complex, I would opt to use a state machine pattern to handle difficulty levels.
+Your Game probably provides a score somehow and has an entrypoint to Start the game:
+I think that you would be better off with one state variable representing the current difficulty level.
+However, as you can see, this gets very repetitive very fast.
+You have a handful of difficulty levels, so you can manage this with a couple of booleans:
+I mean, yeah, private fields should be camelCase in the first place, but that chunk of numbers is fairly annoying, and it encodes your game logic into an identifier.
+All actions concerning changing game parameters that influence the difficulty are handled by each specific state.
+Now, any time the score gets updated, the game asks the current difficulty state to handle the score.
+Each specific state implements a self-transition to avoid unnecessary state changes and actions on Enter to change the game's difficulty level.
+This pattern also allows to skip states (big score leaps) and decrease difficulty levels.
+You've listed 500 twice: once as if (Score <= 500) and again as else if (Score >= 500).
+A Difficulty level state also handles OnScoreUpdated events.
+If you wanted to change your levels, let alone making them configurable, then what's 100500 going to tell the maintainer?
+Checking in reverse order will catch any possible diffuculty jumps (ie from easy straight to insane) as well as any possible negative changes in score.
+As the game gets bigger, gets more parameters that are sensitive to the difficulty level, gets more difficulty levels and gets such features as skipping levels, decreasing score and levels, it will be hard to maintain the code.
+That's still encoding 3 difficulty levels into the identifiers, but at least the thresholds aren't part of the variables' names, so it's a start.
+Maybe it's linearly changing some difficulty parameters, or maybe it sets custom values to each of these parameters.
+Implement EasyState, NormalState, HardState and ExpertState.
+If neither of these things are possible, the logic to set the difficulty can become very simple by using an enum.
+You don't talk about if the score can decrease or if it is possible for the score to jump over one of the difficulty ranges.
+If the score can never decrease in this game, then you can simplify it further:
+An alternative would be to construct a table that defines the data points.
+Let's remove the IncreaseScore, the boolean flags and implement the state machine.
+I haven't found a use for Exit, but I'll keep the method because the pattern provides it, and you might find a use case for it.
+Whenever the difficulty state changes, its Enter actions change the difficulty parameters of the game.
+The current state might decide to keep the state as is, or to change the state to another difficulty level based on the current score.
+The code would also be simpler if you determine NewDifficulty using a level-triggered rather than edge-triggered mechanism.

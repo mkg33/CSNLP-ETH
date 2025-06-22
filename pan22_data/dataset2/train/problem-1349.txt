@@ -1,0 +1,14 @@
+Email is hosted just like websites are.  Your ISP will not automatically host mail for you.  Some ISPs will, either for free or for a small charge, but it's something you need to setup with them.  If you have already set that up with them, you need to contact your ISP's tech support to give you the correct MX records to use.
+On my cPanel, I have added MX records for both the smtp.isp.com and pop3.isp.com, so that mails will be handled by my ISP.
+My domain(www.site.com) is hosted on a webserver running cPanel. My mails are handled by my ISP's server. To retrieve my mails, I use the following setting given by my ISP:
+The "Unauthorized relay" error means that your ISP's mail server isn't configured to accept mail for *@mysite.com.
+Your ISP is configured to handle mail for *@isp.com, and it won't accept email for any other addresses.  Even if it did accept the email, it knows your email address as something like damchey@isp.com - how would it know where to send emails to support@mysite.com?
+Since your hosting provider is configuring the MTA for you, you should give them the above error message along with the domain you are sending to.
+It sounds like your mail server is not configured to know that it should handle emails for your domain.  This setting is known as the local domains in Postfix and probably something similar in other MTAs.
+Your ISP will have instructions on how to set things up properly.  We can't tell you anything else beyond that, since we don't know how your ISP does things.
+The servers used by your mail user agent (pop3.isp.com and smtp.isp.com) have nothing to do with your MX record.  The MX record may need to point to something else entirely.
+Whereas the mail user agent configuration would use imap.googlemail.com for the incoming and smtp.googlemail.com for the outgoing.
+However, when I send mail to my email account, I get a reply saying "Sender address rejected: Unauthorized relay (state 14).
+I prefer to stay away from having my ISP host my email - it makes it harder to change ISPs even if something better comes along.  Instead you should check if your web hosting provider also does email, or sign up for something like Google Apps for your Domain, which is free for up to 10 users.  No matter who you get to host your email, they should give you the correct servers to put in the MX records, as well as what POP3 and SMTP servers to use in your mail client.
+smtp.isp.com is not configured to relay emails from port 25. So you must change your mail client settings to use port 587 to submit email or ask your ISP's helpdesk how to setup your mail clients to send authenticated mail via smtp.isp.com
+Solved my problem finally. Appears that the smtp.isp.com was wrong. They had a different hostname for their smtp server. Found out by using pingability.com on other sites which had mails hosted on this ISP. Happened cause ISP had no information to give me when asked.

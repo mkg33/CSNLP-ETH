@@ -1,0 +1,8 @@
+Check the offset for the partition - needs to be divisable by 4 for EARS as they have the 4096 technology.  If it isn't - repartition it to get alignment and performance issues should go away (misaligned EARS drives will be doing a lot more sector writes per op).
+A tool which may help pinpoint what specifically is chewing up your disks (rather than just "installing packages") is called iotop. I'd suggest running it while you do one of these tasks, and it may point out some other background process which may be triggering at the same time and sucking up all of your I/O throughput.
+On a side note, if you have this drive and use Linux, you also SHOULD increase one of the idle timers as described here:
+http://wdc.custhelp.com/cgi-bin/wdc.cfg/php/enduser/std_adp.php?p_faqid=5357&p_created=1266947046&p_sid=Os7DQL2k&p_accessibility=0&p_redirect=&p_srch=1&p_lva=&p_sp=cF9zcmNoPTEmcF9zb3J0X2J5PSZwX2dyaWRzb3J0PSZwX3Jvd19jbnQ9NTEsNTEmcF9wcm9kcz0yMjcsMjk0JnBfY2F0cz0xMzAmcF9wdj0yLjI5NCZwX2N2PTEuMTMwJnBfcGFnZT0x&p_li=&p_topview=1
+I've run into problems where operations which perform lots of fsync(2) calls will cause a major system slowdown. In my case, I'm running with my root partition contained in LVM contained in LUKS. Are you using either LVM or LUKS?
+Just a random shot, which seems stupid given that you use Debian... but I found that it helped someone with the same HDD model: have you tried to update your BIOS? 
+This is finally fixed! As @Rachel pointed out, the problem indeed was with alignment to the 4kb sectors, but unfortunately the article linked was incorrect :(
+And this article gives a pretty good benchmark so that you can check if your partition table is correct:

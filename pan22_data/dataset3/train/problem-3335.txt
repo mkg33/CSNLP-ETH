@@ -1,0 +1,12 @@
+A check every hour or so would also be OK, just something that works reliably.
+It is dedicated to a client project, and I connect via SSH.
+How do I make the server shut down automatically on inactivity, for example after 30 min without an SSH connection?
+As of January 2013 Amazon CloudWatch provides an option to Use Amazon CloudWatch to Detect and Shut Down Unused Amazon EC2 Instances, see the introductory blog post Amazon CloudWatch - Alarm Actions for details on this functionality:
+The server is built on the Linux AMI, based on CentOS.
+If all you're looking for is to keep the server running while you're logged-in, and your session idle for less than n units of time, you can do so via a cron script which you mentioned, by monitoring the output of w(1) which reports IDLE time for logged-in user, which you can use.
+and if no result is returned write that to file, then the cron tries again and if it returns no results again the script runs this.
+Sometimes, I forget to shut down the server when unused, therefore generating unnecessary costs.
+You could create a cron job script right on the instance itself that uses a command like
+Naturally, I am looking for the simplest solution.
+As outlined, this depends on being able to heuristically detect the appropriate condition triggering the alarm and stopping the instance - you might take it to the next level by means of Publishing Custom Metrics to CloudWatch based on the logged in SSH user count, idle time or else and gain more control/precision for the desired detection and shutdown process in turn.
+Your use case is listed in section Failsafe Ideas specifically:

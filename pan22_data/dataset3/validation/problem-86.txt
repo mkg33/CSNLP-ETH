@@ -1,0 +1,18 @@
+Many systems are somewhere in between, so find a happy medium that allows the occasional large workload to get enough CPU to complete quickly, without strangling your OLTP workloads.
+I also have stumbled about the article http://support.microsoft.com/kb/2806535 and cannot find the correlation to the scripts above.
+If hyperthreading is enabled, this column seems to reflect the number of logical processors exposed.
+That way schedules aren't trying to access memory across numa nodes.
+During installation of SQL Server 2019 CTP 3.0 there is a new tab MaxDOP.
+Generally speaking, you don't want DOP to be higher than the number of physical cores.
+The documentation claims I should be seeing a different figure entirely.
+This version gives you a nice single result set with the existing MAXDOP setting and should hold up on versions SQL 2008-2017 without the need to use xp_cmdshell.
+Also I'm wondering, why there exists a differentiation for "@logicalCPUs >= 8 and @HTEnabled = 1 and @NoofNUMA = 1" and "@logicalCPUs >= 8 and @HTEnabled = 1 and @NoofNUMA > 1" as the result becomes the same.
+As a general rule, use higher DOP for an OLAP system, and lower (or no) DOP for an OLTP system.
+Image source: https://www.brentozar.com/wp-content/uploads/2019/05/SQL_Server_2019_Setup.png
+Also, be careful about using the cpu_count column to get a core count.
+The number I see on our system suggests it could either be the number of physical cores in the entire system, or the number of logical processors per chip.
+There's also a hyperthread_ratio column, but I'm not certain what it represents.
+Spreading a heavy parallel workload across logical processors will just increase overhead with no real benefit.
+The actual value is predefined(in previous versions the default was 0).
+When setting MAXDOP you typically want to limit it to the number of cores in a NUMA node.
+After all I ended up writing my own piece of code matching the article from above, though even there I would have loved a more precise definition and/or differentiation about "processors" "CPU" and "physical processors".

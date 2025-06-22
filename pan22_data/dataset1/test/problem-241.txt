@@ -1,0 +1,15 @@
+You can get better availability from TMG in one or more of the following ways:
+The TMG boxes in an Array maintain an updated wpad.dat, even if autodiscovery is turned off. This file containes a list of all the nodes in the array, local name or ip exclusions, and so on, according to the settings on the relevant Network properties dialog, on the Web Browser tab (and related tabs). The algorithm used is the client-side implementation of CARP, and this includes a failover mechanism if the proxy used doesn't respond.
+To use this, you need to configure clients to use (and your network to support) WPAD autodetection, or if that's hard, point them at autoconfig URL explicitly http://proxy:8080/wpad.dat. An NLB IP is fine; a dedicated IP or name is fine.
+The default file format includes IP addresses of each node, and each node may be a backup for each other node, so if the connection to .1 fails, .2 may be tried for the same URL. You get "loose" availability in this way, just by using the script, without NLB being involved, depending on client behaviour.
+Every node in an array has a dedicated IP address (and the dedicated i.e. unique IP should be the one specified for intra-array communication, and the first IP listed in NIC properties->IPV4), but every node also shares any virtual IP addresses with all other nodes.
+Pointing a client at NLBIP:8080 means that when one node fails, the client will connect to the other node, after NLB reconverges.
+NLB provides box-dead failover only, and using Integrated NLB means that when TMG stops the firewall service on a node, it also helpfully turns off NLB at the same time, so that the node stops trying to accept incoming traffic.
+The worst solution for availability, but won't hurt unless the name overlaps with something important.
+Then, when one node is turned off, the others should still be client-accessible, and should still work.
+If that's not your problem, you need to troubleshoot it.
+I have two Threat Management Gateway Enterprise servers set up in a standalone array for authenticated web proxying. I can verify NLB is working, but when I restart tmgA, which is the array manager, tmgB does not maintain the authenticated web proxy as I understand it should.
+As I understand it, it should maintain the web proxy using the last cached copy of the configuration it synced with the array manager.
+Both servers are set up using the single network adapter topology.
+I'm sure I'm forgetting some helpful configuration information here.
+Any help to get the failover working is much appreciated. Thanks!

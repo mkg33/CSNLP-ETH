@@ -1,0 +1,26 @@
+Configuration management stays very well in GIT, use review process to access changes and CI automation to test and apply it.
+I'm employee in IT company the offers a solution for many customers, there are about 100 sites build on the top of our product code and all of them are hosted in the company DC.
+I'm part of the team so feel free to ask questions.
+Can anyone give me his opinion about what I proposed above?
+Config is a configuration file management tool that can help you.
+You can start with the SaaS solution and you can grow into the on-premise setup.
+Regarding API and so on.... sounds like feature creeping to me, something that sells well to managers but that was never proved to work as well in practice.
+You have a history of all changes, can review them, and can deploy configuration files by version or tag.
+It won't help your restart to reload issue, as that is something in your application you need to fix.
+The thing is we have a long hierarchy of XML configurations that used for each site to set different variables that enable/disable features, pass values there and a lot of other usages, the hierarchy is something like the top parent one for default values of all XML, then another XML for the sites in specific env, then the site itself, (Actually it's longer than so).
+The API will let the developers create new feature json config and set the types of each value there.
+Ease of use is essential because it allows you to use junior staff too, otherwise you risk to end-up being overloaded.
+Synching common values and using environment variables are all core features.
+Your developers can have access to the Dev environments and your devops have access to all environments.
+You will have the typical Dev, QA, Prod environments, and for your Prod environment, create 100 instances.
+My idea now is to separate the config to set of features each feature has its own json object with set of related values.
+I would go for Ansible as is able to easily read and write json, yaml and xml and is also easy to use.
+Will take out the registry module from the product code and create nodejs API that the site read from its config for each feature.
+So for so good, but that is milestone change and it's in the platform level, so I need to know:
+Yes, there is a deployment step, similar to pulling a file from Git.
+Config supports XML, JSON and other configuration file formats.
+We have customized registry module to read this config and hierarchy, each site query any config by using that module and passing XPATH for the aimed feature and assign it to variables there , but the problem is the config are getting increase more and more, for now the final set of config for most of the sites exceed 500 values, not to mentioned that any change on XML required the product to be restarted to get the config again be because they are loaded at initialization time.
+any has experienced this situation before and how they handled it if there was?
+The AM will see the feature created by developers and set the config there to enable/disable or assign any other values there.
+Avoid writing custom code if there are existing tools that are already able to do this.
+I need to know if any other has faced this situation to know if there is a better solution to handle this since the tree of XML is very complicated right now and I need to come up with better solution,especially the DevOps team do that frequent configuration changes since the XML files for different env in the DC are DevOps responsibility.

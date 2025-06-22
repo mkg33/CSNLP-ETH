@@ -1,0 +1,18 @@
+So when you connect to a sever via ssh you provide your private key and a user on the server to log in as, like so: ssh -i ~/.ssh/path/to/your/private/key user@server
+For more information on securing SSH on CentOS please see Securing OpenSSH on the CentOS wiki.
+If you see No such file or directory for your authorized keys file then it does not exist and you will want to create it.
+On the server you store your public key(s), here: /home/user/.ssh/authorized_keys
+You should be able to transfer this file from the old server to the new server to resolve your problem.
+But if I am replacing the server that that workstation connects to, what do I copy to preserve the key pair?
+After I did this, I no longer got the "the key has changed" refusal to connect on the client, but I still had to enter the password.
+Once you have this working it is good practice to disable password authentication in /etc/ssh/sshd_conf
+When you create a private key it also creates a matching public key.
+We have lots of scripts that run over ssh through saved (passwordless) key pairs.
+Both clients and servers are CentOS 6.x.I know that if you get a new client computer (where the scripts are run from), you can just copy the ~/.ssh/known_hosts from the old computer to the new one.
+The public key is what you store on the server you want to connect to.
+Ensure your key.pub exists in .ssh/authorized_keys for the user that you're trying to Authenticate as.
+ssh-copy-id -i .ssh/key.pub user@server should do the trick.
+If you see any Grep Usage errors make sure your key.pub path is correct and that it exists.
+You can copy the contents of the servers authorized_keys file to another server, it's just a file with text in it (each line corresponds to one public key).
+The idea behind the private/public key-pair is that you keep your private key secure (don't send it over the network, Internet, or even allow other users to read it).
+If it is not there you can copy it there by running this command:

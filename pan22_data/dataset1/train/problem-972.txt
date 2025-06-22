@@ -1,0 +1,8 @@
+Given that you cast just one ray and that objects can take no more than closest neighbor tiles in any of 8 directions, you just need to expand your resulting list of tiles 1 tile in every direction. Either while you detect the tiles rays goes through, or after you have the whole list - depends on your needs/constraints.
+As per @Krom Stern's suggestion, this is my solution to this problem. 
+An incomplete, but working box cast algorithm for uniform grid: http://jsfiddle.net/d5ab67fj/1/. It currently is missing the end point cases and it only increment in X direction, but the algorithm itself is working. It will not miss any cells that the box would hit and it will not include any cells that the box would have missed (save for the end points in the incomplete implementation).
+Also, why I choose to use this method rather than a non loose grid:
+1) All my objects contained in grid are strictly smaller than grid size. This has important performance advantage because a large object requires many cells to be updated whenever it moves. If you need to support DYNAMIC objects with vastly different sizes, I highly reccomand use multiple uniform grid of various sizes rather than 1 size fit all structure such as quad/octree.
+2) All my objects in the said grid are expected to require grid cell updates at every game step; as you can imagine, this is more costly in a non loose grid.
+3) I need to call raycast less often than objects requiring updates. 
+4) Although in a loose grid, you need to hit more cells for raycast/collision tests, every cell contains less objects on average (due to the non overlapping nature). This may or may not make a difference depending on your needs.

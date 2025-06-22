@@ -1,0 +1,8 @@
+The NOLOGGING mechanism, as you pointed out, is to avoid the generation of redo logging information, and that can make bulk loading faster. 
+I use it typically for big loading jobs. For example, loading terabytes of satellite imagery: it means that I will write TB of bits to the database proper (the data files), but that I will also write terabytes to the redo logs. This means additional I/Os on the logs, as well as a lot of disk space for the archive logs. 
+By disabling logging during that load, I avoid those extra I/Os and space. 
+Of course, it means that, should I have a total media loss (= one disk drive fails irremediably), then I'm unable to recover: I can recover the media from a backup, but I'm unable to roll forward the failed load. That is fine: it is faster to just restart the load from the last commit point than to have the database plod its way through TB and TB of logs.
+I was wandering what is the practical purpose of using the NOLOGGING clause on tables and indexes.
+For what I know from the Oracle documentation, we can prevent the database from generating redo logs only when INSERTING in direct-path mode. There is no possibility to avoid redo log generation when UPDATING or DELETING.
+I totally don't get what is the practical advantage of using the NOLOGGING clause on TABLE or INDEX creation neither to use the NOLOGGING clause on TABLESPACES creation in order to set the default on the objects that will be created on that tablespace.
+Can anyone describe a practical scenario where setting this clause on database objects may give advantages?

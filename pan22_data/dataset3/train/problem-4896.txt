@@ -1,0 +1,14 @@
+I'm doing shadow mapping in my OpenGL 4.3 deferred renderer, and I'm starting with directional lights believing it to be the easiest.
+Instead, you have to use techniques such as cascaded shadow maps (CSM).
+What I do not understand is how the view projection matrix is to be constructed for the shadow mapping depth pass.
+In a similar way, directional light shadow maps use an orthographic projection, so the direction of the light is uniform across the map so as to approximate a very far away light source (the sun).
+The only tricky part of using a directional light is that it usually cannot shadow the whole scene at once.
+I mean, all I have is the lights direction, and it affects the entire scene - so how do I construct the view matrix from only the direction, and what of the projection matrix?
+you can rotate/shear the scene so the light is vertical and build a height map and use that as the shadow map
+The red volume is the smallest and thus has the highest texel resolution, then green, and so on.
+With CSM, you have a number of shadow volumes of different sizes that overlap so as to cover the entire viewing frustum.
+The colored areas in this image each represent a different shadow volume.
+This allows the light to radiate out from a single point.
+Ideally, they would be sized and placed so that each screen pixel maps to at least one shadow texel while minimizing overdraw.
+This page is more in-depth and should provide you with a pretty thorough understanding of the concept.
+Spotlight shadow maps are created by projecting the scene with a perspective frustum.

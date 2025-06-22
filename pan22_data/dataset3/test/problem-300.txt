@@ -1,0 +1,20 @@
+Hence transaction log backups cannot be taken in this mode.
+The checkpoint flushes the records from the transaction log.
+Data pages may be written to disk by lazy writing, eager writing, and the checkpoint process.
+When a change is to be made, the data page is fetched from the database data file into the buffer and changes are made to the buffer page and are also written to the transaction log.
+This occurs the same way regardless of the database recovery model, with only the level of logging detail being different.
+I think this is done at SQL Server's discretion, and is not configurable.
+The purpose of this is to reduce crash recovery time in the event of a system restart.
+Checkpoint writes dirty pages to disk at specified intervals, configurable via the setting 'recovery interval (min)'.
+There are two key processes that write "dirty" pages to disk: Lazy Writer, and Checkpoint.
+Here is a good link that describes the two processes in a little more detail.
+Similarly for full/bulk recovery models when a full backup hasn't yet been taken.
+The log buffer is flushed to disk before the corresponding data pages are written to the data files by these processes.
+These log buffers are always physically written to disk before the modified pages (write-ahead logging).
+The lazy writer process writes dirty pages to disk at times when SQL Server detects memory pressure.
+In Simple recovery mode the changes from the buffer are applied to the database data pages at checkpoint.
+According to the SQL Server Transaction Log Architecture and Management Guide, data pages are modified in cache first (logical write).
+Checkpoints can be issued manually, but generally this is left to SQL Server to maintain.
+A transaction log record containing the modification is created and written to the log buffer cache.
+Transaction log buffers are physically written to disk when 1) they become full, 2) during COMMIT when the log buffer contains data for a durable transaction, 3) a checkpoint, or 4) a modified page is written to disk by one of the aforementioned processes.
+Question: How and when does the changes to the data page get written to the database data file in the full/bulk recovery model once the 1st full backup has been taken?

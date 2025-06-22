@@ -1,0 +1,19 @@
+I would rather copy at least myProgramInputFile (Method 3 alike); I think it would be more robust. There is, however, a way to make it work with the sole Method 1.
+I advise you to make a (local) script that copies the appropriate file to the remote side, triggers execution and cleans afterwards.
+We will need three local files: myLocalScript (executable), myRemoteScript and myProgramInputFile.
+The files myProgramInputFile (local) and myProgram (remote) will stay the way they are in your current setup.
+Thanks to Here Documents you can embed myProgramInputFile into myShellScript.
+This will be easy if myProgramInputFile is a text file and myProgram can read stdin (maybe with myProgram input - syntax? or maybe when input is omitted?)
+If myProgram cannot read stdin but the remote system allows you to use /proc/self/ then we should write the crucial line in myShellScript like this:
+If myProgramInputFile is more than text then we should encode it locally (see uuencode, base64) and decode on the remote side. We should also check if there's no EOF line in the encoded text, change the here document delimiter if so. Note that base64 doesn't use _ so E_O_F is perfectly safe in this case (but maybe not with uuencode, I don't know).
+As a proof of concept I gzipped the Super User favicon, encoded it with base64 and embedded in the script. I chose to demonstrate /proc/self/fd/0 approach with cp but it might be cat > ~/SUfavicon.ico as well; or better gzip -cd > ~/SUfavicon.ico earlier in the pipe.
+And of course in your case there would be myProgram instead of cp.
+Note in this case {} are important, they make the here document be directed to base64 -d.
+Then you will find ~/SUfavicon.ico on the remote machine.
+Using Linux, bash, and OpenSSH, I can execute a shell script on a remote host in at least three ways:
+I prefer method 1 to method 2 because it prevents the proliferation of copies of the script and the associated maintenance headaches.
+I prefer method 1 to method 3 because it is faster and generally "cleaner" than copying and deleting the script.
+But there's a problem I need to get around if I am to succeed in my goal of
+sticking with method 1. myShellScript is of this form:
+Here, myProgram is a standard utility that is available on all remote hosts I might want to interact with. However, myProgramInputFile is a regular file that exists only on my local machine. It does not exist on any of the remote hosts.
+I'd like to be able to "bundle up" myShellScript and myProgramInputFile into one nice "package" that gets executed on the remote host via SSH without explicitly storing anything on the remote file system, either permanently or temporarily. Is this possible?

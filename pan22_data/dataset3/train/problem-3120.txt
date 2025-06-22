@@ -1,0 +1,13 @@
+I cannot add some method to Object, it is simply dto.
+You could take this further and use generics and allow the Validator class to decide what the object is and what needs validating.
+In a nutshell what you do is create a class which is responsible for validation which is injected into the main class.
+Which I think is what you are alluding to in the second part of the question but I would recommend the following implementation.
+Can't add a comment, so I'm going to try to answer the question.
+If I'm understanding the question correctly, you don't want the responsibility of validation to be in the Upsert method.
+At now I have such code, creating or updating some entity by dto items.
+What I can do is to pass Action<Object> checkWhenNotFound to Upsert method.
+I want to move if (item.Property logic out of this layer.
+If that is the case then you can invert the control to another class by passing a 'Validator'.
+Other way is to inject checker inside Upsert caller ctor:
+Disadvantage - I need to write all those mocking It.IsAny<Action<Object, NotOnlyObjectInReal, AndMaybeMore>> in tests.
+Example Implementation of the IValidator interface would be

@@ -1,0 +1,25 @@
+backup some systems) then you probably don't want to do this.
+We use an ldap directory to store users, groups and ssh keys, then restrict "sudo" access by group.
+If you use SSH keys, you might want to consider disabling a password altogether.
+If you have servers exchanging data or remotely executing commands as root (e.g.
+SSH is close to unhackable without passwords, but these two are like an "or" so if you can hack either, you're hacked.
+Now, my private key is much more valueable because now it not only lets someone break into possibly all of my accounts, but, it allows root on ZZ as well.
+Normally root can log in when others can't since root tends to have less of these external requirements.
+Hopefully you've been using separate private keys, because otherwise you'll have to recreate the file and redistribute the public keys to the authorized users.
+If this is your root user on a Linux box, chances are the the file can be found at /root/.ssh/authorized_keys.
+Plus, of course, any system that lets root on ZZ also be root on themselves.
+Let's say that I can be root on system ZZ and I add my public key to root's authorized_key.
+To remove the entry, you need to edit the authorized_keys file.
+You can disable root logins via ssh by setting PermitRootLogin no in your sshd_config file.
+It is worth thinking very very hard about using ssh's authorized keys for root.
+Yes; it's considered bad practice to allow people to ssh in as "root" for just this reason.
+If this is the case then Kyle Cronin's answer is the way to go.
+Leavers' accounts can simply be disabled and you can guarantee that they can't get back in (unless of course, they've left some back doors, which is something you can't do anything about anyway).
+If you're simply trying to remove one user's access to root it's a little tricky.
+Note that if I put my private key on a system that others can be root on, those users can also get root on ZZ since they can trivially get my private key.
+Unfortunately, there's no easy way to know what line this is without a copy of that user's public key.
+I concur with no root ssh along with sudo, but, if you do that, you might want to add special users which have no NIS/LDAP/NFS/etc network dependency so that you can still log in when there is a network fubar.
+People tend to be a bit too free about where they put their private key since it make ssh so much easier.
+Your boxes should probably have root's ssh disabled, and use something like "sudo" to provide access controls over who can do what as root, that way you won't need to give out the root password or anything equivalent.
+You'll need to delete the user's public SSH key to completely remove access.
+You'll need to remove the line that contains the public key of the user that you're removing.

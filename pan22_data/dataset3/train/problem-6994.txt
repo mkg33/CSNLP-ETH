@@ -1,0 +1,52 @@
+The friction is manifested as a force that opposes motion so in the absence of forces that sustain the movement, the object decelerate following the Newton's second law.
+This happens because of the friction where the slowing depends on the type of friction and the binding reaction, which in turn depends on the weight of the object.
+After some test I found some value you may use as starting point to find your own:
+At each update you traverse the manager list and let them update their object (and destroy/recycle themself when finished).
+If we call Fk the force due the (kinetic) friction and we assume that the object lies on a non inclined plane we  can compute the deceleration due the friction ak:
+The first line states that the force is proportional by mu to the object weight (that is the object's mass multiplied by the gravitational acceleration: m*g).
+Once you get the velocity vector the thing start to be fun: you have to simulate what would happen if you would actually impressed a thrust to the object.
+If your framework supports it you can set a quadratic transition by computing the final position, the transition duration and a quadratic easing.
+The law of motion is described by the initial velocity and the time elapsed taking into account the deceleration.
+If you are using a framework that allows transition and easing you can compute the final position and a quadratic easing to simulate constant decelleration.
+This kind of problems are common when the device is busy so some event may be discarded while other old pending events may be posted at the same time.
+When the touch ends you have to look to what you gathered to see if there were a Flick.
+All this simply tell us that the deceleration is constant and it will appear realistic if you use the save value for big and small objects.
+A simple flick check can be done by looking to the last two recorded position.
+If the initial speed is V pixel/ms and deceleration is -A pixel/ms/ms then every millisecond the velocity loose A pixel/ms until it reaches 0 pixel/ms.
+If you try to push a bottle on your table you will see that it start to moving by itself when you release it whether it is standing or rolling then gradually slows to a stop.
+After checking if the flick happened for real, you should have a velocty vector: a speed and a direction.
+after V/A milliseconds; if t > V/A then Δx remains to its final value:
+Take into account that V reaches 0 when At = V i.e.
+Likewise multiplying the updated velocity by dt you will get the displacement to apply to the position to get the new position.
+flick deceleration: 0.004 pixel/ms/ms; loose one pixel/ms 4 times in a second (4 pixel/ms in a second if you prefer)
+Flick scaled speed: 60% - 90% of the flick speed; transfer less motion to the object than the final "flick speed" gives better results
+To make the things simple let's consider the velocity as a direction unit vector multiplied by a (positive) velocity value; in this case the aceleration has to be considered negative.
+Not everyone knows that a flick done with a finger moves quadratically versus time (ie accelerates) while a flick with mouse is linear (ie moves roughly with the same velocity): if you are sure that the flick will be done with a finger, you can use the records to compute a quadratic regression coefficients of determination, to see how good the last n records look like a parabola.
+The second line is the second Newton's Law for the friction force: the deceleration ak is  bounded to the friction force by the object mass.
+The final position can be computed using the final Δx as explained before; the same for duration.
+Another common problem is the reliability of the quantities reported by the event handler; large distance covered in few milliseconds are suspect: never trust super high flick speed.
+If you have to update yourself the position of the object, you may integrate dinamically the deceleration or use the equation of motion to establish the position when at a given time.
+Here you can sum up all the accelerations, beside friction, to take in account other forces if there are.
+The flick gesture is managed in two separate step: detection and conseguent dynamics.
+In both cases it would be useful to delegate the position updating to external component.
+To simulate the dynamics you have to store the object position, the current velocity,and the last update time (the touch release for the first time).
+If your framework does not support the quadratic easing you can emulate it using a cubic bezier transition with the following control points:
+P0 = (0,0); P1 = (0.33,0.66) P2 = (0.66,1) P3= (1,1)
+The red area represents the distance covered in t milliseconds (the integral generalization of the formula space = speed * time).
+At each position update you have to compute the elapsed time from the last update (dt), multiply the ak by dt to obtain the velocity loss then substract that loss from the current velocity.
+This means that you have to store both the initial velocity and the time the flick start (when the touch is released) but you do not need to update them.
+Tree or more points can be used to let filter noise.
+The check for zero division you certainly do while computing speed, is a good place to check for near-zero division: if this appends you may discard that point and check some previous one that is recorded before.
+Computing the distance and the time that occurred between the two events one can easely find a velocity vector: if the vector is large enough a flick to that direction may be triggered.
+In summary if P is the initial position, v is the velocity unit vector, V is the velocity value and -A is the deceleration then:
+you can multiply Δx by the velocity unit direction to get the actual displacement and add it to the initial position to get the position after t ms.
+The euler integration works well if the elapsed time between updates is small-enough™.
+When an object has to "flick" you instatiate an instance of a "position Manager" giving the relevant initial parameters and the moving object reference.
+Once you have the initial velocity vector there are several way to apply the deceleration.
+The first one can be used if you want to add variable to the simulation (like wind or variable friction areas or with user interaction); the second one is suitable if you are sure that the motion will not be perturbed.
+Knowing V,A, the elapsed time you can compute the distance covered (the red area) using the formula for the trapezoid area:
+Flick cap speed: 1-1.2 pixel/ms; I don't allow flick faster than this but this is very subjective
+Basically you have to collect points in time and space when the touch starts as the touch moves.
+You may consider to bound that direction to one axis if you see that the speed in the other axis is small compared to the speed on the other axis as well as to "snap" the direction to one of the diagonals if the speed on both the axes are roughly the same.
+The third line computes the deceleration using the frist two lines.
+Flick treshold: 0.3 - 0.5 pixel/ms (no flick if slower than this)

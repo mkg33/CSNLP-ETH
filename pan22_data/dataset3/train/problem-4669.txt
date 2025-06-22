@@ -1,0 +1,23 @@
+http://technet.microsoft.com/en-us/library/cc739819(WS.10).aspx
+If I understand your question correctly, you are referring to:
+You can add the key to the registry with a different value and it will take effect after a reboot (tested on Windows Server 2008R2 in a production environment).
+http://download.microsoft.com/download/c/2/6/c26893a6-46c7-4b5c-b287-830216597340/TCPIP_Reg.doc
+In Windows the value is dynamic for established conections, though the default for initial connections is 72 seconds.
+By reducing the value of this entry, TCP/IP can release closed connections faster and provide more resources for new connections.
+This interval between closure and release is known as the TIME_WAIT state or twice the maximum segment lifetime (2MSL) state.
+This number in seconds is doubled each time it retransmits before timing a connection out.
+TcpInitialRTT: Defines what the initial time-out settings are for new connections.
+TcpInitialRTT and TcpMaxConnectRetransmissions may not be present in Vista and Windows 2008.
+TcpMaxConnectRetransmissions: Defines the number of retransmissions before timing a connection out.
+Adjust this parameter if the running application requires rapid release, the creation of new connections, or an adjustment because of a low throughput caused by multiple connections in the TIME_WAIT state.
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Tcpip\Parameters\TcpTimedWaitDelay
+16,000+ connections in netstat -a when you even manage to RDP to the server.
+This is an absurdly high value given the quality of modern networks.
+During this time, reopening the connection to the client and server costs less than establishing a new connection.
+I had an application literally less than a month ago running on a server that exhausted the maximum number of connections Windows can support and killed every network service on that server regularly.
+This key determines the time that must elapse before TCP/IP can release a closed connection and reuse its resources.
+We set the value to 30 decimal (30 seconds) and voila, the issue was solved - less than 10,000 simultaneous connections (since the app was rapidly opening and closing them) and no throughput issues.
+The Registry settings are defined in this article:
+And this says at least TcpInitialRTT is gone, although I don't know how reliable it is.
+http://pul.se/Blog-Post-TCP-IP-Stack-hardening-in-Operating-Systems-starting-with-Windows-Vista_SharePoint-kHPTTCP0WJ5,7zq00hH0wINE
+You may not have it set if you are using Win2008 or later, but the default is 240 decimal (240 seconds or 4 minutes that is).

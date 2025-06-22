@@ -1,0 +1,12 @@
+Alternatively, you can also try Export-DbaDacPackage with -table parameter.
+Finally, this is to be done basically for free minus my time involved.
+I settled on an initial Export of the database using SSMS for the tables required, then followed up with a script generation of the database to capture table keys, indexes, and constraints, as well as other database information not captured with the simple database data export.
+So, I had a day off in the meantime as well as was working on several different tests regarding this idea, and thus had not responded in a bit.
+Their options now are to purchase SQL server, utilize a MySQL server data migration, or simply query the live databases (not my first choice, that is for sure.)
+The goal is to synchronize select tables, including data, key, indexes, etc... from one remote database server to another to form a sort of DIY data warehouse for reporting purposes.
+Since you want to selectively script out certain tables, you can use dbatools to programatically script out tables, triggers, etc using Export-DbaScript.
+Unfortunately free meant using SQL Express and one of the three instances breached the 10GB database cap nullifying the project test.
+If nothing else, it was very good taste of SQL work that I had not previously had, as well as investigating each and everyone's solution suggestions.
+This allowed a stripped-down dataset that still had keys, indexes, and constraints for the required tables while saving space on the destination server.
+Since you are using linked server, my answer on Which one is more efficient: select from linked server or insert into linked server?
+Personally, I use SSIS to generate creation scripts (via right-click your database, select Tasks, Generate Scripts) for the items I need to transfer (especially if I have to drop and recreate, rather than create normally, since this will handle the sequence of tables related by foreign keys, disable/drop FKs on tables not being manipulated, etc, in the proper order to not generate errors), execute the create scripts on the target DB, then use an SSIS datapump operation to transfer the data, which is usually faster than other methods of mass transferring data from one system to another.

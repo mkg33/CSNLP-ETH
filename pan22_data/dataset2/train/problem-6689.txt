@@ -1,0 +1,7 @@
+Each TCP segment is sent as an IP packet, and IP makes routing decisions separately for each packet, again and again. Of course endpoint addresses remain static, but the path might even change in the middle of a connection, and TCP will not even notice the change happening.
+If TCP doesn't receive an ACK because IP didn't deliver the packet, it resends the segment (same sequence number) and shortens the window size.  The window size is how many segments it will send before getting an ACK back.  
+TCP connections only ensure ordering and delivery, but they do not establish a fixed path at all. You might be confusing it with other circuit-based technologies such as ATM or X.25 (where a path is configured during call setup and all packets follow it).
+TCP only cares about segment numbers and not the path.  The path could be from anywhere as long as it's the same IP + port.  In this way TCP does its job and doesn't have to worry about anything above or below.
+For each socket, various state is maintained such as sequence number, window size, and segments (tagged with sequence numbers) that haven't been acknowledged yet.
+If the other end doesn't respond in a certain time (timeout), TCP closes it and tells the application the other end timed out.
+Between the socket and the TCP segment sequence number, it knows how to reassemble things in the right order before delivering the stream fragment to the application.

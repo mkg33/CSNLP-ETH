@@ -1,0 +1,11 @@
+It looks like you can use PrefabUtility.LoadPrefabContents to obtain the block data.
+Make sure to use EditorUtility.SetDirty to mark it for saving after it's modified by your script.
+Simply create a subclass of ScriptableObject with serializable fields.
+This will give you the root GameObject in the prefab, upon which you can use the normal Find/GetComponent methods to get to the bezier curve data.
+If that doesn't work, you can use AssetDatabase.OpenAsset and PrefabStage to obtain your data.
+Alternatively, if you have a collection of these utilities, you can create your own EditorWindow.
+At runtime, any objects which need that data can take a reference to that ScriptableObject (through inspector, Resources.Load or singleton pattern) and use the data accordingly.
+You can save the resulting file as a TextAsset and read it that way at runtime.
+The easiest way is to save the data to a ScriptableObject.
+Alternatively, if you don't like ScriptableObjects, you can always roll your own serialization using any of the various libraries out there.
+Then you should be able to write an editor script to bake out the data into a format you can read at runtime without having to load the blocks.

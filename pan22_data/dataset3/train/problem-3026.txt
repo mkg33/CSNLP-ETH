@@ -1,0 +1,19 @@
+While I would never argue the virtue of all the smart pointers and containers and iterators and whatnot, I am known for being able to code extremely fast (and reasonably reliable - although it's not advisable for others to jump into my code for somewhat obvious reasons, like heart-attacks and perpetual nightmares).
+Preferably, you just use normal objects, and no pointers whenever you can.
+The benefits of memory management and documentation provided by good smart pointers mean I use them regularly.
+However when the profiler pipes up and tells me a particuarly usage is costing me, I'll revert back to more neolithic pointer management.
+The memory cost of a pointer like shared_ptr is generally twice the memory cost of a normal pointer.
+On other cases I just design to good principles like the bullets above and the profiler will tell me where I will need more speed.
+I don't think that this overhead is too big, but if you are low on resources you should consider designing your game to reduce the number of smart pointers.
+When things get hairyI do wrap objects in handles so I can relocate them, but I'd rather not.
+After having tried various approaches, today I find myself in alignment with the Google C++ Style Guide:
+I think that pretty much covers how I manage my resources right now.
+The downside of this is if one object deletes something it points to and owns, but something else is also pointing to it, then it isn't deleted.
+Everything is pooled, and ownership is very strict and never transferable, if really needed I write a custom small block allocator.
+It's good practice to document which classes owns what pointers.
+In my own work I use raw pointers and no dynamic allocations at runtime (except the pools themselves).
+At work, of course, all is different, unless I am prototyping, which I thankfully get to do a lot.
+I am not sure if this is a totally good idea, but I am lazy, and I cannot see any real downside [except if I wanted to do some C-style pointer arithmetic].
+I use boost::shared_ptr because I know I can copy it around - if two entities share an image, then if one dies the other shouldn't lose the image too.
+However, when you need to keep track of resources, passing pointers is the only option.
+I make sure that there is a state during game for every pool to clear itself.

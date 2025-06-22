@@ -1,0 +1,18 @@
+The depth buffer is used to determine what stays in front of what, even for the smallest 3D primitive: a single vertex point.
+Without depth buffer and without face culling it will render in the order you specify the faces, which will result in some faces that should be on the back of the cube being incorrectly drawn on top.
+However, as far as I understand, depth buffers are used for the Z-buffering technique, which helps one efficiently calculate occlusion effects.
+According to a Vulkan tutorial I am following, I will need to create a depth buffer in order to display a 3D cube:
+It should be possible to decide in CPU what faces to draw using the painter's algorithm, which is perfectly suitable for rendering acube.
+For a single non-self-shadowing mesh you don't need a depth buffer, managing draw order and proper winding+culling settings will be enough.
+Yet, you will need depth buffer for more complex scenes, probably the author wanted to introduce the use of depth buffer in a simple setting.
+If you want it to draw correctly, that is, with the planes in the back staying in the back, and the planes in the front staying in the front, you need depth buffer.
+Notice that the planes are drawn in the order they are sent to the GPU, not taking in account their 3D position.
+This is a case (https://stackoverflow.com/questions/6159385/opengl-z-index-problem) of cube rendered without the depth buffer:
+However as soon as you want something more complex or want to draw arbitrary meshes you need the depth buffer to avoid weird effects.
+Recommended viewing (graphics API agnostic): Pixels and Triangles - Computerphile playlist - the fourth video on the series (The Visibility Problem) explains the problem of what to do draw ontop of what and approaches to solve the problem.
+If you render your primitives without face culling, then the system needs the depth buffer to tell which of the faces of the cube are on the front and which are on the back.
+If I have a single 3D cube in a scene, there is never going to be any occlusion.
+Note: The painter's algorithm will fail if faces intersect or if trying to sort them by overlap order results in loops.
+Thus, you do not really need depth buffer in this example.
+In the sense that it could have been archived by other means (face culling or painter's algorithm).
+So the tutorial will teach you how to add depth testing, especially because in vulkan it's less trivial than in old-school graphics apis.

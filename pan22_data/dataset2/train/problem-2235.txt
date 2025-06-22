@@ -1,0 +1,11 @@
+The other neat thing about them is how they can link, by having a pointer to the next process. In this way, your animate row process may actually consist of:
+Sure, they're simple, they're supported in every language, but they're such an amazing pain to work with. Every manipulation takes a ton of bugprone copy-and-paste code, and tweaking the effect in small ways can be a huge change to code.
+If you can use a language that supports them, I recommend coroutines. They let you write code that looks like:
+The process would be added to the process manager's list, which would be iterated every frame and Update() called on each. So verymuchlike entities, but for actions. There would be a kill flag to remove from the list when it has finished.
+You need to think of the game as a "finite state machine". The game can be in one of several states: in your case, "expecting input", "piece moving down", "row exploding".
+He talks about a 'Process Manager', which boils down to a list of tasks that need to be done. For example, a process would control the animation for drawing a sword (AnimProcess), or opening a door, or in your case, make the row disappear.
+You do different things depending on the state. For example, during "piece moving down" you ignore player input, and instead animate the piece from its current row to the next row. Something like this:
+You can use a priority queue of actions. You push in an action, and a time. Each frame, you get the time, and you pop off all actions that have a time specified as before that time and execute them. Bonus: Approach parallelises nicely, and you can actually implement almost all game logic this way.
+To the best of my knowledge, this functionality isn't easily available in C, C++, C#, Objective C, or Java. This is one of the main reasons I use Lua for all my game logic :)
+Obviously rather pseudocodey, but it should be clear that not only is this a simple linear description of the special effect, but it easily lets us drop a new block while the animation is still finishing. Accomplishing this with a state machine will generally be ghastly.
+The traditional solution to this is a finite state machine, which is being suggested in several comments.

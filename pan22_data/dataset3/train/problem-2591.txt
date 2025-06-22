@@ -1,0 +1,23 @@
+MultiAZ creates an "invisible" standby that is only used during failover / maintenance ie=AVAILABILITY.
+Most applications I have seen setup two database connection pools/strings.
+But for the Load issue, I think you should enable (which I believe you already did) the Multi-AZ replication in the RDS.
+That's a tradeoff you need to do when you use RDS.
+You also might have more immediate gains by running a separate database instance for each of the applications rather than splitting the load via reads, if your load profile allows it.
+I am supposed to set the MySQL database connection to the read replica for non-logged in users and the source RDS instance for logged-in ones?
+I don't think you can specify that where your traffic will go for read or write operations.
+My websites have mostly visitors - non-logged in users.
+Then use the route 53 domain name in your db connection urls.
+You can use route 53 to distribute traffic to your read replicas.
+My single RDS instance which power several websites just went bottleneck so I'm a little panicking and don't know where to start right now.
+That all depends on what your application(s) are and how they go about connecting to the database and running their queries.
+The link below has a video walkthrough of setting up the process, it only takes a few seconds to set up.
+That will very much increase the efficiency and performance of your DB.
+Also, if still your traffic is getting affected, you should consider using provisioned-IOPS.
+That will create read replicas and will also be used for the failover and redundancy purposes.
+If the direction I'm going is not correct, kindly point me to the correct path then
+Most applications are not written like this until they need failover though so this is probably going to need some coding.
+You might be able to use mysql-proxy to filter particular queries to a read only back end.
+One for reading and one for writing and the application code directs it's queries to whichever pool suits the query.
+https://aws.amazon.com/premiumsupport/knowledge-center/requests-rds-read-replicas/
+Amazon RDS FAQs stated that it is up my application to distribute traffic to the read replica.
+Basically you create a domain name in your vpc, and configure route 53 to forward requests to that domain to the N replicas you place behind it.

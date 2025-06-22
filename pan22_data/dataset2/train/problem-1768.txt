@@ -1,0 +1,9 @@
+You don't refill buffers every frame unless it's totally necessary, because this has a great performance penalty (copying data from CPU to GPU is no trivial task).
+As you can see, each tile has it's x,y location, a color array, texture coordinates and a texture name.
+whith the corresponding index buffer, to draw all tiles with the texture associated. For the next texture I do the same again.
+Create a VBO for each texture type, and fill it once (on map load, or whenever you want) with the data of those tiles. Then, iterate your tile texture array, set the active texture and then draw the corresponding VBO.
+Keep in mind that this solution is very inflexible (in case your map changes dinamically), but for static tile maps is the best solution.
+I am trying to write efficient code to render a tile based map in android. I load for each tile the corresponding bitmap (just one time) and then create the according tiles. I have designed a class to do this:
+The second for loop iterates over all Tiles and puts all tiles with the corresponding texture into an IndexBuffer. After the second for loop has finished, I call
+To reduce the openGL api calls (I read somewhere that the state changes are costly and therefore I want to keep them to a minimum), I first want to hand ALL the coordinate-arrays, color-arrays and texture-coordinates over to OpenGL. After that I run two for loops. The first one iterates over the textures and binds the texture.
+Allocating and filling the FloatBuffers at the start of each rendering cycle costs very much time. I just run a test, where i wanted to put 400 coordinates into a FloatBuffer which took me about 200ms.

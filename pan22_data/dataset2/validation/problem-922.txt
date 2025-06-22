@@ -1,0 +1,7 @@
+Is there any way to define shortcuts for often-used values derived from CloudFormation template parameters?
+You could use a nested stack which resolves all your variables in it's outputs, and then use Fn::GetAtt to read the outputs from that stack
+I don't have an answer, but did want to point out that you can save yourself a lot of pain by using Fn::Sub in place of Fn::Join
+This construction or very similar is repeated many times throughout the template - to create the EC2 host name, Route53 records, etc.
+Instead of repeating that over and over again I would like to assign the output of that Fn::Join to a variable of some sort and only refer to that, just like I can with "Ref": statement. 
+You might use nested templates in which you "resolve" all your variables in the outer template and pass them to another template.
+For example - I've got a script that creates a Multi-AZ Project stack with ELB name project and two instances behind the ELB called project-1 and project-2. I only pass ELBHostName parameter to the template and later on use it to construct :

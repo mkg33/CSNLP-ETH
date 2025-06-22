@@ -1,0 +1,29 @@
+These include modifying innodb_buffer_pool_size, innodb_flush_method, NFS's attribute caching timeout, no_atime_update on the source volume and (as Richard says above) specifying different mount points for logs.
+Evaluate how it performs in comparison to your local disks today.
+The results indicate that InnoDB engines performed well and in line with the protocol differences seen in Oracle.
+Just as long as you're not using berkleydb, MySQL/InnoDB works fine to NFS.
+The first piece of good news for you is that there is now more information in the etherspace than had you asked the same question earlier than a year ago.
+You should be able to view the second link regardless though.
+Instead, Netapp have published some OLTP benchmarks of MySQL 5.0 across all three storage protocols.
+You don't say whether you are already a Netapp customer.
+On the other hand, read performance is mostly based on how much of the database fits in ram.
+Even more so if you wish to perform snapshots, change the machine running MySQL or your local disks prove less reliable than the filer.
+Personally I wouldn't recommend storing the logs upon different storage altogether such as local disk.
+Not that those don't work very well, but they are a slightly different kettle of fish to file-based.
+Otherwise it would be a much different and murkier story, consisting of lousy performance and no supporting information.
+There isn't much choice there but to use block-based iSCSI or FCP.
+I'm not sure what it says in the Netapp NFS documentation, but if you mount the NFS volume with the 'async' option, then the application will not be blocked waiting for writes to hit the disk.
+Netapp's official line is that MySQL is supported across all three protocols.
+I imagine the issue lies with the usage of fsnc() and/or O_DIRECT.
+I know older versions of MySQL performed poorly with NFS.
+If you separate them entirely then you could be setting yourself up for a fall.
+Which isn't as much of a significant difference as we had anticipated.
+The logs are closely related to any data that has already gone down to disk.
+MySQL InnoDB commit performance depends largely on how fast the underlying IO can sync data to disc; this is hugely impacted by network latency, so running MySQL over NFS will have a massive hit no matter what the server is.
+The seconds piece of good news is that you didn't say MyISAM.
+Even more helpfully is that the same document details the NFS and InnoDB specific steps that they took to achieve that benchmark figure.
+If the issues are mostly resolved, are there common pitfalls/gotchas, specifically around a large (multiple tables with tens of millions of records) InnoDB database that may see up to 20-50 reads/sec
+Even if your network is as fast as possible, it is still likely to be a lot slower than a local disk (I'm assuming your local disc would be a battery backed raid controller here).
+Setup an environment based on the best practices in the document and perform some benchmarks with your own data.
+With all that said, the next best thing that you can do is suck it and see.
+If you can fit the whole database in RAM (or most of it, depending on the usage patterns), then performance will be very good, as you'll just set your innodb_buffer_pool to be bigger than the data, and in theory no reads will ever need to be done on the NFS.

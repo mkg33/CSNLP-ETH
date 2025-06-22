@@ -1,0 +1,10 @@
+I suspect the option is 'not recommended' because it's nearly useless in practice: almost all other mDNS implementations use the .local domain only, so trying to do lookups for whatever domain you happened to obtain from DHCP would only introduce additional delays most of the time. There are also security issues mentioned in the actual mDNS spec.
+Instead, nss-mdns could be patched to specifically append .local to dotless names before trying to look them up, instead of using the resolv.conf domains.
+The reason mdns doesn't append .local or search domains is because there is no NXDOMAIN or similar concept in mdns.
+So if mdns fails to find a resolution in any caches, it must send a multicast query and wait to see if anything responds. This timeout is lengthy enough for "causing problems".
+The following doesn't answer the question, but is speculative of possible implementations to resolve some of the issues.
+What I would wish for is to explicitly append .local to hostnames without any dots at the end of the nss chain. E.G.
+hosts: files mdns4_minimal [NOTFOUND=return] dns mdns_append
+Perhaps it would also be possible to specify a "cache only" mdns resolution. Perhaps with an nsswitch like this
+hosts: files mdns4_minimal [NOTFOUND=return] mdns_append_cacheonly dns mdns_append
+I envision mdns_append trying both with and without .local appended.

@@ -1,0 +1,12 @@
+I have gotten better results looking at the operators in the plan (mainly the seeks/scans/joins) and checking the tooltip or properties window to see which columns are involved and using that to determine index candidates to test for improvement.
+2) The query plan itself is not optimal, either due to the construction of the query (joins and where clause not optimized, etc), or the rowcount estimates are off due to missing/out-of-date statistics.
+1) The "percent improvement" can be way off for all but the simplest queries/most obvious indexes, after all it is just an estimate and does not derive from the actual costs incurred or actual rowcounts when the query runs.
+I only use the missing index suggestions as a starting point when working with an unfamiliar query/environment to see where to look deeper.
+This has been due to a variety of reasons in my experience:
+The one shown first in the graphical plan is not necessarily the one with most impact on the query.
+I've seen query costs go up after implementing a suggested index, or it doesn't even get used and the plan remains the same.
+Indexing to a brutally bad query plan is often at best a band-aid solution with only an incremental improvement in performance.
+I recommend cautious use of this tuning technique since I have found missing index suggestions popped up by query plans to be consistently less reliable as queries and DB schemas become progessively more complex.
+This is especially true when using only the graphical plan and not viewing the XML to see if more than one missing index has been suggested.
+See the other answers here regarding this point, they are spot on, no need for me to elaborate further.
+4) I've also encountered plenty of examples of new indexes being suggested when modifying the existing index will do.

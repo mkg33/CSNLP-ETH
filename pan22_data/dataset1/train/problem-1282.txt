@@ -1,0 +1,16 @@
+Your DNS is fine, as your home router"s proxy DNS does resolve correctly, as does your RPi. You can see this from your ping attempt: it correctly resolves.
+So, this puts the IP layer back in focus: please notice that the ping fails already at your home router. So this looks like your home router denies you access to the Internet. Could it be that it blocks traffic from IPs not assigned via DHCPv4? Can you check your home router configuration?
+I am setting up Raspbian Jessie on a Raspberry Pi 2 B+ board and experiencing problems with configuring a static IP.  At this point I've spent about half a day googling the problem and it would seem that I'm not the only one having issues with this.  Unfortunately the responses to the posts I've found all seem to say the same thing; either don't modify /etc/network/interfaces and configure your static IP through /etc/dhcpcd.conf or disable dhcpcd and configure this through /etc/network/interfaces.  I've tried both methods (for reference this article had the most complete instruction: How do I set up networking/WiFi/static IP address? ) and neither method works.  Adding the static IP using either process results in a network setup that can access other machines on the same LAN segment but nothing past the gateway router.  My question here is how do I resolve this problem so that I can use a static IP without loosing internet access?
+If the network files (/etc/network/interfaces & /etc/dhcpcd.conf) are left alone after a clean install of Raspbian Jessie than the network connection works as expected using DHCP.  Output from the ifconfig command showing this setup is below:
+Attempting to ping an internet address like google.com also works:
+Output from the route command at this time is as follows:
+Also if I run the 'traceroute' command under this configuration I get the following (clipped to just the top few results for comparison with a later traceroute run):
+Next I try to change the networking configuration to use a static IP.  This is done by adding the lines below to the end of the /etc/dhcpcd.conf file (NO changes were made to /etc/network/interfaces):
+After making these changes I reboot the raspberry pi and upon restart I have a functioning network configuration that will ONLY allow connections to a computer on my LAN.  Below is the ifconfig output after changing to use the static IP.
+Here I ping the gateway router (192.168.1.1) and another Debian machine on the same LAN segment (192.168.1.9); both machines can be reached:
+However once I try to ping something that is on a different network segment (Google in this case) I can't reach it.  
+The issue does not appear to be related to DNS as I can resolve host strings just fine:
+Here are outputs from the 'route' and 'traceroute' commands.  Notice that something funny is happening with traceroute as it only goes as far as the gateway router now:
+The network configuration I added to /etc/dhcpcd.conf is also in use by two other Ubuntu machines that are on the same LAN segment; neither of these machines has any difficulty accessing the internet through the gateway router.
+If anyone can shed some light on what is causing this issue and how I can resolve it I would appreciate their insight.  Thanks!
+File: /etc/dhcpcd.conf (following static IP update):

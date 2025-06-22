@@ -1,0 +1,13 @@
+I'd transfer the master database (probably msdb and modal as well), but I wouldn't call it master on the new server. I'd restore it as something like master-old, so you can at least query it to get job details, or logins out if you need them. But I'd really treat it only as a failsafe, in case you forget something, or your login/job/whatever scripts fail.
+There's a lot that can get unwired when doing a database migration, SSIS packages, jobs, logins can all be a bit picky. If you can, keep both databases online as you do the migration, or at least practise on a VM.
+On the other hand, I'm anxious of compatibilities issues by transferring the master database due to the different version (SQL 2005 vs 2008 and clustered vs non-clustered).
+Since you say the backup is part of a (failed) cluster, you definitely don't want to restore that to a non-clustered server (with a completely different hostname.)
+Among the reasons why you shouldn't is that each SQL Server installation generates local user and group accounts that grant rights on the database server, and encryption keys specific to THAT instance of SQL Server.
+You should not restore the master database to a different target machine than the one it was backed up from.
+I'm wondering whether or not I should transfer the master database from the old machine to the new one?
+In addition of transferring the user databases, my approach was to script all the logins, users, jobs, etc and restore them on the new machine, but I'm afraid of forgetting something?
+In short, restoring a 2005 clustered master over the top of a 2008 non-clustered master will almost certainly result in bad stuff. I think.
+The current installation is SQL Server 2005 standard: it used to be clustered but the node got removed at some point, but still is configured as a clustered.
+I mean, while the databases it hosts are going to be the same, the configuration is going to be different (different versions and not clustered).
+Restoring the master database elsewhere means that information will no longer match the original server.
+That said, the master database does contain all security credentials and login information, so you may want to temporarily restore it somewhere to extract this information.

@@ -1,0 +1,16 @@
+This maybe is not the most sophisticated solution, but - especially if you do not have other processes opening so many sockets - you could check the output of
+If you want alerts and monitoring then I would look at Nagios if you want pure graphs then I would look at Munin or Cacti.
+If you just want to know how many connections a process has open at any time then use lsof.
+This will mail you when process count exceeds treshold.
+As it is not limited by any trigger, the action runs at every ps-watcher check.
+The second part has a different regular expression that matches the same process name, it logs the count of processes.
+Adding an extra few lines to send an email if the count is >3000 should be trivial.
+Have a look into lsof manual page to see if you can modify the output format to better suit scripted parsing.
+You can change checking interval with "--sleep 150" option to ps-watcher.
+You might want to refine the search to more accurately match your needs (e.g.
+For huge number of connections, you better experiment how much resources running netstat or lsof takes and adjust the interval.
+You can write a simple script to run the command periodically.
+(n: no name resolution, t: TCP, u: UDP, p:show PID and program - you might want to only provide only one of u or t based on whether your process opens UDP or TCP connections).
+If you don't want to go for a full Nagios (or whatever) install to monitor a single process, why not just write a script to do it yourself?
+I've done something similar to keep track of DB connections from one of our boxes, using the output of netstat to do the count and logging the results to a file.
+where '12345' should be replaced with your PID and 'progname' with the name of your process.

@@ -1,0 +1,11 @@
+If you care about redirecting only tcp to your client, you could use:
+That will redirect all tcp packets except those to port 22 (sshd). That should work as long as you're running OpenVPN on udp (the usual case). In case you want to redirect udp also, add:
+And then there's icmp: you'll likely want to redirect at least some of it, too.
+Rather than specifying the traffic (almost all of it in your case) to redirect, it may be simpler to invert the problem:
+The -j RETURN means to stop processing the current chain. The first 2 rules above define cases to "short-circuit" your redirect rule. Anything not matched by the first 2 rules then gets redirected.
+One handy iptables reference: https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html#RETURNTARGET
+I'm setting up an OpenVPN server. I want it to redirect any incoming connection (except for ports 22 (ssh) and 1194 (the VPN server itself)) to a client connected to the VPN.
+The client is at 10.8.0.2, the VPN gateway is 10.8.0.1
+I found how to redirect a single port over the VPN here: Port forwarding with OpenVPN
+The gist is to run iptables -t nat -A PREROUTING -i eth0 -d VPN_IP_HERE -p tcp --dport PORT_TO_REDIRECT -j DNAT --to-destination 10.8.0.2
+However, this only works for one port at a time, I woud love a solution like --dport *

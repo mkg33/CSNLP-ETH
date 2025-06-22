@@ -1,0 +1,9 @@
+You can try and force the parent to do this if you want by sending it a SIGCHLD (kill -20), to the parent, but there's no guarantee that the parent will honor it.
+It's a process that has been completely deallocated but still exists in the process table.  Contrast this with an orphan process, whose parent has died but is still executing.  
+The only time that you should be concerned from zombie processes, is when you see lots and lots of them, for example if the same crappy application mentioned above is placed under load.
+You'll often see them for short periods of time (for example while viewing the process tree using top) - this is normal; In the time slice between the time that a child process completes, and the parent polls for it - the child process will appear as a zombie.
+There is already an accepted answer, however: you CAN kill the zombie process. Attach with the debugger to the parent process and call waitpid function. E.g.:
+A zombie process is a process that has finished executing, but is still listed in the process table.
+A zombie process has no resources allocated to it whatsoever, other than the entry in the process tree.  This happens when a process completes, however the parent process has not yet reaped it, (i.e., waited on it).
+If you see zombie processes that continually exist however - which is not normal - there is still no need to be concerned - again as there is not resource allocated to a dead process - it generally means that the application is poorly written by crappy developers.
+We have alot of crappy developers where I work, and so I have the privilege of dealing with such issues and learning all sorts of useless stuff while doing so.  In fact - my team often resorts to using the crappy shell scripts written by out crappy developers in interviews - if the candidate can pick that the script is indeed crapy, and tell us why it's crappy, he has a good foot in the door.

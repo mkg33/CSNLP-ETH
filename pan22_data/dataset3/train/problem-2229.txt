@@ -1,0 +1,25 @@
+I don't have the same environment as you (Office 365 and Outlook 2013), so I will provide the steps I used to retrieve my answer.
+HKCU\Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles\Outlook\e6ee84559d879548bc05573166e74d21\001f6620
+The change the e-mail name from Outlook 2013, I go to:
+You can see when I create a New Email, the name is appended with the numbers.
+In conclusion I can only repeat sunk818's warning.
+HKEY_USERS\S-1-5-21-1874162390-2186939667-310645977-48933\Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles\Outlook\9375CFF0413111d3B88A00104B2A6676\00000003\Account Name
+It is the only guid that has again several subkeys in the format "0000000X" and there for me it was the highest numbered one and the one containing a key "Identity Eid" that has a complex value including the words "exchange".
+To also Update the  from adress name and account name I had to change the additional key "Account Name" for me (Outlook 2010) both keys were found under
+Finally keep in mind that those are binary values and depending on the method you try to update those with the characters have to be spaced with trailing 00 because the binary format allows for formats that use more bits per character than ascii.
+00000003 Der Ordner wo Identity Eid existiert mit Wert enthält EXCHANGE
+9375CFF0413111d3B88A00104B2A6676 = Der einzige Ordner mit Unterordnern
+For me, I found that when I changed the e-mail address to the new value, this registry changed:
+001f6620 = name@new-domain.com (Type = REG_BINARY)
+The best I could come up with was either check all occurences of 001f6620 for the wrong mail or use the subkey that contains a key 001e6750 with value "Outlook".
+This does not change the actual FROM e-mail Outlook 2013, but just the name.
+It might be also wise to just iterate through all those folders and check all account names here.
+HKCU\Software\Microsoft\Office\15.0\Outlook\Profiles\Outlook\fc9a8ceae2b34f449fc525e570d01fcf
+I do not find registry changes in general to be problematic but in this case it's very hard to identify the correct keys and then they are even stored in non string format, so be very careful if you change things automatically here.
+Your mileage may vary along with the usual caveats about the dangers of changing values in the registry directly versus using the application.
+For this sequence, I used Process Monitor from SysInternals (procmon) to monitor the file and registry activity where the process name contains outlook and category is write:
+If you only change the value 001f6620 this will have the effect that if you go to the Account Settings afterwards, and try to change it manually, the change field, but only that will reflect your changes.
+e6ee84559d879548bc05573166e74d21 = der Ordner wo der REG_SZ 001e6750 mit Value Outlook exisitert
+So far I have not found a really good method for identifying which subkey guid has to be used.
+I checked this with the same method as sunk818 but found slightly different results:
+Since you are using Outlook 2010, the registry path will be different, especially the 15.0 part.

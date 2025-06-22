@@ -1,0 +1,17 @@
+Do I need a journaling filesystem for both host and guest operating systems when using virtualization?
+For journalling to work, it is essential that the OS is in control of the order in which data is written to disk.
+What filesystem layout will give the best performance?
+Reiterating what's already been said here by others:
+Journalling in the guest OS can give a false sense of security in case of an unclean shutdown of the host OS.
+Without being totally sure, i think that the disk in a virtual is actually the RAM (afterall ... the virtual machine is an application -full virtualisation machines - )
+Or, conversely, should I disable journaling in the guests?
+Or, conversely, should I disable journalling in the guests?
+What filesystem layout will give the best performance?
+Journaling overhead is typically a negligible amount of overhead compared to other things that could be tuned, like the disk sub-system.
+Is it worth it to set up a different partition on the host just for the guests, with no journaling?
+When that become cost prohibitive then look at non-standard file systems.
+IMHO, it depends on how you plan on crashing your virtual machines (Ask yourself: Why do you need a journaling filesystem for in the first place?
+Is it worth it to set up a different partition on the host just for the guests, with no journalling?
+The result could be that upon reboot, the guest OS replays old journal data and overwrites more recent file data, possibly with unnoticed massive filesystem corruption as a result.
+Using VirtualBox, I've got a few Linux guests for different distros running on an Ubuntu host.
+The guest OS may think it is in control, but there is no guarantee that the host OS actually writes the data to disk in the same sequence.

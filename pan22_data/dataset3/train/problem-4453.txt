@@ -1,0 +1,12 @@
+Incidentally, does Linux/Unix allow a mode of file opening with creation wherein the created file is deleted when the creating process terminates, even if it's from a crash?
+awk 'NR>1 {print $9}': print only the ninth column of lsof output, excluding the headers
+Normally, this is enough but sometimes, processes create files in there and fail to cleanup after themselves.
+Some people do it by checking last modification timestamp, but this approach is unsafe because there can be long-running processes that still need those files.
+Is there a program/script/etc that embodies this approach or some other approach that is also safe?
+Obtain a list of files older than so an so, exclude files that are open by anything from that list:
+Debian/Ubuntu have tmpreaper, it's probably available in other dists as well.
+You could just do rm -rf /tmp/* and hope nothing breaks...
+I need to delete these orphaned tmp files or else future process will run out of space on /tmp.
+A safer approach is to combine the last modification timestamp condition with the condition that no process has a file handle for the file.
+I always run lsof +L1 | grep tmp and either kill or restart the processes holding on to "deleted" tmp files:
+egrep -v "foo|moo|bar": print lines NOT containing foo or moo or bar

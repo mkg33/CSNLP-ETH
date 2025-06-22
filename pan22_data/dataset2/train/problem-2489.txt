@@ -1,0 +1,9 @@
+EDIT: based on the new information, note that you need to tell filebeat what indexes it should use.  Go to the Settings tab and configure an Index Pattern there.  Here's the doc.
+You can also crank up debugging in filebeat, which will show you when information is being sent to logstash.
+You can check if data is contained in a filebeat-YYYY.MM.dd index in Elasticsearch using a curl command that will print the event count.
+If you followed the official Filebeat getting started guide and are routing data from Filebeat -> Logstash -> Elasticearch, then the data produced by Filebeat is supposed to be contained in a filebeat-YYYY.MM.dd index. It uses the filebeat-* index instead of the logstash-* index so that it can use its own index template and have exclusive control over the data in that index.
+Filebeat keeps information on what it has sent to logstash.  Check ~/.filebeat (for the user who runs filebeat).
+How can I see if filebeat is sending logs to logstash? I followed the filebeat and ELK stack tutorials exactly. I can see data when I enter in filebeat-* into Kibana, but nothing when I enter in logstash-* into Kibana.
+When I open up Kibana interface, I get an error to configure index when logstash-* is entered as a query:
+And you can check the Filebeat logs for errors if you have no events in Elasticsearch. The logs are located at /var/log/filebeat/filebeat by default on Linux. You can increase verbosity by setting logging.level: debug in your config file.
+So in Kibana you should configure a time based index pattern based on the filebeat-* index pattern instead of logstash-*. Alternatively you could run the import_dashboards script provided with Filebeat and it will install an index pattern into Kibana for you. The path to the import_dashboards script may vary based on how you installed Filebeat. This is for Linux when installed via RPM or deb.

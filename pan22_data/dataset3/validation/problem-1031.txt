@@ -1,0 +1,10 @@
+NOTE: Both interfaces are connected to Cisco switch with 'ip local-proxy-arp' on the SVI with ip 176.119.32.2/22 which is default gw, and both are in Private VLAN.
+10.10.32.0/22 dev eth0  proto kernel  scope link  src 10.10.34.146
+If there is no default gateway configured on the interface and there is proxy-arp configured on switch port, then if you ping ip address outside network configured on the iface, you will get arp entry in your arp table with ip address outside current network.
+But when I ping -I eth1 8.8.8.8 I get icmp reply and there is a new entry in arp table:
+default via 10.10.32.2 dev eth0  proto static  metric 1024
+10.10.32.0/22 dev eth1  proto kernel  scope link  src 10.10.33.188
+Can someone tell me why do I have arp table entry outside interface network?
+Server has 2 interfaces, both on the same network:
+But, when I add 'ip route add default via 176.119.32.2 dev eth1' to the routing table and ping 8.8.8.8 from eth1 there is no new arp table entry for 8.8.8.8.
+And then, when I ping 8.8.8.8 (from eth0) I get icmp reply but arp table does not change.

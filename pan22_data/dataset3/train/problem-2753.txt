@@ -1,0 +1,15 @@
+Red Hat supports ext4 up to 50TB, and XFS up to 500TB.
+XFS can't know for sure on its dynamically allocated structures.
+But I've always found ext4 to beat XFS for performance.
+In short: XFS is perfectly stable in production scenario, especially on RHEL (and derived) OS where is has many patches and backports from recent kernel releases.
+XFS uses the same workaround for "broken" applications that ext4 does.
+Yes, XFS is basically on data=writeback modus operandi.
+For example, while Debian 6.0 XFS performances were quite poor, RHEL 6 was much faster thanks to the delayed logging algorithm implemented in newer kernels and back-ported to RHEL one.
+As already mentioned, ext4's "ordered" mode is basically the old ext3 "writeback" mode, with a little extra privacy thrown in.
+On the other side, many distributions used EXT3 without barriers, which in the wrong situation (eg: powerloss during a journal wrap-around) can totally destroy your filesystem.
+I've never observed XFS's widely claimed performance advantage over ext4 for parallelism in any of my testing.
+ext4.fsck knows exactly where everything should be.
+However, the common "wrong cases" (eg: crash/power loss when truncating a file) are all worked around in the code, so in practice EXT4 and XFS are very stable.
+A damaged ext4 filesystem might be more effectively recovered by fsck.ext4 than a damaged XFS fs by xfs_repair because of all the static vs dynamic allocation ext4 does.
+For example, on a server I support which has a 6 15k drive RAID 10 array.
+EXT4 is the same, and so NTFS and BTRFS and any modern filesystem.

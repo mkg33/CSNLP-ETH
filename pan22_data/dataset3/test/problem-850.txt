@@ -1,0 +1,42 @@
+For that purpose you can both have the VM export a CSR that can be signed a CA as well as implement integration with LetsEncrypt.
+At this point there is going to be a couple of decisions to make.
+You ask for a certificate for an internal IP address from a CA which is already trusted by browsers.
+1) For clients with their own CA infrastructure (ADCS or otherwise), we will use one of their certs.
+Preferably, customers should not have to add trust for a new CA or add security exceptions to their browsers.
+But using the same name introduce a security risk as any of your customers would have access to a certificate that could potentially be used against other customers.
+Customers access the site by the private IP and we access the VMs directly using TeamViewer (installed before we ship them), so there's no public IP or domain name involved.
+I have tried LetsEncrypt, but they only support certs for domain names, not for IPs.
+The server you direct LetsEncrypt to is the one where you generate the certificate, which does not have to be the same as the one where you will ultimately be using the certificate.
+They monitor the customer's devices, and run a (Apache/Django) webserver showing the state of the network.
+But you should also allow the customer to provide their own domain name, in which case they also have to provide their own certificate.
+For the rest of my answer I'll assume you are using it as a method of access control.
+If you have registered example.com, you can then user something like customername.example.com for each VM (or replace customername with a different value if the customer do not want their name in audit records of your chosen CA).
+Instead I recommend you register a domain name and create a subdomain for each VM (don't put these names under your regular domain name used for other purposes).
+Customers should not be forced to use a subdomain of example.com.
+However you can get a certificate for a real domain name and point that name to an internal IP address.
+This would leak both information about our customers networks (at least the IP of our server), and about our client list, which makes it a no-go for us.
+We ship our product to customers as a VM, which they install on a hypervisor in their network.
+We are planning to go with a mix of several options posted here.
+Either way, it'll always be compatible with their infrastructure and security policy.
+There is a few contradicting requirements in the question which I suggest you resolve by using a domain name rather than an IP address.
+Provide your customers an option to replace that certificate with their own.
+We'd very much like to provide SSL certs on our VMs so that clients stop seeing notifications that our site is insecure (and of course, so that our site stops being insecure).
+2) For clients with no CA but with DNS, we will get a wildcard cert for *.productname.com and have client IT add a DNS record pointing to our VM within their network.
+Just use a self-signed certificate as you already do, and don't try any dirty hacks to bypass the error.
+As I understand it, we will then be able to use this wildcard cert for all clients of this type.
+I was hoping to avoid this, but the only other option would be to use the wildcard cert with a public DNS record pointing to a private IP in their network.
+Are you using an internal IP address due to shortage of IP addresses, or are you using an internal IP address as a method of access control?
+All of this could be done using the same name for every VM at every customer site.
+The replacement certificate can be signed by a public CA using their own public (sub) domain name or by a locally trusted CA, e.g.
+This way you can use name based tls certificates, and get valid dns
+On the end user site you'll then override that domain name in their DNS configuration to point to the local IP of the VM.
+These VMs are given static, private IP addresses in the customer network.
+You never want the server on which you generated the certificate to actually use it, instead you'll copy it to the VM on the customer site.
+One of the decisions depend on why you are using an internal IP address in the first place.
+3) For clients with no CA and no internal DNS, we will resort use self signed certs and have client users manually add them to their browsers.
+You could set up a domain, with DNS servers, to return private ip addresses
+However if a CA were to issue such certificates browsers would probably stop trusting the CA, which would defeat the purpose of you choosing that CA in the first place.
+In order to issue a certificate LetsEncrypt need to send an HTTP request to the domain, for that reason the domain has to resolve to a real IP address which is reachable for LetsEncrypt.
+And since you want strict access control on the VM using the certificate you'll probably want LetsEncrypt to be communicating with a different server.
+If you are only doing it due to shortage of IP addresses there are other and possibly simpler solutions.
+What is the most efficient and cost effective way to do so?

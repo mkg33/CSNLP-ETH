@@ -1,0 +1,14 @@
+For example if all reverse proxies should route traffic to all web app nodes, how could they be set up so that they don't send traffic to dead web app nodes, and so that when new web app nodes are brought online they can send traffic to it?
+You can do this with Amazon ELB (if you're on EC2), the pf firewall (or pfsense) with a round-robin virtual IP, or various software load-balancing tools like haproxy (which are probably the best choice as they come with some decent failure-detection capabilities, though they do require additional hardware).
+i use haproxy as an example here, but pretty much any application load balancer (a.k.a. layer 4/7 load balancers) have these characteristics.
+For some applications, they can implement retry logic if they contact a node in the tier below that doesn't respond, but is there any way that some middleware could direct traffic to only live nodes in the following tier? 
+If you need to tolerate a failure of a single node in a set, put the set behind a load balancer as you described.  
+using keepalived and heartbeat, you can have a pair of haproxy servers. if one fails, the other takes over.
+The reverse-proxy should again use an LB that monitors the web apps. The web-apps should be able to take over sessions from other nodes.
+I've read (briefly) about heartbeat and keepalived - are these relevant here? What are the virtual IPs they talk about and how are they managed? Are there still single points of failure using them?
+If I was hosting on AWS I could use an ELB between tiers, but I want to know how I could achieve the same functionality myself.
+There are also dedicated commercial load balancer solutions like Cisco's content switches or content switching modules if you have the cash.
+an application load balancer like haproxy does this. for example, if it detects 5xx errors from a web server, it can mark the server as failed. also, if a server fails the three-way handshake, it can mark it as failed, plus try another server while the client continues to wait.
+What are the standard ways of connecting tiers to make them resilient to failure of nodes in each tier? i.e. how does each tier get the IP addresses of each node in the tier below?
+Don't forget to simulate failures in your test environment to make sure things fail over the way you expect.
+The LB should monitor the proxy tier and automatically remove hosts (i.e. redirect traffic to surviving nodes) that are gone.

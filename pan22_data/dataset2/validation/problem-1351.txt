@@ -1,0 +1,7 @@
+USB uses 7bit addressing so you will be able to address 127 devices.  Of course the bigger issue is power when using USB devices, if there isn't enough power they won't work.
+As long as the device number of the currently connected device is less than 127, the new "next device number" will just be the current device number plus one. At "current device number" 127, the "next device number" is reset to 1.
+So my question is what is the limit on the device number?  Can it keep increasing to 999 or even beyond or is there a lower limit, such as 256 or 128?  With this information I can code in a check on the device number and force a reboot if it gets close to the limit.
+Device allocation also checks whether the number proposed to be assigned is already in use, and if so, will revert to checking for successive device numbers until a free one is found.
+I am developing a remote monitoring device using a Raspberry Pi.  In order to provide me with alerts it has 3G dongle in it.  However, due to power supply instability the dongle will sometimes change device number.  So, for instance, when it boots the 3G dongle might show as (using lsusb):
+Linux device numbering on a USB bus maintains information on "next device number to be assigned". This is naturally updated each time a new device is connected.
+So, all in all, there is a device number limit, but upon reaching it, the numbering will gracefully roll over.

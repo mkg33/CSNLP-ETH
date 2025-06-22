@@ -1,0 +1,53 @@
+Far fewer users need access to Internet-facing servers than to regular corporate computing resources, so setting up a system in this way should not impose significant extra administrative overhead in terms of user support.
+Finally, is there any way to reduce the damage potential if a domain controller is compromised?
+Any account with privileges in AD (domain admins, help desk, etc) should never log into any regular member server or workstation.
+This is inside our internet border firewall, but is still firewalled to some extent from the juicy goodness of the greater network.
+I.e., you should set the Deny Logon rights to include Domain Admins and other privileged groups on regular member machines.
+Universal best practices (read your logs, secure Administrator passwords, etc) should be a given.
+We do have an auth barrier between the WLAN and anything interesting, which helps.
+This separation of roles is one of the key aspects of securing a network.
+Use Group Policy to reinforce network firewall rules at the host's firewall.
+All in all, the amount of evil-ware we've seen on the WLAN is more interested in sending large amounts of email than it is in scanning everything local to the machine to worm its way around.
+Rename the Administrator account to something else, add "Administrator" as a disabled guest account (trivial to overcome, but it can block some dumb scripts).
+A general rule is that the only thing that goes on a DC is Active Directory itself.
+should either be stand-alone machines or be in a separate Active Directory forest from your corporate forest.
+The red forest is a separate forest with a one-way trust that houses your domain admin accounts.
+I work at a higher ed with a wireless LAN segment that students (and somewhere between one to three devices in their bags) can connect to.
+If compromised it gives the attacker your Windows network.
+It requires extra effort and servers, but you can get 95% of the benefits without it if you are careful.
+Yes, we did have the occasional hacked server (from the Internet side, not WLAN side).
+Note that each security measure is one piece of the total solution, and you need all of the rest.
+You should have dedicated workstations for these accounts, and your regular workstation accounts should not be able to log into the AD admin workstations.
+This separate forest should exist entirely in a DMZ, while your corporate AD forest should exist entirely within your corporate firewall's strictest boundaries.
+A domain admin should NEVER log into a DMZ system or an internet-connected machine.
+These users are assigned to a single group with nerfed privileges and removed from the Domain Users group.
+The best way is to use Microsoft's red forest design.
+What's more, student laptops are not domained, and we do not have any kind of controls for what is on them.
+It is also possible to setup a separate DMZ domain (with or without a trust to the internal domain).
+There should be zero accounts which can log into both regular workstations and AD admin workstations.
+You should also have separate unprivileged accounts for web/email.
+I'm looking for info that relates specifically to Active Directory (2003 and 2008).
+In order to allow student printing from their laptops, we have to allow domain logins which in turn requires visiblity to the DC's.
+In an environment with externally facing Windows servers (web servers in my case), what steps are necessary to protect Active Directory from attack?
+Our estimated recovery from a compromised DC was several days before implementing a red forest; it is under 12 hours with a red forest.
+In general, all admin activity should occur on systems that have no access to the internet and restricted IP connectivity to machines that do.
+A Microsoft best-practices document I read once suggested that your Internet-facing servers (web, e-mail, etc.)
+Also, we're forever going to the WLAN login logs to see who was on what IP when the RIAA sends us an offender notice for a torrenter.
+In a similar fashion, there should be dedicated accounts for DMZ machines, and no accounts should have access to both DMZ and internal assets.
+Obviously, you can only restrict Domain Admins in that fashion if you have separate accounts for server and workstation administration.
+It's not always achievable, of course, but it's all about reducing the number of services that are potentially exposed.
+You will need to understand pass-the-hash (PtH) and pass-the-ticket (PtT) attacks, as these are the primary means by which attackers spread throughout a Windows network.
+When I first got here I was surprised that a Windows network this open could survive at all.
+Set IPSec Policy so all Domain Controller to Domain Controller traffic is encrypted over the wire
+Externally facing servers are in a separate domain than the HQ/Office machines.
+I have a one-way trust (DMZ trusts HQ) to simplify some logins, but am looking at phasing this out.
+You still need to secure your user accounts properly with either Smart Cards (strongly recommended) or good password policies.
+Microsoft has PtH guidance, but it may be a bit complicated if you're not already familiar with security issues: https://www.microsoft.com/en-us/download/details.aspx?id=36036
+You still need to segment your network and have proper firewall/ACL restrictions.
+Active Directory is one of the best features of Windows Server, but it's also a big shiny target.
+Recovering AD after a compromise is possible, but it must be done absolutely correctly---and obviously, there will be some down time while the domain is being restored and sanitized.
+This prevents those highly privileged credentials from being stolen when an attacker gains admin/system privileges on one workstation and subsequently spreads to others (usually by stealing credentials when a workstation admin logs in).
+Configure all network services to run as Active Directory users (IIS apps run under users named "svc-servicename").
+How do you reduce the damage potential if a domain member is compromised?
+You still need intrusion detection, antivirus, a good external firewall, and a web proxy.
+You just have to remember your separate usernames and passwords for each domain.

@@ -1,0 +1,16 @@
+I would look at just connecting to your proxy box or some other host, then use the GNU screen utility to have multiple sessions running to your other boxes.
+I would go with first option and secure the other machines to only allow ssh from the first machine.
+Since a command line can easily get very long an tedious to type, it is way better to stuff all this, with as many SSH options you want, and as many port tunnelings you like into your ~/.ssh/.ssh_config file. This will reduce your typing to ssh connectionNickname and always have all the forwardings and options set automatically.
+See man 5 ssh_config for an in depth explanation and list of config options you can use in ~/.ssh/.ssh_config.
+remoteMachinePort is the port number of the service you want to connect to on the remote machine behind NAT. In case of SSH it is likely that this will be the standard port 22.
+Could I use the proxy machine to 'filter' the incoming ssh request and to route them to the correct machine ? (in the same way it's possible to do so for web sites using a mix of mod_proxy and namevirtualhost in Apache) 
+hostnameOrIPofMachineBehindNAT is the LAN IP or LAN DNS of the non-proxy machine you want to reach behind NAT. Often in a private IP Range like 10/8, 192.168/16 or 172.16/12.
+Another suggestion might be to connect to your proxy machine and have it explicitly build tunnels to each and every machine you want to directly reach behind your NAT. You can either specify one (or more) SSH tunnels directly from the command line like this:
+Of course, you can add other options as needed to either ssh command, or write a shell wrapper (script, alias, function) to handle any variables. The -t flag forces the allocation of a pseudo-tty, which I think is necessary, but you can test connecting without it to make sure. Also, if you create public/private key pairs for each host in the chain, and use ssh-agent, you can avoid typing passwords.
+As a bonus, you'll learn how to use screen, which is fantastic application that everyone should know more about!
+You could use a VPN to connect to the remote network first, and then directly connect via SSH. This may or may not be possible, may or may not be what you want to achieve in the first place, but it will work.
+Where localport ist the port number you need to connect on your localhost that will be forwarded to the machine behind NAT, SSH tunneled through your proxy.
+I heavily recommend you expose as few as possible machines to the internet via port mapping! Especially if password/keyboard interactive authentication is allowed. People do have weak passwords.
+I have several machines on my lan. One is used as a http proxy to target web sites located on the others (that's working fine now thanks to ServerFault).
+On my router, Port 22 is NATed to this proxy machine. I would like to be able to access the other machines, within internet, with something like:
+Other people made good suggestions, but I think that the simplest and most flexible answer was already contained in your question when you gave a sample command. That is, if we have a source host, an intermediate host, and a destination host; and since ssh can execute commands on a remote host for us, you can run this command from the source host:

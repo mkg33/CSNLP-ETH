@@ -1,0 +1,16 @@
+I don't personally make 3D games, so I don't know if this would work in 3D (or if it is even necessary).
+The scene layout is the challenge.  One good approach is as follows (and FYI I use a 3D camera looking at 2D content positioned at z=0):
+I am strictly speaking mobile, not desktop, specifically with Unity and I don't care about the UI, I only care about the gameplay canvas.
+My asset also includes some logic for placing UI, but that is mostly obsolete due to Unity's new UI system.
+I really would love to know what successful games have used to handle different aspect ratios on iOS and Android without making a zillion different sized assets.
+@Marcel's answer and code are great and helped me understand what was happening. It's the definitive answer. Just thought someone might also find useful what I ended up doing for my specific case: since I wanted something really really simple, one sprite to be always on screen, I came up with these few lines:
+Define an area of the screen that must always be visible regardless of aspect ratio/resolution, and use a simple rectangle transform to 'stencil out' this region. This is your ideal screen shape. Using a simple algorithm I then zoom the camera until the region blocked out by the rectangle is as large as possible while still being 100% visible to the camera.
+I created the Unity Asset 'Resolution Magic 2D' to solve this very problem (ad: you can get it from the Unity Asset Store, or see more details at grogansoft.com).
+I added this to the camera and dragged my sprite (it's my background) to the script's only property. If you don't want any black bars (horizontal or vertical) you can put a bigger background behind this one...
+You typically don't need different sizes of assets - imported textures and sprites with automatically-generated mip maps will look nice when rendered at any size less than or equal to the original pixel size of the image.
+My asset provides this out of the box with minimal setup, and it works really well on all platforms.
+Then your main game area is always taking up as much screen as possible. And as long as there is sufficient 'extra' content (e.g. your background) outside of the rectangle area you defined before, players whose screen is not the same aspect ratio as your 'ideal' rectangle will see the extra content where black bars would otherwise go.
+Issues I have in mind is when there are key things that have to be in certain places and cannot fall off the screen.  Using black bars on top or bottom is unacceptable these days.
+I'm using the following script which adds a targetAspect parameter to the camera and adapts its orthographicSize with respect to the screen ratio (more details in this blog post):
+If you use this technique (or my asset), just make sure you design your game to have 'optional' space all around to accommodate screens that are wider or taller than your ideal (to avoid black bars).
+I've gotten a lot of answers to this question, but they are all generic and generally not very useful.  None of the tutorials talk about aspect ratio and dealing with mobile devices and there are a zillion ways to do it, all seem to have gotcha's and flaws.

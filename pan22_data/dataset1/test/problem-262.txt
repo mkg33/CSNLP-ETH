@@ -1,0 +1,12 @@
+Sean Perry has made several good points, which I'll not duplicate. Though, I think your imports with leading underscores are fine! A leading underscore in a global name suggests that the item is not part of the module's public interface.
+First off, There is usually no need to use UserDict in new code. As the docs for that module say:
+So, your _IdDict class should probably inherit from dict directly, rather than from UserDict unless you need to support Python versions older than 2.2! This will also improve your forward compatibility, as the UserDict module has been removed in Python 3.
+Or, you could probably do without the special dict subclass entirely, and handle the exception raising in the TagDict yourself. Just catch whatever exception gets raised by a normal dictionary, and raise your own (in Python 3, you'd want to use raise Whatever() from None to suppress the previous exception context, but in Python 2 that's neither possible nor necessary).
+I see a few things that could be improved in your TagDict class itself.
+You should probably add a check in add to make sure the item being added isn't in the dictionary already. If it is and the tags it's being added under are not the same as the ones it was under previously, you may end up with inconsistent information in your data and _ids dicts.
+In __getitem__ you have the expression self.data[tag] if tag in self.data else set() in your list comprehension. You can write this more concisely as self.data.get(tag, set()).
+But you might need to think about whether that is what you actually want to happen. If a requested tag is not found in the data dictionary, the intersection of the sets is going to be empty. This means you'll end up returning an empty tuple. Perhaps you should raise an exception instead? 
+The message to KeyError could be defined with a triple quote string to avoid the addition.
+Instead of hiding the modules you should use explicit imports like
+Instead of using type to check if something is a string you should use isinstance like if isinstance(foo, str).
+I would use format in __repr__ to make the output easier to read.

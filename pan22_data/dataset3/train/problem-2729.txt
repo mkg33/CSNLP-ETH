@@ -1,0 +1,17 @@
+Some good suggestions here from other posters about ruling out the software, and tweaking your RAID performance.
+Oh, and to pimp my work some more, and put a wall of text into battle against your wall of text, a guide I wrote to track down performance problems: http://www.anchor.com.au/hosting/development/HuntingThePerformanceWumpus covers everything you should need to know about tracking down performance problems.
+You won't get double the performance, but it'll give you some more ooomph.
+If you're reasonably sure about your UPS and server stability, try mounting that file system using the data=writeback mount option instead of the default data=ordered.
+250GB disks aren't exactly mind-bendingly expensive these days.
+This is especially annoying if you're running databases which often have to issue a fsync() call.
+It's worth mentioning that if your workload is write-heavy, then going for hardware with a battery-backed write cache is likely to be the right thing to do if you're considering replacing your kit.
+By default, under ext3, any fsync issued by any application under any user account forces the entire journal to disk.
+The long term solution might be switching to a better file system, though.
+You will be sacrificing reliability in the face of a server crash, but if your performance gets hit this bad anyway it's not a big loss.
+The only drawback is that it can't be shrunk the way ext2/3 can be shrunk - it can be expanded though.
+If that's up around 100%, then I'd just throw more spindles at it, putting them in a RAID-10.
+This is even more annoying when running over RAID devices which don't support write barriers (don't know if MPT devices support them, sorry.)
+This was an unbelievable yet a fact number for me.
+First check to make sure that one of your disks isn't dying (sector remapping can do bad things to IO), and run sar -d 1 0 and look at the %util numbers for the physical disks.
+It smells like you're just filling up on IO capacity.
+It seems that stat64 syscall was forced to wait for the dump operation to be finished.

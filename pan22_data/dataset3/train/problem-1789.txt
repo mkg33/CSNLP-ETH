@@ -1,0 +1,16 @@
+In game design how should keyboard input be handled and why?
+But often that is irrelevant in terms of keyboard input.
+If you use state based input, then you only are ever going to be able to process information available at exactly the time you run your logic iteration.
+This code is obviously very non-specific, but I have seen similar work with SDL, SFML and allegro samples.
+B: Read key down and key up events from the event queue.
+In many cases, you'll find that people do something like:
+This gives you state based input, but you can mix it in with other event code such that you don't have two different ways to process data.
+With events, you can examine the timestamp and know exactly when something happened.
+While I'm not familiar with allegro specifically, the model that I see most often is the queue model, with a system that looks something like this:
+So basically, events are mandatory if you do not want to miss any input or if you need to know the "precise" time something occurred.
+This means if something happens between iterations, you will miss input.
+The advantage this has is that it is easier to work with, at least in my opinion, when one does that have to deal with saving the state of each key.
+Either model will work, and it really ends up depending on the overall structure of your game.
+Im using allegro 5 and using the event queue model atm, but ive seen the other method in some samples..
+A: check the state of keys in the main loop each iteration?
+You can know whether or not a key was actually held down during the entire time between iterations.

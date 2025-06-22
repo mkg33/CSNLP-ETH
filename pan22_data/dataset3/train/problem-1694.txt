@@ -1,0 +1,11 @@
+In fact the command seems to run but then when I check the arp table the _gateway listing is still there.
+Most likely, your flush/delete command actually succeeds – but the cache is immediately repopulated, because as soon as the system has to send another packet through the gateway, it has to re-learn its MAC address.
+Even on mostly-idle systems, this can occur in just a few seconds.
+I has the ip address _gateway and the MAC address is that of my router.
+While having this command running in one terminal, run sudo ip nei flush all in another, and you should see the cache entry immediately getting deleted but soon readded on demand.
+I have been able to clear all of the entries from my arp cache except one.
+To check if that's the case, use ip monitor or ip mon neigh.
+To see the actual IP address, use arp -n or preferably ip neigh.
+Whenever that happens, the ARP cache entry of course shows up again.
+It's a hostname; in fact it's a virtual hostname that libnss_myhostname resolves to whatever gateways are configured for the system's default route.
+I have tried "sudo arp -d _gateway", "sudo arp -a -d _gateway" and "sudo ip -s -s neigh flush all"

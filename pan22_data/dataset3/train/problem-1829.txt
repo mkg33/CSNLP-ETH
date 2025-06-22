@@ -1,0 +1,12 @@
+To make it simpler, I use a datatype of DATE, not TIMESTAMP:
+That will, if the truncated EndDate (just the date portion) is larger than the truncated StartDate,  insert a row into audit_log with the StartDate of the next day at 00:00:00 and an EndDate of the existing value of EndDate.
+Assuming the StartDate and EndDate are static (the values remain the same for a particular row always), a trigger would be fairly simple.
+This would handle where just one additional row would need to be inserted; but you could put a loop in to handle cases where more than one row would be needed (if a row spanned more than two days).
+It then sets the EndDate of the current record to be at 23:59:59 of the StartDate.
+The data is produced continuously everyday and some records are such that the startdate is one day and the enddate is the nextday as it passes midnight.
+prefix specifies the new value of the columns for the row being inserted.
+If the EndDate could be updated after the row is created, it could still be done but would be more involved.
+I have data with two timestamp columns startdate and enddate.
+Assume the table is named audit_log, we create a trigger called t_audit_log and note that the ":NEW."
+Another way is to duplicate the rows and then eliminate the ones that don't need to be duplicated and adjust the times for those that do.
+One would be to use a pipelined function to return the additional row when the day spanning condition is detected.

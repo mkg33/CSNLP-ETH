@@ -1,0 +1,8 @@
+It shouldn't segfault, but, there may be a file that can't be opened because of se-linux that tar never thought would happen.
+When prelink finishes, you should reboot the server. You could also do telinit u && init 3 to resume booting, but it is better to reboot in order to assure that all binaries will be reloaded with their new memory mappings.
+First, stop all your virtual machines, reboot the host and run a memory test. You have to do this from outside ESXi. If you find any memory defects, that is your problem. Replace the hardware.
+Even without much investigation, from your description that a few programs started to segfault, then they began to work correctly while others started failing, you have either bad memory modules, or a broken prelink.
+Boot the host and the server again, the server in single-user mode (pass "single" to grub kernel parameters) and run:
+If no memory defects were found, check that you are running the latest available kernel from CentOS for your architecture.
+Else you'll have to install the source rpm for tar, and, build it with debugging, and then run it in the debugger to see why.
+Ok, so not as complex as I thought.  The server was compromised and the genius hacker screwed up the root kit install.  So, the affect was binaries segfaulting.  Another affect was unexpected network traffic from the server.  Thanks all who responded!

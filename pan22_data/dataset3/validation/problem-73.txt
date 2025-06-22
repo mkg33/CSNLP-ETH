@@ -1,0 +1,14 @@
+It runs many background tasks and from my brief experience with Win 7 it does more of that than say XP.
+Maybe there's something similar to VMware tools you should install in your VM?
+We've seen this issue on versions 0.12.3 and down, but it doesn't seem to be too much of a problem on 0.12.4.
+It dropped my Win2K3 R2 guest cpu ussage (when guest was idle) on my x86_64 kvm host from ~30%-40% to 6%
+One thing that will help ease the load is to start shutting down necessary services, such as the indexing service.
+The fact that Windows is freshly installed does not mean that is does not run background processes or services.
+Also, check to see if the screensavers are running.
+I've never seen an idle VM to take CPU resources from the host.
+First thing, stop comparing Windows and Linux or expecting them to behave the same.
+I don't know anything at all about KVM, but on VMware this can happen if you don't install the VMware tools in the virtual machine, so that it doesn't have proper device drivers for the virtualized hardware and is unable to put its virtual CPU on real idle when it isn't actually doing anything, using a simple idle loop instead (which actually corresponds to the CPU being fully busy looping on itself).
+Monitor the windows machine with SNMP or task manager and try to find out if it is indeed idle.
+As Massimo said you should also install pravirtualization drivers for your guest OS.
+http://forum.proxmox.com/threads/5770-Windows-guest-high-context-switch-rate-when-idle
+If you're using the VNC connection then it may be running there, and the CPU utilization won't be inside the VM - it will be used up by the KVM process.

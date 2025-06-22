@@ -1,0 +1,17 @@
+I built a freebsd guest OS for a custom Java application.
+Why not fix the memory leak instead of changing platforms?
+There isn't a quick and easy way to set processor affinity for VMs in Linux that I'm aware of, having used VMWare and VirtualBox both, but either should work fine.
+We started with OpenVZ but we found a nasty bug that causes memory leaks in our app, so now we're looking on what to use next.
+http://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1010184
+No Gui, no frills, just SSH and an API to coordinate all the machines.
+Yes you will have your environment jump from processor to processor over time, but then again all of the VM solutions will attempt that out of the box, because they are tied to the system scheduler, and the scheduler is what is causing this to happen.
+The next part of this answer is a bit off-topic as you asked for a full VM solution, but I'm posting anyways because it may make more sense in your situation.
+Sounds like you really don't need much for gfx, sound, etc.
+Using a VM sounds awfully heavy-weight, when you could use a container instead to get the same benefits (isolation) without the drawbacks (VM overhead).
+This application is inherently single-threaded, and it is only limited by the CPU speed.
+With the latest vmware server you can combine multiple cores into one virtual cpu so that may help if you've got a single threaded application:
+If it's single threaded, the scheduler isn't going to impact things a whole lot unless the host is way over-committed.
+If you're really keen on speed, you may want to go with KVM completely, if only for the native integration vs. a few layers added for VMWare/VirtualBox.
+Performance should be very similar across most platforms.
+Which  is the best Virtualization framework for JAVA CPU-bound applications?
+You can try the free esxi version and test your application on it.

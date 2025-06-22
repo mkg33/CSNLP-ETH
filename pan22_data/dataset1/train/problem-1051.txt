@@ -1,0 +1,7 @@
+My server has two physical NICs, interfaces are eth0 192.168.1/24 (lan) and eth1 192.168.3/24 (dmz). Both NICs are connected to a router via wire. Router has two vlans for lan and dmz with separated ports also, with a firewall between the zones (OpenWRT).
+Problem object is the server and the way Linux prioritizes loopback interface. I want to have dmz -> lan initiating traffic blocked, for which the router firewall takes care of on the network, but as we know traffic going over server loopback interface between local NICs doesn't even reach the router. lan -> dmz direction all must be allowed.
+As far as I can tell, this send-to-self kernel patch is one option that can force loopback traffic onto the wire. Anyone with confirmation, experiences, downsides?
+How could this be achieved with iptables? Iptables needs to be generic rule that blankets all services and computers living within lan subnet from the dmz. Googling "iptables block loopback" with different quote-combos seems to be a dead end, since everybody talks about making sure all loopback is fully enabled.
+What about network namespaces with the new-style "ip netns"?
+The whole point in the loopback interface is that it should never get to the router and it should just loop back to the host without getting to the NIC. 
+I suspect you need to change a setting somewhere to stop your particular application from using the loopback interface (127.0.0.1) if that is supported.

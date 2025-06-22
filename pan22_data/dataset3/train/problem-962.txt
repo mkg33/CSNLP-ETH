@@ -1,0 +1,10 @@
+The biggest caveat to remember is that processes that are waiting for disk or network i/o but are otherwise runnable still show up in the load average.
+Greater means there are processes that could be running, but are stuck in line waiting.
+For super time sensitive stuff like a voip server or memcache you want your load avg to be well under the number of cores.
+It doesn't actually in any way measure the "economy", people just use it as a very loosely correlated metric cuz its easy to talk about.
+Focus on monitoring metrics you actually care about, like delivery queue depth and messages per second.
+So if you've got an apache server spoonfeeding jpg's to 56k users you can run a much higher load average than if you have it firing back php/whatever-script responses to a proxy/loadbalancer over a gigabit LAN.
+A load average less than the number of cpu's you have means there are cpu's sitting around with nothing to do.
+For asynchronous stuff that can live with the occasional backup (like email) you could easily run 4x the number of cores.
+In your case a smtp connection to some slow mailserver thats taking forever to transfer an attachment will show up a 1 process on the run-queue, but could get interrupted a twenty times to send out a quick one-liner email to gmail without issue.
+Push comes to shove, load average is like the DOW.

@@ -1,0 +1,30 @@
+The only other reason I can think of is if I had some drive trays/caddies for a server that were intended for SAS drives only and I wished to fit SATA drives to these.
+In this case the interposer should compensate for the different screw positions.
+Most SAS controllers support both SAS and SATA attachment and allow a mix as well.
+), and they add a new layer of complexity into your environment (They are hardware + software, either of which could fail, have a defect, etc.)
+These cards do what they say on the tin: They translate SAS (SCSI) commands to SATA commands, and even implement a few themselves (like power- and spinup-control).
+In the later example, host has no control and is nature of system.
+Alternatively there is a class of drives which are coming along called the FAT SAS drives (fat implies the capacity and not the physical form factor) which are a viable alternative albeit the drive reliability is definitely less than that of the $$ sas drives.
+But if the requirement is dual port access to SATA drives you are locked into getting an interposer.
+Although there is the T10 written document for SCSI to ATA translation (SAT) but the finer details are left to the implementer.
+I have heard that there are companies that build the enclosures exactly this way by design.
+My two cents: If you are concerned about the edge case failures that may occur with SATA hardware (specifically, lousy SATA controllers), spend the money on real SAS disks.
+Sure enough but the reverse case, in case the drive encounters an error which leads to an over/under run the interposer has nothing else but to cause a device reset to clear that condition essentially leading to the same effect as abort.
+You could say we should avoid host issuing abort and this problem would not occur.
+I am deploying a subset of enclosures with SATA-SSD with SAS interprosers, specifically for the purpose of having two direct-attached hosts.
+As these should convert the SATA interface to SAS and vice versa, these mitigate this potential issue.
+As they use different signalling levels, it's not recommended to use both on the same backplane.
+You said no theoretical advice, and I think that's a good policy.
+But maybe it's fair to say, they should be used where-ever practical.
+They do nothing else (the drives are still SATA, their performance characteristics are unchanged, their reliability is unchanged, etc.
+A case in point is as follows - SATA does not have a notion of abort command which is used in SAS domain for recovering a command.
+So of course there is some trade-off, but I'm not sure the current answers provide any positive use cases.
+Lets say the biggest benefit of the interposer is the multi-path, which is removing a fairly large single point of failure from the system.
+The problem, I think, is even sourcing the interposers, and practically, fitting them in the enclosure.
+-- From my point of view you are increasing your net chance of a failure versus just buying an appropriate SAS drive.
+The comparison can't be against buying a SAS drive, because that is spending 2x the price vs $40 on an interposer.
+If you can trade an increased chance of losing a single drive (interposer) for adding a fully redundant active-active secondary host, that's got to be worth $40 / drive, right?
+In some situations you maybe better off no to use the interposer and use native SATA command set.
+There is one main reason I would use them - if I was maxing SATA and SAS drives on the same backplane.
+So when the SAS interposer has a command which needs to be aborted by the host it will translate the abort into a SATA equivalent of device soft reset an inadvertent effect of force evicting all active commands with the SATA drive and hence cause latency and other subtle failures (I can fill the details if necessary).
+Using interposer does give you a so called native SAS experience to the drive but the trade off of that being the error handling and recovery mechanism which is also delegated to these interposer devices.

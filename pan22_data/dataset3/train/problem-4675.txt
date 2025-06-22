@@ -1,0 +1,23 @@
+For your example, you can use as follows(I have used Java-8 streams as well for more readability)
+I would prefer to see the line's end-of-line sequence unaltered in the transform.
+I prefer the read-the-whole-file concept to the stream concept.
+The algorithm you have chose in is fine, and both other answer recommend using streams, but I disagree (hence my answer).
+I can't think of a way with better time complexity, you have to know all values before you can sort.
+This method read all lines from the file at given path and returns the List containing the lines from the file.
+This method reads all the bytes from the file at given path and returns the byte array containing the bytes read from the file.
+Note how the IOException is still thrown out the main method, but also note that I am using the try-with-resource options for a try-block to ensure the files/streams are closed.
+To do this requires a more careful consideration of what methods to use.... None of the Files methods, nor the default BufferedReader.readLine() nor Scanner methods do.
+Further, you just print stack traces for IOException, but the program exists with code 0 - a success condition.
+Let's take a look at two main methods of java.nio.Files class:
+So, your user-inputs are not validated, and your code can throw more than just IOExceptions, but also NoSuchElementException and so on if the file name arguments are not given on the commandline.
+It makes it clear that there are memory-requirements.
+nio is the latest library designed and developed by Oracle, which uses non-blocking I/O for reading and writing.
+Your code strips new-line/carriage-return characters and replaces them with just newline characters.
+Though with some Java 8 stream capability added to the BufferedReader class, you could implement it quite cleanly as follows:
+Note that Files.Lines(...) and Files.readAllLines(...) methods will both trim the whitespace at the end-of-line.
+If you're just going to print the stack trace it makes more sense to declare that the exception is thrown from the main method (and that will automagically print the trace and return with a non-zero code).
+You8 need to validate these and throw appropriate exceptions.
+Purely performance wise I do not know the implications.
+Other answers have pointed to the Files.lines(...) method, but I think you should consider the Files.readAllLines instead.
+The above code does not strip any line-terminators, and writes the output with the same termination as the input.
+I would also consider a mechanism for handling raw lines without messing with the line termination padding and characters.

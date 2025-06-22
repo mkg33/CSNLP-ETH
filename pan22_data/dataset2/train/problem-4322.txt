@@ -1,0 +1,11 @@
+We have a completely new website on a new server with a new domain name. Currently we use the following line in httpd.conf of the old server to redirect users who visit the old site to the new one:
+That will mean when you do make the change it will only take a maximum of 5 minutes to propogate to DNS servers which follow the rules.
+Yes, that would work. However, anyone that followed a deep link to the old site (http://oldsite/pages/whatever) would likely get a 404 Not Found error.
+The redirection will work once you change the DNS, yes, but the new server has to be aware of the old domain name as well; if using apache, you'll need to add a ServerAlias olddomain to your VirtualHost section so that your new server knows what to do with requests for the old domain name.  Similar directives exist for other web servers.
+Is it the matter of simply updating the DNS record for old domain name to point to the new IP? Will the new web server respond correctly? Should something be configured on the new server for this solution to work?
+So if the TTL is 86400 when you change the old servernames IP it can take up to 86400 seconds for the various DNS servers around the net to clear their caches.
+Then at least 24 hours before you plan to make the move you need to change that ttl from 86400 to a much lower value, e.g. 300 seconds (5 mins).
+Basically the old servername's old IP can be cached for what ever the TTL is on DNS servers around the network. 
+Likely at some point the old server will not be needed at all, and will be shut down. So from my understanding, old domain name would need to be redirected to new site using DNS.
+Alternatively, you can create a dedicated VirtualHost for the old domain name on the new server to redirect to the new domain name; it's always better to have a single domain name for SEO purposes.
+What I would do is create a virtual host on your new web server with the old domain name and redirect it like you are now.

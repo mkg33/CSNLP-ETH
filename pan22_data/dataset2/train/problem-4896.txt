@@ -1,0 +1,14 @@
+You use the Excel model with Range, .Find, .Column. With your current example, this would only loop 3 times, so is not significant in terms of performance. However, this presents a good training opportunity. 
+Don't collapse lines of code using ":", it is not necessary, breaks indenting and makes it harder to find some lines. 
+Could be a real game changer if you tie lots of data or logic to these items. I suggest a Class and not a Type because you cannot iterate over a Type collection in VBA and there are some other wrinkles.
+Instead of switching in and out of Excel (headers * rowcount + rowcount) times, you would only do it (headers + insert values) times - which in this case is about 4 times. 
+In this review, I am only looking at options for addressing the loops. With the number of rows you have described, finding efficiencies in the loops should have a big payoff. 
+Sometimes, there is not much that can be done. I have had a quick look, but I don't think using Arrays here is going to help much because of the diverse amount of data and Excel object items (not just .Value) that are used. Avoid using .Select.
+Another thing to consider is the use of a custom class that acts as a data structure. In that way, you could:
+You work with a single range(rDataSheet.Range(Cells(1, 1), Cells(1, colCount))), but you set that range each time in the loop. If you were using Excel objects, you coud set the With statement outside of the loop and save some performance time there.
+The array returned by a Range of values is always two-dimensional. Because we are taking it from a single column, the array is only one wide, hence why I have used dataValues(i,1)
+DISCLAIMER: I have not tested this. Possible may require some tweaking if Excel does funky things with values from a multi-area range.
+This is where you are going to get the real performance hit. I am also finding it difficult to unpack the loop and what you are trying to achieve. If I am interpreting this right, you are creating a temporary string out of the values across the row (selected columns only), and putting this string into another column on the same row. Except in a different sheet.
+Note: Always use qualified ranges, as you can't really tell which is the active sheet once the code is running.
+The first r loop seems a bit complicated, but it is short (3 iterations in your example) and it now sets up the quicker array.
+Iterating through the entire loop to find the one value (noting that I exit when the first one is found) can be cheaper than calling the equivalent Excel function. You can see now that I am not touching Excel at all during that loop. Because of the use of Variants, I have cast them to strings, and taken the UpperCase to conduct a case-insensitive search.

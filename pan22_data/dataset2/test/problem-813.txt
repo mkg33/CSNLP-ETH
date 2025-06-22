@@ -1,0 +1,6 @@
+I've got a C program that reads from stdin and does some operations. I am asked to enter information periodically (every 20 sec), and leave the user interaction the same while doing some tests.
+I tried (./periodic.sh; cat) > ./myprogram , which doesn't work because it is waiting the script to end (and the same the other way round).
+To accomplish this you can use a "socket" in the middle. You would setup a socket file (e.g. /tmp/program.socket and then adapt your program to read from that instead of stdin.
+Your script is not working, not because "./myprogram" is waiting for your script to end, but because "./myprogram" is waiting for the indefinite "cat" to end you started in your subshell "( ... )".
+Is this possible without modifing the C program? I have already done a shell script that echoes the information periodically (to its stdout), so the idea is to connect this shell and the normal stdin to only one stdin (an inverse tee).
+This code will forever wait for your input to "./periodic.sh", once you provide that, it will be passed to the pipe "mypipe" (in the background), then "./myprogram" will process it's output.

@@ -1,0 +1,18 @@
+I can see the file names if I use ls -1f, but it just repeats the same 48 files ad infinitum, all of which have non-ascii characters somewhere in the file name:
+I didn't bother with error checking on mallocs, etc because I'm lazy and this is a one-off:
+-inum <inode> -exec rm -fv {} \; and it still has the problem with unlink returning ENOENT)
+Don't use "find ... -exec rm -fv {} \;" use "find ... -delete" instead
+When I try to access the files (say to copy them or remove them) I get messages like the following:
+Thus it is possible that while you are doing the find and such, the file got deleted before it could be processed by find.
+For those interested, here's the diff between that man page's code and mine.
+If anyone's had success using other methods for removing files (by inode number, I can get those with the getdents code) I'd love to hear them.
+I am presumming you are doing this on an ACTIVE filesystem.
+I've got a folder that can't be listed (ls just hangs, eating memory until it is killed).
+BTW, the -0 and -print0 are options in Linux so that filenames with "special" characters are passed properly to xargs.
+I tried altering the code found on this man page and modified the code to call unlink for each file.
+ls tries to do a sort and with a directory that size it would take pretty long just to get the list and then get it sorted.
+This works fine, but the folder still contains an entry by the same name after the operation completes and the program runs for an arbitrarily long time (strace output ended up at 20GB after 5 minutes and I stopped the process).
+I'm stumped on this one, I'd really prefer not to have to take this production machine (hundreds of customers) offline to fsck the filesystem, but I'm leaning toward that being the only option at this point.
+What I might do to get a list of files is NOT to use ls.
+I also straced a "touch", grabbed the syscalls it makes and replicated them, then tried to unlink the resulting file by name.
+The above of course removes files that have been modified GREATER THAN 60 days before now.

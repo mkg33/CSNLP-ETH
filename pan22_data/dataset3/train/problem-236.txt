@@ -1,0 +1,9 @@
+But don't ask me why, it is just one of those "unexplainable" things in Oracle.
+First, a self x NATURAL JOIN x should return the same number of rows and columns as the original table.
+The 2nd query, that returns 4 rows, seems to be doing a CROSS JOIN instead (if you try with a table of 3 rows, it returns 9).
+Oracle database does not understand ANSI join syntax internally (except FULL OUTER JOIN), it rewrites such queries to its own, old join syntax.
+See the tests at dbfiddle.uk, where cross joins return this error message:
+Second, the query should have given a "ORA-00918: column ambiguously defined" error or something similar because it is not allowed to have 2 tables with same alias in the same FROM clause.
+So, the last query that returns 2 rows is correct.
+I have seen a case, where the transformation resulted in a similarly ambigiuous final query, and there was an actual error message in the trace file, still, the database returned wrong results and no error to the client.
+And run the queries, in the generated trace file, you can view the final form of the query that is executed.

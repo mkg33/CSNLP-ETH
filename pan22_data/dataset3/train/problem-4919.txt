@@ -1,0 +1,12 @@
+@Daniel's answer is good, but it need a shell script.
+-0 for handling special file names properly, but you need to pass parameters with the -print0 option with find
+I did not get the solution I was expected, so I found out my own.
+You can run ffmpeg directly from the find command like this:
+An alternative to Zoredache's answer using name binding (and using different separators to avoid the issue of spaces in file names):
+Note the quotes around the parameters to ffmpeg, in case there are spaces in the filename, and the escaped semi-colon marks the end of the executed command.
+The -i tells to xargs to replace {} with the current argument.
+Command output inside `` printed out to standard output (bash feature) so basename {} will be evaluated as the bare file name and printed out.
+Of course you can also use the separators with the find -a array argument that the other answer had used, but sometimes named arguments are more comprehensible.
+IFS="\t" find -iname "*.mov" -printf "%p\t%f\n" | while read path file; do
+A one liner is quicker, and I like it better :) also simpler solution than writing a script.
+I could use one argument and process it with basename and using sh -c

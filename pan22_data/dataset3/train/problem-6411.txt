@@ -1,0 +1,14 @@
+Rather than use individual checkboxes, Firefox now operates over a range of SSL/TLS protocols.
+WARNING: According the following article, selecting TLS 1.1 may prevent connections to older servers from working: http://kb.mozillazine.org/Security.tls.version.
+Lowest Acceptable Protocol: security.tls.version.min (default SSL3.0 = 0)
+I'm not an expert on this, but my research tells me that the problem is that you are using the default Apache certificate but you are browsing to a URL like mysite.dev.
+(4) To disable TLS of one flavor or another, double-click security.tls.version.max and enter the desired value:
+These settings are accessed using the about:config preferences editor.
+In either case, I found an excellent post over at ServerFault that tells how to create a new self-signed certificate with a subject alternative name and CN that matches the domain(s) you are trying to use, how to install it in Apache, and alternately how to disable HSTS headers in Apache so the browser's give you the option to "proceed" as before.
+Highest Allowed Protocol: security.tls.version.max (default TLS1.0 = 1)
+(1) In a new tab, type or paste about:config in the address bar and press Enter.
+(3) To disable SSL3 and requires TLS of one flavor or another, double-click security.tls.version.min and enter the desired value:
+Because the default certificate in Apache does not include mysite.dev in it's Common Name or in it's Subject Alternative Name and/or the certificate is not signed by a trusted authority, the browser rejects it.
+Your Apache web server may be including HSTS headers which tell the browser to enforce HTTPS security.
+(2) In the Search box above the list, type or paste tls and pause while the list is filtered
+Or, the browsers may be rejecting the SSL certificate because it is a default cert / or it does not include the domain names you are trying to access.

@@ -1,0 +1,11 @@
+And if it's not, then that particular directory entry won't be a candidate for pool import anyway, so it doesn't make any difference.
+And in that case, you shouldn't be importing from /dev/disk/by-id (which, as you have noted, have multiple ways of referring to the same partition), but instead setting up /etc/zfs/vdev_id.conf and then importing from /dev/disk/by-vdev.
+Generally, don't bother with implementation details unless you actually have some real use for the implementation details, because the next version might completely change the behavior you are looking at.
+The only reason why you'd care is if you want some specific name to show up in the zpool status output.
+What it does care about is whether the on-disk data is accessible through it or not.
+This could of course have been avoided had someone put the type into a separate path component, such that we'd have had something like /dev/disk/by-id/scsi/SATA_WDC_WD6001FSYZ-_WD-WXB1HB4SFS7W, /dev/disk/by-id/ata/WDC_WD6001FSYZ-01SS7B0_WD-WXB1HB4SFS7W and /dev/disk/by-id/wwn/0x50014ee004032d28 instead.
+You could do that on your own system, but it would confuse everyone else and their scripts...
+Well, you've looked at the code, which does use readdir, which doesn't guarantee the order that entries are read out in.
+ZFS doesn't care if the device node is referred to in one way or another.
+Instead, use the documented interfaces for getting the effect you are after.
+(You probably need to re-run udevadm trigger first.)

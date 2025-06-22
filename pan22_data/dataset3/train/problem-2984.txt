@@ -1,0 +1,15 @@
+Also check what is the real number of open connections on the server (lsof -i | grep nginx  or netstat -atnp | grep nginx ).
+I ran into this problem last week and found this article: http://gregsramblings.com/2011/02/07/amazon-ec2-micro-instance-cpu-steal/
+The situation was resolved by going to a small instance type.
+It could be that nginx is running out of file descriptors, or it could be the kernel is forbidding nginx from taking more than a certain number of connections.
+Last thing I would try is stracing the nginx process while the problem occurs.
+Is the server loaded in any way during the fault ?
+What does vmstat 1 say during the problem occurence ?
+But, honestly, I suspect that it's more likely related to your fastcgi comparison.
+It could be the problem of connections to app servers ( maybe some kind of connection overflow to backend)
+That means you're probably running into queueing issues on the fastcgi side, and nginx is just dropping connections on the floor instead of waiting for fastcgi to return.
+If something's happening at the kernel level, nginx might not ever know about it.
+So, for a really easy test, use ab (apachebench) to hit a static file on the nginx proxy, and hit it with a couple hundred simultaneous connections for a few thousand times.
+150 still seems to little to hit even default limit of 1024, but check output of ulimit -n. You might need to increase limit in init.d script (using ulimit command) or in /etc/security/limits.conf
+It could be ulimit problem (you would see number of open files with lsof | grep nginx).
+My guess is that it will do it with no trouble at all.

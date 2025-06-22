@@ -1,0 +1,14 @@
+(I'm writing this as I see your points; please read to the end before taking action.  I 'develop' the best answer piece by piece -- hope you learn some things.)
+must scan every row in every partition.  That means it must do a lot of I/O, which will take a lot of time, regardless of the tuning.
+Normally it is best to have the "partition key" (task_year) at the end of indexes, not the start.  In this case, you may as well simply remove it.  Any use of task_year will be for "pruning", then the KEY can take over.  DROP that INDEX and ADD the following in a single ALTER:
+You ought to switch to InnoDB, which has online INDEX operations.
+The tuner suggestions seem to be worse than usual: 
+If aggr_id can be made UNIQUE, then perhaps it should be the PRIMARY KEY and eliminate id.  Note that you cannot have a UNIQUEness constraint because of partitioning.
+Note that there are two things intertwined here:  Switching to InnoDB and making aggr_id the PK.  If you do both, then do
+Switching to InnoDB is almost always "good".  See my blog for the gotchas:
+While you are at it, read about PARTITION issues here:
+It may conclude that partitioning is doing you no good.
+If you go to all-InnoDB, then innodb_buffer_pool_size = 5G and key_buffer_size = 20M.
+I'm currently trying to optimize a database I've inherited for speed. The server is an Amazon RDS db.m3.large instance: 
+I am making this post to get feedback on the current approach, and any additional ideas. I'm not a DBA by any means, just a web developer. Any and all feedback is welcomed, thanks in advance. I'll be sure to respond and approve answers! I will also edit this post with any insights gained and resources found.
+There are a few problem tables all with the same format:

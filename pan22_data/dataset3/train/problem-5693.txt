@@ -1,0 +1,29 @@
+Everything I created/cloned with git had my permissions and the git tool was listed in /usr/bin which fits this thesis.
+On *BSD, or Linux with setgid on the directory, the group field of newly created files will be set to the same as that of the parent directory.
+Now all files and directories created by any user that has access (i.e.
+For anything more, you need to look into ACLs, with the 'default' ACL on directories, which do let you have inherited permissions.
+Otherwise, customers could mess with each others' files by having a CGI do so.
+For instance, if you're doing web hosting with multiple customers and you don't want them seeing each others files, then you might use a common group "webcusts" for all those users and a directory mode of 0705.
+Adding to @Xeoncross's answer, I think it would be good to configure permissions on files and directories separately.
+(However, the git/svn daemons are a different matter!)
+However, this does mean that the moment you allow CGI or PHP you have to make sure that the processes run as the specific user (good practice anyway, for multiple-users-on-one-host, for accountability).
+Change the permissions so that ONLY the owner (root) and all users in the group "www-data" can rwx (read/write/execute) files and directories (no one else should even be able to access it).
+Stickiness on a directory means that only the owner of a file, or the directory owner, can rename or delete that file in the directory, despite the permissions saying otherwise.
+By default /var/www is owned by root:root and no one can add or changes files there.
+User permissions seems to be solvable by adding all users that need access to the www directory to the www-data group that apache (and nginx) run as.
+After doing more research it seems that git/svn TOOLS are NOT a problem since they run as whatever user is using them.
+in the "www-data" group) will be readable/writable by apache and hence php.
+Keep in mind that you should have the execute bit enabled on directories so that you can list the contents.
+It will also allow developers to create and modify code files (read HTML, PHP files and the like).
+What about files that PHP/Ruby create - can the www-data users access them?
+However, if the run-time user for a website is the same as the owner of the website, then you do have issues with not being able to protect content from abusers in the case of a security hole in the script.
+Then files served by the webserver process (not in "webcusts") will see the Other perms and be allowed; customers can't see each others files and the users can mess with their own files.
+I'm not sure whether it's "right", but here's what I do on my server:
+This will allow developers to create and modify directories within /var/www.
+Which is where dedicated hosts win, so that you can have a run-time user distinct from the static content owner and not have to worry so much about interaction with other users.
+So it seems that one answer to this question goes like this:
+Which seems important because, developers might need to create additional directories or remove a directory that's no longer needed.
+In classical Unix, there is no permissions inheritance based on the file-system, only on the current process' umask.
+But, will still only allow read-only access for everyone else.
+First we need to change the www directory group to be owned by "www-data" instead of "root" group
+Then we need to add the current user (and anyone else) to the www-data group

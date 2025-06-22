@@ -1,0 +1,15 @@
+After experiencing a similar problem myself, I have to ask further: why are you running Notepad++ in admin mode in the first place? In my case it was because the HTML Tidy plugin which I like to use has to update a cfg file in Notepad++'s Program Files folder in order to work; and Windows 8 has Program Files locked down like crazy.
+Part of the security overhaul that came with Vista was User Interface Privilege Isolation, which prevents lower level processes from sending messages to higher level ones (because the messages may be malicious, as in the case of shatter attacks).
+Now just run Notepad++ as a regular user and open the files you want to edit. As you have read-access this will work without problems.
+Louis gave you the correct technical answer, here is workaround. You can start the Explorer with admin rights with a hack and now you should be able to drag & drop files.
+If I have Notepad++ running as administrator, I can't drag files from explorer on to it (they are rejected with the 'stop' cursor) and if I try to use the explorer extension right click 'Edit with Notepad++' it throws an error.
+Then I could happily run Notepad++ as a regular user, and then I could drag & drop or use the ever-handy context menu again, from non-admin-mode explorer into non-admin-mode Notepad++.
+Now every time you try to save a file you don't have write permissions the "Save as admin" plugin will elevate the privileges for saving. Therefore if you now execute the save command an UAC dialog will be displayed and if you select "yes" on that dialog the file will be saved using admin permissions.
+For more detailed information about access tokens, integrity levels and UIPI, see Windows Integrity Mechanism Design.
+http://forums.auran.com/trainz/entry.php?115-Removing-the-security-restrictions-from-a-folder-in-the-Program-Files-folder
+In most cases (where you have read- but not write-access as regular user) there is a better approach than running Notepad++ as admin:
+Opening the files using the Notepad++ 'Open' dialog, or even double clicking them in Explorer works as it should. (Note double clicking is not a solution as very few of the files I want to open are default to Notepad++)
+Processes run under certain security access tokens and integrity levels. Explorer runs under your user account's restricted token with a medium integrity level, and when you elevate a process by running as administrator, it will use a different, unrestricted security token with a high integrity level.
+Louis explained why you can't drag from non-admin-mode explorer into admin-mode Notepad++, and magicandre told you how get around it by running explorer in admin mode.
+Using the hack where UAC 'admin approval mode' is disabled fixes the issue, but kills the ability to use Metro apps.
+So in this case, Windows won't allow Explorer to send the drag and drop message to Notepad++ (it actually returns "success" but drops the message).

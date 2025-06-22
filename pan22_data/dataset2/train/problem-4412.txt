@@ -1,0 +1,7 @@
+I'm using ReplicaSet with Mongo and when i build the connection string i have all servers hosts and ports - comma delimited. 
+The reason why you should always give at least two members of a replica set in a connection string is that this enables the driver to connect to a replica set, even when one node is down. This can be any node (except a hidden one, I suppose, but I have never tried that), since each node is fully aware of the replica set.
+In a five node replica set, however, you may include an arbiter in the connection string, since you may want to add 3 nodes altogether to make sure that either you can connect to one of them or can safely assume that the replica set is unavailable.
+I would suggest to always add the replicaSet option to the connection string, and be it just for being clear on the intended purpose.
+To be on the safe side, you will almost always include the majority of voting members in your connection string. Which type of member the individual member is does not play a significant role for the purpose of replica set discovery.
+It does not hurt to include an arbiter in the connection string, though it makes a bit less sense in a minimal replica set consisting of two data bearing nodes and an arbiter.
+In a three node replica set with two data bearing members, it does not make much sense to include the arbiter into the connection string. If you give the two data bearing nodes, and both are unreachable, your replica set is not reachable any more.

@@ -1,0 +1,16 @@
+I dealt with a similar issue, all replies I could find on the web were of no help whatsoever.
+Is there any reason you aren't using the installer to do the work for you?
+First off I assume you have tried running http://yourservernamehere/check.php and everything seems to come back correct.
+Also, can you confirm that the .php handler mapping is correctly set?
+Well, I'm not sure what I did, but somehow I fixed it.
+I turned on detailed error handling in IIS and discovered I was receiving a 404.7 error: 'The request filtering module is configured to deny the file extension'.
+IF this is the case I would suggest checking in your php.ini file the setting under:
+I'd still like to know why I was getting the error if possible.
+; Defines the default timezone used by the date functions
+Most likely it is blank like mine was, this generates a silly error with newer version of php and for whatever reason you will be dead in the water until you have a timezone specified (mine is America/Chicago).
+I may be assuming a lot about your situation but it sounds very similar to mine and I spent several days frustratedly searching for an answer.
+Just wanted to add the stupid answer encase anyone else find this issue with the same problem.
+What had happened, was that windows was hiding file extensions, so the file was actually called index.php.txt... Not a funny 30 minutes.
+I went into the 'Request Filtering' menu within the IIS manager, added '.php' as an approved file type and this fixed the issue for me.
+I had this issue today but none of the fixes above worked for me.
+I removed the website and re-added it, then checked my FastCGI Mapping settings, everything looked just like before, but this time it works.

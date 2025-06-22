@@ -1,0 +1,8 @@
+I have a script set up to deal with this which sets up a hosts file with aliases on one of my servers here, then scp's it to the various instances. So it uses ec2-describe-instances to list all the machines, the name tag of the instance is also the name that the machine is known as. This is for a mixture of windows and unix ec2-instances.
+For such case of multinode installation on EC2, I've used this Exapark utility: http://www.exapark.com/product.html
+Incidentally, a useful fact is that the public DNS name of an instance resolves from within EC2 to its internal IP — even if an elastic IP is in use:
+I've got a private DNS Server running on Amazon EC2.  I don't need a public IP Address because its only used for private addressing web1.xxx.internal database1.xxx.internal
+Problem is I had to terminate the instance recently and start a new one.  This meant that the private IP address of the DNS server changed and I had to log in to each of my other 15 server one-by-one and change the DNS address to point to the new DNS server.
+Use puppet to keep the configuration in sync. Changing the configuration on your  puppet server it will be replicated on all other servers. 
+It's quite easy to install and quick to run. It takes Name tag of instances and their private IPs and puts togather in hosts file. So you can configure inter-instance connections with persistent names resolved to private IPs.
+If the server gets as little traffic as a DNS server would, it probably makes sense to use an elastic IP internally, if you have any to spare.

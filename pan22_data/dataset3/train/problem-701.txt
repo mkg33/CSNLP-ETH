@@ -1,0 +1,12 @@
+Would it be possible to backup all of the other files from this file system to a temporary storage location, reformat the partition, and then restore the files?
+Created 100,000 512-byte files in a directory (dd and /dev/urandom in a loop); forgot to time it, but it took roughly 15 minutes to create those files.
+The files are small enough that the unlink operation probably doesn't jump around too much zeroing out the space.
+If you readdir and then sort by ascending inode you would probably get better performance.
+So readdir into ram (sort by inode) -> unlink -> profit.
+Would it be possible to convert the filesystem to ext4 and see if things change?
+This is a Pentium 4 2.8GHz box (couple hundred GB IDE 7200 RPM I think; EXT3).
+Alright this has been covered in various ways in the rest of the thread but I thought I would throw in my two cents.
+You are getting back a list of files that are not necessarily in any way sequential on disk which is causing disk access all over the place when you unlink.
+Inode is a rough approximation here I think .. but basing on your use case it might be fairly accurate...
+The performance culprit in your case is probably readdir.
+Obviously not apples to apples here, but I setup a little test and did the following:

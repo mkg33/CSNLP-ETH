@@ -1,0 +1,10 @@
+You didn't say which json serializer you use but I cannot imagine you use anything else then JSON.NET. With it you can specify the date-time serializer so you don't have to implement any hacks.
+See Serializing Dates in JSON for more information.
+I've got a system and every object in my system has a base class with property: DateTime DateCreated
+In the constructor for the base class I set the DateCreated as below:
+This has been fine but now I'm exposing my data as json via a web service call. As the date are UTC I want the format to have the Z suffix as below:
+The DateCreated in each object has Kind set to Utc because I'm setting it using DateTime.UtcNow. However, as I load the data from the database the Kind remains as Unspecified (I assumed that the UTC part would be saved to the database but it appears not). When I return the dates via the web service function I get it without the Z suffix so the calling application doesn't know it is UTC:
+It seems weird to me that the UTC Kind of the DateTime object isn't saved to the database - I thought it would be. The datatype is datetime2(7).
+To get the date returned as required I've changed the property in the base class to this:
+This does exactly what I need but seems kind of hacky - Is this really the best way?
+After Googling someone suggests that using DateTimeOffset would be more appropriate. I'm not convinced? This would have me questioning the use of DateTime in any scenario - and always using DateTimeOffset!?!

@@ -1,0 +1,5 @@
+Ad 3) The easiest way to diagnose network issues to first look for OLEDB and ASYNC_NETWORK_IO waits in step 2 (if you wait a long time for network, one of those show up). If those waits are high, use xperf -on latency or a network monitoring program like netmon or wireshark to check your latencies. If the network looks slow, this could also be caused by the calling application server not responding fast enough to the connection being recycled.
+Ad 2) If you are waiting for a lock, this is best diagnosed by comparing two snapshots of sys.dm_os_wait_stats. See this article on how to do this:
+If you see long waits for LCK_[Something], query sys.dm_tran_locks to track down which objects are being locked. In your case, I would expect to see some form of SCH-[Something]> locks blocking you.
+There are typically three main reasons a simple procedure like sp_reset_connection will take a long time to run.
+Ad 1) If you are waiting for CPU resources, this should show up as signal waits. Please see my comment on your question on how to diagnose if this is the issue

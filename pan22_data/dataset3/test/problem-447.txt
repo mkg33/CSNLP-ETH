@@ -1,0 +1,17 @@
+This will atleast give you whatever errors you may be seeing.
+This is the default state in some distributions as it helps lock down the system from outside tampering right from start.
+You might also want to check your hosts.deny and hosts.allow files in /etc.
+In some distributions, these are set by default to block all connections from external sources but allow any connections from the local machine.
+This file typically has an "ALL: 127.0.0.1" line in it allowing any type of connection from the local machine which is why ssh may be working from the local machine but not from an external machine.
+If it didn't create the keys, that means that they were previously generated and you're O.K.
+can be a specific IP, FQDN or a wildcarded version (i.e.
+If the file has nothing but comments this isn't the problem.
+2 Open a terminal, su into the root user, and type /etc/init.d/sshd start
+3 Enable firewall Verify that the firewall isn't the problem by connecting from remote host
+This may be why you are able to connect locally but not from a remote system.
+If hosts.deny has the "ALL: *" or maybe "ALL: PARANOID" line present and uncommented then this will be rejecting all connections from outside sources not explicitly allowed in the hosts.allow file.
+You may notice in step 2 that the computer is generating your keys, which may have not been done sooner.
+Assuming the "ALL:  PARANOID" line is present in hosts.deny and you leave it alone, to enable ssh connections from a specific source you would need to add a "sshd: " line to your hosts.allow file.
+You most likely have selinux running; recent Fedora installations enable this by default, with a pretty restrictive set of policies.
+1 Disable firewall to host (only long enough to verify it isn't the firewall
+Any errors from this, if you post, we might all be able to help.

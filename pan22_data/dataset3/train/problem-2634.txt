@@ -1,0 +1,38 @@
+This is the same reason why Cat-5 and fiber links have distance limitations.
+but ive been looking on the internet and this is a Layer 2 router.
+If you absolutely need to do this, you will need to establish a layer-2 tunnel between the locations.
+The routers at each end will, because of their VLAN interfaces and static routing table entries, automatically tag traffic with the appropriate VLAN tags and drop them onto the Ethernet.
+Router would have helped in connecting from one network to another.
+(This is assuming that the link between sites is secure and encryption is not required.)
+If you have layer 2 link between you site, just use a switch.
+In your 2821's, you'd setup an IPSEC tunnel between the sites.
+In any case although it is bad design I think switch will be more useful then router.
+You can certainly use the same vlan numbers at both locations and just have a layer-3 link in the middle.
+http://blog.dest-unreach.be/2009/05/05/ethernet-over-ip-l2tp-on-cisco
+You'll need to configure the switches at both ends with trunk ports to connect the routers to, and you'll have to figure out how to integrate the Site A router into your existing routing topology re: the existing ASA-5505, but this should give you enough to go on to get started.
+If the propagation delay is to long, you will get a lot retransmissions (at best).
+The IP addresses will be different at each location, but the vlan numbers could be the same.
+http://www.cisco.com/en/US/docs/ios/12_0s/feature/guide/l2tpv325.html
+For you application any layer 2 or layer 3 manageable switch that can do trunking using VTP (VLAN Trunking Protocol) is more than enough.
+You do not need router to connect vlans at two sites as same VLANs are required at both sides.
+Extending a broadcast domain over a WAN is not a good idea.
+Should i request to have a different router which is layer 3 or should i request a layer 3 switch to plug into that router?
+I would highly suggest you do some additional investigation into the technical and business requirements.
+Are you using subinterfaces and vlans OR are you using seperate ethernet interface for each LAN segment.
+For every TCP packet that a machine sends, it is expecting an ACK back within a certain period of time -- if it does not get one it will have to retransmit (assuming the connection is able to be established at all).
+Once you've got that, you'll create VLAN interfaces on the routers on each end, assigning the routers IP addresses in each VLAN:
+As example, one of the vlans will be use for the ip phones at both sites.
+Im going to be given a Cisco 2821 router at either end.
+I don't know where you've gotten this "layer 2 router" business from (the statement is an oxymoron in itself), but a 2821 is a perfectly capable IP router.
+It is generally not a good idea to extend layer-2 (vlans) across long distances.
+But as you talk about router I guess your site are connected with layer 3 so you can use L2TP to do Layer 2 over Layer 3 (4 in fact).
+Let's call your existing location "site A" and the new location "site B".
+Ive never done VLAN before, in our own LAN i create subnets physically by using CISCO ASA 5505.
+Assuming you've set the IPSEC tunnel up properly w/ the proper addresses being excluded from NAT, traffic between the various subnets in the sites will be transparently encrypted and sent to the other end.
+You may also need an appliance at both ends to do local ACKs and re-timing of the packets.
+We now have added a new site and Ive been requested to create a VPN connection and 2 or 3 VLANs between 2 sites, this is the same VLANs in site 1 to have them in site 2.
+Just trunk VLANs from both side on the interface that is common to both sides and similar VLANs on both sides will get connected.
+Here's a decent example using a static key: http://www.cisco.com/en/US/tech/tk583/tk372/technologies_configuration_example09186a0080094634.shtml
+You don't want to extend a layer 2 broadcast domain across a VPN.
+This may be a good time to dig a little deeper and ask some more questions to try and determine what the goals are verse having someone who may not have the technical background say "I want vlans".
+http://www.cisco.com/en/US/prod/collateral/iosswrel/ps6537/ps6549/ps6587/prod_white_paper0900aecd8066d3f5.html

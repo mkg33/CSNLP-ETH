@@ -1,0 +1,11 @@
+When you set up your public key, you probably (perhaps inadvertently) set it up with a passphrase.
+Check that the private key id_rsa doesn't have extra line breaks at the end, in some cases extra line breaks will make ssh-keygen to ask for the passphrase, try this:
+If viewing the log file doesn't quickly lead you to a resolution, I suggest posting a new question (since this is a great generalized question) which does include the specific details from the log file, so that more specific directions can be provided.
+See /var/log/authlog (e.g., /var/log/authlog for OpenSSH, although I've seen some operating systems use Portable OpenSSH and use /var/log/auth.log) and check the end of that file.
+You probably need to start fresh -- I haven't used puttygen, but you can delete (or rename) the public key in your .ssh directory, use ssh-keygen to generate a new one (being sure not to provide a passphrase), and then share the public_key out to the authorized_keys file on the server you're trying to connect to.
+You may need to also remove your old passphrase-key from the authorized-keys file on the server you're connecting to.
+One thing to check, if your sshd_config file has StrictModes=yes , then the $HOME directory or $HOME/.ssh directory must not be world writable to group or other.
+The most common causes I've seen are incorrect permissions (as noted by TD1's answer), although other issues could be with the public key (stored on the server) not being in the right file, or that key being commented out, or a misspelled username.
+I made the mistake of accidentally overwriting my ~/.ssh/id_rsa file with my ~/.ssh/id_rsa.pub.
+Doing that will cause ssh to ask for a pass phrase.
+It may also be helpful (for troubleshooting) to give the account a passphrase temporarily, just to verify that the account can be successfully logged in when you do that.

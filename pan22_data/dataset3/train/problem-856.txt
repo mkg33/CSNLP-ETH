@@ -1,0 +1,5 @@
+Secondly, ISP B will most likely have a higher Local Preference set on your routes (since you are a customer) than anything they receive from other ISPs, so their customers will always use your link to them, regardless of any AS Path pre-pending you configure.
+If they (ISP B) are black-holing a specific /32 then this prefix will be more specific than any of your other prefixes received (from you or ISP A) and will draw traffic towards it from within ISP B.  Blackholing a /32 will generally not propagate beyond an AS, so upstreams of ISP B will still receive your aggregate prefixes.
+AS Prepending will not override any Local Preference configured within ISP B.
+If you simply null-route the traffic at ISP B, it will still attract the traffic from it's upstreams (and directly attached clients), but then just drop it at it's edge thanks to the null route.
+The best you will be able to do to guarantee no lost customers is withdraw the entire prefix containing the /32 from ISP B (the one without DDoS protection) so that all traffic is forced to you via ISP A (which will presumably scrub the traffic for you).

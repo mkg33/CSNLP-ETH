@@ -1,0 +1,8 @@
+Just run the producing command on the server and write to the local file.
+While I agree with the answer of piping output through STDOUT and through SSH, I'd like to offer a variation of perspective:
+You can use SSHfs (a FUSE filesystem) on the remote machine to mount a directory from your local machine and then write to it. If necessary this can be tunneled back through a connection from your local machine to the remote machine.
+As a result, the output will be slowly written to /directory/on/localmachine/bigstreamfile
+If you can't reach the local machine from the remote machine by direct SSH (NAT without port forward, CGNAT, firewalls, ...) then follow
+The only requirement for example B to work is, that you are running a SSH server on your local machine. You connect sshfs to localhost:54223, as that is a reverse tunnel from the remote machine, redirecting all connections back through your initial SSH connection and to the SSH server on your local machine.
+It's maybe not as straight forward, but it's far more flexible, in the sense, that you can execute arbitrary file operations from the remote machine, directly on your local filesystem. I don't recommend to run commands that need to read a lot of data through this, as that will then of course need to be sent from your local machine to the remote machine, which, on residential connections, tends to be slow. Writing large files to your local machine should be much faster, just as download bandwidth is larger for residential connections.
+For more details, please reread and then consult man sshfs.

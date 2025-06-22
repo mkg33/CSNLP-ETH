@@ -1,0 +1,9 @@
+It was easy to write small 1MB hasher using rhash tools (librhash library). There is simple perl script which creates checksums of each 1MB part of standard input stream. It needs Crypt::Rhash bindings from cpan:
+This task is easy for uncompressed disk image, with using dd tool in for loop in bash with computing offsets and selecting (skipping) every 1MB part of file. The same with the disk:
+For example, I have disk image, compressed disk image, and the copy of the original disk. Some parts of images may be modified. The disk is 50 GB, and there is around 50000 of 1 MB blocks. So for every file I want to get 50 000 md5sum or sha1sums to get overview of modifications. Single md5sum will not help me to locate modification offset.
+split from coreutils (the default on most Linux distributions) has a --filter option which you can use:
+I want to do checksumming of large files and stream in unix/linux, and I want get many checksums from every large part of file/stream, every 1 MB or every 10MB.
+This public domain script will output decimal offset, then +, then block size, then md5 and sha1 sums of input.
+But now I want to compare compressed image and uncompressed one without unpacking it to the disk. I have 7z unpacker which can unpack the image to stdout with high speed, up to 150-200 MB/s (options 7z e -so image.7z |). But what can I write after the | symbol to get md5sum of all file parts.
+I'm not sure how well it would function with files this large, although I have never heard of it having any file size limitation.
+rsync works like this, computing a checksum to see if there are differences in parts of the file before sending anything.

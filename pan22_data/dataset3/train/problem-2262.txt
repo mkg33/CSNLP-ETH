@@ -1,0 +1,78 @@
+Due to your locking in the execute methods, this requirement won't be met, each execution will have to wait for the previous to complete to free up the resource.
+Now the opportunity to deal with the repetitive Execute methods presents itself.
+So we've cut down the interface and cleaned up most of the inappropriate intimacy.
+It's not very likely to come up, so further refactoring may not be worthwhile, but one approach is for the states to hold references to the other states which they can transition to, and return the resultant state when they act.
+But there is one problem point: the Open/Closed principle.
+But I did not :) and I did many smaller refactorings until I reduced the ICircuitStateMachine (everything on the ICircuitBreaker except Execute) to
+I think it is now easier to understand what Execute does without reading each of BeforeExecute, AfterExecute, OnException as their names had previously no information content.
+But the To...State methods still smell a bit, requiring the state classes to be passed an ICircuitBreaker.
+If these methods are not removed altogether as described above, a different potential improvement would be to move them to a different interface, also implemented by any concrete circuit breakers.
+To deal with ICircuitBreaker not following ISP, you should just split the interface.
+After these changes the programmer does not need to remember calling base.XXX() at the beginning of state methods or call OnCircuitBreakerTripped at the end.
+OpenState clearly a sink node for example: no transitions.
+In CircuitBreakerStateBase, we see that AfterExecute and OnException can cause state transition, whereas BeforeExecute cannot.
+Going with SOLID, it conforms to the Single Responsibility Principle.
+Multiple circuit breakers may be required if the pattern is used in multiple places where the expected reasons for failure are unrelated.
+One example of when this would cause problems is if a new state needed to be added.
+I would advise against just deleting T Execute<T>(Func<T> action); as it is the more general case, and a method invocation not returning a value is a peculiarity of the AOP library you happened to be using.
+The principle is called interface segregation for a reason.
+There's a few ways to deal with this, but injecting via a setter is probably fine since there's only one place that the states will be built- in the circuit breaker's constructor.
+It is now a stateless static utility function, thus can be moved elsewhere, made public, or easily tested extensively on its own.
+So, quickly running through programming principles, is there any where this falls down compared to the larger implementation?
+So a focus for the rest of the review will be ensuring the answer to that second question is no.
+So for example, since ClosedState can transition to OpenState, it would need to be passed a reference to the instance of the open state.
+I kept ICircuitBreaker for the Execute methods and ICircuitStateMachine for everything else.
+I wouldn't suggest a plain rewrite, as rewriting means writing new code, and new code comes with new bugs.
+So let's go through the interface members one by one and see what can be done with them:
+This reads pretty much like a State Transition Table of a Finite State Machine with two inputs: Success and Failure.
+That much decoupling is appropriate for Interceptor.Proceed() or some totally abstract ExecutionWrapper.Execute() but not for a class named CircuitBreaker with clear specs for what it does before and after execution.
+As a sketch, the main execution method may look something like:
+The fly in the ointment is that the states cannot all be passed to each other on construction because of the circular chain of references.
+The simplest way to make this possible is to avoid static members on any of the relevant classes.
+What I would do is implement the specific case as an extension:
+I will suggest refactorings addressing those points.
+This would give better adherence to the interface segregation principle.
+In this case method name OnCircuitBreakerTripped already says what we should do, convert it to an event:
+For example, perhaps two graduated half-open states, the first one letting through very few executions and the second one letting through more.
+The timer/half-open logic would go inside SetStateOpen, and hopefully the rest is clear just from the code.
+A nice simple design along the lines of the previous outline will be fine, and anything much more will be needless complexity.
+If that execution is successful, it moves to closed, otherwise it moves to open.
+Depending on the situation, this could be a serious performance issue.
+We can now move logging concern out of the LoggingCircuitBreaker.
+Preferably we'd avoid the use of statics to store information like this, which means storing the state objects rather than constructing a new one every time there's a change, but that is also not too difficult.
+Inheritance goes against composability and shouldn't make classes abstract unless moved/removed functionality is sine qua non.
+Then we'd have to update the circuit breaker concrete classes- or potentially a base class if we had one- to implement them, as well as the private backing field.
+If the answer is yes, then the second question becomes relevant.
+In the article, the transition from half-open to closed has a success threshold just like the transition from closed to open has a failure threshold.
+This is something that really should be in the design, in addition to being an illustrative driving example for refactoring.
+Adding a success threshold and subsequent refactoring
+Unfortunately neither of these are things I have a lot of experience with, but there are three potential requirements related to to them:
+And the only class that will actually want to use this isn't the circuit breaker itself but the HalfOpenState.
+This also breaks the unnecessary dependency from CircuitBreaker to ILogger.
+A good option is the usual one for feature envy: move the members that only particular states care about out of the ICircuitBreaker interface to the state class.
+If the answer to question 1 is no, then you're done.
+This allows the reference to ICircuitBreaker to be removed altogether, along with the To...State methods.
+I'm sure there's more to be said about concurrency and asynchronicity- in particular how to achieve effective locking- but I'll leave them up to another answerer.
+AfterExecute and OnException are some kind of event handler, whereas BeforeExecute is some kind of a validation method.
+Or if no transition was needed, it would return itself.
+So BeforeExecute, AfterExecute and OnException would all return states.
+One difference between this implementation and the description in the article is that in this version, the circuit breaker can only ever stay in the half-open state for one execution.
+Liskov Substitution, Interface Segregation and Dependency Inversion are irrelevant.
+Potentially at this point the solution is good enough.
+This would be a very simple implementation, it would only require this one public method, the CircuitState enum and the two private SetState... methods.
+The problem may show itself to the reader as a MethodX does not belong on InterfaceY; but as you said to @svick you can not just delete it from the interface, without causing compiler errors, fixing which may cause even more compile errors.
+We'd have to add three members to the ICircuitBreaker interface: IncrementSuccessCount(), ResetSuccessCount(), IsSuccessThresholdReached().
+I renamed AfterExecute to OnSuccess, and OnException to OnFailure.
+ToClosedState and ToHalfOpenState are as is, but some behavior has moved into ToOpenState.
+This way it is less conceptually coupled to how it is used and more in line with what it does.
+I'm not suggesting this is exactly how you'd write it, just giving an outline.
+Then instead of calling CircuitBreaker.ToOpenState, it would just return that open state.
+By now we fixed the interface of the library, now is a good time to stop refactoring.
+So how would this be done with the current design?
+Naming is hard, but they don't have to be perfect: you can always (re)rename things.
+Clearly, most changes would require going in and modifying existing code, probably really getting our hands dirty mucking around with that logic.
+But now that we've identified that, there's two follow-up questions:
+You probably would do some real testing, but I used the following to see at least code kept compiling and doing something somewhat sensible:
+As a finishing note: Since I am not responsible for the code, I played quite fast&loose with refactoring.
+Parameters such as the timeout and threshold will be passed into the state's constructor and stored on the state.
+As I'm sure you realise, it would be possible to do a much simpler implementation of this.

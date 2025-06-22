@@ -1,0 +1,9 @@
+This pipes a single ctrl-C followed by input from the controlling terminal, while -tt forces a psuedo-terminal to be allocated. All told this gives you a (somewhat malformed) shell on the remote machine while bypassing as much of .bashrc as is possible.
+Run "man bash" or "man (your shell)" for options to disable the start up files. You only need to use an abhorrent shell for the time it takes to fix the problem.
+From the suggestions and responses given above, I'd say it's not the .bashrc or .bash_profile files. Also ssh manpage says that if you specify a command to be executed then your profile files won't be read. 
+However, if you are in the "no such luck" situation, I offer this solution, based on user60069's and Dennis W's solutions:
+Mashing ctrl-C works as long as you can get a ctrl-C in before the .bashrc exits. Unfortunately, this can be difficult to do if exit is early in the .bashrc.
+Kudos to user60069, it worked for me, but I use the shell-specific startup file .bashrc, so logging in with /bin/sh worked for me.
+If you system is setup normally, .bash_profile won't be run for a non-interactive shell (such as running a command).
+I'd suggest try executing a different login shell (ksh? csh? sh?) from the absolute path; also, beware that it might be a totally different problem (quota? execute and read permission on your home directory?), so a side approach would be better. Can you ask another user to do a ls -la $YOUR_HOME_DIR and mail you the result? 
+All ssh commands run your login shell. ssh $COMMAND runs $SHELL -c $COMMAND, scp runs $SHELL -c /path/to/sftp-server, plain ssh just runs your shell.

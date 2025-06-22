@@ -1,0 +1,12 @@
+I'm trying to check if my configuration management system is running on my servers.
+You can set an item zabbix[items_unsupported], then make a trigger if returned value of this item > 0.
+However, hosts that are not presently running the CMS will return ZBX_NOTSUPPORTED, and I'd like to detect these as well.
+The complete procedure is described in the Zabbix official documentation.
+Go here:  http://www.zabbix.com/forum/showpost.php?p=85153&postcount=7
+For any people still wondering, unsupported item notification is now supported since Zabbix 2.2 and involves creating a specific Action (not an Item), and include all details concerning the unsupported item in the notification.
+This key should work for puppet and Debian: 'vfs.file.regmatch[/etc/passwd,puppet]'
+One bright spark created an external script for use in zabbix that will tell you server by server which items are unsupported.
+Check the list of internal checks in the documentation for more information.
+It is pretty easy to use it to distribute a Zabbix configuration that will test if the CMS is running.
+This will solve your problem where the zabbix[items_unsupported] will not.
+You can set a log trigger to read zabbix server log searching by 'cms item' and 'ZBX_NOTSUPPORTED', but, if you had zabbix agent installed on machines without CMS installed, you can search by cms user or try read CMS logs in Zabbix.

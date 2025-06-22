@@ -1,0 +1,11 @@
+The CA file is required if you or your client sets up a PKI to allow secure SSL connections from trusted clients only.
+The CA is used to authorize clients, not your own backend servers.
+HAproxy does not make SSL connections to its backends (to my knowledge) - there are no handshakes, and no certificates for HAproxy to validate.
+I think you misinterpret the significance of the ca-file.
+I solved by pointing to the combined CA certificates file that your linux distro packages and neatly maintains for you.
+I recently hit this issue in 1.5.6 where I was receiving the error message
+On debian, this file is /etc/ssl/cert/ca-certificates.crt, it's probably the same for you.
+Even in the rare case where several CAs are necessary for the same service, it seems to be possible to bundle those in one PEM file.
+I likewise did not want to think about service disruption should the backend endpoint have their cert re-issued by another CA.
+This was related to not specifying a ca-file, which you cannot specify at the default-server level (according to the docs).
+You (or the client) will generate the CA certificate yourself, and use it to sign client certificates.

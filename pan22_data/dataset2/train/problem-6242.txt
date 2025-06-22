@@ -1,0 +1,8 @@
+You can also store the Hash or Array in attributes, but keep in mind that attributes aren't a true Hash, they're a Mash and there's some got'chas in there when trying to override attributes, but that's an entirely different discussion.
+So what is the best way to override the retries and retry_delay default values of the package resource?
+Now I want to change this behavior so retries in 12 and retry_delay is 5 secs. Now I know I can do this
+Per the Chef package documentation, the resource has the retries and retry_delay properties, with default values of 0 and 2secs respectively.
+I have started writing a custom_resource, and call it say, mycompany_package can can do this, in my mycompany_package/resource/default.rb file.
+But then I'd have to do this in ALL package resource calls. Like I said I have a LOT of them, so I don't necessarily want to do this.
+LWRP is probably overkill for what you're trying to do.  Something to remember is that recipes are just Ruby and any Ruby you write outside of a block is executed during the compile phase.  So with that in mind you can programmatically generate blocks that are executed in the converge phase.
+since mycompany_package does NOT define the flush_cache property. Now I have to define ALL of the package resource's properties in my mycompany_package cookbook. Yikes!

@@ -1,0 +1,8 @@
+If all the servers are linux or unix based you might be able to use rsync as it would be the fastest way to complete it.
+It works just like almost any other CLI FTP program.  Explaining all the things you can do with it is a bit large for a superuser answer, so just read its manpage.
+This works because if these programs don't have a file specified, they default to stdin or stdout as appropriate.  So you create an archive or slurp a file and dump the result to stdout, and then you pipe that stdout to the stdin of ssh, which is running a program that will convert it back into the files you want.
+NOTE: your home directory has to have protections 755 at least and the .ssh directory under home should be 700.  On all 3 servers.
+Now, it would be a bit unusual for a system to be configured to forbid scp, but allow sftp.  Not that it can't be configured that way, but most admins who block one block the other.
+Have fun... You MUST get that working, and if you want to do all the files at one time we can try tar.
+If you find yourself in that boat, then you can leverage the fact that ssh lets you execute remote commands via any archive or copy program that will work with stdin and stdout.  For example:
+Depending on your network conditions and file characteristics, you may want to invoke the sftp or ssh portions of these commands with -C to compress the traffic so it doesn't take as long.

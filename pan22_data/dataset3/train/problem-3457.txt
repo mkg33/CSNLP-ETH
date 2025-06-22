@@ -1,0 +1,15 @@
+Based on the chosen answer, I modified the script from Microsoft to set the WMI security.
+You may also have to grant "DCOM remote access permissions" and/or "DCOM remote launch and activation permissions" depending on what exactly you are trying to do.
+2) Run wmimgmt.msc, right click "WMI Control (LOCAL), goto Security tab and grant the appropriate user "Enable Account" and "Remote Enable" on the desired namespace (usualy CIMV2).
+What permissions/rights does my user require for this?
+I'm writing a monitoring service that uses WMI to get information from remote machines.
+If I manage to get it done for the entire domain I'll come back and update.
+Having local admin rights on all these machines is not possible for political reasons.
+and used  a powershell script to add this user to WMI Control.
+This MSDN article gives the step-by-step procedures.
+After granting my user the EnableAccount, RemoteEnable, and ExecuteMethods permissions on the target namespace, I was able to access WMI.
+https://live.paloaltonetworks.com/t5/Management-Articles/PowerShell-Script-for-setting-WMI-Permissions-for-User-ID/ta-p/53646
+The following worked for me in a 2012 r2 domain environment although I only managed to do it per server and not the entire domain:
+Created a GPO Dit to put his user in the group "Performnce Log Users"
+My test user was a non-administrative domain user who was a member of the "Remote Management Users" on the local system for reasons not related to this issue.
+So, I did not add my user to the Performance Monitor Users or Distributed COM Users local groups.

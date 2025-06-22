@@ -1,0 +1,6 @@
+Figuring out CPU requirements (speed/number of cores) is a little more difficult - You will need to take into account how much "work" the server has to do to generate each page.
+My first suggestions at 400 requests per second with the numbers you're quoting in your question would be "Move the MySQL server to its own box" or perhaps a better choice: "Add another web server and load balance your requests".
+You are allowing Apache to spawn up to 1500 children to serve requests (ServerLimit / MaxClients) -- It's no wonder your server load (the number of processes waiting in the run queue) is getting enormous!
+A tool like XDebug can help you out here by telling you how long it takes to generate a page (you should perform this test on an unloaded server as well as one under load, but you should also not use a tool like XDebug on a production server in most cases.)
+Figure out how many apache processes you want to run on the new server and determine how much RAM you'll need to handle them.
+To help you figure out how to size the additional server follow the advice HDDP500 gave in their answer to figure the average size of an Apache process.

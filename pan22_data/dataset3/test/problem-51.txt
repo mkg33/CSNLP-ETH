@@ -1,0 +1,9 @@
+Here is an example script modified using pieces from each of these answers.
+You have the hobt_id so the following query will identify the table:-
+Here's an article by Grant Fritchey about %%LOCKRES%% - http://www.scarydba.com/2010/03/18/undocumented-virtual-column-lockres/
+One important piece of info I found during testing that the other answers left out is that you need to use the index that is returned from sys.partitions for the given HOBT_ID when looking up the %%lockres%% (via an index query hint).
+From that you can then run the following statement to identify the row in the table (if it still exists):-
+And here's an article from my own blog about using %%LOCKRES%% to identify rows from an extended event:-  https://dbafromthecold.wordpress.com/2015/02/24/identifying-blocking-via-extended-events/
+This index is not always the PK or clustered index.
+The answers from @Kin, @AaronBertrand, and @DBAFromTheCold are great and were very helpful.
+Be careful with the above statement however, it will scan the target table so run in READ UNCOMMITTED and monitor your server.

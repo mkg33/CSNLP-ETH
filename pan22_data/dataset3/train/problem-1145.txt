@@ -1,0 +1,24 @@
+But, before you even do that, ask yourself if you need that serial device.
+esxi4 was needed to see my 64GB RAM on my new server.
+Either way, obviously you've got a virtual hardware difference.
+source: http://brakertech.com/howto-convert-a-esxv5-to-esxv4-vm/
+Searched Serverfault (and Google) for this, haven't been able to find an answer... We copied a VM (folder and files) from an ESXi 5.0 server (5.0.0-623860) to an ESXi 4.0 server (4.0.0-261974).
+Chopper3's advise about attaching the existing vmdk files to a new vm is sound advise.
+Really, the P2V tool should be updated to prompt you, "do you really want a virtual serial device?????"
+Version 7 of vm hardware was new on ESX(i) 4.0, and version 8 is new on ESXi 5.0.
+This details the steps needed to convert a machine from ESXv5 to ESXv4
+Delete the serial device from the vm config, and try to power on the vm again.
+Value was not accepted by rule 'Virtual Serial Port Device backend'."
+Now when we try to start the VM on the 4.0 server, we are getting a popup error "Invalid virtual machine configuration."
+Looking at the 4.0 server's logs, it is complaining of "Invalid value '/dev/char/serial/uart0' for configuration key serial0.FileName'.
+(and the same mssg for uart1 for key serial1.FileName as well.)
+The references to hardware versions are incorrect guys.
+Thanks for any assistance; I'm not a VMware expert by any stretch of the imagination (more of a network guy...)
+I compared the .vmx's for both versions and made the ESXi5.1 version to look exactly like the ESXi4.1 one, but have not changed the item's values (except for the "virtualHW.version", which I changed from "8" to "7").
+Since you state that it was a P2V converted vm, that is just a little gift of that process.
+(Also, the 5.0 server is licensed, and the 4.0 server is the free version.)
+Had to move a not so important VM to an ESXi4.1 to expand the RAM.
+Even if you got it working some other way, chances are you'd get screwed by that serial device during vmotion.
+Is this a simple version incompatablity between ESXi 5 to 4, which can be fixed by a conversion tool or file edit, or is this something more fundemental?
+VM Converter 5.0.1 build-875114 on Winodws is working GREAT to migrate my VMs from esxi5 -> exsi4.
+I just managed to copy the ESXi5.1 files for a specfiec VM to ESXi4.1.

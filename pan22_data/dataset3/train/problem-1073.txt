@@ -1,0 +1,16 @@
+I suppose I should have fully read the man page (man sssd.conf).
+I can then login to the box with "uswuser@usw.example.com" assuming "uswuser" is in the "USW\Linux Admins" AD group.
+Is it possible to configure Linux authentication to work in a similar way that a traditional Windows server does?
+Please let me know if you see any other issues with this architecture.
+I've configured our RHEL7 instance to support Active Directory login integration by using the documentation HERE.
+That is, the server has a single computer account in one sub-domain, but can authenticate against any of the other domains.
+This describes using the "realm" command to configure the "sssd" service allowing for AD Integration.
+I've used the following commands to configure sssd via realmd:
+I've also tried other variations such as "use.example.com\\useuser".
+I assume this command fails because the RHEL7 server is not joined to the USE.EXAMPLE.COM  domain in addition to the USW.EXAMPLE.COM domain.
+For example, join this RHEL7 server to "usw.example.com" but also grant access to "use.example.com\useuser"?
+I would also like to grant users in our "use.example.com" (note USE instead of USW) domain access to this box:
+There may be something fundamental that I've missed.
+I can do a "realm join' for use.wlgore.com but that creates two different computer accounts, which is undesirable.
+The RHEL7 box also (of course) shows up as a computer account in AD.
+This was resolved by adding the following line to /etc/sssd/sssd.conf:

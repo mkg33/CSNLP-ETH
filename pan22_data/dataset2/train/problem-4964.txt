@@ -1,0 +1,6 @@
+I am setting up an email system using Interspire Email Marketer with 5 user accounts, and each user has their own Sendgrid account. 
+I would almost like to have the MTA intercept the smtp requests from the web server (which includes the smtp authentication details) and then take over the delivery. Since the MTA is also a local server it should be quite fast. 
+My question is, how can we still setup/use our own Sendgrid accounts, but pipe the emails via a MTA server to Sendgrid? Are there any alternatives? 
+Charlie, you can use sender dependent SASL auth in postfix to use different relayhosts for different users. http://www.postfix.org/SASL_README.html#client_sasl_sender
+We are trying to build a fast system, so we have a dedicated MySQL server with lots of RAM, a web server to host the Interspire software, and our current problem: a MTA server.
+We want the MTA server to act as a gateway to Sendgrid since it can process emails in parallel instead of directly from Interspire with the PHP limitations. From what I've heard Postfix will not be able to be used since we all have our own Sendgrid accounts, and when Postfix is configured to act as a gateway, it only allows one set of credentials. 

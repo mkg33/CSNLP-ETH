@@ -1,0 +1,34 @@
+However, Apache has Phusion/Passenger which makes the integration nicer.
+I will go with nginx with my testing and profiling setup.
+You're in a VPS environment, this means you're most likely going to be low on RAM.
+I have no performance data about that, but You might want to know.
+I have no doubt that it can reverse proxy perfectly fine, but it was not designed to have a minimal memory footprint and as a result it requires more resources than Nginx does, which means my initial VPS environment argument comes into play.
+While Nginx still has plugins made for it, I think that Apache has many many more than Nginx does.
+Under high load, this makes all the difference in the world... Apache has to fork or start a new thread for each connection, while nginx doesn't.
+I have read that there are people who reverse proxy and serve static files from nginx and pass everything else like PHP to a running Apache instance.
+I wanted to put this in a comment since I agree with the most important point of webdestroyas answer, but it got a bit too long.
+Nginx is event-based, while apache is process-based.
+This difference shows up mainly in memory usage, but also in user response time and other performance metrics.
+I am not a Ruby programmer so I cannot verify this but I often see Unicorn and Thin mentioned as better alternatives.
+Initially all it did was serve static files and reverse proxy to a backend server via HTTP/1.0.
+Since then fastcgi, load balancing and various other features has been added, but it's initial design purpose was to serve static files and reverse proxy.
+Nginx has Passenger, however, I usually see it described as the inferior method to connect to Ruby.
+I migrated completely from Apache to Nginx over a year ago and today I would struggle to configure an Apache server whereas I find Nginx extremely easy to configure.
+This server is known to be one of the best performing web servers, and is used by many different companies (Notable, MediaTemple)
+The rest are bolt on solutions which You have to configure or script Your way around.
+Nginx can handle tens of thousands of simultaneous HTTP keepalive connections on modern hardware.
+Apache, on the contrary is a general purpose web server.
+Nginx is powerful, but can be very hard to understand, as it seems more like a programming language than a config file.
+AFAIK nginx has no htaccess files so You have to find Your way around if depending on that feature.
+AFAIK everything needed works and I've seen tutorials.
+To give You a really terse answer: From my research nginx is really fast and resource friendly, but it was only concieved to reverse proxy static files.
+Apache will use 1-2 MB of stack for each connection, so doing the math you see that you can only handle a few hundred or maybe a thousand connections simultaneously without starting to swap.
+I know Nginx can be used as a powerful load balancer with Mongrel/webrick.
+I was in the same dilemma as You about two weeks ago.
+We use nginx in front of Apache and IIS in our environment as a load-balancing and caching proxy, and couldn't be happier.
+For this reason alone you'll want Nginx as its memory footprint is smaller than Apaches.
+Also I do not agree with some of the arguments mentioned.
+Apache has tons of mods and other plugins written for it.
+We use two small-ish nginx boxes in place of a pair of very expensive leased F5 devices and our sites are far faster in both feel and measured response times.
+If you're used to Apache then change will always be more difficult, this does not mean that the configuration style itself is more difficult.
+Apache's config is really simple, and really powerful.

@@ -1,0 +1,11 @@
+You have to mark the packets for this application somehow. The easiest way to do this would be the following:
+The detailed explanation would be beyond useful if written here, but this should give you enough keywords to google for.
+Looks like you can tell rtorrent to confine the ports it uses for outgoing connects to a specific range.  Do this, and then use iptables to REDIRECT outgoing traffic on those ports from eth0 to tun0.
+One other way to solve it could be to use socks ower ssh (ssh -D portnumber) which works fine with tsocks.
+When researching this exact question for my setup, I found it to be extremely hard to limit the OpenVPN on a process-level. If you can find a way to make it work, I would sure be interested.
+My idea is that I could run a sockd proxy internally that redirects traffic to the openvpn tunnel. I could use the *nix "proxifier" application "tsocks" to make it possible for rtorrent to connect through that proxy (as rtorrent doesn't support proxies). 
+I don't know what "sockd" is but tsocks configuration file is /etc/tsocks.conf IIRC.  But you need a socks-aware application at the other side and OpenVPN is not.
+The question is mainly if you want to run rtorrent as a different user. You are most likely running it inside screen, and screen is not a big fan of su'ing to it's user. It is doable, but an extra thing you will need to figure out.
+As my IP changes at each connect I don't know what to put in that config file. I have no control over the host side config file.
+Tell rtorrent to only listen to tun0 or whatever IP is assigned to it.  This should take care of incoming connections.
+I have trouble configuring sockd as my IP inside the VPN changes every time I connect. This is a config file someone said would help:

@@ -1,0 +1,17 @@
+The access log only logs requests--many DoS attacks don't actually submit HTTP requests.
+You can also use netstat to count the connections to port 80, something like this:
+I know that this site is in Russian but it's so good and simple to use that I could not help recommending it for your problem.
+http://wiki.apache.org/httpd/InternalDummyConnection
+You may get the data you're looking for from mod_log_forensic but I don't know if people would recommend using this module for day-to-day logging of requests.
+How did you determine that your server is under attack?
+No, these are requests which Apache sends back to itself to wakeup processes that are listening for new connections.
+These are internal requests by the apache parent process to keep child processes alive and to generate new child processes when load dictates new children are required.
+The access log represents logging of requests once processing is completed (whether successful or not).
+I'm pretty sure this is because I'm using mod_rewrite, in short I'd like apache to log the pre-redirection request instead of the internally redirected request - does anyone know if this is possible?
+I use ddosViewer viewer for checking through the logs though there are many of such programs in the web.
+I wanted to find the IP which was used for the attack so naturally I went to the access.log only to find hundreds of lines of this:
+Those connections haven't any relation with mod_rewrite, and you shouldn't worry about it.
+You can probably get what you want out of the RewriteLog but that isn't normally something that would be included in the access log.
+Depending upon the type of denial of service attack, you're not going to have much luck getting the IP from the access log.
+My site recently came under a DOS attack, which seems to have been mostly fixed by installing mod-evasive (which is fine)
+I would recommend to study your access log once again if you want to find attacker.

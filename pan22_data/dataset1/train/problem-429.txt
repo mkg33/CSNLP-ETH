@@ -1,0 +1,8 @@
+You may want to solve this at the application level.  You should be constructing a full path to the new location.  This should consist of three components: the protocol (https), the hostname (from the request header) and the path (as required by the application).  You may want a utility class that constructs links for the application to ensure consistency.
+For links you may want to use relative paths.  These will be sent to the originating host using the protocol they arrived on. 
+Redirecting the request resulting from the redirect, still leaves you with mixed content.  This is because the initial redirect will be http rather than https.
+On the Apache server level, there is a module that will rewrite the paths in the response from http to https.  This is one way to fix a broken links sent by an application.  However, I would limit that to applications you don't have access to. 
+I'm using elastic beanstalk single instance. So there is apache configured and tomcat is behind listening on http port 8080. Apache is configured on using ssl https 443. 
+The problem is that tomcat redirects using http. But I can't set up apache to change http to https. So as a consequence the mixed content error happens preventing application to work. 
+I wonder what would be the correct way of setting it?
+(app is running through facebook, if directly accessed it won't show any errors)

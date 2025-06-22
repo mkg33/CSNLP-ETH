@@ -1,0 +1,14 @@
+You can then find the point, line, or surface common to both shapes at this moment.
+Then you can look at the projections you get along that axis, and measure how much time you'd need to rewind at that speed until the two intervals just kiss.
+The smallest such result tells you the last axis to lose its separation during the approach along this velocity vector.
+The best approach I can think of there is to use the method above as an estimate of contact time, then re-run your overlap checks at the estimated timestamp to get a refined estimate, and close in by binary search.
+Displacing the cube according to this penetration axis will resolve the overlap, but it won't tell us where the collision occurred (ie.
+What you can do instead is compute, for each axis, the (signed) speed of approach along that axis.
+Many physics engines deem this result "good enough," and leave it up to devs to use a shorter timestep, continuous collision detection methods, or explicit raycast/sweep tests to get finer precision for the cases where they're needed.
+Backtrack along the velocity vector by this time-since-penetration you've calculated to position the objects the way they were at the moment of contact.
+There are probably more sophisticated approaches you could use though.)
+The axis with the smallest overlap is not necessarily a good guide to where the collision occurred.
+Imagine a small cube translating to the right at high speed, entering a larger prism from the side and penetrating a fair distance into the middle:
+(Assuming neither object is rotating relative to the other - if they are, then the axis overlaps you computed for the end of the movement aren't necessarily valid for moments earlier in the movement, and things get more complicated still...
+The behaviour will look like the cube nicked the corner of the platform and skipped upward, rather than slamming into it side-on as it should have.
+Here the smallest overlapping axis is vertical, perpendicular to the incident velocity.

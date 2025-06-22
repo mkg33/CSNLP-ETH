@@ -1,0 +1,23 @@
+Assuming users don't connect directly to IP addresses you can modify DNS configurations/host file entries so that they technically override the existing local network setup.
+To avoid all the issues mentioned above, I'd definitely plump for an IP range in the 172.16.n.n or 10.n.n.n range.
+This is slightly bemusing to me because in most of the environments that I've come across for remote users to have VPN access the administrator needs to to have control/management over connecting users to ensure that the network remains secure.
+So, what is the ideal networking address setup to avoid this?
+This means that the administrator can control the IP address range which means the chances of what you are describing is basically impossible.
+One option is creating a script that you run on connecting systems to overwrite routing tables to reduce the chances of a possible conflict (am aware that certain VPN solutions are able to do this).
+Since you have administrative access you should be able to do this quickly and easily (though I've since read another comment which brings IPv6 issue into play).
+openvpn client override default gateway for vpn sever
+Effectively, the organisational network setup will take precedence over the local network setup.
+I have users that VPN into our firewall which then essentially adds them to the network.
+Another way is to change your organisational setup to have a less common IP address backbone.
+For example, in the server config file for the VPN server, I'd allocate an IP address range of say 10.66.77.0, with mask 255.255.255.0 - the VPN server itself will take 10.66.77.1, each VPN client will get the next free IP above this.
+https://support.rackspace.com/how-to/modify-your-hosts-file/
+Works for me, no conflicts from connections using 'home' routers, which are mainly in 192.168.n.n range.
+That said, your solution does seem workable but very difficult with regards to using different IP ranges.
+However, if their home router has an IP address of 192.168.0.1 then of course we have all kinds of issues.
+Obviously, you'll need to change the type of VPN setup you have to give you  some of the options that I'm outlining above if you don't already have them.
+https://unix.stackexchange.com/questions/263678/openvpn-understand-the-routing-table-how-to-route-only-the-traffic-to-a-spec
+My internal network is 192.168.0.x with a gateway of 192.168.0.1.
+I have seen setups where the remote users have router addresses in the 10.x range also so not sure what i can do to prevent this.
+The best you can do is to use a range for the network that you give vpn access to, that you expect none of your users use.
+There's a good chance a lot of your users won't have changed that their routers use 192.168.0.0/24 or 192.168.1.0/24 (the two ranges I have seen the most in consumer gear), if you have an idea of some who might have chosen to use a different range, ask them what they use, but users who have done so will also know how to change the setup of their own router to avoid the conflict.
+That means administrative access, control, etc... of connecting machines and users.

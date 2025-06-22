@@ -1,0 +1,13 @@
+The owner of the directory foo has control over everything inside the subspace; however, for a subdirectory foo/bar, the owner of foo has control over whether bar can be attached to foo but not over what goes inside bar: only the owner of bar has control over that.
+Every directory is attached to some other directory, called its parent.
+There's also the problem of what to do if a directory has 0 hard links but is not empty: since the directory is unattached, you'd want to delete it, but what do you do with its contents?)
+Evidence in favor of interpretation 1: in practice, directories do have a single parent and so form a tree structure.
+Evidence in favor of interpretation 2: as you've noted, the way permissions work.
+Interpretation 2: a directory is a subspace of the filesystem.
+And you can't access foo/bar/qux unless you have execute permission on foo as well as bar (well, except that there are somewhat obscure ways to be given access to bar without being given access to foo).
+Interpretation 1: a directory is a subspace of the filesystem.
+It can be further subdivided into subsubspaces by creating subdirectories in it.
+The owner of the directory foo should have control over everything inside the subspace: foo/bar, foo/bar/qux, etc.
+Also, the fact that some Unix filesystems allow a directory to be attached to more than one parent: this is called having multiple hard links.
+(Having multiple hard links is common for regular files, but it's usually discouraged or forbidden for directories mainly because of the risk of creating loops, where a directory is its own grandparent N times removed — so you can't get to it from the root directory, which is a very common expectation.
+On a more practical note, in your situation, user A can do

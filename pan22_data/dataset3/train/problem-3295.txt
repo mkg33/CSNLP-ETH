@@ -1,0 +1,7 @@
+I don't think suexec solves this part and I'm not sure what would solve it aside from using a chroot in some fashion.
+For example, if you want to prevent a PHP script from accessing /etc/passwd, there is nothing that suexec will do to prevent it since that's always a world-readable file.
+open_basedir would possibly prevent that from happening if it weren't for that pesky race condition.
+I'm not aware that it is being removed from PHP and I would assume they would try to tighten that up someday.
+open_basedir does have some issues that make it broken, such as the fact that there is a bad race condition related to symlink replacement, and therefore it probably shouldn't be used.
+I would suggest that given appropriate file permissions in the filesystem, using suexec with PHP would be acceptable to replace safe_mode.
+This is simply because you are allowing the filesystem to prevent file access instead of letting PHP do it for you, which is considered broken and therefore removed as of PHP 5.4.

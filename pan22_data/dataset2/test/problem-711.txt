@@ -1,0 +1,7 @@
+You will certainly have issues with FTP/SSL in either passive/active mode if your firewall rules are too strict.
+Because FTP utilizes a dynamic secondary port (for data channels), many firewalls were designed to snoop FTP protocol control messages in order to determine what secondary data connections they need to allow. However, if the FTP control connection is encrypted using TLS/SSL, the firewall cannot determine the TCP port number of a data connection negotiated between the client and FTP server.
+FTP over SSL is sadly a useless protocol in the real world, where both ends will have a firewall in the way.
+The best way is to use SFTP (included with ssh). Most ftp clients support it already and you only need port 22 open.
+Therefore, in many firewalled networks, an FTPS deployment will fail when an unencrypted FTP deployment will work, but this problem can be solved with the use of a limited range of ports for data and configuring the firewall to open these ports.
+On active mode, you only need to open ports 20/21 inbound and keep the state to outbound, but it will not work well with many users, but you don't need to worry about using ftp-proxy tools or anything.
+I was once greatly embarrassed by recommending FTP over SSL, assuming that the protocol had solved the design issues that plague FTP since the encryption would make them unsolvable. Instead, the encryption makes it impossible for a firewall to handle them!

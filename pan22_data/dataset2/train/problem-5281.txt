@@ -1,0 +1,9 @@
+It is then simply a matter of creating your backup configs, which can be done by issuing the command duply myfirstbackup create.
+Running duply myfirstback fetch <file on S3> <destination> will let you retrieve individual files or entire directory structures. 
+Assuming you will be on a Linux OS, you may use Duply with Duplicity to simplify the encryption and incremental backup of your server data to S3. 
+The above will backup everything in /home/myhome and keep a copy for 1 month. See duply docs for more on how to setup the configurations, for example for 60 days incremental. You can do things like set a full backup weekly with incremental every 2 hours. You have a lot of control over this.
+You can then edit the two files (conf,exlude) in /root/.duply/myfirstbackup. Here is a simplified example of both:
+It's possible to back and retrieve your files. However, if you look in your Amazon bucket from the web interface, all you will see are backup archives, not the actually files that you can download. This is where Duplicity and Duply (simple Duplicity) come in. 
+You can then tell Duply which backup set to retrieve files from. For example: duply myfirstbackup fetch 'home/myhome/importantdirectory' ./home/myhome/restore 3D will restore the /home/myhome/importantdirectory from backups made 3 days ago, and restore it locally in /home/myhome/restore (see "duplicity manpage", section TIME FORMATS)
+Last step is then simply to ensure you setup a cronjob to run this however often you want. Daily, hourly, weekly etc.
+Running a simple command from the server such as duply myfirstback list will give you a list of all files backed up. 

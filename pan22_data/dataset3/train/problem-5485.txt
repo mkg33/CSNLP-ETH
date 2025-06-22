@@ -1,0 +1,7 @@
+It seems to get especially bad when there are many different destinations shared by the same origin server and sought by the same client, as each time a new connection is opened in response to a 421, the client still feels it can reuse that connection, and so the 421s can happen almost as often as useful responses.
+This can arise in some unexpected situations, such as when virtual servers are used and their TLS configuration differs but they share a certificate using wildcards or subject alternative names.
+Assuming the underlying problem is intractable, or at least the conditions under which a 421 response is sent are beyond the control of a server administrator, but the fact that it will happen is known, is there a way to inform clients in advance not to reuse connections across domains?
+This still leaves the primary benefit of HTTP/2 connection reuse, namely that multiple requests to the same domain can be multiplexed on a single connection, while also avoiding foreseeable 421 responses.
+In the worst case, this can be as bad as or perhaps even worse than just using HTTP/1.1 connections without reuse.
+So, for example, if the same origin server can serve foo.example.com and bar.example.com then the client may reuse a connection to issue requests to both destinations.
+Unfortunately, the end result is one or more extra round trips: the client optimistically reuses a connection, the server rejects the request, and then the client has to open a new connection and try again.

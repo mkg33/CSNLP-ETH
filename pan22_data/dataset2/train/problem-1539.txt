@@ -1,0 +1,9 @@
+You can use apachectl to do a simple configuration test.  Be careful though, as it is a good check for syntax errors it will not catch everything.  The full command is:
+If you tell apache to restart, it will shut down completely before attempting to restart, leaving you out in the cold if you have an error in your config syntax.
+If you tell apache to restart gracefully, then, in addition to the niceties of it not killing processes underneath your users, apache will first check your configuration files for syntax errors.  If it finds any, it will not restart.
+If your configuration is broken, even a configuration reload (via a SIGHUP) will cause Apache to exit.
+If apache fails to restart, will it keep running but not shut down the previous instance of it?  So if I'm working on the server and I restart apache and it fails, will that keep my site running on it's previous configuration?
+but as long as you don't fix the problem in the config file, no instances will be available (no www service)
+as Warner says you need to check your config file and test it to make it sure it does not contains errors, so your service will be available again (successful start / restart)
+if you restart the service (because you changed the config file, maintenance, etc.), it actually stops and try to start it again, if it fails so the service itself will be not available.
+I almost always use graceful when I'm making config changes; there are a few options (ServerLimit, for example) that need full restarts, but graceful should be your default command.

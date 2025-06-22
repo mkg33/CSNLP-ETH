@@ -1,0 +1,13 @@
+It orchestrates centralized pre-commit verifications in such manner as to ensure that a change is committed only after it is verified, together with all other changes committed before it, to meet or exceed the latest branch quality level.
+It's generally not particularly difficult (depending on the tools used) to indicate both whether the source branch in a PR is up-to-date with the target, and if it has a passing CI build.
+You can do this with pre-commit hooks, but it's often easier with pull requests (which hopefully you're already using for peer code review).
+Use GitLAB, you can set in project-settings to only allow a merge when the pipeline succeed, so can have a truly Continuous Integration, combine that with adding your QA to the list of merge approvals and with Dynamic Environments, you can have quality assurance before you merge to the master.
+Disclaimer: I'm the author of the tool and founder of the company offering it.
+True continuous integration tools (as opposed to just continuous testing) like Reitveld and Zuul can help, though they are only as good as the tests you write and code reviews you do.
+You can use this as a requirement (by policy, and/or enforced in software) for merging the pull request.
+This is the key difference compared to traditional developer-driven pre-commit verifications, often done in parallel , which leaves room for regressions caused by interfering changes which were never tested together.
+ApartCI is a CI system designed exactly to prevent regressions, thus guaranteeing flat or increasing branch quality level.
+The tool is also designed to easily scale - capable of sustaining very high rates of incoming candidate changes and supporting 100s/1000s of developers working in the same integration branch.
+If a branch is up-to-date with its upstream (where the PR is merging to), and its tests pass, then they will still pass after the merge; the state of the target branch after the merge will match the state of the source branch before the merge.
+No tool could possibly guarantee no regressions - that depends much more on your tests than the tool executing them.
+However, you can help to prevent regressions that will be caught from entering into the integration branch.

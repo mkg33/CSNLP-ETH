@@ -1,0 +1,59 @@
+The point of the VLANs is to have network segmentation.
+Such a selected VLAN is known as the native VLAN for that port.
+One of the things VLAN's do is take a physical switch and break them up into multiple smaller "virtual" switches.
+So, to your case of two devices in two different VLANs on the same switch, both using addresses on the same IP subnet.
+Since both VLANs pretend to be distinct on the Ethernet level, but are using the same IP subnet, what happens will depend on how the devices' IP routing has been implemented.
+Alternatively, you can route the traffic via a firewall and allow selective communication between the VLANs.
+So it will be just like you had two NICs plugged into two separate physical network segments with 100% overlapping IP subnets: the system might receive incoming traffic just fine, but will assume that any NIC connected to the destination IP subnet is good for talking to any other host in that IP subnet, and will use which ever (virtual, VLAN-specific) NIC occurs first in the routing table... and so the configuration might or might not work depending on the order in which the various parts of the NIC and VLAN configuration have been initialized.
+Switch ports as access ports, devices not VLAN-aware: the switch port will filter out the traffic of the "opposite" VLAN, and so the devices will never see each other's traffic.
+Taking this to its extreme, at the lowest layer you need some physical material (well, okay, or air :D) to actually transport the data.
+Even if the source would somehow know the destination's MAC address and build a frame addressed to that MAC it would never reach the destination since it's outside the L2 network still.
+Meaning this Physical depiction of One switch and Two VLANs:
+The underlying topology has a part to play as well.
+In order for the hosts in the 2nd image to communicate with one another, you would need some sort of device to facilitate the communication from one "switch" to the other.
+Switch ports as trunk ports set to pass only one VLAN each, devices VLAN-aware: you'll need to specify the VLAN numbers in the network configuration of the devices too, but the end result is essentially the same as in case #1: the devices won't see each other's traffic.
+You can setup IRB interface on the switch to allow communication between the VLANs.
+The first part of the VLAN tag is a tag protocol identifier, which is a constant value of 0x8100.
+A layer-3 problem will need a layer-3 solution: using a router or some other box to symmetric-NAT one of the subnets to remove the IP subnet overlap would be much more elegant than trying to handle it at the individual devices.
+Consider what happens when you have a LAN at home and a computer with IP 192.168.2.1.
+What happens will depend on how the switch ports (and the network interfaces on the devices) are configured regarding VLANs.
+In Cisco terminology, a switch port can be configured as either an access port or as a trunk port.
+Using the same IP subnet on two distinct segments is a layer-3 problem, no matter what the segment separation at layer-2 is physical (= actual separate NICs) or logical (= created with VLANs).
+Ideally, you should design your network to have different subnets for each of the VLANs and then Firewall the traffic between VLANs.
+Switch ports as trunk ports set to pass both VLANs, devices not VLAN-aware: each device will think "Why does that other device keep sending me that strange Ethertype 0x8100 stuff???
+Even if the IP addresses in the 2nd image were in the same Subnet, you'll notice there is no "link" between the two virtual switches (i.e., VLANs), and therefore no possible way Hosts A/B can communicate with Hosts C/D.
+For example, Linux will present any configured tagged VLANs as extra virtual NICs, that reflect the link state of the underlying physical NIC but otherwise act as independent as technically possible.
+That is why every VLAN traditionally requires it's own unique IP subnet -- because if any communication is to happen between those VLANs, unique subnets will be required.
+You'd need to use Linux's advanced routing functionality and create custom routing rules to handle this case well.
+A trunk port, on the other hand, will pass traffic on a configurable set of VLANs, but all the traffic will be VLAN-tagged.
+The 802.1Q standard allows an Ethernet port to support a single native VLAN and any number of tagged VLANs at the same time, but I understand having a port pass both tagged and untagged Ethernet frames at the same time is a somewhat disfavored configuration: you'll need to remember that one of the VLANs in a port/NIC is different from all the others and needs to be configured differently.
+And due to how Router's work, each router interface must have it's own, unique IP Subnet.
+A VLAN-supporting switch can filter packets going out to each port by their VLAN tags, and can optionally strip the VLAN tag from one selected VLAN on outgoing traffic from that port (and reciprocally add the VLAN tag to incoming traffic on that port), so that any traffic of the selected VLAN appears as plain pre-802.1Q Ethernet traffic for the device connected to that particular port.
+Your friend down the road also has a LAN at his home and a computer with IP 192.168.2.2.
+My point is that we can easily see that the fact "IP addresses are in the same subnet" is not sufficient for determining whether packets may route between them.
+The IEEE 802.1Q conformant VLAN tag is placed in the Ethernet frame in the location where the EtherType of the frame would normally be.
+Switch ports as trunk ports set to pass both VLANs, device configured with VLAN awareness, both VLANs configured in the device.
+Since the destination host is outside the local network it never hears the ARP request and ARP fails.
+In such an example, the cause is different than you're asking about.
+You could also achieve the same (some caveats aside) using subnets.
+ARP works by sending a request as broadcast to the local L2 network and the host with the requested IP address answers with its MAC address.
+When an Ethernet connection carries more than a single VLAN, all but one of those VLANs must be tagged.
+Talking to hosts on another subnet requires the use of a gateway/router.
+This raises the question whether or not it makes sense to think of them as "being on the same network segment" at all.
+So, when two hosts are in the same IP subnet but on different VLANs/broadcast domains/L2 networks they can't communicate: the source host assumes the destination in within its local L2 network and therefore it tries to ARP the destination address (or NDP resolve for IPv6).
+An access port will only provide access to a single VLAN and has the VLAN tags automatically stripped from outgoing traffic and added on incoming traffic for that port.
+The main important detail will be whether the IP stack is designed to use a strong host model or a weak host model, and exactly how the concept of VLANs has been integrated to the system.
+MACs from outside the local L2 network are meaningless and useless.
+As a result, a device that is unaware of IEEE 802.1Q tags or configured to not expect them will see the tagged frames and think "this is neither IPv4, ARP nor IPv6; this Ethertype 0x8100, which is something completely different and I don't think I understand it at all.
+(Don't beat me up - physically group isn't really correct but it marks my point.)
+VLANs physically group hosts - hosts within the same VLAN/broadcast domain/L2 segment can talk to each other directly.
+The device that exists for that purpose is a Router -- hence, a Router is required for traffic to cross a VLAN boundary:
+Now the device will be effectively present on both VLANs.
+Is identical in operation to this Logical depiction of the same topology:
+The images above are from my blog, you can read more about VLANs as a concept here, and about Routing between VLANs here.
+Switch ports as trunk ports set to pass both VLANs, devices VLAN-aware but configured to different VLANs: now it's the VLAN support layer in the devices themselves doing the filtering, but the practical result is the same as in cases #1 and #3: the traffic of the "opposite" device will never reach the IP protocol layer in the device's network protocol stack.
+Since your subnet is split into 2 different VLANs, your devices can not communicate on L2 network.
+IP subnets logically group hosts - hosts within the same subnet use their layer-2 connection to directly talk to each other.
+They're on the same subnet, so why can't they talk to each other?
+But a VLAN achieves the same result — it segments a network, at the second layer.
+Your computers can be in the same house on the same subnet but not be physically connected (or have a wireless link) and then you wouldn't expect packets to be routed.

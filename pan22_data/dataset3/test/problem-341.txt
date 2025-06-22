@@ -1,0 +1,12 @@
+a FreeBSD host and share them over NFS or SMB, or even just run the database on a FreeBSD system.
+Adding devices is a completely transparent, online operation; hence, if the storage device itself is hot-pluggable, it is possible to build a storage solution that has zero downtime during capacity upgrades.
+I'll take a punch here and assume that you aren't really interested in combining storage hooked up to several different physical machines as is indicated in your question, but rather just want to be able to grow the storage solution on a single host as your storage needs grow.
+I don't see you specifying the OS, but your mention of MySQL and preferring open source solutions do point toward *nix.
+There is a Linux implementation which unfortunately is known to still experience hiccups under certain use scenarios, or if you prefer rock-solid stable you can host the files on e.g.
+On ZFS, you work with what is known as zpools, which are basically somewhat like what you might otherwise think of as file systems.
+On the entire zpool, you can create what in ZFS terminology is called file systems (separately mountable hierarchies).
+If that is the case, I suggest that you take a very close look at ZFS.
+It is designed specifically to be able to deal with situations like this (among other things), and it is a general-purpose file system.
+By adding additional physical devices to a new or existing vdev, the file system automatically makes available and will use the additional storage capacity gained (if any; e.g., if you add a mirror device to a vdev, no additional storage space is gained although you gain redundancy).
+Each zpool is made up of one or more vdevs, which in turn each is made up of one or more physical (or logical) devices.
+The main caveat is that you really want to go 64-bit and have lots of RAM for ZFS to be really happy, but that shouldn't be as much of a concern today as it has been historically.

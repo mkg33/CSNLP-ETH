@@ -1,0 +1,16 @@
+If a drive is asleep it’s definitely not spinning (or doing anything else, including communicating with the host); otherwise you can interrogate it about its current mode.
+    cmd.TimeOutValue = 3;                   /*  Arbitrary timeout (seconds)  */
+For an ATA drive, the “Check Power Mode” command will do this.
+Is there a "programmatic" way to determine whether a disk is spinning or not (spinning, not necessarily reading/writing)?
+    cmd.CurrentTaskFile[6] = 0xE5;          /*  "Check Power Mode" in command register  */
+Whether a disk is spinning depends on its power mode; typically the spindle motor will be running in “Active” and “Idle” modes, and stopped in “Standby” and “Sleep” modes.
+Send the value E5 in the command register, and it will return FF in the sector count register if the drive is active or idle.
+        /*  FF in sector count register means the drive is
+            active or idle (and therefore spinning)  */
+HANDLE hDevice = CreateFile(TEXT("\\\\.\\PHYSICALDRIVE0"), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+    if (DeviceIoControl(hDevice, IOCTL_ATA_PASS_THROUGH, &cmd, sizeof(cmd), &cmd, sizeof(cmd), &cb, 0))
+Doing that programatically is venturing into Stack Overflow territory, but here’s a snippet of C that will do it on Windows:
+(It gets a bit more complicated with drives with NV cache power management, which I don’t know enough about to cover here.)
+        isSpinning = cmd.CurrentTaskFile[1] == 0xFF;
+    ATA_PASS_THROUGH_EX cmd = {sizeof(ATA_PASS_THROUGH_EX)};
+    cmd.AtaFlags = ATA_FLAGS_DRDY_REQUIRED; /*  Require drive to be ready  */

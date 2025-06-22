@@ -1,0 +1,15 @@
+By including it in your light properties cbuffer you're creating an artificial coupling between these two different classes of property, and it's likely to cause you further problems in the future.
+Right now specular power might be the only surface property you want to change, but in the future you might want to add more.
+From the question, this appears to be more a design problem rather than an API problem: specular power is not a property of the light, it's a property of the surface.
+Remember that 1 is a valid value for InstanceCount.
+It does of course come with the added cost of extra texture memory (but remember that it can be a lower-resolution texture) and an extra texture lookup (although you could abuse the alpha channel of an existing texture to hold it).
+Pass the values directly from the VS to the PS if required.
+I have a LightingBuffer which is passed to the GPU containing, ambient color, diffuse color etc and I want to be able to update the specularPower component of this CBuffer but not the rest.
+Remember that cbuffer registers are groups of 4 floats (I'm deliberately ignoring other data types for the purpose of simplicity and clarity here) so if you update one float you effectively get 3 more float updates for free.
+I am trying to update a single variable within a CBuffer but I am unsure of how to do this.
+We should also note here that all draw calls in forthcoming APIs are instanced draw calls, so this suggests that we don't need to worry about instancing overhead going forward: there is none.
+In openGL I could just do glUniform1f and update it, however I cannot do this is DX / HLSL
+Add these per-surface properties to a per-instance buffer, adjust your input layout to match, and make a DrawInstanced or DrawIndexedInstanced call.
+Again, if you ever need to expand to other surface properties you can use e.g a 4 channel RGBA texture with each channel holding a different property.
+This is the most flexible method and would let you vary the power across a surface: some parts of the surface may have a different specular power to other parts.
+There are a few different ways you can solve this.

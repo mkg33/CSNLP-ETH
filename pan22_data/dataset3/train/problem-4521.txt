@@ -1,0 +1,29 @@
+What I would recommend is that you configure LVM (Logical Volume Management) on top of your RAID array.
+Regarding quotas under NFS, the Red Hat manual says:
+In the /etc/projects file you have an ID:directory mapping, eg:
+The nice thing about this as opposed to using LVM volumes is that you can both increase and decrease the quota assignment, and you can also set soft quotas so that you can receive warnings when a directory is beginning to use a lot of space (see the report command of xfs_quota).
+I feel that using RAID and quotas and NFS is a little painful to manage.
+If you're imagining using it as a hot spare, I'd recommend using all your drives and using RAID6, so you have the ability to lose two drives before you risk losing data by having a third disk failure.
+You can set per-directory quotas if you use XFS as your filesystem (which you will probably want to do, since you'll have ~8TB of disk).
+You the mount the filesystem with project quotas enabled mount -o pquota /dev/md0 /mnt/raid and then set up the quotas:
+Then in the /etc/projid file you have a listing of project name:ID mappings:
+The answer really depends on how you envisage your backup drives being used.
+They call the feature "project quotas" and they're a bit of a pain to get up and running, but work reasonably well once you figure them out.
+One useful tip is that, because some file systems like XFS can't be shrunk, you should start by creating your filesystems as small as you first need and leave plenty of space for you to grow your filesystems as and when you need to.
+I have slowly come the the realisation that hardware raid is more effort than it's worth.
+It also allows you to do other management tasks like migrate filesystems from one device to another easily while they are in use by adding and removing block devices from the volume groups.
+The downside is that this feature is only available with XFS filesytems, so these project quotas aren't supported by any tools other than the XFS ones.
+I am planning to use software raid by putting 3 of the five disks into one raid 5 pool and using the remaining two disks as backup space.
+As an alternative, since you are planning to set up a file-server, you may want to consider using a file-server oriented Linux distribution such as Openfiler, which may be easier to configure via a web-interface and you can still drop down to the low-level stuff if necessary.
+Most file systems allow you to increase the size while the filesystem is mounted.
+Software RAID easier to manage and hardware RAID is just another component to fail, with incompatible metadata standards.
+I am running Debian, and need to setup an NFS server.
+You can read man 8 xfs_quota to find out more about them.
+I would love to use a ZFS like tool to make all this work easier, but I want to know if there are any competitive software in Linux.
+Being a novice sysadmin, I want to know if there is a better system to do all this under Linux.
+This allows far more flexibility than any standard partitioning would.
+Basically you need two files: /etc/projects and /etc/projid.
+If you were just using it to make a backup in case of a filesystem issue or accidental deletion of data, then I'd recommend using all your drives as RAID5.
+Software raid is not considerably slower, and in some cases is much faster than hardware raid.
+The first command sets the quota metadata in the filesystem, and the second one sets up the hard block limit.
+You can increase the size of partitions and in the case of some filesystems, decrease their size.

@@ -1,0 +1,23 @@
+Anytime your guest writes to the disk in a place that has not been written to before, then the VDI grows in size to accommodate the "new" data.
+You can google for "punching holes in sparse files".
+The only thing that matters, is that the space was used at some point.
+You create 10GB thin VDI disk, mount it and then start creating / deleting series of relatively small files in a loop.
+But things will look very different from the host perspective.
+Now we will run this one liner script in a sequence.
+For example if Oracle database is in archive mode - it will create many archive logs and even if those are deleted regularly by running rman - it will quickly fill thin disk to it's maximum size.
+And this is how it looks like outside of VM (on the host)
+Even though each of these small files will not be bigger than 100MB - your VDI disk will quickly grow to the maximum size.
+Now, if the guest wrote 20Gb of contiguous data (one byte following the next), then the VDI file would require 20GB of physical hard drive space.
+Thin (or so called sparse or dynamic in virtualbox terminology) disk images will grow in size over time but will never shrink.
+Let's start off with the 10G disk, which was just created and mounted.
+At any given point in time our VM will show that we only consume 200M on the file system.
+So it only takes slightly less than 100M on a host.
+Creating and deleting 1000 relatively small 100M size files.
+Instead the guest VM will be continually reading/writing/moving data around.
+There are some possibilities to actually decrease it, but that would require shutting down VM and punching holes in the VDI file.
+The VDI file will never shrink, and eventually will always max out at your pre-defined maximum size.
+Some workloads are behaving particularly bad with thin disks.
+VirtualBox doesn't have any knowledge of what is stored on the disk.
+The reason for that is that every time new file is created - OS can write data to a different location on the block device.
+Then when file is deleted - from the point of view of the VM space is now free, but on the underlying VDI space was already reserved, size of the VDI file grew and there is no way to shrink it.
+Even if the same 20GB of data is moved around to new areas of the partition, the VDI will grow to accommodate the "new" data.

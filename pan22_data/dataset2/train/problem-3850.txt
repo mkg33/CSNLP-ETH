@@ -1,0 +1,10 @@
+If finetuning the logging does not help, then introduce log rotation or keep the logs for only one month, but the first thing I would do is inspecting the log and see whether there is superfluous information that could be removed by modifying the code.
+I use rsyslog to push logs to elasticsearch. It is really a fast and reliable way to send logs. Moreover, you don't need to add any agents in your system.
+For visualizing you can use Kibana. You can create a great dashboards based on the logs with all the information that really gives value to your business
+If you don't want to install agents, you can forward logs using rsyslog directly but with al beats series you could get more in deep information rather than simply logs.
+What are the best practices regarding log storage for a cloud hosted environment such as ours? We've considered log rotation, pushing the logs to CloudWatch or simply truncating log files.
+We currently have some ruby applications hosted on EC2 servers on AWS, and every few weeks we see the disk space get completely consumed by the app log as well as the worker logs.
+My view is that Using elasticsearch would be beneficial than log rotation as you can keep logs for as much time as you want. And also, you can easily make visualizations and dashboards which can help in faster analysis. It also provides full text search so you can search for any kind of error OR status in your logs instantly.
+I handle logs of 3 servers. We keep only really important logs in the system. Rest are pushed instantly to elasticsearch database. 
+In logstash you could tag, filter, parse and modify the log entries that are stored in Elasticsearch.
+Also check the content of the log files and ask "is this relevant logging"? Sometimes, complete stack traces are logged. If this is the case, what is causing this and how to suppress it? Some apps define several log levels. If the app is running without issues, just set the log level to normal. If there are issues, change it to debug for a short moment.

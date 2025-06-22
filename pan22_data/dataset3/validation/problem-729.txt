@@ -1,0 +1,38 @@
+If you have control over your PHP app, make sure it doesn't use too much memory (e.g.
+Instead of *:80 and *:443, I used the real IP of my server.
+I don't have experience dimensioning the worker MPM.
+The per process footprint is harder to get smaller; most apache configurations these days only come with the four essential modules compiled in.
+For example, there are bunch of authentication modules that are always loaded.
+Next you should configure apache MaxClients based on the size of one process and the amount of memory you want to give apache.
+Since you already met your target, here's few extra:
+You can reduce the total memory footprint by leaving out shared modules that you don't need.
+I don't have experience with Solaris, but the best thing you can do is to not use Apache/mod_php.
+For the record, my server receives close to 2M pvs/month, serving both dynamic pages and assets at a regular rate - no digg effect.
+deflate is typically not required unless you are trying to limit your bandwidth usage.
+Beyond those four modules, most of the memory usage comes from either leaks or application RAM that's not garbage collected effectively, which is why you might want to set the number of requests handled by each process low.
+Since you removed all unnecessery php modules, you could to the same for apache.
+For apache, remove the modules you do not use, as they just use additional memory.
+Just a little, to remove the unneeded stuff, but swapping regularily on a web server will result in a non-responsive web site.
+The intention, again, was to reduce the memory footprint, not to improve performance or HA.
+Just be careful how much you remove, because some of the things you may need or their dependencies are not intuitive!
+And another one is that you can limit the amount of memory available for php in php.ini: memory_limit=xxxM
+Same goes for max connections on MySQL (I recommend the excellent MySQL Tuning Primer Script.
+All of the modules should be documented on the apache.org website.
+I've spent some time trying different values and combination, and then testing them against the real usage of my server and everyone should do the same in their enviroment.
+One last thing - you really don't want to swap on a web server.
+There are some items that are in shared memory, and some items that are in each process's memory.
+You really want to keep your memory usage in RAM itself and not go into swap.
+For MySQL, remove innodb/bbdb if you do not use them, and remove PHP modules you do not need.
+Reference: http://httpd.apache.org/docs/2.0/mod/core.html#keepalivetimeout
+By default (depending on the installation thou) apache loads quite a bunch of extra modules and most of them are not really required for normal day to day usage.
+The main issues are the number of apache processes that are running at any one point -- assuming prefork here, since I've only deployed PHP applications and PHP is not threadsafe.
+If you're not using mod_userdir, then comment it out of your apache config.
+Got rid of the wildcard used in VirtualHost entries.
+If you want to go further, you can replace apache+mod_php with nginx+fcgi setup, which will probably result in further memory reduction.
+Basically, Apache comes configured from most hosts to do just about everything under the sun.
+You're going to need to limit how many apache server processes are running, and being as close to the limit as you are, you're not going to be able to handle very much peaky traffic.
+There are also some remarkable good suggestions that I couldn't personally do:
+Having a web server that's maxed out under normal usage is generally a Bad Idea (tm), as web traffic is nice and low for the most part until you get slashdotted or digged or fireballed or whatever.
+I/O is slow and will drive your CPU usage through the roof as processes block while waiting for something to get shuffled out of swap.
+Following your suggestions I've been able to reduce my memory usage to 195M SWAP and 108M RSS, without touching my code (I'll definitely optimize it soon, but this was supposed to be a solution to get me out of trouble fast).
+By setting KeepAliveTimeout to a lower value (2 in my case) I can expect less server processes just waiting on connections with idle clients that may not request any more content.

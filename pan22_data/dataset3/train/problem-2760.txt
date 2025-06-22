@@ -1,0 +1,16 @@
+Unless the latency is really high I don't think that this would be as large of a concern.
+In the end, you're going to probably need to do it to see how it works.
+You can talk to people using similiar software and having similar workloads to get a feel for scale.
+Log shipping usually means that your unit of replication is fairly large (multiple KB), and you're probably going to benefit from more bandwidth moreso than lower latency.
+The primary determiner of a latency requirement is whether the primary application waits for response/confirmation of the data being posted on the slave.
+If the application doesn't care then latency likely isn't an issue.
+This might depend on how much activity your database is going to receive, or changes that will be produced on the source db.
+The primary determiner of a bandwidth requirement is the volume of data being changed and the amount of time you are willing to put up with the slave being behind after a burst of changes.
+My general rule of thumb for this is that you want a lower latency connection for an OLTP-type system [online transaction processing] with active mirroring (lots of small transactions) or an actively mirrored ODS [operational datastore], but you will want a higher bandwidth connection for a data-warehouse (or any other kind of setup) where you are mirroring in batches.
+If you're doing replication of individual transactions (can be done through different means with different database engines), you may be generating traffic that is bursty small packets.
+If such confirmation is required, then the low latency is necessary to not bog the application down.
+Your best bet is to mock it up in as close to a real-world implementation as possible and measure.
+However, low latency would be important if you are making lots of small updates.
+That depends on the database, the type of replication, and quantity of data being replicated (workload / transactions per unit of time, log updates, etc).
+If there will be a large amount of data changing on the source db then I would opt for higher bandwidth to keep up with the changes.
+If the amount of data to be replicated outpaces the available bandwidth, the replication is not going to be very successful at all.

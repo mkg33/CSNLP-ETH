@@ -1,0 +1,7 @@
+I experienced the same and very specific scenario by trying to load a kernel using netbsd pxeboot bootloader.  It actually talks NFSv2.  8 years ago, this might also be the root cause, your debian client and rhel server did not talk the same language.  You could have enabled NFSv2 by adding -V2 as argument to rpc.mountd.  You can also eventually disable v3 and v4 with -N3,4.
+I have two machine, an NFS server (RHEL) and a client (Debian).  The server has NFS set up, exporting a particular directory:
+the linux kernel for example is trying to mount rootfs over UDP even for the NFSv4 and needed a special argument to be added at the tail of nfsroot. example: nfsroot=192.79.143.131:/diskless/client01,tcp
+...and comment out whatever is in /etc/hosts.deny to make only hosts.allow active. NFS uses tcpwrappers and these files to control access along with what's in /etc/exports.
+I've seen this if your /etc/hosts.allow and /etc/hosts.deny are not correct; check those files for a line with portmap in it and either comment it out (unsecure if you're not behind a firewall) or set the line on the client/server to be your specific subnet.
+Unfortunately, rebooting the server solved the issue, so I still don't know why it was happening, but it's not anymore.
+your rpcinfo indicates NFS is trying to connect over UDP. it appeared NFSv4 is no longer working over UDP but is expecting TCP to be used. 

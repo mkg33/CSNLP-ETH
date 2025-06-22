@@ -1,0 +1,7 @@
+these are all per connection RAM requirements and are driving your RAM footprint much higher than necessary.  Let the DEFAULTS work for you to improve response time with room to breathe in RAM.
+Please note that option n.1 and n.2 have a small, but nonzero, risks to lose some transaction in case of power loss. By far, the safest option is the third one - to buy a proper RAID card.
+By addressing #1, you will significantly reduce the number of full table scans require to fulfill your queries. You'll need to spend a good amount of time, though, understanding what type of queries are causing the most IO load. 
+Such as high jdb2 load for such a low query count (200 per seconds) is quite strange, especially with fast SSD. Are you using a cacheless RAID card? It may disable your SSD internal caches, giving abysmal performance. If so, you can try to:
+By addressing #2, you will allow more of your database to be cached in RAM, which will simultaneously speed up queries as well as reduce IO. 
+jbd2 is a kernel process used to synchronize filesystem journal to disk. This means that your MySQL setup is write-bound at the moment. 
+I am running MySQL 5.5 with InnoDB tables. There are about 200 queries per second. There are also tables with 500 000 or more rows. But I have big issues with server load and io/wait especially with the jdb2.

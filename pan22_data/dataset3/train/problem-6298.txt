@@ -1,0 +1,15 @@
+You can add hot spares only for some raid, but not for specified disk.
+While pulling out one disk, another one in another mirror pair failed.
+I have a Linux mdadm RAID 10 array comprising of 6 (SATA) disks configured with n2 copies.
+As far as i known, mdadm don`t have such option too.
+However, when I add the new disk with mdadm -a /dev/md1 /dev/sde1, mdadm starts to rebuild RaidDevice 0
+Maybe, --re-add option is do what you want, but im not sure.
+I wanted to replace the 5th disk and rebuilt the partition table with: sfdisk -d /dev/sdf | sfdisk /dev/sde
+My question is, is there a way to instruct mdadm to use a new disk to replace a specific RaidDevice?
+    re-add a device that was previous removed from an array.
+If the metadata on the device reports that it is a member of the array, and the slot that it used is still vacant, then the device will be added back to the array in the same position.
+This is not a major issue and I just need to physically move disk 5 to the disk 1 slot to maintain some sanity when looking at the box.
+I don`t saw such option even on hardware raid controllers.
+But you can try to do such trick: make dump of superblock(metadata) target failed disk (sde?)
+Maybe, some controllers do that thing, but not all...
+I've trawled the man pages but can't find a suitable option.

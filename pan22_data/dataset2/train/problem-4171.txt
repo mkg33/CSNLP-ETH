@@ -1,0 +1,8 @@
+My computer, when switched into UEFI mode, skips the BIOS screen completely. No manufacturer's logo, no nothing. It just tries to boot and tells me there's no bootable media (or boots).
+Even if you somewhat managed to destroy the UEFI partition, core BIOS files will not be affected, as they reside in non-volatile memory (flash-based, mostly) socketed on your motherboard. 
+The other answers seem to agree that wiping the BIOS is probably not your problem, so here's another thought:
+/sys/firmware/efi/efivars is a special file system containing all EFI variables. If the vendor didn't follow best practices, it's possible that your rm -rf wiped important ones and thus confused the firmware.
+If I remember the key to enter setup, I can whack it as the computer comes up, and I can still go into the BIOS settings.
+UEFI partition hosts additional software components (eg: debugger, driver, ecc), but the machine should boot to BIOS even without a valid UEFI partition.
+While fun, rm -rf / can only break a havoc inside its own little jail -- and that is the partition(s) it is given. It cannot mess up disk MBR, nor it cannot magically destroy your computer.
+If you know the BIOS setup key, you could try hitting it to enter setup, or trust that it is actually working and restore your tar to the disk, then try to boot. It may be faster to use some other some other piece of UEFI bootable media and try to boot that if it's a huge tar (Memtest86 is supposed to support UEFI boot).

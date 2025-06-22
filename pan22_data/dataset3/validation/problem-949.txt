@@ -1,0 +1,15 @@
+After increasing the NTFS size to take up all the extra space (which shows as unallocated space), the server was somewhat non-responsive, a reboot fixed this and everything is working fine now with the file system seeing the new full capacity.
+Then I increased the size and let it reconfigure the device.
+You should replace disks one-by-one and rebuild same size array, then expand array.
+The reconfiguring started at 50% and took a very long time, but it eventually finished.
+That won't work sorry - if you removed the first disk and replaced it with the larger one that disk would be setup by the controller as through it were a 146GB disk not a 300GB disk and the same would occur when you replaced the second smaller disk.
+The RAID manager software I used was "Adaptec Storage Manager" --> Actions "Expand or Change Logical Drive".
+Adaptec doesn't care about disk size - it supports and works with partitioning (segments).
+After that, I had to increase the file system (NTFS on W2K8 server), but I had to rescan the disks first (diskmgmt.msc).
+Is the new space left automatically visible after the second disk change?
+I replaced a faulting 1TB disk with a 2TB disk; it did rebuild the array, then I replaced the non-faulting 1TB disk with another 2TB disk.
+Is it possible to hot-replace each 146GB HD with a 300GB HD, and let the controller reconstruct the array after each disk change?
+That controller does support RAID-level migration however so you could add one of the new disks as a third member of a RAID 5 array but it would still only add 146GB to that array.
+We have a server with an Adaptec 5805 RAID 1 array, with two SAS 146GB disks.
+Adaptec supports live migration and kernel can recognize block device size changes.
+After the second rebuild, you need to go in and adjust the device size in the RAID manager software (which you can't do whilst the rebuilds are taking place).

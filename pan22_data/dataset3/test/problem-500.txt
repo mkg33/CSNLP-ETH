@@ -1,0 +1,15 @@
+Genrally the daemon writes its settings when it exits (or is restarted).
+In /etc/transmission-daemon/settings.json, there are these options:
+The program is smarter than usual and detects that your password is not a hash, so it overwrites the password with the hash to be secure.
+The config file is ambiguous, and keeps getting overwritten when you restart the daemon in Debian, anyway.
+This also means that you have to completely disable daemon-startup on boot, reboot, edit your settings.json and then re-enabling it to make the changes you do persist.
+You can force the daemon to reload new settings by sending it SIGHUP:
+Pretty annoying, but once you're aware of what's going on, it's fairly easy to cope.
+BTW: I'm not happy that transmission-remote-cli wants to have the password on the command line.
+However, remember that it writes the password it loaded with when it shuts down.
+So doing /etc/init.d/transmission-daemon restart will not do what you expect if you've written the file while it's running.
+Does anyone know how to set the password properly?
+...then it will not overwrite your settings anymore when stopping.
+It overwrites rpc-password, and the password it prints doesn't work anyway.
+This means that any changes you do to settings.json will get overwritten on next restart, whenever that is.
+While this post already has an accepted answer, I find it worth adding that in Ubuntu the transmission-daemon is actually not stoppable once started.

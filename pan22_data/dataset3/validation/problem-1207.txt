@@ -1,0 +1,20 @@
+Use the resulting query in the cursor directly, instead of
+The dynamic SQL is chosen to make the query most efficient – as well as maintainable.
+Connecting to your own server through distributed query methods would do the trick if sp_foreachdb would return single resultset.
+but below query will return the result for all databases in a single resultset.
+One last note concerns the specific script you are planning to run against each database.
+The rewritten query would be parametrised in this way:
+As can be seen, the final touch would need to go to the SELECT part, where the simple SELECT name of the new query would be replaced with
+but when I use my own sp_foreachdb procedure, the source code is on this link below:
+Taking into account your specific needs, some sacrifices might be in order.
+The source code for Aaron's sp_foreachdb contains the following line:
+above query will return only the first resultset of sp_foreachdb execution.
+So code like that below will not be valid as it is nesting INSERT xxx EXEC xxx code.
+You could try adapting Aaron's SP by getting rid of its dynamic part.
+I would argue, though, that the performance might not suffer much from the rewriting I am offering below, as the sys.databases system view usually does not have very many rows, but in any event you could add OPTION (RECOMPILE) at the end.
+For instance, the @system_only controls whether the database_id IN (1,2,3,4) filter should be included, like this:
+Obviously, you could now also get rid of the #x table as no longer needed in the SP.
+The dynamic part is supposed to build a query reading just the database names from sys.databases based on the arguments supplied.
+I get an exception (please note I have added exception handling on that procedure)
+Aaron's procedure is building the query using a repeating pattern where a parameter value is checked and, based on the result, an additional query is added to the dynamic query, i.e.
+However slow it may be, though, it is likely to end up rather ugly, that I can promise.

@@ -1,0 +1,16 @@
+I've been learning about firewalls using virtual box and I had a similar issue not getting the DHCPACK on the server and it turned out that was using the wrong virtual box network settings for the test green (internal) network for a ubuntu firewall vm and a test ubuntu client vm.
+The logs show the server getting the request from the client but the client gets its ip from vb instead so you never get an ACK sent back to the server.
+will show if the client receive the DHCP-OFFER from the DHCP-SERVER, or not.
+As soon as I turned that off, the DHCP lease was accepted:
+For me it was a simple of case of forgetting to turn off the DHCP server (via Internet Sharing) on the client.
+Such DHCP-DISCOVER (as seen from the DHCP-client side) is correctly received from the DHCP-SERVER.
+In such a case, supposing eth0 is the network interface used by the DHCP-client host, a simple:
+: Obviously problems above, as well as other related arguments, can be easily avoided used proper technologies (like GVRP, VTP or other not-strictly-manual-config-approach) but... this is out of the scope of this answer
+dhcpd could not write to /var/lib/dhcp/dhcpd.leases.
+In detail, the never-ending cycle of DHCP-DISCOVER / DHCP-OFFER (as seen from the DHCP-server side), let me think that the DHCP-client is NOT receiving the DHCP-OFFER and, hence, stick reissuing the DHCP-DISCOVER message.
+I've seen this a few times and so far I've seen only two reasons:
+Things are more difficult to troubleshoot if you can not control the client-side.
+the wrong/mismatched setup of the two trunk ports means that:
+Supposing your DHCP-server and DHCP-client are both connected to the same ethernet segment, and supposing such ethernet segment spans several L2-switches interconnected with various "trunk" (802.1q) links, I've run into similar issues when there was a mismatch between the configuration of at least one trunk link.
+This is very easy to troubleshoot, if you "control" the DHCP-Client host.
+If you use the NAT network rather than vb internal network the client vm gets its ip from vb rather than the DHCP server vm.

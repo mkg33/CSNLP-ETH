@@ -1,0 +1,9 @@
+The access pattern for GridFS is different from a sharded collection where random document distribution might be more desirable (for example, with a hashed shard key).
+GridFS is for storing large binary data chunked into smaller documents (by default, 255KB each).
+The chunk number is expected to be a sequence, but you can (and should) provide your own custom IDs when uploading files if you want to improve write distribution for GridFS in a sharded deployment.
+The default values for these two fields indeed increase monotonically, which will lead to a hot shard for writes if you shard an fs.chunks collection using the default ObjectID value for files_id.
+I suspect there are also improvements to be made in the driver documentation so will review those as part of documenting the overall recommendation.
+I've raised DOCS-10993 to improve this information in the MongoDB manual.
+With GridFS the documents relating to a single file are normally read sequentially: identified by unique files_id and ordered by chunk number n. The supported shard keys for GridFS enable range queries based on the order that drivers will reconstruct a GridFS byte stream.
+Official MongoDB drivers should provide an API for setting the _id when creating a new GridFS file.
+A hashed shard key does not support range queries so would be extremely unhelpful for read performance (n chunk lookups would be required and data would be randomly distributed).

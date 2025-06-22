@@ -1,0 +1,15 @@
+Also, the .zip install suddenly becomes larger than the .exe install, so we'd be asked what did we omit in the .exe install.
+The .zip option is preferred by large clients which have many workstations and use automated deployment / software update services.
+My test .dll file is ~10MB, and the archive turns out to be 3.5MB
+But that's not the case with .zip and the resulting install is 15MB larger, meaning more bandwidth usage, slower download times and searing engineer-unhappy-that-things-are-not-optimal type of rage.
+We ship our software in both ".exe installer" and ".zip file" form.
+We create the .zip files with C++ code, which uses the minizip project from zlib.
+So the question is: is it possible to construct a .zip file where this space wastage is avoided?
+The .exe installer figures this out, since we instruct it to use the exact same compressed blob for each of the two destinations.
+Basically most such utilities behave similarly (tar.gz, tar.bz2, rar in solid mode) - only 7zip caught me and the resulting a2.7z is only marginally larger than a1.7z.
+We introduced three .dll files recently, that now need to be put in two different folders, to be used by different components (only one central directory for these files is impossible for technical reasons).
+The software doesn't really require installation, you can just unzip and use it.
+This three .dll files are exact copies in both folders.
+You might expect that ZIP is smart enough to figure out this is repeating data and use only one compression object inside the .zip, but this is not the case: a2.zip is 7.0MB!
+Say that you have a file you want to put in a .zip archive:
+Then you create a file with the exact same contents, and put these both into an archive:

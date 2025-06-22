@@ -1,0 +1,12 @@
+SharePoint doesn't operate like a traditional file-backed web site; the URL is parsed by SharePoint's virtual redirector to pull content from the appropriate content database backing the site.
+After that, all page requests and links would go to the redirected target.
+Before doing this, though, there's one very important consideration to bear in mind: each zone (again: Default, Intranet, Extranet, Internet, or Custom) can only have on public URL associated with it.
+An alternate approach would be to associated an additional hostname with the default zone URL you already have via the Alternate Access Mappings (AAM) functionality built into the platform.
+Generally speaking, the proper way to do this is with option #1: extending the web application.
+In your example, abc123.com is the Default zone public URL.
+So, the first page request could arrive through www.abc123.com, but clicking any of the links on the page that post back to the site will send requests to abc123.com.
+I haven't tested it, but I would expect option #3 to work for the initial entry into the site.
+If IIS has a hostname but SharePoint knows nothing about it, I would expect no content to get retrieved and an error condition to result.
+In essence, this makes the AAM useful for really only the first call (unless you're using something like ISA Server's SharePoint publishing functionality -- but that's another story and off-topic).
+If SharePoint isn't aware of the hostname associated with a site (that is, it is only assigned in IIS), it has no way of knowing where the content from that site should be drawn from.
+You could use AAMs to then map www.abc123.com as an additional entry point to the Default zone ... but when you do so, all links on the page will refer back to abc123.com.

@@ -1,0 +1,10 @@
+First, all the talk about the optimizer not using low cardinality indexes is overblown.
+I'm sitting in front of a table with over a million rows in it.
+Second, if you partition the table as discussed, then every query that does not reference that column in its where clause now has all 7 partitions to deal with (and 7 sets of indexes).
+The myth of low cardinality indexes not being useful or used... seriously needs to be discarded.
+It is, however, a bullet of a different kind -- and it tends to point toward your foot unless appropriately used.
+It uses the index for rows that match, and it also uses the index to almost immediately tell me that no rows match if I used a value in the where clause that is not found anywhere in the table in that column.
+Its true that the optimizer may not prefer it, and it's true that the optimizer may sometimes choose to disregard it, but I have seen posts suggesting that if more than "x" percent of the rows match an index, it wont be used.
+I could hardly disagree any more than I already do with the accepted answer, for two reasons.
+Unless there is something really significant and meaningful about this column that means you'll be interrogating it in most of your where clauses, partitioning on it doesn't seem like a particularly good plan.
+It has an indexed enum column, along with a number of other indexes, but I'm showing that index below.

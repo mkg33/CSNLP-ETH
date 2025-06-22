@@ -1,0 +1,20 @@
+The weakness in this approach is that the date list cannot contain the current or future dates, and that there is no provision for updates or new records for a date that has already been copied into the DW, but for your logged transactions, it sounds like that may be acceptable.
+I would love to go into more detail but I don't know enough about your ETL process to give more advice.
+The next thing you want to do to prevent against duplicates is also fairly simple.
+Now when you're doing your ETL you can call to this table to find the date range you are looking for essentially all rows > LastSuccesfullRun
+So if the job runs after having missed a day or two, it will query production separately for each day, but it shouldn't waste any resources pulling records that the DW already has.
+1. i take in the last 5 days regardless, every day the ETL runs, deletes the last 5 days and refill.
+It sounds like you're able to treat each day's records as a discrete unit.
+2. i check the destination tables if they have missing dates in the last month and then i query the source with the missing days.
+You may want to limit the date ranges for #1 above to the past 5 days, 30 days, or whatever makes sense.
+keeping in mind that the source is a huge table in a production environment that i have to optimize my query to the maximum when requesting from it.
+Essentially this will control the ETL you are doing.
+If the job is run multiple times in one day, it shouldn't even end up running a query against production, unless there's a day that didn't have any transactions (e.g.
+i want it to check if there are missing days and run run the ETL for that day, and check if there are duplicates and delete them.
+but for transaction tables, that have many records, i usually increment, that is i run the ETL daily to add yesterdays records.
+Alright this is going to be a sort of basic version of what exactly you need to first is going to be to make a control table.
+I have 2 type of tables to populate the data-warehouse with every day, lookup tables or configuration tables with few 100s records, and thats easy where i just truncate and refill the table.
+now i am trying to design a way where i over come these 2 problems as well as am trying to develop the ETL in such a way that it can auto fix it self incase any of these events occur.
+In this table one of the things you will want to store the last time the process ran successfully.
+First take your data flow task that has now been filtered by date range according to the last successfull run.
+Then use a lookup component to compare against the rowset you currently have in the table.

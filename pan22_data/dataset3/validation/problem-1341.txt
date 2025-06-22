@@ -1,0 +1,22 @@
+I know I can manually add the SPN with setspn -A, but that isn't really the point.
+When the Database Engine service starts, it attempts to register the Service Principal Name (SPN).
+If the name of the AD account used by SQL service is longer than 20 characters then SetSpn.exe won't be able to find it in AD and the only way to get your SQL sessions to authenticate using Kerberos is the reconfig of AD permissions and the restart of SQL.
+I have replicated this to all domain controllers, and confirmed the inheritence of the new ACE to the specific computer object, using both the Effective Permissions tab and with dsacls CN=SERVER01,CN=Computers,DC=fabrikam,DC=local, the latter of which now includes:
+I am trying to configure a fresh install of SQL Server to run under a domain account.
+Don't try to fool SetSpn.exe -S by shortening the name-parameter: SetSpn.exe will then find the account but it will register it with the name that is "mismatched" for the Kerberos
+How can I further diagnose which privileges/permissions are missing here?
+When SQL Server is running on the Windows 7 or Windows Server 2008 R2 operating system, you can run SQL Server using a virtual account or a managed service account (MSA).
+I have added my service account (not a Managed Service Account, just a regular user account), to an AD group (e.g.
+However, when I restart the SQL Server service, I still see the could not register the Service Principal Name message.
+I have used Sysinternals Process Explorer to inspect the running sqlservr.exe; the Security tab there clearly shows the correct service user and its membership of the SQL Servers group.
+SQL Servers), and I have added an ACE to my domain Computers container's ACL, for this group, selecting:
+To register the SPN, the Database Engine must be running under a built-in account, such as Local System (not recommended), or NETWORK SERVICE, or an account that has permission to register an SPN, such as a domain administrator account.
+The computer properties shows Read/Write SPN as effective permissions and the Admin account does not.
+If the account starting SQL Server doesn’t have permission to register a SPN in Active Directory Domain Services, this call will fail and a warning message will be logged in the Application event log as well as the SQL Server error log.
+in-spite of this....How can i be sure of which account to remove the associated SPN from?
+However, I get intermittent errors when trying to connect to the server using another domain account, and I still see The SQL Server Network Interface library could not register the Service Principal Name when trawling the ERRORLOG file.
+I have also restarted the server, with the same result.
+What else must I do to ensure that the service account (and any future account I place in the SQL Servers group) can automatically register its own SPN without manual intervention?
+If SQL Server is not running under one of these accounts, the SPN is not registered at startup and the domain administrator must register the SPN manually.
+One is associated with the server and again to a domain Admin account.
+Both virtual accounts and MSA’s can register an SPN.

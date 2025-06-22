@@ -1,0 +1,49 @@
+https://en.wikipedia.org/wiki/Address_Resolution_Protocol
+Finally, when the response reaches the switch, the switch reads the MAC address in the response packet header, and sees that PC#3 made the request.
+For example, ETH3 could have the IP: 192.168.1.20/24.
+http://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13788-3.html
+You can read more about NAT on Ciscos website - they give a pretty good explanation of how it works: http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/26704-nat-faq-00.html
+So, if my laptop has an ethernet port, will that also often be referred to as ETHO?
+When traffic crosses routers, it leaves one network and enters another.
+The router knows which IP address the packet is for, and so it forwards the packet to the switch, which looks for the IP address in its ARP table to find the corresponding MAC address and then send out the frame on the appropriate interface/port.
+In regard to your ethernet port question - the name is given by the interface of the adapter, this totally depends on the manufacturer and the drivers.
+Next, I am a little uncertain as to how a packet is routed from the internet to, say, PC #3.
+There is no strict requirement that a router hand off traffic not matching any known route in it's routing table to a default gateway.
+The TCP/IP stack will try to find a matching route, and if none is found, will send traffic to the default gateway if it exists.
+Typically though they're called things like 'Local Area Connection'
+I am under the impression that each router interface has its own IP address and subnet mask, both of which are given to them by the ISP.
+If it's connected to something you control, you'll need to assign IP addresses yourself.
+The router's routing table will look something like this, though (I made up addresses for the other interfaces as an example):
+Suppose PC#3 has the IP 192.168.1.45 and makes a request to www.facebook.com.
+If an interface is connected to something your ISP controls, you'll need to use an IP that your ISP assigns.
+So, www.facebook.com sees a request is made from 192.168.1.20 (ETH3 interface).
+http://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/26704-nat-faq-00.html
+The other interfaces would have a manually configured (internal/private) IP address (in this particular case).
+This means that the network ID (id of the subnet) is 192.168.1, and thus all servers in the subnet connecting to the ETH3 interface will have IP's of the form 192.168.1.XX.
+Router's TCP/IP stack consults its routing table to see if facebook.com's IP address matches any routes, and if none is found, will send traffic to the default gateway if it exists.
+The original MAC address is lost once traffic crosses a router.
+The same process happens at your ISP, then your ISPs upstream provider, and so forth until it reaches the destination.
+The ethX scheme is just a convention - by default Linux will name the first one it sees eth0, the next eth1, and so forth.
+It sends a response to this request, which is eventually routed to ETH1 and then to ETH3.
+In the same vein, are switch ethernet ports also enumerated in the same way (ETH0, ETH1, ETH2).
+As facebook.com's IP will not match any of those routes, PC#3 will send the traffic to the default gateway.
+Technically, you could have an "internal only" router that only connects 2 or more private subnets, and access to other subnets would not be possible.
+eth1 will have to have NAT configured, so at that point, NAT changes the source address to look like it came from eth1 and remembers that fact for when it receives a response.
+Basically PC3 doesn't have it's own global IP address, it only has a unique IP address within it's own network.
+Finally, I have a question about the ethernet interfaces.
+The rest of your devices usually just get NATed versions of that IP address.
+You ISP gives you 1 IP address (be it static or dynamic).
+It also means that you get a "free" directly-connected route based on the IP/subnetmask assignment - the router knows that it can reach 192.168.1.XX via ETH3, so an entry will be placed in the routing table simply due to that fact.
+Because routers don’t work with MAC addresses (layer 2 of the OSI model), they work with IP addresses (layer 3).
+As facebook.com's IP will not match any of those routes, PC#3 will send the traffic to the default gateway.
+No, facebook.com would see a request from your external IP address (the one on the ETH1 interface).
+Names are assigned by udev or systemd and persist by MAC address.
+Router's TCP/IP stack will consult routing table to see if it can find a matching destination.
+IP stands for Internetworking Protocol - it's an address scheme that is designed to allow any computer to reach any other computer globally - and if the destination computer is not on the same network, a hierarchy of routers is supposed to forward on the traffic back and forth.
+Any clarification on this would be greatly appreciated.
+Correct, even though the subnet ID would be 192.168.1.0 to be exact.
+Only the WAN-facing interface (ETH1 in this case) would have an (external/public) IP address assigned by the ISP.
+If this is correct, I am slightly confused as to why it is necessary for PC#3 to have its own IP address in the first place, if the only information used to get the packet from www.facebook.com to PC#3 is the IP address of the router interface the PC is connected to + the MAC address of the PC.
+Since private IP addresses are not routable on the public Internet, the private IP address of the PC (192.168.1.x) is “translated” to the public/external IP address through a process known as Network Address Translation (NAT).
+PC#3 is part of the 192.168.1 subnet (which connects to the 192.168.1.20 ETH3 interface).
+The router keeps track of these translations in a so-called NAT table, so it knows where the request came from, and where to send the reply from the server.

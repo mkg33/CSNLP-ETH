@@ -1,0 +1,12 @@
+In the case of protecting against site failure, you may get better mileage out of lower bandwidth / higher density transfers in the case of one (or both) bandwidth constrained site.
+I can't speak for DRBD Proxy, but the regular DRBD will not like this much.
+Memory synchronous (Protocol B) won't help as it's still constrained by the bandwidth issue.
+I recommend you re-evaluate your DR strategy to work out what you are mitigating against; hardware failure or site failure.
+Async replication (Protocol A) might technically work, but I would expect the secondary to be so far out of date as to not be usable in the case of a failure (the replica might be hours behind during the day)
+You can still combine this option with limited file replication to an DR site to protect against a primary site failure.
+300KB/s could be taken up by application logging alone, let alone doing anything interesting on your server.
+If you're protecting against hardware failure, a local DRBD replica connected with a GigE crossover will work just fine, allow for fully synchronous updates, and permit online verification to prove the data is consistent on both nodes.
+I expect DRBD Proxy will still suffer with similar issues, primarily causing replication delay due to the limited bandwidth.
+Some examples of this technique are rsync (over-the-wire transfers are limited to changes in files between runs - rather than per-change for every change - plus some protocol overhead; can be run over SSH to encrypt and compress traffic further) and database log shipping (transferring compressed database logs to replay on the DR box may use less bandwidth than transferring a full database dump).
+With even limited activity, you could easily saturate a dual T1 (2x 1.5Mbps; for round numbers, 300KB/s).
+This rules out synchronous replication (Protocol C), let alone adding the over-the-vpn latency into the equation.

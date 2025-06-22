@@ -1,0 +1,8 @@
+If you want more informations, you also can use the ultimate DEBUG logging mode, but, be really careful with this one because logs will growth fast without a good logrotate policy ;-)
+When sshd logging level is set to VERBOSE, an additional line is printed stating that a user connected and the port they connected from.
+On my VPS, running Debian 7, I have ssh enabled on the default port 22 with only private key authentication enabled, all other ports are filtered with iptables. I am frequently getting login attempts from china under bogus usernames, such as "plesk" or "r00t",  showing up in my /var/log/auth.log
+The only issue is for authentication attempts that don't present a private key and attempt login under a valid username, the only line that appears in the logs reads
+Any logging that sshd can do will be documented in man sshd_config.  Try searching that for "log", but I don't see anything that specific there - mainly just LogLevel and SyslogFacility, although maybe MaxAuthTries would help.
+The answer to your question is No. At least, not without taking heroic measures (e.g., running DEBUG level and processing it with scripts) that are much harder than some sensible alternatives. That same [preauth] error is reported for no key or an invalid key.
+Personally, I always install DenyHosts, although it doesn't appear to have recent updates. I've heard that Fail2Ban is also good
+What you can usefully do is further harden your config. You've already required a key, you can also use the AllowUsers and AllowGroups commands to prevent connection by anyone not specifically authorized.

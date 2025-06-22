@@ -1,0 +1,19 @@
+Sorry the tick function pasted in weird - go to the link for better formatting
+Tutorial 2: Controlling the animation speed and flipping the sprites
+I'd like to leave the fps at 60, but alter how fast the frames are looped through without altering the main game FPS rate.
+How can I control the animation speed of a sprite using create JS?
+Or, if you only have one animation on stage, why not just reduce the framerate?
+You want your spritesheet animation to go slower, but i guess you do not want all other elements to go slower, the solution above seems to slow down everything by only calling stage.update each fourth tick.
+http://www.htmlgoodies.com/html5/client/html5-gaming-how-to-animate-sprites-in-canvas-with-easeljs.html#fbid=CLhV58xOZNe
+    // To slow down the animation loop of the sprite, we're not redrawing during each tick
+I thought changing the bmp animation frequency property would do the trick...
+There’s currently an open issue about this on EaselJS 0.3.2: https://github.com/gskinner/EaselJS/issues/60
+EaselJS exposes a SpriteSheetUtils object for that and a flip() method.
+Also, I noticed that each time I hit a random key, the animation plays 1 frame then goes back to first frame.
+Finally, here is the code that slows down the speed animation and handles which sequence to play based on the character position:
+You’re essentially making a derivative sequence named “walk_right” based on the “walk_left” sequence that’s flipped horizontally.
+The simplest way I’ve found to fix the animation’s speed is by using a modulus operator to avoid drawing/updating my sequence during each tick.
+When you press right and left, the sprite will run through the frames...
+To make the character walk normally from left to right, we just need to flip each frame.
+// {nameOfFlippedSequence:["derivativeSequence", flipHorizontally, flipVertically, optionNameOfNextSequence]}
+    // With a Modulo 4, we're dividing the speed by 4

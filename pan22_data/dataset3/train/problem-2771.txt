@@ -1,0 +1,11 @@
+If it keeps trying to look up the DNS hostname of the machine you're pinging (or some router that's sending back ICMP Unreachable messages), then that could be hindering ping enough to keep it from getting out more than one packet every few seconds.
+Is there some QoS feature on your router (especially if it's flashed to Tomato or DD-WRT) limiting or de-prioritizing ICMP traffic?
+Maybe it is implemented that way, so that a long-running ping will continue to ping the correct host, even when the host<->IP mapping changes during runtime.
+Long story short, as suggested elsewhere, try ping -n.
+If there is a delay in name resolution (for example, because the RR has a very low TTL and your caching DNS server does not enforce a minimum TTL), then you will likely see long delays between each ICMP request, but individual responses having a low TTL.
+Trying running ping with the -n option so it doesn't try to do name lookups.
+You may not hit the same server by pinging google.com they have thousands of servers and based on where you live you may be directed to one or many of them due to server load at any given time.
+It is probably your router's dns software, and ping is waiting for the result of the dns lookup and not the icmp reply.
+It seems that ping does a name resolution before each ICMP request is sent.
+So it could be the router is allowing LAN hosts to issue only 1 ping per 10 seconds, but when that ping is allowed through it works fine, so that could account for the low RTT but high delays.
+Run ping with the -n option, so that it does not do reverse name resolution.

@@ -1,0 +1,20 @@
+It's really hard to say for sure, though, since the number of potential variables is so huge.
+But bear in mind, such a short test will likely only be testing thread creation/spawning rather than the app performance itself.
+There's so many possibilities here it's hard to know where to begin.
+triple channel vs. single channel), it will have a HUGE impact.
+Really, all I can suggest is to play hunt the bottleneck.
+I'd lean towards an untuned MySQL server, as that tends to be the first point of call since default MySQL configs are woefully underspecced for modern hardware.
+You're not even running the same OS, so the versions of everything is going to be different, along with the default configurations from which you're working.
+What I would recommend is starting Apache up in single-child mode and running strace on it with the -tt option.
+Check that out, just by removing half of the memory and keeping the same configurations on the secod machine.
+What you are looking for is a large gap between syscalls or a syscall that takes a long time.
+Based on your talk of MySQL, I suspect it will be a poll() or multiple of them.
+If the problem turns out to be MySQL, you might be able to find out what's causing it by turning on the slow query log, setting the long_query_time to something low like 1 second or 0.1 seconds and turning on log_queries_not_using_indexes.
+It also will be hitting RAM more than anything else due to disk buffers/cache, so if you've got a more optimal memory configuration in one server over another (eg.
+You can also find differences between the performance of servers by using monitoring and graphing tools like Munin, Cacti or Zabbix.
+Without knowing what application you are running, I cannot suggest any more.
+I would suggest you looking into the fact that Intel memory controllers scale frequency down as you fit memory slots inside the machine.
+If its much lower on one machine, there is your answer.
+As an example you have 3 branches for each memory channel (9 Dimms) if you fill only 1 branch the memory frequency will stay at 1.6Ghz if you fill all the dimms it will be lowered to 1.06Ghz.
+Run a bootable version of memtest on each machine and it will give you a rough indication of memory bandwidth.
+50% CPU limit cap looks awfully like the PHP setting open_basedir

@@ -1,0 +1,9 @@
+You'll need to adapt the policy to label files correctly. So you'll have to set this with semanage fcontext -a -t <type> <path-pattern> for each pattern listed in the output of the above command.
+This causes security contexts under /postgresdata to be applied as if they were under /var/lib/pgsql. You can then fix the contexts of any existing files with restorecon:
+best would be if you make the copy of the whole folder with rsync the the arcive option "-a or --archive" that try to keep the original permissions and symlinks ect. the same. of course only if its possible on the target Filesystem...
+The file contexts required for PostgreSQL can be determined using semanage fcontext --list | grep ^/var/lib/pgsql.
+If you insist on putting PostgreSQL's data directory in an unexpected location, you can make SELinux work correctly by setting a new file context for the new directory structure that is equivalent to the existing one. For example:
+Another problem could be the "other partition" if you use a different Filesystem for example like NTFS for moving data between multi boot systems you will run into those kind of permission problems especially since the executable permission bit is not supported from NTFS. Same goes of course for other non UNIX FS like fat ect. 
+Be aware that people are not going to understand why you did this. That includes any admins that look at this server in the future, including yourself. There's no need to use a nonstandard directory simply because you are using a new disk. Just mount the new storage at /var/lib/pgsql.
+The easiest thing to do is to mount your new disk at /var/lib/pgsql and save yourself a lot of trouble. This way you don't have to worry about altering SELinux policies or any of that.
+Having done that you just need to call restorecon -Rv /postgresdata to make SElinux relabel the files according to the updated filecontext patterns you just created.

@@ -1,0 +1,23 @@
+The lack of a secured DNS is slightly concerning, but for low-value targets it's not really a practical reduction in security.
+The lack of standardisation, and the additional management overhead (much easier to just drop a key/cert on a machine than have to also add a key -- which is likely to be quite long and hence whack up against the UDP packet limit) are the things that kill this from a practical perspective.
+Google Chrome has supported DNSSEC-stapled certificates for a while now, and now RFC6698 DNS-Based Authentication of Named Entities (DANE) is an attempt to standardize this support.
+For internal services, though, we just import our own CA certificate so you don't really gain anything there, and any public site that needs SSL will want a "real" certificate anyway.
+This will change dramatically later this year when the root zone gets DNSSEC signed and as more and more TLDs support DNSSEC.
+Most low-cost SSL certificate providers really only verify that you control a domain name.
+It'll be a few more years before the browser support for this is widespread, but I'm looking forward to it.
+I am kind of wary on adding stuff especially when it comes to security.
+I'd expect to see massive backlash and FUD from the commercial certificate providers if something like this were to be seriously pushed (RFC drafts, reference implementations, etc) -- like any parasite, they get awfully annoyed when their cash cow looks like it might get slaughtered.
+The main reason behind my thinking is because DNS and SSL are not in the same domain and do not have similar functionality nor purpose.
+For those types of certificates, rather than pay a third party to verify that I control the DNS records for the domain, why not "sign" the certificate in DNS?
+At this point there's something of a chicken and egg problem, though...
+Since I asked this question years ago, there's been some positive development towards making this a reality.
+The main reason it's not being done in anger much is because the transport mechanism isn't yet secure.
+I'm not aware of any browsers implementing something like this, but it seems like it would be a good method to at least get a trusted, encrypted connection without displaying the dreaded "Untrusted certificate" dialog.
+I see two problems with the design, but both seem minimal:
+It's already perfectly possible to encode an X.509 certificate inside a DNS Record - look at the CERT record type from RFC 4398.
+SSL certificates are supposed to validate the identity of the site, so that the end user can be sure their request hasn't been diverted by a poisoned DNS server, bogus BGP broadcast, or other dirty trick that would also allow a bogus certificate served from DNS to look valid.
+DNS query size (as mentioned elsewhere) is also a concern, although it's worth noting that the CERT RR also allows you to simply store the URL from which the real X.509 certificate can be downloaded.
+If I generate a keypair on a server and publish the same public key in DNS for the hostname, I'd think that would be an equivalent level of security.
+I say "supposed to" because then everything got watered down by "instant" certificates that prove nothing in particular, and to be honest I think browser vendors should either display the "untrusted certificate" warning for all unaudited certificates, or go ahead and allow self-signed certificates without prompting.
+Aside from the issues I noted above and existing commercial certification authorities fighting the idea, are there any other reasons doing this would be a bad idea?
+The combination of DNSSEC to secure your DNS with published TLS certificates in DNS allows this goal.

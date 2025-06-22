@@ -1,0 +1,18 @@
+http://www.mongodb.org/display/DOCS/Backups#Backups-WriteLock%2CFsync%2CandBackup
+What testing you need to do to verify the replica set is working for you is up to you, as is  how you manage the cutover of writes from your application.
+For zero down time (aside from the fsync and lock, where no writes would be possible), you could temporarily write to both perhaps, then cutover when you are happy.
+The secondaries should then be wiped and resynced from scratch from that new primary.
+You have to use the master, because slaves have no oplog in a master/slave set up and you want one for the replica set primary to take over as easily as possible.
+The other option would be to create a new master and then use that to be the primary of your replica set.
+Once it was up you would then add other secondaries, get them synced up and you would be good to go.
+The only down time would be to restart mongod with the new option and then run the initiate command.
+That would be dependent on your app server being up to handling double the write volume, of course.
+The simplest way to do this is to follow the instructions here:
+Then, copy the data files from the current master to the replica set primary db (shut it down first) and then start that up as normal.
+Just wondering what's the most efficient way (shortest down-time required, and lossless transfer of all data) to transfer all the data from the master/slave to the RS.
+You could step it down and promote one of the new machines if you so wished once they were synced to complete the cutover.
+I now have two mongo servers with a Master-Slave configuration (all read-writes are done with the Master, the Slave is just a cold backup) serving a pretty demanding web app.
+The nice thing about this is that you can test it out before you do any actual cutover and see how you fare.
+To do that fsync and lock the master as if performing a backup (this disables writes, so be careful!
+http://www.mongodb.org/display/DOCS/Upgrading+to+Replica+Sets#UpgradingtoReplicaSets-UpgradingFromReplicaPairsorMaster%2FSlave
+I want to switch to ReplicaSet of 3 servers - I have these 3 already configured and working (still not connected to the web app).

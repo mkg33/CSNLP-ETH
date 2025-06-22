@@ -1,0 +1,30 @@
+Assuming that you're using VMs and have adequate disk space, clone the DR node, shut down the original DR node, and do the testing on the clone.
+Other than truly failing over everything, this is about the safest, because what happens if the primary site gets destroyed 5 hours after the DR test starts?
+We isolated our remote DR network to simulate a catastrophic failure of our main site and tested the DR site to make sure we could bring it up and use it successfully.
+The test went very well up to this point, but we had a major issue when setting things back to normal.
+Assuming the use of VMs, take a snapshot of the DR server after the source site is disconnected.
+I did consider shutting down the DR server before opening the network link, but am still not sure what would happen when it’s brought online.
+are cloned and the clones are brought online in the bubble.
+I could not force failover back to the Live servers and had to rebuild the cluster.
+Some organizations create a "bubble" network at the DR site that cannot communicate with the production DR network.
+The downside of this, of course, is that it can become a massive undertaking and require a lot of staff time, hardware, etc.
+Question: How do I prevent the Live servers from detecting that a forced failover was performed on the DR site?
+But, because I had to force failover on the DR site, as soon as the network link was re-established, the primary site detected that the DR server had been started with the Force Quorum switch ( /fq) and it basically shut down the two live servers.
+If you've disconnected the sites, you lose 5 hours of data.
+We recently did an internal IT DR test as proof-of-concept during which the rest of the company continued using the primary site.
+This solves two problems: 1) You don't have to resynchronize the entire database(s), and 2) You don't have to evict/join cluster nodes.
+Then the other servers that need to be part of the DR test are cloned into the bubble.
+We are using an AlwaysOn Availability Group in SQL 2017 on Windows Server 2016 which consists of two servers on our primary site and one DR server on a remote site.
+After the DR testing is done, shut down the DR server and then revert it to the snapshot.
+Because the main site was still in use during the test, my main concern was to ensure that the live database would not be corrupted by the DR database which had also been used during the test, so I dropped the DR database before we opened the VPN and I expected the main site to start automatic seeding back to the DR site.
+In the test you performed, this was occurring so you apparently had enough disk space for your logs that it wasn't a problem.
+Then infrastructure servers (domain controllers, DNS, etc.)
+This allows you to keep your real DR servers online and functional during the DR test.
+This is fairly simple and requires the least hardware, but it does have the downside of leaving your primary site unprotected during the time of the DR test.
+The only downsides are that the source site is unprotected during the test, and the DR node may be a little slower due to the snapshot depending on your storage infrastructure.
+I might recommend shutting down the server first just so the snapshot is in a good, clean state.
+In any case, the remote database would need reseeding from Live.
+As mentioned in the comments above, you can evict the DR node from the cluster before the DR site is reconnected, and then rejoin it back to the cluster and add the node back to the availability group.
+Oh, and your primary will have to have enough disk space to queue database replication until the sites are reconnected.
+When done, delete the clone and bring the original DR node online.
+The downside of this approach is that during the time of the testing, the primary server has to queue all of the data, so transaction logs may get quite large.

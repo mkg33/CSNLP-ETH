@@ -1,0 +1,8 @@
+you can force run hadoop oob balancer periodically.this will shuffle blocks so all datanodes will be consuming same amount of disk space 
+you can specify threshold to this script to which hdfs blocks will be balanced , default is 10 , you can specify lower number if you think 10% is not enough , I see you already using 90% space on hdfs ,so you can go for 5  
+Currently we workaround it by decreasing the amount of space reserved for the root user but we'll eventually run out.  We also run the re-balancer pretty much constantly, but some disks stay stuck at 100% anyway.
+Our HDFS cluster is only 90% full but some datanodes have some disks that are 100% full.  That means when we mass reboot the entire cluster some datanodes completely fail to start with a message like this:
+for your case , balancing your data evenly over the cluster datanodes might help you to avoid disks getting full even if overall cluster has space 
+I think what you really want is to set dfs.datanode.du.reserved to some non-zero value, so that the datanode ensures there will always be that much space free on the system's HDFS volumes.  
+According to HDFS-1564, there's discussion on making a per-volume option, but it's not slated for any particular version yet.
+Changing the dfs.datanode.failed.volumes.tolerated setting is not the solution as the volume has not failed.

@@ -1,0 +1,11 @@
+If you just back up the whole filesystem, you will get an inconsistent backup of Exchange and chances are nigh on certain your databases won't mount if you restored the Exchange database and transaction logs from a filesystem backup.
+That's an important distinction, and you should do what's required for your business.
+Regarding your comment saying one big system partition including everything, I assume you are talking about doing a full filesystem backup of the server.
+The whole idea behind transaction logs being on different physical disks is that if the disks your databases are stored on fail so catastrophically all data is rendered useless, you can still recover to the point of failure with a combination of your most recent backup and the transaction logs.
+If you do that, be sure to exclude the Exchange databases and transaction logs from your filesystem backup and do separate Exchange backups using supported software which backs Exchange up in a logically consistent manner.
+That's not to say any other combination isn't supported, and it's certainly fine to have everything all on your C: drive if you are constrained for example by number of physical disks that fit in your server.
+If the disks fail which render your databases unusable, you would restore from backup and then "replay" the transaction logs, which would contain the data between the backup and the failure.
+This works because before Exchange does anything to the database, it writes it to the transaction logs.
+If your separate partitions are actually the same set of physical disks and they all die, you don't have the benefit of recovery to the point of failure, but rather you have recovery to the point of your last backup.
+Microsoft recommend you have 3 separate sets of physical disks for your operating system, Exchange databases and transaction logs.
+The backup process is no different, the only thing that's different is recovery, and then only if a particular failure scenario occurs.

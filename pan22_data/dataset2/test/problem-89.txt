@@ -1,0 +1,6 @@
+where if you combine the values of chroot + webroot + $fastcgi_script_name you get the absolute path of the file on the disk. Because PHP is running in the chroot you don't need to include it in the path.
+You haven't posted it but you also need to make a change to the fastcgi_param config file, where you set the SCRIPT_FILENAME parameter which probably looks like this:
+Then the path /opt/jail/example/home/example becomes the path / for PHP. Because of that this is non-sensical: 
+btw It's a better practice to have the chroot to be set to one level above the webroot, so that your application can write to log files that are within the chroot, but not in the webroot, so that there's no way for them to be accidentally downloaded by a user.
+I want to set chroot to the DocumentRoot using PHP-FPM pools' chroot attribute. With the settings below, whatever I do I get only a "File not found." error:
+So the website itself is located in /opt/jail/example/home/example. You may find it strange, but doesn't really matter, it is caused by jailkit.

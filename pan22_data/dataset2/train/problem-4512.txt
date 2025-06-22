@@ -1,0 +1,14 @@
+There are several resources you can have a look such as Mono P/Invoke docs and unity docs on native plugins. 
+I understand that you can expose your C++ code to a scripting language such as ChaiScript. From this you can call code that you've made in C++. In Unity, however, they have functions in the script, such as Update() that get called. In other words, how do I call script functions from C++?  
+In Lua for example, I can load a script and then check whether a particular function is declared.  I've often done this for Update() and other methods so that if defined, I create a mapping that will then be invoked during the game simulation for those scripts that have overloaded that callback.
+I guess Unity is forced to use Reflection for SendMessage, because the method name is know only at runtime. Use it carefully because reflection is really expensive.
+Unity uses its own messaging system to call methods like Update. You can use it as well with for example Component.SendMessage.
+C++ and C# can interact quite easily. (In the practice C++ issues relative to name mangling often force to have an intermediate C layer)
+Scripting languages often expose a set of API functions that allow you to inspect and determine attributes about a loaded script, in your case what functions are defined.  This varies by scripting language naturally and will also depend on your native language to scripting language bindings.
+Why? Not sure, I often asked my self why (honestly I prefer a more explicit approach like implementing an interface like ISerializationCallbackReceiver).
+On how the binding between function pointer and C# method happens, it's probably creating a delegate instance. 
+For the others Update, Start, etc.. the problem is simpler because method name, signature and target object are know. So the expensive binding process can be used only once in initialization. Here's a nice article.
+For what concern how Unity handles callbacks it's another question. I don't know the exact underlying implementation but most MonoBehaviours hooks like Update aren't virtual|abstract method, nor implement any interface.
+I think that the underlying implementation of the message system uses some form of reflection to determine what methods a class has and call the appropriate ones.
+In the case of Unity, their MonoBehavior is a contract they've defined and they simply look to see whether you've overwritten specific functions from the contract and if so, then the callback is invoked at the appropriate times during game simulation.
+Calling a C# function from C++ code is simply as using a function pointer (a C# delegate can be marshalled to be used this way).

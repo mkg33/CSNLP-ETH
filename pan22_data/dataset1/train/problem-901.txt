@@ -1,0 +1,12 @@
+You may also want to take a look at OpenTSDB, a Hadoop-based system for storing and retrieving massive time-series data.  I've never used it, but it sounds handy and at least near your purposes.
+I need to build a system to store & maintain a huge amount (20 [TB]) of time-series data (for many different instruments), so that it would support the following requirements:
+(1) fast appends of new data, as new data comes in
+(2) fast retrievals of existing (already stored) data
+There are 10,000 instruments and 1000 data fields (updated every 1-min) to save for each instrument. Once data is written to disk, it remains unchanged (no issues of concurrent writing/reading). 
+Since there would be no need for any joins whatsoever (typical query is: give me all instruments for field 'X' on interval 'Y'), I tend to store the data using flat binary files that will be named like this: fieldName.timeStamp.bin; this way, I would be able to store all the data in flat binary files (no need for a huge expense for a giant server / commercial database) and still, queries will be fast.
+Since it's a lot of data (circa 20[TB]), I thought I would need some logic to distribute the files (fieldName.timeStamp.bin) between all of my machines. Here's what I had in mind: there will be a central machine to which all queries will be sent. this central machine (based on the field & timestamp requested) would route the query to the machine of interest, that would in turn return the requested data.
+(1) is this design scalable as I think it is? any drawbacks?
+(2) is there anything I am missing here that might hurt performance? 
+(3) is it really the best way to send all queries to a central machine, that would in turn route the query to the right machine? or would it be best to directly access the right machine (suppose I know which one it is ) using NFS?
+(4) is there a faster way than NFS to access the right machine to read data from it? are there other methods for sharing all the data that on the data machines with client machines?
+All of my machines use Ubuntu Linux. As can be understood, there will be many client machines that would access the various data machines and read (only read, not write) data from them. my goal is to have the data read as fast as possible.

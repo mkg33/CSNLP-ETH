@@ -1,0 +1,12 @@
+But given the next part of my answer, that will only really matter for things that are moving on the map, not for drawing the map.
+The code is also available to browse on the site using developer tools.
+As far as wrapping to be able to scroll around the world (I'm assuming in the east/west direction only) all you are doing looping from startpos to startpos+CellCountWidth(canvasWidth) [ which may extend beyond the end of the array] and just wrap the position if it goes over the edge (if xpos >= arraysize { xpos -= arraysize; }) [x is east west, Y is your row counter the way I'm looking at the coords]
+Basically what it boils down to is if you store your map in a 2D array, it is wasteful to also store sibling links.. the sibling coords for hex grids are too easy to compute at runtime
+My current problem is that I want to make it like in the civilizations games that you can scroll around the world.
+you may be scanning a 2D map array, but drawing the hex cells with the correct offsets based if the row is even or odd.
+My map array (2d) holds all the tiles and every tile has a member which holds all the siblings.
+I have created a simple canvas renderer to render hexagonial map.
+Hex grids can be treated as square grids with an offset every other column/row (depending on orientation), which means your map can be a 2D array instead of a linked graph of hex cells, then you just need method calls to find the siblings that wrap up a little math to handle converting hex grid coords to square grid coords.. For instance.. given your orientation, East and West are easy... NE/NW/SE/SW need to look at if they are on an even or odd row to decide if the neighbor hex is directly above or below, or offset to to the east or west.
+I am developing an TBS (turn based strategy) game.
+I had the idea of checking if a tile was rendered and if there is still space to the left render next sibling and so on, but this would turn out into long loops.
+Considering that there are fixed size steps for each row/column, using a 2D array as the backing store and a bit of math it should not be hard to pre-determine how many cells you can display on a canvas of given size... that makes your draw loop deterministic and MUCH faster than walking a linked graph of hex cells.

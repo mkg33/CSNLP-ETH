@@ -1,0 +1,12 @@
+Can you split the job/process you are running in batches?
+As already explained by others, you're running out of memory, so
+You should be able to find out what killed your process by looking at the output of the dmesg command; or at the logfiles /var/log/kern.log, /var/log/messages, or /var/log/syslog.
+The log says you are running out of swap/cache memory.
+a) upgrade your ec2 machine to more powerful one, 'small instance' has 2.5x more memory (1.7GB) than 'micro instance' (0.64GB), costs additional money
+b) adding swap partition - add additional EBS drive, mkswap /dev/sdx, swapon /dev/sdx, costs EBS storage and IO fees
+Perhaps you can try running it in isolation after stopping the other processes?
+The c) should be sufficient, but keep in mind that micro instance is not supposed to run long-running cpu-intensive tasks due cpu limits (only short bursts allowed).
+The logs or dmesg should tell you why the process was killed.
+out of memory killer gets triggered and kills some process.
+There are a number of things that can cause a process to be summarily killed:
+c) adding swap file - dd if=/dev/zero of=/swap bs=1M count=500, mkswap /swap, swapon /swap, costs IO fees and free space on root EBS

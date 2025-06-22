@@ -1,0 +1,10 @@
+I have a question: if I have a VBO, and I have to change all the data inside it (because of resizing, ...), would it be more efficient to delete the old one and create a new one (and reallocate the memory for it), or change the data inside it using glBufferSubData?
+A simple but efficient method is to "orphan" the buffer (allocating a new piece of VRAM in the process) and refill the entire thing.
+According to OpenGL Insights there are a couple ways to efficiently stream data to a VBO.
+It's kind of like double buffering to prevent sending a scene to the monitor before it's completely built up.
+Apologies for the C syntax, I don't use LWJGL but from what I've seen it's pretty much directly transferrable.
+This allows the current frame to use the old data while you can upload the new data.
+This will give you the most control over how and when you upload the data (and also let you do partial uploads), but it makes it possible to accidentally change a buffer that's being drawn from, causing graphical glitches.
+The solution to this is to have several buffers (3 is a good number) that you switch between in a round-robin fashion, ensuring that you can instantly kick off a DMA (upload) without messing with a buffer that is being accessed.
+The article I linked goes more into depth with this technique.
+A more performant, but complex, solution is to disable synchronization.

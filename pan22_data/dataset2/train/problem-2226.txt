@@ -1,0 +1,7 @@
+"Because the natural key is not ever-increasing I’m afraid of insert performance, fragmentation or other problems that I don’t foresee now."
+Just monitor it, and re-org/rebuild as needed, and give the index a fill factor to keep it within reasonable fragmentation levels between re-orgs. 
+http://download.microsoft.com/download/b/9/e/b9edf2cd-1dbf-4954-b81e-82522880a2dc/sqlserverlatchcontention.pdf
+Clustered indexes excel at ordered range scans, which is something that will never take place with a surrogate key.
+Every choice has pros and cons, and I wouldn't be too concerned about fragmentation, especially on RAID arrays which introduce deliberate fragmentation of their own. 
+The choice to make the Primary Key clustered, especially for surrogate keys, is in most cases a poor choice. 
+In fact, such an active table may suffer from 'last page contention' because of the ever increasing clustering key. one of the solutions to this issue, is to create a random access insert pattern, to avoid physical page contention.

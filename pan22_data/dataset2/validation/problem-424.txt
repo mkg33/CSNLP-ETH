@@ -1,0 +1,15 @@
+Looking at smallpt (http://www.kevinbeason.com/smallpt/), it doesn't allow for objects to have both, but instead forces materials to be either diffuse or specular.
+Of course you can improve this via importance sampling, and that is probably where you have problems. For a very specular surface design a random distribution that just draws more directions from the specular reflection direction. Rest will be diffuse. I don't have enough experience with actually bulding path tracers to help you how to design one, but your sources will probably have something here.
+When you diverge the path and spawn two rays, you have to increase the number $n$ of total samples accordingly because now you have done two samples. Then handle both pathes as if they were separate from the beginning.
+What is now the correct way to handle a material that has multiple different ways that a ray could travel? There is no one correct way. The only important part is, that your values $n$, $f(x_i)$ and $p(x_i)$ stay correct.
+Monte Carlo samling, as long as you correct weighting by probability, will always with infinite samples converge against the correct value. This means even if you use a complete stupid way to generate samples, if you do it long enough, that will work. Maybe not in your lifetime or that of your great grandchildren, but it will.
+If we instead sum $\frac{f(x_i)}{p(x_i)}$ we get $\frac{1}{n}\sum_{i=0}^n \frac{f(x_i)}{p(x_i)} \rightarrow \int f(x) \mathrm{d}x$.
+I've seen other path tracing code which rolls a random number to choose which way to go, using the luminance of the diffuse and specular reflectance as weightings in the random roll.
+Define three intervals (one common way is to chose the intervals to be a partition of the numbers between 0 and 1). The relative sizes of these intervals have to be proportional to the material. The tricky part is how do you design this. In my class we defined a number reflectivity $\rho$.
+Important here is again: Design it so that you know how probable a specific direction is, and then keep your $p(x_i)$ up to it, so you can in the end divide by this and get a correct Monte Carlo estimate.
+You generate a path of light, that will become one of the samples $\frac{f(x_i)}{p(x_i)}$. In order to do this you model the interaction of the light with the surface at each step along the path. And you always update your current path probability $p(x_i)$.
+We draw a random number between 0 and 1, if it is lower than $\rho$ the path ends. Else we reflect. The BRDF will take care to weight the specular vs diffuse part if you do enough samples.
+Now your $f(x)$ is the rendering equation and you got yourself a way to approximate the rendering equation.
+The Monte Carlo integration says for a sufficiently big $n$: $\frac{1}{n}\sum_{i=0}^n f(x_i) \rightarrow \int f(x)p(x) \mathrm{d}x$
+Let's say we are path tracing and that there is an object which has some amount of diffuse reflection, and some amount of specular reflection.
+I've also seen code which follows both paths and diverges when this happens and sums the results, where each recursive ray was multiplied by it's corresponding reflectance.

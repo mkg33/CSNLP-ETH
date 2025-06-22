@@ -1,0 +1,5 @@
+I'm writing a driver in C for a WiFi module attached to a PIC18 microcontroller. I want to implement some functions that I'm familiar with in computer application level programming like Window's API recv function for WinSock.
+Is this the correct way to achieve this? Efficiency is very important here (It's an embedded system too).
+The only thing I see wrong with the algorithm is that if you don't have any data coming in from the WiFi module, you could potentially sit and wait for 200ms (the value of RECEIVE_TIMEOUT) before returning to the caller to say "no data". Is there other work that your main program could be doing during that time? If so, it might be worthwhile to split the check for incoming data and the reading of that data into separate functions.
+The module itself already implements the WiFi communication protocol and the TCP/IP stack, and communicate with the PIC18 microcontroller through UART.
+One more thing missed in other comments. The UART is capable of detecting errors. They do happen, and must be reported upstairs. You must read and analyze RCSTA before reading RCREG

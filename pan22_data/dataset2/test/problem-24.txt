@@ -1,0 +1,6 @@
+As others have mentioned, a per-vlan protocol will accomplish your goal. Also, you could trunk all four vlans across both links and use per-vlan costing to achieve load sharing with fault tolerance.
+Note: you'll also have to ensure any native, untagged vlan on each port is different or a loop will be created.
+With Cisco's PVST+ (Per-VLAN STP), every VLAN has a corresponding instance of STP. This means that if there are no loops within the VLANs, STP will not block ports.
+Depends on which version of spanning tree you are using, you should be able to have this work with either MST or PVST+ (Cisco proprietary).
+MST, defined in IEEE 802.1s, works a bit differently. Instead of providing a one-to-one VLAN-STP mapping, VLANs can be grouped together into a few instances of STP. This way, if you do STP odd-even load balancing (odd VLANs over link A, even over link B) you only need two instances of STP, instead of one instance for every single VLAN. If you use MST correctly, your proposed configuration should work without any blocked links, just like PVST+, but with VLANs grouped into instances instead of working with each VLAN independently.
+It depends. With IEEE 802.1Q specified STP, where you have one instance per trunk, STP will block ports. 

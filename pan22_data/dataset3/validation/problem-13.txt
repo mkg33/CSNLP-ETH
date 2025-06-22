@@ -1,0 +1,27 @@
+I would also suggest to create some prototypes, so you know e.g.
+Your developers would have to write SQL queries perfectly to have such database fast enough.
+It also makes your problem smaller, which has also some advantages.
+May you help me better understand this question with resources (I must be lacking the right keywords or so to find them myself).
+Imagine you would have 1000 customers on one database with 2TB of data in total.
+So, this decision should be made at the begining of the project, after making a list of advantages and disadvantages.
+To my point of view, when one's designing a web application, he must have in mind that he will be able to maintain one "soft" running for all of his clients (not talking about replication or load balancing), with maybe different databases for each, but one application...
+Having a single server for each customer gives you ability to plan resources for each customer more precisely and let them pay for what they really use.
+On the other hand, having single instance for all customers gives you ability to share resources between your customers and save some money on hardware.
+This problem is much smaller with a small database for each customer.
+I actually don't understand why they went through "the third way" between "one centralized web application for everyone" and "one distributed desktop application for each".
+You will spend more money on servers (because you cannot share resources between customers easily) and you have do manage deploy pretty well.
+If you have one database per customer, there is smaller chance to leak another customers data.
+Also, if you have only one database across all clients, you have to ensure there will be no breaking changes in data structure or requirements of libraries.
+Another question to think about might be security.
+At work, we design a CRM that is used through web browsers.
+Having separated servers for each customer brings benefits from isolating customers data and allows you have multiple version of application.
+It especially helps maintaining and keeping everyone up to date with patches and upgrading.
+I think this is quite an early stage setup and here are some reasons why I think it is a bad idea to keep separate servers on top of the resource overhead:
+Also I don't have to work with different endpoints for each customer.
+I've recently been told that each specific client has its own server (although the servers are owned by my company, they're not theirs neither are located in their offices).
+It is much easier to maintain thousands servers which are the same with todays technologies (tools for job automation such us docker, puppet, chef, ansible, etc - hundreds of them).
+You need to have some map client - app version to manage too.
+I have a general question about software deployment.
+From my experience I personaly suggest to have an instance for each customer if you can deal with managing many instances.
+I have same version of software for each client in my environment, which help us maintain and scale servers (I can just deploy new server which is identical to others and just add it to loadbalancer).
+If you have to separate your customers on application level, your developers must be very carefull about what data they select.

@@ -1,0 +1,19 @@
+If you would feel better trapping 80 and 443 go for it.
+Very similar setup, LAMP stack, a couple of functional fail2ban jails, yet I still saw those supposedly banned IP address showing up in access log file.
+Disable fail2ban and load the configuration with the fail2ban chain and IP address blocked into iptables.
+If that turns out to be the case you will have to move your firewall logic to the proxy / load balancer or down to the application level (Apache mathing the FORWARDED_FOR header and deny access.
+But do so with the following as the first -A rule:
+My first guess is that you have a proxy / load balancer in front of the server and Apache is logging the HTTP_X_FORWARDED_FOR header or what ever that is called.
+The next course of action that I would take, is to capture the output of iptables -s you posted above.
+Try running iptables -z to zero the packet counts and observe the output of iptables -nvL again.
+I had exactly the same problem as yours on my own web site.
+The solution to my problem was surprisingly simple: move the banning statements right on top of the iptables configuration file!
+I don't have any proxy/load balancer in front of Apache.
+Additionally, consider saving the rules for the fail2ban chains in the initial rules for iptables (/etc/iptables.firewall.rules).
+Instead, all 224 packets that have gone through that chain have been accepted.
+However, more traffic appears to have been accepted by your accept TCP port 80 rule than has been through the fail2ban filter chain.
+The iptables -s output looks correct and I don't know how 80.82.70.239/32 is getting to any:80 on your server through the firewall.
+The output of iptables actually shows that while there is a rule for the IP address fail2ban feels should be filtered and dropped, no packets have gone through the fail2ban xmlrpc chain and actually been dropped by that rule.
+The most probable reason is that the traffic you wanted blocked came in while the fail2ban chain was not yet inserted in input (I notice you don't have it in your default rules, which is probably OK, but it means that if you reload iptables the fail2ban chain won't be in effect immediately).
+The thought is that the logs from the FIREWALL may show something we are missing if we pay attention to the packets from suspect sources.
+Also save the existence of the chains (like fail2ban-apache-xmlrpc), but do not save the actual banned IPs.

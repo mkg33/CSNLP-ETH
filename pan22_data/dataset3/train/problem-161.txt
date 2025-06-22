@@ -1,0 +1,11 @@
+I'd expect that to be management traffic; vCenter Server need to confirm hosts are alive and send them tasks; the hosts need to confirm their licenses are valid and obtain tasks from vCenter.
+more or less data captured) to see if the data sizes correspondingly go up or down, if they do then you simply need to tune the collection sizes and times.
+HI, I'm almost certain that this is performance counter data, VC requests a block of performance metrics from each ESX server periodically.
+A lot depends on how you've structured your hosts within vCenter but even so this does not strike me as normal.
+Is there any other reason why the hosts or any one of the Guests within the hosts would be talking back to vCenter.
+You might be able to track down what the traffic is by looking at the port numbers, and tracing that back to an owning process (Process Explorer and Wireshark on the vCenter server would probably help here).
+The fact that the bulk of the traffic is over port 443 indicates to me that something odd is going on - VC (and the various CLI tools) use port 443 to handle the initial SSL initiation but then switches to port 902 for the real traffic.
+Try changing the class of captured metrics in VC to a lower or higher value (i.e.
+The general purpose management traffic (heartbeats, performance counters for the hosts etc) should be very low - a few kbits/sec per host at most.
+Each node also needs to communicate with the others in it's cluster to confirm which nodes are alive.
+Anything like the VMware Infrastructure Management Assistant appliance, or anyone using the PErl or Powershell VMware CLI tools within those guests?

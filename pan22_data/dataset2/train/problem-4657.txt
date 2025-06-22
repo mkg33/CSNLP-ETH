@@ -1,0 +1,11 @@
+Still trying to get GPU passthrough working and decided to change machine type from older 440fx to q35 ie pc-q35 but if I do virsh edit on the config it refuse to save saying "PCI Bridges not supported"... by current qemu binary. What do I need to fix/change in the virtual machine xml file?
+btw. those <qemu:arg /> at the end might be causing trouble as well. If you run into problems, try removing those as well.
+After some research seems q35 only allows PCIexpress PCIe and not PCI but I don't know what to change in my xml file so that virsh stops complaining and accepts change from 440fx to q35.
+With virsh edit, I am guessing a little, but I would try removing the PCI controller and all bus related parameters (like <address />. 
+Latest virt-manager (1.1.0) supports setting architecture on VM creation. You can not change it later. 
+There is a patch available for the underlying issue (being that QEMU won't allow you to bind to a PCIe root bus, which is needed for Windows guests on Q35):
+Normally i'd offer this in a comment, since its more of a guess, but it's too long. I'll remove it if it does not work.
+Then it will complain about anything with a bus-related parameter - I think you can leave the item but remove the specification. I also had to remove USB-related 
+Not sure if you're still trying to do this - but I tought I'd put it out there for anyone else who searches for this.
+I just did this today - pretty much as 'Fox' described, except change the pci controller entry instead of deleting it - changing 'pci-root' to 'pcie-root'
+I'd run qemu manually with -M q35 or -M ? to check the version you have installed really supports it

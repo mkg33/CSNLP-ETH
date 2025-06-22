@@ -1,0 +1,8 @@
+I backup several 100GB+ svn repositories with plain old rsync. svnadmin dump and svnadmin hotcopy would take days on these repositories.
+Why is this important? Well, if you have a large development team and you have a daily Subversion backup and your system fails 12 hours into the old backup, the entire day's work is lost.
+As a bonus; I also recommend Backup-PC as a backup solution. It can do incremental remote backups and is capable of saving a lot of space if you're backing up identical files on different systems.
+I use svnsync to backup to an otherwise read-only repository, which is itself backed up with aged copies (day, week, month)
+Look for the svn-hot-backup script.  It should ship with subversion, and contains all the logic to do what you want, plus automagic rolling out of old backups.  I have written the following wrapper script that uses svn-hot-backup to run as a nightly cronjob to backup a single server with multiple repositories, slightly modified to be generalized.
+Simply making a copy of the directory is not an option because your repository might change while the copy is being made.
+Whether you are into incremental or full backups depends on your amount of paranoia, the size of your repository, your needs and your infrastructure.
+If you do full backups (which SVN hotcopy is) many times a day you're causing unnecessary load to your repository machine, that will irritate impatient developers.

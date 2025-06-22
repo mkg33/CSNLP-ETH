@@ -1,0 +1,6 @@
+Should the memory allocated for this plan be counted against db1, db2 or db3? Usually the three dbs in my example are the same and the issue is not perceived, but the problem is there none the less and this is why a view like sys.dm_exec_cached_plans does not project database_id, and sys.dm_exec_query_plan has the note:
+The thinking around this issues should be 'memory allocated for plans', 'memory allocated for execution' and don't consider such memory as 'pages'. This is even more so in the SQL Server 2012 memory model which makes the buffer pool and ordinary client of the memory broker. 
+For 'data' is all clear: a data page has an obvious database is coming from and sys.dm_os_buffer_descriptors will describe it exactly. 
+And for the second question: sys.dm_os_buffer_descriptors will only show data, not stolen pages.
+Is it possible to get a break down of how many plan cache pages are being used per database? Perfmon seems to only have the total for the server, but maybe there is a DMV with more detail?
+Also, does the buffer pool (sys.dm_os_buffer_descriptors) include the plan cache or is that separate? 

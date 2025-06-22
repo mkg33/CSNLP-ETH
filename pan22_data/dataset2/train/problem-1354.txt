@@ -1,0 +1,11 @@
+See how you get on with this lot and if you're still no further on - I'll see if I can dig out some mroe places to look.
+check security filtering - probably not your issue, but you can actually change what is and isnt allowed to apply a group policy by security filtering:
+AD/GPO Replication - Ensure that your domain controllers can replicate between eacother (if you have mroe than 1, which hopefully you do).  It's all good building a policy on a DC - but if there are multiple DCs that arent talking to eachother and your client is talking to the other DC - you're in trouble.  You can check this by opening GPMC, going to Domain > Group Policy Objects > your GPO > Status (tab) > "Detect Now":
+Check your path - copy and paste the path of the image from the GPO into file explorer on the PC thats not applying the setting - can the user actually acces the image?  is there a tpyo in the path?  is it a permissions issue?  I know it sounds stupid - but I've done it and know others who have as well.
+Check the OU - if this is a user policy, make sure the user is in the OU that the policy is applied to.  Check the Computer too.
+check your links - make sure the group policy link for the OU is actually enabled.  Linked doesn't always mean active and applied:
+Test other Settings - is it the whole GPO or just this setting?  Try adding something trivial to the Group Policy (a random drive mapping, removing the Run Command from start menu etc) and see if this applies.  This will narrow you down to a setting or policy level issue
+Inheritance - Group Policy modelling (above) will show this.  It could be that you have a policy higher up the chain which stops the changing of wallpapers or sets a different wallpaper.
+Preference or Policy?? Remember if you have old clients (talking XP and older here) - they don't apply GPP (Group Policy Preferences).  If you're not able to apply by policy - try preference (assuming your clients are new enough) and see how you get on.
+Remember, also, that if the 2 DCs are in different AD groups, they won't be replicating as often as DCs on the same AD site.
+Loopback Processing - it is common for loopback processing to get in the way of a policy applying.  Use the GP Modelling or GP Results functionality in GPMC to check this.  

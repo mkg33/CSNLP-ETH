@@ -1,0 +1,7 @@
+Scneario: We had only 1 data file(.mdf) which is now around 900 GB. We are planning to split it across multiple drives to improve IO performance.
+You can cause enough data movements using ALTER TABLE or ALTER INDEX with the REBUILD option table by table or index by index, so that the new storage allocated by the rebuild will come from the new files. I.e., this will cause "emptiness" of the mdf file for each rebuild. And then finally a shrink (not using EMPTYFILE, but to the desired size, same size as the other files) will do whatever movements there is left to do (the pages allocated to the part of the mdf file that will be removed).
+what is the most efficient of moving data from 1 data file(.mdf) to another within same filegroup i.e PRIMARY Filegroup. 
+If that is not possible, then what is the best way of splitting the data across multiple drives in the same database?
+The reason for using rebuild first is for you to control the pace, doing bits by bits. And also because the shrink code can be horribly slow (for instance if you have heaps and LOBs).
+We tried using DBCC SHRINKFILE with EMPTYFILE but it throws errors as it cannot move system files from .mdf file. 
+Note though that this final shrink will fragment your indexes and if you care about index fragmentation you would be in for another rebuild.

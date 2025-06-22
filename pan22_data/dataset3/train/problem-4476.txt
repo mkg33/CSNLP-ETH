@@ -1,0 +1,11 @@
+being milliseconds "out of date"), then use that for just this select query if you can.
+If the problem is relatively rare, perhaps just implement a deadlock retry in the app code where your queries are called.
+If your select query is ok with inaccurate/incomplete data (and still the occasional crash due to data movement), use read uncommitted isolation, or nolock on the joins.
+In your case it seems the likely deadlock cause is that the write query needs to update multiple indexes, and the read query has already locked certain rows in the non-clustered index -- or vice-versa.
+So it's possible that removing the hint that Tanner noticed may resolve it (since the update and select can then queue politely).The hint may not be necessary if the data remains small enough, since after all SQL Server determines by default that a single scan will be more efficient than a bunch of parallel seeks.
+Or if you are using stored procs you can also to it there, see "Retries in TRY/CATCH" at https://technet.microsoft.com/en-us/library/aa175791(v=sql.80).aspx -- to which I would add that if you also use SET DEADLOCK_PRIORITY N'LOW' before the retry loop then the deadlock retry need only be implemented for your select statement, which also simplifies the loop code (no rollback etc.
+(There are further considerations if the select query is part of a transaction, or if there is more DML after the select.)
+But read this first: https://sqlperformance.com/2015/04/t-sql-queries/the-read-uncommitted-isolation-level
+Reads under the default isolation level require brief locks to ensure transactional consistency (with caveats -- see Locking Read Committed Behaviours at https://sqlperformance.com/2014/04/t-sql-queries/the-read-committed-isolation-level).
+If Snapshot Isolation is enabled on your database, and your select query is ok with not seeing updates currently being made (i.e.
+(And don't confuse this with Read Committed Snapshot Isolation which would also solve your issue but requires comprehensive review before being enabled.)

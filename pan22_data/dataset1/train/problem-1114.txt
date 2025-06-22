@@ -1,0 +1,9 @@
+I'm trying to set-up a password protected development version of a clients web site (Plone CMS driven).
+The live site serves on port 7373, and is mapped to the public www port 80.
+The 'dev' site serves on port 8383, and is mapped to port 8111.
+I don't currently have access to the clients DNS records, so I can't set up a sub domain, but IP and different port numbers are fine.
+However, I can't work out how to password protect the development site, whilst still serving the live site. I'm especially flummoxed by the protection settings seeming to be for folders only, not sites?
+Below is the best guest I have (based on my rather lacking apache-foo), but this only serves the live site, not the dev site, or fire the password!
+Your ProxyPass lines look a little confusing, having port numbers halfway through the URL.  Is that really how the plone server is setup to handle the incoming request (port numbers in the file/dir names)?
+The proxy stuff is very order specific. From a quick check of the apache docs, it looks like the ProxyPass lines are probably kicking in before the Location lines, which may be bypassing the authentication stuff.  How about something like this:
+This will proxy requests for http://123.456.789.123:8111/plonesitetest/ onto the plone site.

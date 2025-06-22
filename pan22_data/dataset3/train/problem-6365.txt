@@ -1,0 +1,15 @@
+If their last mile connection is poor then it does't much matter where it's being downloaded from.
+60MB should download pretty quick anywhere in the world that has a decent internet connection.
+However, CF connects to S3 using the AWS internal network, not the internet, so fetching the object should be faster than the user fetching from S3 directly.
+If you're passing through cookies and headers CF may have 1000 versions of the same install cached, so is evicting them regularly.
+If you can't get the current setup work, instead of hosting servers you can create S3 buckets in each AWS region.
+Your application / web server could receive this header, decide which S3 region/bucket to use, and generate the link to the bucket closest to the user.
+You can't automatically direct users to the closest bucket, but you can use geolocation and generate a link to the bucket you think is closest to the user.
+Unfortunately you can't control CloudFront (CF) eviction - they may evict objects at any time.
+CF can be configured to add the header "Cloudfront-Viewer-Country" to requests.
+Because this is such a small download, I wonder if this who question is a case of premature optimization.
+You can use behaviors to add those headers to only very specific requests, which you should, otherwise your cache hit rate will decrease.
+You haven't actually given us a problem, such as "downloads for users in this country are slow", you've just described the technology which could be causing a problem.
+This is because caching is per header, so each different country that hits the CF node would have their own item in the cache.
+In your existing setup you should create a behavior that passes through no cookies or headers, that way all users who request the setup get the same object.
+You should of course have looked at the caching headers the origin is sending to CF.

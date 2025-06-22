@@ -1,0 +1,26 @@
+If your switch sees the true L3 destination, it can hash on that.
+very suprisingly, a few days ago our testing showed that xmit_hash_policy=layer3+4 will not have any effect between two directly connected linux servers, all traffic will use one port.
+Basically if you've got 2 links, think link 1 is for odd numbered destinations, link 2 is for even numbered destinations.
+most Obviously, the bridge could cause the problem, just that it does not make sense AT ALL considering that ip+port based hashing would be used.
+What this thread and documentation reading etc etc has shown me:
+Other vendors, such as extreme networks, can hash on things like:
+If the destination is the remote system on the internet, you'll get even distribution, but if it is something like a web server, where your system is the destination address, the switch will always send traffic over only one of the available links.
+I don't think they ever use the next-hop IP unless configured to do so, but that's pretty much the same as using the MAC address of the target.
+Myself I try to use 3+4 where possible, since I often want that bandwidth between two adjacent systems.
+Hashing the router IP would require a lookup based on the MAC, right?
+I know some people actually manage to push 180MB+ over bonded links (i.e.
+I've also tried with OpenVSwitch and had once instance where that disrupted traffic flows (every first packet lost... i have no idea)
+- The OPs example would mean the second LACP "unhashes" the connections - does that make sense, ever?
+both run xen with 1 bridge that has the bonding device as a member.
+You may want to expand your horizon of vendors a bit.
+In quite a few cases the standards-perverting blowtorch called ALB/SLB (mode6) might work better.
+You could get around that a bit by using lots of IP addresses on the load balancer and the server, but that's a hack.
+The real source and destination IPs will be at a fixed offset in the packet, and that's going to be fast to do hashing on.
+Since I just ended up back here, a few things I learned by now:
+The problem you're going to run into is that, depending on your traffic, the destination will always be the single server's single IP address so you'll never use that other link.
+If anyone ends up a good high-performance bonding setup, or really knows what they're talking about it would be awesome if they took half an hour to write a new small howto that documents ONE working example using LACP, no odd stuff and bandwidth > one link
+Even hashing on source and destination IP would be enough to avoid hot-spots, so long as you don't have a load balancer in the mix.
+You'll be in even worse shape if there is a load balancer somewhere in there, because then the "remote" IP will always be either the load balancer's IP or the server.
+I will guess that it's off of the client IP, not the router.
+To avoid gray hair, you need a decent switch that supports a layer3+4 policy, and the same also in Linux.
+So basically as long as the client's source port (which typically changes a lot) changes, you'll evenly distribute the traffic.

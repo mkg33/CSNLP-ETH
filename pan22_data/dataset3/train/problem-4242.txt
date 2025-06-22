@@ -1,0 +1,55 @@
+It has the least overhead and the hardware raid controller will almost eliminate the write overhead penalty since it calculates the parity bits in hardware.
+RAID 5 is a compromise between not wasting too much space on redundancy and still getting the added performance of extra disks.
+In short, use Raid 1 for redundancy, and for read speed if you uses advanced controllers.
+Failure risk increased as the number of member disk increase.
+On servers, RAID 1 is an excellent choice for your operating system files.
+Redundancy increased compared with Raid 5. two drive can fail at anytime, and when rebuilding the array after 1 drive failed there is still redundancy (note that when raid 5 drive failed, the array is similar to raid 0 - any drive fail = total loss).
+If you purchase a hardware raid controller go with RAID5.
+Even with hardware that does the parity calculations, small random writes suffer on RAID 5 since each logic write operation requires 4 I/Os (read from data disk, read from parity disk, write data disk, write parity disk).
+Many SSDs can outperform the bus (SATA) they are attached to though, especially for read operations, so the performance effect of RAID is less compelling with SSDs.
+Write speeds can sometimes be a problem with RAID 5, though I think this is sometimes overstated depending on the situation.
+BSD had a correctly implemented Raid 1 implementation that uses roundrobin read method.
+Note that the performance of raid 5 is very dependent on the speed of the controller (e.g.
+Read and write performance are both great (reads can happen from all disks at once essentially, writes have to happen to multiple disks but no read/read/write/write cycle needed like RAID 5) though RAID 5 can win in certain circumstances.
+Raid 5. a very mixed bag: for sequential reads, it is faster than raid 1/0, and for random read it is slightly slower that that.
+Note that for software raid solutions there are two types, OS-software and Motherboard-software.
+Raid 1/0 is that there is mirror in each set: Set A (1+2), Set B (3+4), Set C (5+6), Set D (7+8), Set E (9+10), then Do a strip set across the 5 sets (A-E).
+RAID 1/0 and 0/1 have pretty much the same performance characteristics.
+Pick RAID 5 when you want to maximize the amount of storage you get out of a disk set while still having a good degree of safety.
+It can also be useful for really fast "scratch" areas if you have software that needs that sort of thing.
+RAID 2 through 4 (not in the question) are generally unused except by certain vendors' products on the the enterprise side.
+RAID 1/0 is (unsurprisingly) also the most expensive in nearly all cases.
+Yes, this also applies to Solid state drives as well.
+Last time I checked Windows and Linux did not have a good implementation of Raid 1 reads too.
+A test of SSDs in Raid0 showed almost linear speed increases.
+RAID 0 is the fastest since you can read from and write to many disks at once, and no space is "wasted" for redundancy.
+It should only be used when performance is critical, the data is highly valuable, and the application has no tolerance for down time.
+Great read speed only if driver properly implemented - If you use Areca and LSI raid controllers, they can deliver almost the same read capability for Raid 1 sets as Raid 0 sets (within 10%).
+(and how do they compare to a JBOD setup for R/W IO performance)
+Are certain practical RAID setups better for different applications: gaming, video editing, database (Acccess or SQL)?
+1/0 is preferable though because a failure means rebuilding only the pair of disks involved rather than an entire stripe of disks.
+Most motherboard-type Raid does not offer good Raid 1 read performance.
+I was thinking about hard disk drives but does this apply to solid state drives as well?
+Also be aware that modern large disks take a loooooong time to rebuild when they fail as part of a RAID 5 set, and that puts your data at risk longer for a second disk failure.
+Lose any disk and you lose the set, so RAID 0 should only be used on a machine you do not care about, or is easy to restore and does not contain data you value.
+I also prefer to put virtual machines on RAID 1/0 if there are going to be a lot of them or they run disk intensive applications that I really care about.
+RAID 1 is the very common mirror setup, usually of 2 disks.
+There is little performance difference between the two but I don't think you usually get both from a Raid controller.
+Read speeds are very good since all the disks can participate.
+I've always thought the following to be a general rule of thumb for RAID:
+Avoid when your application has high performance needs and requires lots of small random writes (virtual machine hard disks, database data files).
+Raid5 is by far the most used technology in the server world, but for just a laptop with only 2 hard drives I'd suggest raid1 mirrored.
+Raid 0/1 is that to have strip set A (1+2+3+4+5) and set B (6+7+8+9+10) and mirror the two sets.
+As your question implies, there is not really a "best" RAID configuration, only best for a particular set of circumstances, with cost often being one of the most important factors.
+Solid State Drives can indeed be put into RAID configurations, particularly for its redundancy value.
+Reads are generally just shy of twice as fast as a single disk, while writes are just a bit slower than a single disk.
+This way, each of the set can have one drive failure, but if two drives fail in the same set you are done.
+RAID 6 can reduce this risk at the expense of even worse random write performance.
+JBOD has no redundancy in case a hard drive fails but depending on the settings can stripe the data to increase performance like raid.
+Raid5 also reads off multiple disks simultaniously improving read and write speed.
+This way, if drive 2 and drive 9 fails, most controllers do consider this as a total failure (which, in fact, you still have all the data).
+It is also a good choice when you need redundancy, your storage needs are not so great as to require RAID 5 and you might benefit from the extra read speed (database log files are commonly placed on RAID 1).
+A gaming machine might fit this scenario, though honestly, the speed difference is not so noticeable that I would be willing to accept the increased risk of having to rebuild the machine.
+RAID 1/0 is the fastest general purpose configuration of the ones mentioned in the question.
+Without going into the minutiae of controllers and software, here would be my rules of thumb.
+Often database servers (or at least their data files) make good candidates for RAID 1/0.

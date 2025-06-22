@@ -1,0 +1,12 @@
+Moreover, I see that on those disk I mostly do reads.
+L2ARC fills from ARC evictions, and it's entirely possible that what's happening is simply that the contents of the L2ARC and ARC are most of your truly "hot" dataset and you don't have a lot of repetitive reads that aren't already in cache.
+I have a peculiar load on a machine that is limited by disk IO, mostly reads.
+A larger L2ARC might very well fill to roughly the same capacity as the one you have now (which is pretty tiny, if I'm reading that right - only 12.5GB?)
+(See /etc/modprobe.d/zfs.conf; it defaults to 50% of physical RAM in the system.)
+The bulk of the IO happens on slow network attached disk that are formated with ZFS.
+I have a reasonable cache rate, 98.5% for ARC and 73.7% for the L2.
+As usual with L2ARC discussions, you're likely to be better served simply adding more RAM to the server for use with ARC.
+I was optimistic and I installed a L2ARC cache and using zpool iostat I see something like this:
+Moreover, the slow disk is still used at roughly ~100%, so if I could remove work from the disk my application would run faster.
+Using iostat I can clearly see that the use of those disk is at around 100%, hence, at least I know that this is the bottleneck.
+Moreover I see that the L2 is not completely full, hence a bigger one won't help, right?

@@ -1,0 +1,12 @@
+Also, I hate Experts Exchange, but I read a comment on this question that it's ideal to have less than 10-15,000 per directory.
+I would suggest you try testing various directory sizes with a benchmarking tool such as postmark, because there are a lot of variables like cache size (both in the OS and in the disk subsystem) that depend on your particular environment.
+My personal rule of thumb is to aim for a directory size of <= 20k files, although I've seen relatively decent performance with up to 100k files/directory.
+Unless you plan on needing tens of billions of files, you could pretty much pick a number between 1000 and 100,000 and get good results.
+Essentially you leverage the distribution of your favorite hashing algorithm.
+I started playing with the numbers, a MySQL signed INT has a maximum value of 2147483647.
+http://roopindersingh.com/2008/05/10/ext3-handling-large-number-of-files-in-a-directory/
+If you even chose a single additional level of directories and were able to balance things evenly, you'd have 1732* directories and 1732 files per directory.
+You can also vary the desired number of files per directory and number of sub-directories to settle on the final number-of-sub-directories/files-per-directory split for a given data set, but it's hard to find empirical evidence on optimal directory/file organizations.
+This article does give some insight into performance differences across filesystems (some interesting metrics), but nothing about optimal organizations.
+http://en.wikipedia.org/wiki/Ext3#Functionality - This mentions that a directory can only have approximately 32000 subdirectories, but makes no mention of files.
+I think you're putting too much thought into this.

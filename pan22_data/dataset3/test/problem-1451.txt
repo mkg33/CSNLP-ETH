@@ -1,0 +1,19 @@
+I suspect it is indeed possible to flip BC6-7 blocks with much less work than a full decompress and recompress, but it's still no picnic and is much more complex than flipping BC1-5 blocks.
+(BTW, the fullest specification of BC6-7 I've found is the ARB_texture_compression_bptc spec; I also wrote a blog post about the BCn formats awhile back.)
+The problem is that this partition set is not symmetric under vertical flips.
+All in all, it doesn't seem like there's any fundamental showstopper (though I haven't actually written the code), but it sure would be a lot of work to flip or rotate these formats.
+The flipping is only a matter of default on the two formats.
+However, I suspect it is symmetric under some combination of vertical flips and interchanging the two subsets.
+I haven't verified that every partition can be flipped this way, nor have I checked the ones for BC7 (which also includes partitions with 3 subsets).
+First of all, BC6-7 have a variety of modes that can be selected per block.
+one endpoint is stored at full precision and the others are stored as lower-precision deltas from it).
+Swapping partition subsets and endpoint order will switch which endpoint is the high-precision one, so you'll have to shuffle the low-precision bits around and negate some deltas.
+In BC1-5, the order of the two endpoints of the RGB line segment was used to switch modes, but in BC6-7 the order of endpoints is chosen to fix one bit of the per-pixel indices in each partition subset.
+Therefore if you change the partition around you might also have to swap the order of endpoints.
+For example, looking at the partition #22 (6th row, 3rd column) at that link, there is no vertically flipped version of it in the table, but if you vertically flip and interchange 0s and 1s, you end up with the partition #9 (3rd row, 2nd column).
+The modes have completely different binary layouts, so you'd pretty much have to write a different flip routine for each mode (there are ~20 of them altogether, IIRC).
+The partition must be chosen from a predefined set; the ones for BC6 can be seen here.
+Another difficulty is the partitioned modes, where the pixels in the block are partitioned into 2 or 3 subsets, each with its own RGB line segment.
+If possible, I'd recommend flipping the images in your art pipeline before they get compressed.
+This is probably better to do on the OpenGL side, because OpenGL is lower level, and thus less likely to lose optimization when doing things like this.
+And last but not least, in BC6-7 the endpoints are often delta-compressed (i.e.

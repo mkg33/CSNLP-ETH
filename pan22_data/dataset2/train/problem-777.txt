@@ -1,0 +1,8 @@
+Rather than group your hosts by function, you could group them by role and have Ansible run a given role on a host only if that host is found in the designated group for that role.
+Is there a way to write this so I can have a single list of vhosts with all the required parameters and automatically add the different roles to the different host groups for each vhost entry?
+I've done this successfully in the past. To populate layouts you can use various techniques: combining "group_vars/all" with "vars_files" with "host_vars" etc. 
+(This is an implementation detail, but the apache-vhost role prepares some essential vhost configuration based on the variables passed to it, and also adds the extras variable as is inside the vhost configuration.)
+I use Ansible to manage some web- and database servers which run websites for multiple vhosts. For each website I need to assign a database role to the dbservers group and a website role to the webservers group. So my playbook looks something like this:
+the most obvious answer - use complex variables (dictionaries) to hold your values, and then pass entire variable:
+What I do is I create roles apache, which installs apache and does some configuration for all vhosts, apache-vhost, which installs a vhost, host1-com, and other-com. Then the playbook would be like this:
+This works well, but it is ugly as I have to repeat everything twice. This is especially error-prone when changing some parameters from the default values (like db on vhost host1.com in this example).

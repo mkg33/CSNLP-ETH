@@ -1,0 +1,10 @@
+"Not all of the sprite's colors change, only certain ones do."
+Old games did palette tricks because that was all they had. These days, you can use multiple textures and combine them in various ways.
+You can create a separate grayscale mask texture which you use to decide which pixels will change color. White areas in the texture receieve the full color modification, and black areas remain unchanged.
+Or you can use fixed-function multi-texturing with various texture combiner modes.
+There are obviously many different ways you can go about this; you can put masks for different colors in each of the RGB channels, or modulate the colors by tint shifting in an HSV colorspace.
+Another, perhaps simpler, option is to simply draw the sprite using a separate texture for each component. One texture for the hair, one for the armor, one for the boots, etc. Each one color tintable separately.
+I believe ifs are fast enough for the color space [0...1] to be divided into two:
+In this way color values between 0 and 0.5 are reserved for normal color values; and 0.5 - 1.0 are reserved for "modulated" values, where 0.5..1.0 maps to any range selected by the user.
+Only the color resolution is truncated from 256 values per pixel to 128 values.
+Probably one can use builtin functions like max(color-0.5f,0.0f) to remove the ifs completely (trading them to multiplications by zero or one...).

@@ -1,0 +1,7 @@
+Keep in mind that one basic rule for the ASA is that to initiate traffic from a lower-security interface(Outside) to a higher security interface(Inside) there must be a explicit ACL entry to allow this traffic through. Without seeing your ASA configuration it is hard to tell what could be causing the problems. 
+It seems like the server itself naturally responds to your crafted SYN packet with the RST-ACK in packet#23 (of the inside cap, see above) -- probably because port 8000 is closed.  This will prompt the Firewall to forward the RST to the Outside (Packet#23 in Outside cap), and purge this connection from its state table.
+In your inside capture, there are two packets going from the Server (10.1.102.19) to the Client (10.1.202.1), but they are coming from different MAC addresses. 
+That seems weird, but is probably not your problem.  As far as I can interpret it, your problem is as follows:
+But your crafted SYN-ACK packet fires off in #25 (of the inside cap), prompting a RST from the Firewall (#26) because there is no entry in the connection table related to this flow.
+You are describing normal/defaul operation of the ASA.  Only established TCP connections are allowed from OUTSIDE to INSIDE.  You can disable this by configuring TCP State Bypass.
+By default, the ASA randomizes the sequence numbers in the handshake (to prevent session hijacks).  So your sequence numbers don't actually match.   You can turn off that feature.

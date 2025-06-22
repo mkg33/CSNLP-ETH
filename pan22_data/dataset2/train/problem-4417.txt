@@ -1,0 +1,7 @@
+Now we need to test drawing distance, create a maximum distance at which you will draw objects and stress test your environment at different distance settings by running around and catching object counts.  From this you will come up with a good distance to clip objects being drawn.
+At this point most studios will pass that information along to the artists and designers so that they can make their data fit within the drawing parameters you've laid down.
+First order of business is that you've discovered that it's best to measure before optimizing =)  So now you know that it's object count that's killing your speed and not screen real estate.
+Now your basic render loop becomes one of throwing away any object that's farther away than that distance.
+It it was, be more lenient with it when deciding whether it should be drawn this frame than you would be if it hadn't been drawn the last frame. So...
+That's what Z buffering is for. Once you cull outside your frustum, and apply LoD to further-away objects, then you draw closest first. This will ensure that the graphics hardware can easily reject pixels that it doesn't need to draw.
+Ultimately, if the shapes are part of your scene, then you can't not draw them and still get a correct image. You may try decomposing the resulting frames and see how many you actually needed.

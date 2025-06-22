@@ -1,0 +1,17 @@
+Most likely it's a permissions problem on the new server.
+You can also use the stored procedure sp_change_users_login to remap the database user to the appropriate login on the new server.
+This also preserves the user's permissions, which is really handy if you have set granular permissions on objects in the database.
+I used the following script I prepared all the time before discovering sp_help_revlogin years ago.
+This is the case with SQL logins as does cause "orphaning" as a result.
+If you detach and move the database to another server the users appear in the database, but they don't necessarily get the security hooks.
+You may need to either reset their permissions on the server, or delete the user and recreate it.
+Your SQL logins don't carry over automatically and if you manually create it on the new server it'll get a different SID which won't jive with the one that's granted access to the database.
+Once this is done the permissions set up in your database should then be in sync with the login(s) on the new server.
+You won't have an issue with Windows-based logins as they are not associated back to the databases by a SID.
+Best way is to use sp_help_revlogin (KB918992 in case the link ever dies) to generate a script of the logins on the old server and then run the script on the new server.
+This shouldn't be a problem for Windows logins as SQL gets the SID from Windows, although you'll still need to set up the Windows login on the new server.
+(Note that this doesn't work with Windows-authenticated logins, but I usually don't have a problem with those syncing properly.)
+Best bet is to use sp_help_revlogin as addressed (proactively) or use sp_change_users_login (reactively).
+This procedure will carry over SID and password information to the new server effectively recreating the login on the new server.
+sp_help_revlogin will handle this part for you as well.
+That does the trick without deleting the database user.

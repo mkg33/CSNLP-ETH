@@ -1,0 +1,7 @@
+Note how my port variable was commented out! I do not know what iptables would have been fed, I am assuming it would be blank. Regardless of it's value, it's not going to be a known port that iptables could understand.
+I did a quick google search and no answer seemed to help me, so I just tried the first thing that came into my mind:
+I just tried to add a new fail2ban rule that is supposed to scan Apache2 error logs for suspicious file access attempts (People who try to access three common login urls that do not exist usually don't have good intentions).
+My mistake turned out to be from trying to ban multiple ports with an iptables[] action, which only works for a single port. Once I changed my action to use iptables-multiport[], the error ceased:
+Also occurs if your configuration produces 'multiport' and 'all' together ('all' can be used to work around bots switching from tcp to udp, which fills logs with "WARNING: ... already banned").
+I had checked the filter with fail2ban-regex before that, so I was quite sure that it was not something in there.
+I had to edit my rule to remove the --dport bit, since I wasn't actually going to pass a port, and then it was ok to load without causing it to return 200.

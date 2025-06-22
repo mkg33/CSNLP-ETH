@@ -1,0 +1,16 @@
+var left = (mapDimensions.x + (viewportCenterPosition.x - halfWidth)) % mapDimensions.x; // Modulo using negative numbers is strange sometimes, thats why I add mapDimensions.x before.
+That means that when I cross the top border of the map I should end up at the bottom of the map, when I cross the left side of the map I should end up on the right side, etc.
+So when I am at one of bottom tiles for example and I am at the center of the screen, I will need to fill the bottom with top tiles, and since the map is bigger than what is displayed on screen I would need to also extract only part of it to render.
+At the same time I only want the part visible on screen to be rendered.
+var right = (viewportCenterPosition.x + halfWidth) % mapDimensions.x; // Positive overlap is solved using modulo
+var up = (mapDimensions.y + (viewportCenterPosition.y - halfHeight)) % mapDimensions.y;
+I could make the map as math.matrix, and do multiple operations to fragment it and arrange so that it represents only the part visible on screen, like so:
+var mapDimensions = {x: 20, y: 20}; // Width of the map
+for(var y = up; y != down; y = (y + 1) % mapDimensions.y) {
+I also want it to loop infinitely in every direction.
+It is hard to explain, especially in a language that is not my native, but I hope that someone will help me.
+I am making a top-down view tiled map in canvas, where player is always in the middle of the screen, and map scrolls depending on where you go, like in moba games.
+Normaly I would just use for loop, but in cases when I am at the border, or corner of a map, and I need to display the same map, but the other end of it, it gets complicated with lots of nested loops.
+But that would require a few math functions each draw, and I wonder if it is ok to do it.
+var down = (viewportCenterPosition.y + halfHeight) % mapDimensions.y;
+  for(var x = left; x != right; x = (x + 1) % mapDimensions.x) {

@@ -1,0 +1,13 @@
+check for existing records of disk errors (event log, hardware logs, etc.)
+Second, make sure you have a unique index on the combination of NetworkUserID, NetworkID (with the highest cardinality one of those two first).
+You have no transaction there and no locks being held on the table while performing reads and writes.
+Third, patch your host OS and move that leaky service to another machine.
+Or, if you absolutely cannot, then reboot the server often enough that it doesn't run out of memory before the next reboot.
+For 2008 R2, at this time I'd say the hard minimum is build 10.50.6220 (SP3 + MS15-058), and you really should be at 10.50.6537 (SP3 + MS15-058 + TLS 1.2 capability).
+I second the suggestion of a unique index on NetworkId+NetworkUserId.
+Incorrect results may be due to the way you're writing to that table unsafely.
+I suggest that you rewrite your procedure with a MERGE statement:
+First, make sure your SQL Server is fully patched and up to date.
+if you're on RAID, try a consistency check and/or patrol read or other validation.
+My expectation is that EITHER the patching will fix it, OR putting the unique index on will fail because you've got duplicates in the table already.
+The other thing that might be an issue is that you have an actual hardware fault, and may have corrupt data - this is actually very rare.

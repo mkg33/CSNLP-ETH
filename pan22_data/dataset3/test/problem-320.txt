@@ -1,0 +1,11 @@
+Most modern TCP/IP stacks perform "Path MTU Discovery" (PMTUD) so they never have to rely on IP fragmentation.
+Your theoretical messaging-protocol server is probably connected to an Ethernet-like network, which probably uses standard 1500 byte frames, so your own server's IP stack would have to fragment that 64KiB write into 46 or so separate packets before it could even begin transmitting them on the first hop.
+Ethernet has a standard MTU of 1500 bytes, which, after typical IPv4 header overhead of 20 bytes and typical modern TCP header overhead of 32 bytes (used to be 20 bytes but we add a 12-bytes timestamp option nowadays), results in a TCP Maximum Segment Size of 1448 bytes.
+Ethernet has always been influential on TCP/IP packet sizes.
+To allow people behind PMTUD black holes to still connect to their services, Google sites choose to negotiate a very conservative TCP MSS of 1380 bytes (last time I checked).
+IPv4 datagrams can be as large as 64 KibiBytes, but exceedingly few paths across the Internet have a 64KiB MTU, so that number is irrelevant to most packet-size planning.
+Unfortunately some sites block the ICMP messages necessary for PMTUD to work, accidentally creating "PMTUD black holes" where PMTUD doesn't work.
+Even Ethernet networks that are set up to use nonstandard "jumbo frames" usually max out at 9000 byte MTUs.
+So I'd say one could make a pretty good argument that if you want to tailor how your application does writes, to make sure they only fill a single packet most of the time, make your writes no larger than 1448 bytes, and perhaps no larger than 1380 bytes.
+PPPoE, which is popular among DSL-based ISPs, adds another 8 bytes of overhead, so TCP connections that traverse a PPPoE link end up with a TCP MSS of 1440 bytes.
+Off the top of my head, I can't even name a physical / data link (layer 1/2) networking technology that allows for 64KiB MTUs.

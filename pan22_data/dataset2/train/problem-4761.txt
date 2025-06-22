@@ -1,0 +1,10 @@
+This way, domainname.com will map to some public IP address when resolver from the outside, while it will map to your CAS server's internal IP address when resolved from the inside.
+However, once you add domainname.com to your AD DNS, AD will try and resolve ALL YOUR INTERNAL DNS REQUESTS - so you'll have to duplicate, or have appropriate counterparts for all of your external DNS records in AD.
+Or figure out why an external domain (yours) is not resolving correctly since your internal one as .local should not interfere with the the resolving of the external one.
+It should work fine on the external address. Is your AD Domain name the same as your web domain name? If it is, this could cause DNS problems internally that would prevent this.
+Also be aware that people with laptops may cache the DNS records for either the internal or external IP address, and it could break owa for them when they move in and out of the office. - the solution is for them to flush their DNS or reboot.
+If you are not using AD DNS for your External DNS needs, then you can add "domainname.com" to your AD DNS, using your internal IP address.
+This will solve your problem by providing the internal IP address to people in the office, but people outside will still resolve your external IP address as they do now.
+If your firewall/proxy can't handle requests for domainname.com from the inside, then you will need to create a "shadow" zone for domainname.com in your internal DNS servers, which maps your public names to internal IP addresses.
+I have a working OWA internally and externally. Users can access OWA externally through https://domainname.com/owa and internally through the IP address. What I want is internal users to access OWA by browsing to https://domainname.com/owa rather than the IP address for obvious easy of use.
+If it does not work, then just add a DNS record to your AD DNS server for the FQDN of the external address and point it to the internal IP address.

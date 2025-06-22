@@ -1,0 +1,22 @@
+If you use http sessions/authentication, you will have to store session outside of the server, like on the database.
+From a license point of view, it's included in windows, no more cost.
+Affinity is based on a hash between client IP and Virtual IP.
+http://technet.microsoft.com/en-us/library/cc757659(WS.10).aspx
+Servers will "share" this ip and spread client to different server.
+You can use Microsoft NLB feature to spread the load between 2 or more servers.
+You will have a virtual IP that client will connect to.
+If a server fail, client will be dispatched to others servers.
+NLB just remove a server if it's down from an ip point of view.
+Each server got a local storage, and the primary send transaction on the fly to the standby server (synchrone or asynchrone).
+NLB is not application aware, if you shut IIS, users will be lost if you have affinity.
+You will have to change in IIS metabase (loadbalancercapabilities) as explained here:
+The last one means Windows enterprise version and external shared storage which imply high cost (but still SQL standard version).
+Going with SQL pure layer, you can mirror your database.
+You have differents options: using SQL mechanism to replicate database, or use Microsoft MSCS (cluster).
+So your webserver switch to the standby server automatically in case of problem.
+Else client session will be lost when a server fail.
+It's per database, so if your WCF use multiple database, and only one is broken, you will have issue because one database is now active on the standby server, but all others are still on the primary server.
+When your webserver connect, the server tell him that a standby server is available in case of problem, through the SQL native client and or ADO.Net.
+The multicast/unicast depend on the network, number of nic and intra server communication or not.
+You can maintain them on the same servers while this one is working (through affinity).
+http://technet.microsoft.com/en-us/library/cc917680.aspx

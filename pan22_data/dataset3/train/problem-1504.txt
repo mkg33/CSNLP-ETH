@@ -1,0 +1,9 @@
+from each if( !rdr.NextResult() ) and move each subsequent operation to a branch under the if, but this results in code many layers deep as there's about 8 or more result sets.
+throw new NoNextResultException() and in the catch block that surrounds the using I would swallow the exception and have the return-value interrogation code in the finally block, or in code immediately following the try block:
+Furthermore it avoids the expensive cost of throwing and catching exceptions as well as sticking to the mantra of "use exceptions for exceptional circumstances, not for program flow" - which is what it would be if I did convert it to a try/throw/catch.
+But the problem with that is that throw statements don't define where the exception lands: so removing the catch statement means the program will compile, but crash due to an unhandled exception when it runs, whereas removing the goto label readReturnValue means the program won't compile, which is safer.
+This is a problem if you want to interrogate the return-value to make a decision regarding how you want to read the data.
+The first alternative that comes to mind is to remove the negation operator (!)
+SqlCommand and SqlDataReader only read the RETURN-value of a Stored Procedure after the SqlDataReader has been closed.
+Another alternative is to replace goto readReturnValue with a throw and throw my own custom exception, e.g.
+In my case, the stored procedure I'm calling returns multiple output data tables followed by an integer return value.

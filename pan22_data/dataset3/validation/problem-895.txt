@@ -1,0 +1,14 @@
+We are trialling using puppet to roll out the majority of security updates.
+We have a number of Debian servers that need to be patched and manual patching becomes an issue as their number grows.
+We did this by creating a define which takes the package name as the name and a version parameter.
+What I am lookig at is a way to push patches to the servers from the central location and have some sort of reporting on how it goes.I believe that there shoud be relatively easy way to do it without buying third party tools.
+We don't use it, for example, to upgrade MySQL, because we would need to arrange downtime, and should do that by hand.
+Puppet comes to my mind but maybe there are other ideas that can serve this purpose better?
+What should work (I've done the theory but haven't rolled it out) is using cron-apt in combination with repositories managed by debmashal to approve the patches that cron-apt will then deploy.
+If this works, then I'd recommend it as a valid method.
+We only use it to roll out packages that we don't care about.
+Debmarshal is out of google and there's a tech talk available on it:
+On the other hand we have upgrades like Mutt, which can just be upgraded without much concern.
+Our current problems with this solution is that we have three different distributions to track (Jaunty, Hardy and Dapper) and keeping the file up to date with the output of apticron is a little time consuming, but hopefully both these problems can be fairly easily solved, or at least greatly reduced, with some scripting to automatically create the manifest files direct from the emails.
+We didn't implement this using the native "package" type, because there could be conflicts with other manifests and there is no way to only upgrade packages which are installed.
+Puppet is great, but doesn't really handle that problem.

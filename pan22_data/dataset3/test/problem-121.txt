@@ -1,0 +1,10 @@
+That is not a perfect solution because it has maintenance issues, but I cannot see another way.
+It seems the indizes led to a different Execution Plan.
+As you just want the TOP 10 ordered by name it thinks it will be quicker to work down the index on name in order and look to see if each row matches the CONTAINS(Name, '"John" AND "Smith"') ) predicate.
+Not sure what can be done about it as the "driver" of the query is fulltext search which you cannot augment with statistics.
+Presumably it takes many more rows to find the 10 matches required then it expects and this cardinality issue is compounded by the number of key lookups.
+I removed all indizes and statistics, added the fulltext search and voilà, the query became really fast.
+A quick hack to stop it using this plan would be to change the ORDER BY to ORDER BY Name + '' although using CONTAINSTABLE in conjunction with FORCE ORDER should also work.
+Try rewriting the where contains predicate to an inner join containstable (CONTAINSTABLE) and apply join order hints to force the shape of the plan.
+This looks like classic selectivity misestimation.
+As I said in the question there were indizes on all columns + statistics for each column.

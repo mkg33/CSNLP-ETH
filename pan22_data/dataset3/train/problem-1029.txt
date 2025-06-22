@@ -1,0 +1,10 @@
+The reason is since job was added as administrator in SQL Server there is entry of this owner with SID in sys.server_principal which SQL Server knows, and since the login was member of sysadmin role no "impersonization" will be done and hence job will succeed.
+Tibor Karaszi has more detailed explanation on this.
+In this scenario the job will fail which is pretty much obvious
+Below is more detailed answer with couple of scenarios.
+The login was removed from AD but not from SQL Server( someone forgot to remove it) and the login is member of sysadmin fixed server role
+For SQL Server admin login like SA, even if SA is disabled and is owner of some job when you run the job it would succeed.
+The login was removed from AD and from SQL Server.
+The login was removed from AD but not from SQL Server( someone forgot to remove it) and the login is NOT member of sysadmin fixed server role.
+Let us say we are talking about Windows login which part of AD and was owner of a job.
+In this case job will fail because since owner is not sysadmin impersonization will be done and SQL Server will look for this account in Windows AD, since the account was removed the job will fail.

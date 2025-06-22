@@ -1,0 +1,17 @@
+But this can be solved, as you can modify the script to suit the move.
+For sure, to have any chance, the application need to be for the same CPU arch, same glibc version, and the 2 distros need to be with a common base - i.e.
+It depends on the complexity of the application, as well as on the dependencies and libraries it links to.
+Its generally not a good idea to since file system structures might vary.
+From there on it's mostly paths that have to be adjusted.
+If the processor architecture is the same I can't see why this wouldn't work.
+If you want to build such an application, and be able to run it on any distro - then you need to compile it with statically linked libraries, and to nor relay on the OS filesystem layout and to assume that some files will be located at specific locations.
+Another problem are shared libraries which might not be installed on the target system, or worse might be installed in incompatible versions.
+Id it's not you who builds the application - then better use the specific distro's pre-build packages, or compile from source.
+It depends on the glibc version amongst other things.
+If the application is stand-alone, simple, has no external dependencies and is compiled on the same CPU architecture - it should work.
+If all the linked libraries exist in a compatible version on the target system, it's likely your application will be able to start.
+An easy way to check if your program will run is to list all the linked libraries using ldd and see if they exist on the target system.
+In other words, can an application that runs on one distro be simply copied and run on another distro?
+If it's some scripting language application - ruby, php, perl, python, etc., most probably (if the interpreter version is the same) you can just copy it - again, if the app does not assume some files are at specific locations.
+One problem can be system paths that might differ from distribution to distribution.
+One solution to the libraries problem is to either build statically linked binaries or (like it's common on OS X) to just ship all required libs with the application and if necessary set LD_LIBRARY_PATH accordingly (though this is a bad idea for so many reasons).

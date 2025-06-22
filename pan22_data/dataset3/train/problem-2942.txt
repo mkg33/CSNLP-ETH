@@ -1,0 +1,18 @@
+If a network partition happens only one partition will have quorum, the other stop services until the partition goes away.
+Since only modes that were reachable by clients spent records assigned to those nodes, there should be no over-spent records.
+The main thing that would make such an attack possible is if both partitions are independently addressable during a partition, which may not be the case.
+When the partition is resolved, all of the nodes resynchronize which data records are spent.
+As for the likelihood of a partition, that depends on your infrastructure and how your nodes are communicating availability state to each other.
+For each new data record that is created as unspent, assign it to a single node.
+The quorum is used to determine the majority and minority partitions.
+Such systems frequently have the concept of a quorum, which is why such systems require an odd number of member nodes.
+Having dealt with similar issues in Clustering scenarios, I'm familiar with the situation you describe.
+If the partitions are not addressable, then this attack is a lot less likely to succeed.
+The quorum is the number, greater than half, that defines what is the minimum number of available nodes that needs to be present to provide services.
+In my experience, network partitions frequently exclude end-users from one partition as well as the other nodes.
+Thought will have to be put in to how records are assigned to nodes, and what to do when a node runs out of its own records during both unified and partitioned operation.
+If you're looking for a practical solution to allow transactions to continue while there is a partition, I have an idea.
+If a multiple partition event happens it can lead to no services being provided at all.
+As for their ability to detect a partition event, that depends on your code.
+However, it does guarantee only-one node is serving, and that's how consistency is provided.
+While the network is partitioned, the data records assigned to the reachable nodes are the only ones allowed to be spent by the clients.

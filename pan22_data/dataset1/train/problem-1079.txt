@@ -1,0 +1,9 @@
+I have a 6 disk raid6 mdadm array I'd like to benchmark writes to:
+Benchmarks can be inaccurate because of cache - for example, notice the write speed here is higher than it should be:
+To disable Linux caching, we can mount the filesystem synchronously:
+But after this writes become way slower than they should be:
+It's as if mdadm requires async mounts in order to function. What's going on here?
+Performance is dramatically worse because synchronous writing forces parity computation to hammer the disks.
+In general, computing and writing parity is a relatively slow process, especially with RAID 6--in your case, not only does md have to fragment the data into four chunks, it then computes two chunks of parity for each stripe. In order to improve performance, RAID implementations (including md) will cache recently-used stripes in memory in order to compare the data to be written with the existing data and quickly recompute parity on write. If new data is written to a cached stripe, it can compare, fragment, and recompute parity without ever touching the disk, then flush it later. You've created a situation where md always misses the cache, in which case it has to read the stripe from disk, compare the data, fragment the new data, recompute parity, then flush the new stripe directly to disk. What would require zero reads and writes from/to disk on a cache hit becomes six reads and six writes for every stripe written.
+Granted, the difference in performance you've observed is enormous (1.9GB/s versus 449KB/s), but I think it's all accounted for in how much work md is doing to maintain the integrity of the data.
+This performance hit may be compounded by how you have the disks arranged... if you have them all on one controller, that much extra reading and writing will bring performance to a standstill.

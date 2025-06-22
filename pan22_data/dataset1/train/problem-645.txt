@@ -1,0 +1,12 @@
+I had a Win7 Home edition system that would not see or be seen from other Win7 computers on my network. Each and every system connected through router to Internet with no issues. Pinging IP addresses in either direction worked consistently, BUT pinging COMPUTER-NAME in either direction would NOT work. 
+Checked WORKGROUP name, DNS, router settings, Windows services. Nothing. 
+Started looking at less likely reasons I could think of: firewall ports, HOSTS files, LMHOSTS, ARP cache, malware, higher-level stack corruption, errant third-party apps, exorcism of evil spirits...
+Driving me nuts! I used to troubleshooting for a living, now I can't get a system (with NO apparent problems) to talk to the rest of my simple network, and vice versa!  
+NO local system communication beyond pinging IP addresses worked. So, I knew it was likely a Windows issue, more precisely, Windows-specific networking.
+I finally found the problem. I had disabled HomeGroup services manually (HomeGroup doesn't work with my young kids' old XP machines, and it is nothing an advanced user would really ever need). BUT, in spite of disabling HomeGroup services, WHEN THE COMPUTER'S ADVANCED NETWORK SETTINGS FOR 'PRIVATE NETWORK' WERE LOOKED AT, 'HOMEGROUP' WAS STILL SELECTED. Deselected it, and everything worked immediately. DOH! 
+My fault for being too techy and disabling the services directly instead of going through the dialog panel. I suspect an "ON" flag was still set inside the registry, even though the HomeGroup services were disabled, and this led to the older NETBIOS-type of connection from being allowed. 
+This parallels the old advice that, IF given a choice, ALWAYS change a registry setting via a Windows dialog panel, instead of directly through the registry. As in this instance, there are often unseen levers interacting with other components that only show up as problems later -- problems that you may not associate with a change you made earlier. (We've all been there, right?)
+For those having issues with starting up the Workstation Service as Workstation service could not start for me, do the following... (always make sure to backup your registry before making any changes)
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\lanmanworkstation
+On the right there should be a "DependOnService" & "DependOnGroup", delete these 2 and reboot.
+URL for Ref = https://social.technet.microsoft.com/Forums/windowsserver/en-US/722499b5-dc8a-472c-a187-b49dc1a14f07/could-not-start-the-workstation-service-on-local-computer-error-1275?forum=winservergen

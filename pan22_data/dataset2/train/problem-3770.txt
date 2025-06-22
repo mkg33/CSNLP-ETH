@@ -1,0 +1,23 @@
+we had a similar challenge and have solved it using local repos and a snapshot based storage system. We basically update the development repository, clone it for testing, clone that for staging and finally for production. The amount of disk used is limited that way, plus it's all slow sata storage and that's ok.
+Transparent proxies are breaking HTTPS. The client doesn't know that there is a proxy and has no reason to use the special Connect method.
+Domain and subdomain whitelisting is fully supported by squid. Nonetheless, it's bound to fail in unexpected ways from time to time.
+Some applications are ignoring environment variables and/or are run as service before variables can be set (e.g. debian apt). 
+Most http client libraries (libcurl, httpclient, ...) are self configuring using the environment variables. Most applications are using one of the common libraries and thus support proxying out-of-the-box (without the dev necessarily knowing that they do).
+I'd rather totally disable caching than experience a single caching bug that will melt my brain in troubleshooting. Every single person on the internet CANNOT get their caching headers right.
+Personally, I'm running things in the cloud at the moment, all instances have at least 100 Mbps connectivity and the provider runs its own repos for popular stuff (e.g. Debian) which are discovered automatically. That makes bandwidth a commodity I couldn't care less about. 
+The most well-known and free and open-source is squid. Luckily it's one of the few good open-source software that can easily be installed with a single apt-get install squid3 and configured with a single file /etc/squid3/squid.conf.
+Modern websites can have all sort of domain redirections and CDN. That will break ACL when people didn't go the extra mile to put everything neatly in a single domain.
+If you're a dev and you just joined a company that is blocking direct internet AND forcing proxy authentication, RUN AWAY WHILE YOU CAN.
+You could achieve what you want using ace's on the proxy server using user-agent strings or source ips/mask combinations and restricting their access to certain domains, but if you do that one problem I see is that of different versions of packages/libraries. So if one of the hosts may access cpan and requests module xxx::yyy unless the client instructs to use a specific version, will pull the latest from cpan (or pypy or rubygems), which may or may not be the one that was already cached in the proxy. So you might end up with different versions on the same environment. You will not have that problem if you use local repositories.
+This won't solve all your tasks, but maybe this is still helpful. Despite the name, apt-cacher-ng doesn't only work with Debian and derivatives, and is 
+However, AFAIK, this won't support rubygems, PyPI, PECL, CPAN or npm and doesn't provide granular ACLs.
+That's a definitive use case for a proxy. A normal proxy, not a reverse-proxy (aka. load balancers).
+I'd recommend to stick to the basics when setting up a proxy. Generally speaking, a plain proxy without any particular filtering will work well and not give any trouble. Just gotta remember to (auto) configure the clients. 
+Personally, I think that investigating Squid is a good idea. If you implement a setup in the end, could you please share your experiences? I'm quite interested in how it goes.
+The client tries a direct HTTPS connection... that is intercepted. The interception is detected and errors are thrown all over the place. (HTTPS is meant to detect man-in-he-middle attacks).
+Not all environments have the same requirements though. You may go the extra mile and configure caching.
+Sometimes there will be an installer or a package that wants to call the homeship or retrieve external dependencies before running. It will fail every single time and there is nothing you can do about it.
+The clients get the repository info from our configuration management so switching is easy if necessary.
+HTTPS proxying is fully supported by design. It uses a special "CONNECT" method which establishes some sort of tunnel between the browser and the proxy.
+There is an option to require password authentication from clients, typically with their LDAP accounts. It will break every browser and every command line tool in the universe.
+A note on transparent proxy. (i.e. The proxy is hidden and it intercepts clients requests ala. man-in-the-middle). 

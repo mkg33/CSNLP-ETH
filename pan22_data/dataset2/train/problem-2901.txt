@@ -1,0 +1,5 @@
+You should probably also check if anyone is logged in before you power down. (And depending what you use ssh for, this might be enough for ssh too, in which case you will not need to worry about sshd logs.)
+Do not write a long-running program. Use cron to run a script every five minutes or so to create a file that is half an hour old (use the touch command) and then checks whether the various log files are newer than that reference file (using the test command).
+I believe CUPS also has an HTTP-accessible diagnostics, like a list of active jobs (or just just use lpq -a).
+You can use netstat -p to look for connections associated with sshd (if run under sufficient privilege level, like root), and there is a diagnostics page for Apache (enabled by mod_status) which can tell you if the server is doing something (you can strip logging from access to the page and lock it down to requests from localhost only).
+Perhaps in your system, sshd logs (via syslog) to the /var/log/messages file. This will not work for your purpose, as many other things log there too, so you might need to edit /etc/syslog.conf so that sshd also logs to dedicated log files that you can monitor.

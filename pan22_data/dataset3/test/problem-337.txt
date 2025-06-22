@@ -1,0 +1,12 @@
+They are good to allow override access to people that don't have access to the server config.
+Common usage of .ht* as "this is a restricted/inaccessible file of some kind" is expected/abused by some people/content/web applications, for many of the same reasons that .htaccess is misunderstood by many people as the "right" place to put access controls and rewrite rules, despite the fact that it's not intended for that.
+), make sure your content isn't abusing that file name convention to hide things.
+I'm hardening my Apache server config and wondering if it uses any other "^.ht.+" files besides .htaccess and .htpasswd?
+There is nothing special about `.htpasswd' just that most people use it so it makes the ACL to block access to them easier.
+here is how you can check if you're using any other .htaccess: core - Apache HTTP Server, also this is what should be used by any apache as it would prevent people accessing it:
+There is nothing that says you need to use those filenames, and if you have access to the httpd.conf file, you really shouldn't use them at all as they slow down access to the directories.
+That being said, if you haven't changed the defaults by using AccessFileName directive in your config, and have named all your password files .htpasswd than you should be good with the dotfiles.
+The only one it does normally use is .htaccess, but that's really only due to the default of AccessFileName being AccessFileName .htaccess - change that configuration and Apache will have no special interest whatsoever in files that start with .ht.
+So, if you disable the default behavior of <Files ~ "^\.ht"> (why would you need to do this for hardening?
+.htaccess is the default AccessFileName used by apache.
+.htpasswd isn't a normal standard, and really isn't even a good idea; the general recommendation is to keep the auth files out of your web root, since there are other ways (remote file inclusion vulnerabilities) to potentially get at the contents of the file, bypassing Apache's access restrictions.

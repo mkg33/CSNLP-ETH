@@ -1,0 +1,5 @@
+As mysql 'databases' are just schemas, as Gaius pointed out, if it's all running from the same server instance, you can just qualify the name of the tables you're trying to modify, or get information out of:
+If you start breaking things up across multiple servers, you can still script something that makes connections to multiple servers so you can apply all of the changes; for the analytics, again, you could set a bunch of database links using federated tables in your master database to access the data from one place, as you'd just be reading from the tables.
+You'd likely want to keep another database to track what version each customer is at, so you could keep track of which ones have or haven't undergone the last round of modifications.
+And I have no idea what sort of performance overhead there'd be in mysql at that scale, I don't think I've ever gotten past 30 'databases' in mysql.
+Scripting the upgrades wouldn't be that difficult ... you could write something that looks at the catalog of databases and applied the necessary changes to get each database to the latest version, possibly skipping those that shouldn't be upgraded for some reason.

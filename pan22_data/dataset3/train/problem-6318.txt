@@ -1,0 +1,14 @@
+Trying to access localhost:8080/myproject/hello gives a 404.
+The only issues I've had so far have been minor troubles keeping DRY, eg where settings.py requires absolute URLs and Django doesn't think to prepend the SCRIPT_NAME on the URL (think settings.LOGIN_URL, settings.MEDIA_URL).
+http://albertoconnor.ca/blog/2011/Sep/15/hosting-django-under-different-locations
+For Django 1.6> according to the changes... this settings are no longer necessary, https://code.djangoproject.com/wiki/BackwardsIncompatibleChanges#ChangedthewayURLpathsaredetermined.I have commented out both the Path info and Script Name lines in fastcgi_params (in Debian-like cases) or in the nginx.conf (RHEL cases)
+The rest of the fastcgi params I have in another site-wide config file.
+localhost:8080/myproject/ instead of localhost:8080/; all the examples I have seen either assume Apache or mounting at the root of the site.
+I ran into related problem with Nginx and Gunicorn instead of fastcgi.
+For Django 1.6< according to other threads on ServerFault, you should not set the SCRIPT_NAME variable, this one should be '', and you should set only PATH_INFO with $fastcgi_script_name variable.
+The upshot is you can use proxy_set_header to set the SCRIPT_NAME header directly into the HTTP headers.
+This might be obvious, but also make sure you have another location that points to your static and admin media.
+Just pushed through the same issue myself- it turns out that the link you provided to the Django change doc was the key to solving the problem.
+For a project called 'myproject', which you'd like rooted at mydomain.com/myproject/, try this.
+Django > 1.0 uses SCRIPT_NAME and PATH_INFO to route URLs, as the doc explained.
+I can't for the life of me figure out how to deploy a django site under a non-root location with Nginx/fastcgi, e.g.

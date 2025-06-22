@@ -1,0 +1,36 @@
+The answer to the question is going to depend greatly on the RAID controller manufacturer and how they implemented error/failed drive detection.
+In other words, RAID controllers just do the best they can.
+And have been weighing up the pro/cons of raid controllers hardware/software.
+Now this is the big question, with hardware raid what would the Raid controller do?
+Installed a new drive, and in the process of rebuilding one of the good disks upchucked an unrecoverable read error, which is an issue more and more as drives get bigger and manufacturers allow a certain number of these in the manufacturing process.
+Lets say, data is read from drive 0, and also at the same time from drive 1.
+Though drive 1 reports a ECC read failure to the Raid Controller.
+(Yes, a drive can report read correct and the data can still be corrupted, and RAID does not check polarity or ECC on read)
+It is a crappy version of software RAID, and it makes it nigh impossible to recover data if your motherboard goes south because often they're vendor-specific in how they mess with data on the drive.
+The research that I have done have showed that most common hard disk drive manufactures use ECC in their hard disk drive design that is suppose to protect against 1 bit failures to an extent 3 bits.
+All hard disk drives use error correcting codes (ECC) today.
+So when you ask how the controller "knows" the drive is bad, it doesn't necessarily know.
+There are various methods that a RAID implementations can assess the "health" of a disk (SMART, SCSI "Check Condition" and "Sense Key" messages), but I'm not aware of any published "standard" as to how RAID implementations should act on these methods.
+I've had a controller that didn't KNOW there was an issue with a drive.
+calculating parity of data as it's written to the drive and if it's wrong, it flags a possible issue, it could watch hard disk status if there's onboard SMART status, reading errors straight from the drive, see if there's issues through multiple errors to a particular drive, etc...
+Its got a signal from the hard disk that the read failed.
+It also doesn't need special drivers unlike many controllers.
+Unrecoverable read errors are what matter to a RAID controller.
+Implementation is entirely up to the manufacturer.
+If you're talking about motherboard RAID, it's not really RAID.
+I asked a NetApp engineer who was giving us a talk this very question.
+Software RAID is integrated with the OS, it's far far cheaper, and it's just about as reliable now (if you're talking about Linux especially) and nearly as speedy (in some cases, faster).
+Overall, unless you're talking RAID for servers in a business or have really specialized needs, software RAID is probably on par with hardware RAID for %90 of what home users would use it for.
+It can report the hard disk drive as faulty and need replacing.
+I've had cases where a system failed and you couldn't take the drive from the array to another system to recover data from.
+Does the Raid Controller Seeks to a different hard disk drive for the data until it gets a successfully read from the drive.
+How does a RAID controller, even Raid 1 to Raid 6 actually detect that a hard disk drive is failing.
+The specific steps that each make and model of RAID controller firmware (or, for that matter, a software RAID implementation in an OS) uses are going to vary depending on the manufacturer's design.
+If you use a high-end card it'll probably perform better but for most home-grade RAID they tend to be comparable in speed.
+I have been looking over Raid levels over the past 3 days.
+At the level you're interested in, you'd have to have the design specs on both the RAID controller and the drive firmware to really understand how media errors would be reported up the device stack to the OS, and ultimately the user.
+I understand that RAID is not a backup solution and I'm perfectly fine with it, though one question still remains.
+We had a three-drive RAID 5 where one disk completely failed.
+Though when thinking about this, lets say you have Raid (1) and two hard disk drives that are identical.
+At the data densities we're working at bit errors are just a fact of life.
+The end result is that RAID controllers usually simplify your setup by abstracting the work from the software, they offload processing power to dedicated hardware, and they add (usually) some better support for telling the end user which drive is bad (through software tools and/or blinky lights) so you don't have to guess which one is bad.

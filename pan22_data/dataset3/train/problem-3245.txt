@@ -1,0 +1,12 @@
+Noone can read data without specifying key for every query (or without adding it to the triggers/procedures).
+I also want to make sure that if someone got root access to the machine, but didn't have a decryption key, they couldn't read the data.
+I know I can encrypt particular fields of a database, but I'm interested in encrypting every field of the database.
+Also, this requires SSL connection to the database.
+(And likely counter productive in the world of primary keys)
+And on lower level - you can encrypt filesystem too.
+I want to make sure no one who gains access to a mysql shell but who does not have access to a decryption key cannot read anything out of the database at all.
+First: You store your key with the application and handle all encryption at the application layer.
+Next: you ensure that the MySQL instance and the application [server] are on separate machines so that a root compromise on the MySQL server doesn't allow the attacker to read the key from application source.
+Minimal, field-level AES and DES encryption is available: https://dev.mysql.com/doc/refman/5.5/en/encryption-functions.html#function_encrypt
+Handle sensitive data properly (passwords, credit cards, etc) but encrypting everything is overkill.
+I'm concerned if someone has access to the mysql database they inevitably will have access to the key, so this makes no sense.

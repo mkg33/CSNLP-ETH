@@ -1,0 +1,18 @@
+This is the worst mode of operation, because now you have essentially two independent APs on the same channel competing with each other, and because of the hidden station problem, undetected collisions can happen, which reduce overall throughput in addition to the necessary repitition of packets.
+In this mode, the repeater has no presence in the WLAN, no IP address, and no MAC address (though often the repeater acts in addition as a client with those addresses, to be able to present a webinterface etc.)
+1) One way of operation is to just retransmit the frames it receives, unchanged.
+But forwarding frames between different APs needs four MAC addresses (original source, original destination, sending AP, receiving AP), so to make a "real" WDS, all participating APs need to switch to four-address mode.
+Normally, communication between a single AP and its clients only involves three MAC addresses in the wireless communication frame.
+You'll typically enable this mode using a WDS option or similar in the APs webinterface.
+On top of that, there are proprietary implementations that are incompatible with each other.
+2) An extender can also act as an AP in a wireless distribution systems (WDS).
+The forwarding then just happens on OSI level 3, the packet never leaves the network interface, there are no IP addresses involved, only MAC addresses, and again, no NAT happens.
+The problem with WDS is that the standard is a bit fuzzy and allows different implementations.
+3) A third way of operation is for the extender to act both as an independent AP, and at the same time as a client to the main AP.
+But two radio stacks that can deal with different channels at once are expensive, you won't find them often in hardware, therefore most extenders won't use this mode.
+You can set up this mode in OpenWRT, but it's much better to use one of the other modes, or keep the old firmware and use proprietary modes by TP-Link (if all your hardware is TP-Link).
+On Linux (and most routers are embedded Linux systems), iw phy will tell you about these capabilities under the valid interface combinations heading.
+This requires two network interfaces, but not necessarily two radio stacks: Most modern single-channel Wifi hardware is perfectly capable of supporting several interfaces on just one radio.
+So while two radio stacks are not necessary, everything runs a lot smoother if the extender can use two different channels.
+There are several modes of operation for an "extender":
+This is also the only mode where the extender actually acts as a gateway and does NAT.

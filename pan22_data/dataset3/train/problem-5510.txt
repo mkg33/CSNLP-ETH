@@ -1,0 +1,16 @@
+Also ensure that both abuse and postmaster addresses are valid.
+Notice that I removed t=y earlier from the policy entry, but that didn't do the trick:
+In terms of the content you send - its a lot more tricky to say whether that's a contributory factor.
+teltubdkim._domainkey IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtMbAffP/NxX4JcglM+1G2M6xB/va6k1pZijAgZxRKXbbzACUdbSv0MFip5TAAFyZkH4VIUgUq+BAgbAzLZOBEB0SZu2uDb87XMj1acvSOVs//QpUDnbmaLjz4I7HGCY70jZtjFzdEt42730bXJ6eoK1zTGHAx3KLtFFkurHJVXwIDAQAB" ; ----- DKIM teltubdkim for teltub.com
+Including Google apps in your list of senders probably is not helping this score.
+_ssp.teltubdkim._domainkey            TXT "dkim=unknown"
+What happens you try to send mail to norepy@teltub.com from yahoo.com?
+It's important to remember that most spam systems work by totalling a variety of scores.
+Looks like you've got the right stuff set up at your end, and the headers you've published show that DomainKeys and SPF settings are acceptable.
+Certainly its not an easy thing to test in the absence of DSN failures to identify how to recreate the problem on demand.
+I redid the whole thing with a new IP and got the same results.
+But noticed that the DKIM signature generation tool that I use, leaves a 't=y' in the middle of the signature.
+It should work, even if it goes to the bit bucket.
+The things nobody can tell from the headers you've supplied are what Yahoo's bayesian filters hold - nor the rate at which you send emails.
+In the case of the latter there's several milters for sendmail (which may work with Postfix) but I'd suggest having a look at policyd
+The problem was that DKIM signing was still at test mode ('t=y' in the DNS entry).

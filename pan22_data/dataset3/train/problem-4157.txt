@@ -1,0 +1,10 @@
+If the players are in a 2D space (it's 3D but the z difference shouldn't affect visibility) what is the best way to manage the visibility of other players?
+The main problem is that if you had to compare all the players every time an update is sent, it would just take way too long as the number of players scales (think up to a few thousand players per map and each of them updating up to 3-5 times a second).
+One of the problems is that of managing visibility.
+you shouldn't get health updates for people you can't see on the other side of the map).
+The existing system uses grids to organize players, and only uses only players in the current and neighbouring grids to do updates.
+There are some problems with the system though, as it isn't that efficient (besides knowing which grid they are in, no other caching) and sometimes visibility limits should extend beyond 2 grids of distance.
+My idea is to have a separate thread that compares the space difference of all the players every few seconds or so and stores references to all nearby players in the player's object for easy access when an update needs to be broadcasted.
+Update data for other players should only be sent to a game client if their player is near the other players (i.e.
+I'm looking into designing and implementing an online RPG (or more accurately, redesigning an existing piece of server software).
+If it can be multithreaded that would obviously be better, and the less main-thread calculation the better.

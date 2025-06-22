@@ -1,0 +1,19 @@
+This means that all changes that are part of the same transaction get the same SYS_CHANGE_VERSION.
+Our database is a subscriber (transactional replication).
+See Obtaining Changes by Using the Change Tracking Functions for confirmation that VERSION is ever increasing.
+My understanding of Change Tracking is that it is per database transaction.
+My colleagues and I are working on a solution revolving around change tracking…
+Numerous publishers are pushing transactions into numerous tables.
+We are trying to determine if all we need to do is have a sort order on SYS_CHANGE_VERSION and simple ignore records for the current max value of SYS_CHANGE_VERSION.
+There are many records with the same value of SYS_CHANGE_VERSION.
+When rows are inserted into the change tracking table/mechanism, can rows be inserted with a lower value of SYS_CHANGE_VERSION than the current maximum value?
+Our goal is to use SQL Server change tracking to track changes to be pushed to another non-SQL system.
+This is based on the query of select * from changetable(CHANGES my_table, 0)
+For example, we may have 50 row with SYS_CHANGE_VERSION = 100, 1 row with SYS_CHANGE_VERSION = 101 and then more rows with SYS_CHANGE_VERSION = 100.
+Observation: When we execute the above query, some of the rows are ‘interleaved’.
+You should always process the records in transaction completion order.
+During our testing, we observed that the entries recorded by change tracking has records grouped into ‘chunks’.
+We are worried about whether or not we can continue/resume the process of pushing transactions to the non-sql system.
+As an alternative, we have considered using the replication stored procedures on my subscriber to push changes to my non-SQL system.
+I also understood that the SYS_CHANGE_VERSION is set during the commit of the transaction, so numbers are a) always ascending and b) may be interleaved.
+Furthermore, once data is read from the change tracking table, can subsequent reads contain entries which have the same ‘maximum’ SYS_CHANGE_VERSION which was read previously.

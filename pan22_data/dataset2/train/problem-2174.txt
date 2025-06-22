@@ -1,0 +1,11 @@
+I downloaded the toolchain, but I don't really understand how to "install" it. I extracted the files to my home directory. The directory structure looks like this:
+However, when I try to use the compiler now (from outside the inner bin directory), it is unable to find the libstdc++ shared library that comes with the toolchain:
+However, I believe I should be using the hf version, so I switched to arm-linux-gnueabihf. Then I realized that this does not work with Raspberry Pi since it is armv6.
+During my initial attempts I was using the arm-linux-gnueabi compiler, which is available in the Ubuntu repo. I got this working. I was able to build all my dependencies and use the cross-compiler in my cmake project.
+I then tried to compile a test program in the OUTER bin folder, which contains the prefixed versions of the tools.
+If I change directory to the INNER bin folder I am able to compile a test program from the terminal without any problems.
+After some Googling, I then found the pre-built toolchain from GitHub: https://github.com/raspberrypi/tools. 
+The primary target of the Ubuntu arm-linux-gnueabi cross compiler is to compile for a different architecture of the same Ubuntu release leveraging the Debian/Ubuntu multiarch capabilities. Example: You compile on Ubuntu 16.04 amd64 for Ubuntu 16.04 armel.
+I created a project on Github which contains build files to build your own toolchain with correction versions. Especially the --with-arch=armv6 flag is important.
+However, this results in the same error. How should I "install" the toolchain so that I can use the toolchain from everywhere, just like I can when I use the cross-compilers from the Ubuntu repo?
+Furthermore, I want to be able to use the compiler without having to navigate to the bin directory. So I tried adding the OUTER bin directory (since I want the prefixed versions) and both lib directories to my PATH:

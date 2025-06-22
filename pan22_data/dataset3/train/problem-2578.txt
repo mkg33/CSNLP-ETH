@@ -1,0 +1,28 @@
+But as stated by TysHTTP, if you add an index (which slows down your insert/updates some), your scanning becomes crazy fast.
+Multiply that out by 1048580 rows and it means that the sort operation would need an estimated 4GB so it sensibly decides to do the SORT operation before the JOIN.
+Both your JOIN conditions do match and would preserve all rows.
+They end up getting eliminated because the single row in tinytable does not match the t.foreignId=3 predicate.
+This gives you the improved performance (in this case where the returned result count is very small), without actually having the performance hit from adding another index.
+Given a simple three table join, query performance changes drastically when ORDER BY is included even with no rows returned.
+The reason why the Join Order changes when you add the ORDER BY clause and there is a varchar(max) column in smalltable is because it estimates that varchar(max) columns will increase the rowsize by 4,000 bytes on average.
+Actual problem scenario take 30 seconds to return zero rows but is instant when ORDER BY not included.
+While it is odd when the SQL optimizer decides to perform the order by before join, it's likely because if you actually had return data then sorting it after the joins would take longer than sorting without.
+Basically, you've found a hole in the SQL optimizer logic for your particular scenario.
+For both queries the estimated row count shows that it believes the final SELECT will return 1,048,580 rows (the same number of rows estimated to exist in bigtable) rather than the 0 that actually ensue.
+I've tested on SQL 2005, 2008 and 2008R2 with same results.
+You can force the ORDER BY query to adopt the non ORDER BY join strategy with the use of hints as below.
+The plan shows a sort operator with an estimated sub tree cost of nearly 12,000 and erroneous estimated row counts and estimated data size.
+Curiously, it seems to matter that smalltable has an nvarchar(max) field.
+BTW I didn't find replacing the UNIQUEIDENTIFIER columns with integer ones altered things in my test.
+and look at the estimated number of rows it is 1 rather than 0 and this error propagates throughout the plan.
+So, the sort (27%), and 2 x 1 million "seeks" on small tables (23% and 46%) are the massive bulk of the expensive query.
+I understand that I could have an index on bigtable.smallGuidId, but, I believe that would actually make it worse in this case.
+The statistics would not get recompiled for this table until 500 row modifications have occurred so a matching row could be added and it wouldn't trigger a recompile.
+What's happening is SQL is deciding to run the order by before the restriction.
+Look at that - run together, the first query is ~33x more "expensive" (97:3 ratio).
+It also seems to matter that I'm joining on the bigtable with a guid (which I guess makes it want to use hash matching).
+Lastly, try running the following script and then see if the updated statistics and indexes fix the problem you're having:
+Turn on your Show Execution Plan button and you can see what's happening.
+Here's script to create/populate the tables for test.
+In comparison, the non-ORDER BY query performs a grand total of 3 scans.
+SQL is optimizing the first query to order the BigTable by datetime, then running a small "seek" loop over SmallTable & TinyTable, executing them 1 million times each (you can hover over the "Clustered Index Seek" icon to get more stats).

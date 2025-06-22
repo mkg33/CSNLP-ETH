@@ -1,0 +1,21 @@
+On my MacBook Pro, after I set upper=100000 bound just to get the timings back into human scale, the Python code executes (with python, i.e.
+However, after thinking about that a little more, I found your actual bug.
+(The correct answer is 837799, and as v5r suggests, you can get that answer by changing int to int64_t throughout your code.
+However, this will not solve the general problem that 3*c+1 can overflow to a positive number; and it won't remove the undefined behavior that results on signed integer overflow.
+With this modification, your C code runs in 0.572 seconds and produces the mathematically incorrect answer 910107.
+With clang x.c -W -Wall -pedantic (implicitly -O0), my test case takes 0.195 seconds, i.e., almost three times as slow.
+Python 2.7.10) in 5.169 seconds and the C code executes in 0.073 seconds (after compilation with clang x.c -W -Wall -pedantic -O3).
+There's no point doing all that computation every time through the inner loop.
+One pedantic thing that could be going horribly wrong is "you're on a 16-bit machine, so i < 1000000 is invariably false and your loop never terminates."
+Specifically, once c overflows, because it's a signed int, it'll go negative; and then it may enter the attractor
+If you're compiling without -O3, well, that could inflate your numbers quite a bit.
+One more improvement: You can, and therefore should, move the code block
+The revised code runs in 0.402 seconds on my machine, i.e., the 64-bit version runs faster — but I suspect that's partly due to getting to skip over all those error-reporting printfs that were slowing down the 32-bit code.
+It's your job as a programmer to make sure overflow can't happen.)
+In this particular case, you can fix the infinite loop by checking for c > 1 instead of c != 1, so that the inner loop will stop on overflow-to-negative as well as on reduction-to-1.
+Code runs faster when it doesn't have any errors to report.
+(Which is to say, the compiler is allowed by the language standard to assume that overflow never happens, which means that if overflow does happen anyway, all bets are off.
+But (A) you're not, and (B) if you were, then compiling with -W -Wall -pedantic would suffice to diagnose that issue on any modern compiler.
+which never hits 1 and so your inner loop (the cl loop) never terminates.
+So what you need to do is check for overflow before doing the multiplication, like this:
+It's not overflow on the ++i loop; it's overflow on the 3*c+1 multiplication!

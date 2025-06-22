@@ -1,0 +1,18 @@
+Every X frames (with lower values of X leading to more fine-grained manipulation), you take a "snapshot" of the gameworld at that point, and associate it with an in-game time.
+While playing through the game normally, time-forward, every input an reaction contributes to the snapshot set at some time in the future.
+If you have a fixed velocity, you could also only save rotation, or save only one velocity for both axis. 
+If you destroy objects, remember to pool them, to ensure that you do not stress your neat friend Mr. Garbage ;) 
+Then, when you want to reverse time, just set the direction of time to be backwards, so that it is iterating between the present and the snapshot X frames in the past (while disabling the ability to create future snapshots).
+That said, using a list of objects for multiple values is necessary. If you have a nice timer system, which, for example, calls update methods 20 times in a second, and therefore is fps independent, you can create an array of 20 * 30 objects to store the movement values you need for the last 30 seconds. Using a simple array is not recommended, since you would have to move every element one index left each update call. 
+GDCVault has a lecture by Jon Blow (the creator of Braid) on their site called The Implementation of Rewind in Braid for $3.95.  I'll bet this has the info you want ;)
+This way you'd need much less memory to calculate the state of the game universe at any given time coordinate.
+Based on this, you can go through the list or whatever to go back. If you really want to gain a "realistic" effect, use this technique for all moving objects. But this is game design related. 
+You can simply treat the game's virtual time as another space-like dimension. So what's time travel from the outside is a simple n+1 dimensional movement in the game's virtual universe.
+Let's say an entity has a velocity, rotation, x and y position. These are, with acceleration, the basic movement states, values, whatever you call it. 
+Rather than have two separate arrays, you should probably have one class that describes the player's position (there's probably a Point class in Java already... I'm a C# guy lately) and use one single array to hold past positions.
+You need to setup a "ring buffer", meaning that when you get to the end of the array, you circle back to the beginning of the array, overwriting the oldest entries.  If you travel back in time, the opposite is true (when you get to the beginning, circle up to the end).
+There was a game released for the XBox360 that involved time-manipulation. It was mediocre, so I can't remember the title at this time. Anyway, in an interview with a developer for it, they outlined how they managed time manipulation:
+Saving rotation is necessary in games, unless your entity has a static rotation, what it is not in most cases. 
+Assuming some user interaction and some sort of physics system that determine the behaviour of your universe when there's no user input, all you need to record is the effect of user interactions (for example, changes in the n+1 dimension speed/acceleration vectors), as your physics should be time-reversible.
+The game world then iterates between the snapshot at the current time, and the snapshot X frames in the future.
+If you want to hold 30 seconds worth of past data, you need to know your frame rate if you want to pre-allocate space and use a fixed-size array.  If you render the game at 10 frames/second, times 30 seconds, that's 300 elements.

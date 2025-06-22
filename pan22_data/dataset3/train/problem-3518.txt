@@ -1,0 +1,34 @@
+If your switch supports cross-stack LACP (which is the case for 4XXX EXs) go with LACP if you have a stack.
+LACP only specifies a protocol for dynamically aggregating ports.
+But, this really is a huge limitation if you use SR-IOV, bonding and virtual machines.
+If you've set LACP on the ports where your boxes connect to use LACP, the only "correct" setting on the host side is to use LACP.
+It can also be easier to debug in case you have a more complex L2 topology with per VLAN loops etc.
+I thought the best mode to use is 802.3ad (LACP) because that's the standard being used on all network equipment, but as it turns out the moment I configure a set of ports as an LACP channel on the switch side the connection breaks until I also configure the server side properly.
+So if you've got 2 1GbE ports, a single connection is still limited to 1GbE.
+The EX will balance according to Ethernet source and destination MACs for ethernet traffic and will consider IP source/destination/port for IP traffic if you have IP packets on your frames.
+Other bonding modes such as balance-alb do not require any special configuration on the switch side while on paper provide the same advantages.
+It does not specify a port scheduling policy (where traffic is sent and received).
+If you got only a small number of machines with bonded NIC's, go for it.
+If you're a provider who wants to host maybe hundreds or thousands of machines in a rack you don't necessarily want to be spending tens of thousands of dollars on a high end switch that's important but unnecessarily expensive just to provide redundancy and performance for a single rack of machines.
+I can see why companies like facebook want to create their own switches.
+Please consider reading Juniper KB22943 for the details of the hashing algorithms.
+In balance-alb, both sending and receiving frames are load balanced using the change MAC address trick.
+This makes our system administration tasks much harder because before installing a new server we must remove the LACP configuration on the switch (because things like PXE boot and network installation do not work on LACP ports), and after the installation we need must change the switch settings again but only after the server was configured to use LACP, or the connection will die.
+No one thought you'd need more than 1/2 the number of switch ports.
+It's probably just a hard coded number in the firmware and probably takes up a little more memory.
+Is there any reason to choose 802.3ad instead of balance-alb?
+I'm not terribly familiar with Juniper switches, but you shouldn't have to configure LACP on them; that is the point of LACP.
+Historically I used the active-backup mode because some servers were connecting to non-stacked switches but now we have a new and consistent network and I would like to take use a bonding mode that offers load balancing in addition to fault tolerance.
+A 2k supermicro switch we were using at one point only had 8 LACP groups despite having 52 ports.
+Mainly that it semi-intelligently selects an outgoing port for new connections, and they're stuck to that one port for the life of the connection (it's actually done by MAC, not port, if a port fails the MAC gets assigned to another port, thus allowing the connection to continue).
+LACP resolves this usually, though it depends on your scheduling policy and the number of active ports supported at each end.
+This doesn't exactly "aggregate" the ports however, as connections will not be able to utilize more than one port.
+If this isn't the case, something is wrong with your switch configuration.
+LACP is great when it works and provides pretty much double the performance of a single NIC.
+I don't remember the process in Linux, but I know Linux supports specifying at couple different policies, probably similar to balance-alb.
+I know I can use any of the Linux bonding modes and I wonder what is the best one.
+As a minimum, most switches from HP and similar seem to offer only as many bonding groups as there are half as many ports.
+I would like to connect my Linux servers to a single network using dual link for fault tolerance and load balancing reasons.
+But, one of the drawback's with it is if you are on a bit of a budget and so therefore using lower end switches, they tend to lack sufficient LACP groups and no MLAG or SMLT features.
+The servers have 2 or more 1-gig NICs and I plan to connect each of them to a different switch that reside in a single stack (i.e.
+So in this type of scenario, I'd go with a different mode, perhaps balance-alb.

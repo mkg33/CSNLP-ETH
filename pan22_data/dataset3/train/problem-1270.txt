@@ -1,0 +1,28 @@
+There is no object context here at all, and my guess is your code doesn't actually work right now.
+You do not seem to be doing any mitigation against cross-site request forgery (CSRF) attacks, meaning anyone can hijack this endpoint and being sending out mail.
+You should absolutely not be working with POST data (especially sending it off to other servers), until you have validated/sanitized it.
+This can greatly eliminate a lot of your nested conditionals and such when it comes time to render output.
+You need to get into the habit of performing all of your business logic before your start outputting to the browser.
+On that note, this code is nowhere near ready for review...
+Right now your code could also lead to malformed HTML.
+So when you ask about application security, please understand that you effectively have no security right now.
+Don't have functions like get_ip_address() and rand_color() tucked away in the middle of code that is creating side effects, like outputting to user, changing data stores, etc.
+Why are your randomly choosing a "trusted user" for use in this script?
+Consider filter_input() or filter_input_array() for use in validating/sanitizing your input data.
+Why are you using $this inside of your get_ip_address() function?
+Say someone posted bad data and you wanted to redirect to a 403 page using header().
+Do you really want to have to change and redeploy this file just to make an authorization change?
+If you were following this standard, your function definitions would be in a totally different file.
+You need to perform all your data validations, API interactions, etc.
+Why are you storing authorization info (your trusted users array) in this file?
+Similarly, you have some HTMl output near the end of the script which seem to be output without regard to success of intermediate API calls.
+This is pretty much the best set of standards that exists for trying to codify what the behaviors for professional PHP development should be.
+You can't do that now, because you have already started output.
+up front in order to determine application state that should be presented to user and then present that state.
+You also have case where it looks like you are "indenting" with single spaces, with really isn't indentation at all.
+Ideally, you should keep your passwords, API keys, etc.
+Here you just work with it freely, just hoping for the best.
+Even if you have control structures like conditionals without braces (which would be non-compliant with PSR-2 style guide), you should indent the following line so it is clear that the line is within the control structure.
+Note that in PSR-1 (basic coding standards), one of the first sections talks about side effects, stating:
+If you are not familiar with the PHP Standards Recommendations, I would highly recommend that you familiirize yourself with them and try to follow them.
+Everything inside curly braces, should be indented one level.

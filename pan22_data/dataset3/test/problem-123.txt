@@ -1,0 +1,29 @@
+PostgreSQL 9.3 is running on an Ubuntu 14.04.3 LTS server.
+If no backup was initiated during the period that 00000003000000370000007A was the active WAL file, then there never would have been a 00000003000000370000007A.mmmmmmmm.backup file in the first place.
+Any older WAL files in the Archive Log directory could be deleted and are no longer required.
+The above configuration should result in the WAL files being copied from the /pg_xlog/ directory to the /pgsql-backup/archive/postgres1/ directory, when ...
+If you weren't using Simpana, then you would be using something else.
+What amazes me, is that there is a WAL file in the Archive Log directory without a corresponding *.mmmmmmmm.backup pointer file.
+Simpana is telling me that everything is ok, but leaves files lying around in the WAL Archive directory.
+The client computer has been configured so that the PostgreSQL databases/instance and WAL files in the Archive Log directory are backed up.
+If the test ... part is left in the archive_command it breaks the Simpana backup, which is why we omitted it.
+According to the documentation a nnnnnnnnnnnnnnnnnnnnnnn.mmmmmmmm.backup file is a pointer to the earliest WAL file required for a roll forward recovery to succeed.
+It looks to me like when Simpana decides to clean up the archive, instead of removing all WAL files older than the oldest one currently needed, it instead deletes the range of files starting with the one still needed last time it did a clean up, ending at the one just before the one currently needed.
+As Commvault seems to be commercial software, you might have the best luck contacting their support desk.
+The WAL files should be deleted when no longer required, because the Simpana option 'Delete Archive' has been set for the PostgreSQL client.
+If this is the case, then if a WAL file was archived by PostgreSQL right after you turned on archiving, but before Simpana had been activated (or before it had gotten its bearings) then that file will never be removed.
+Here is an example of the content of the directory:
+The postgres.conf file is set as follows for WAL archiving.
+While pg_archivecleanup is one such method, it is starting to look pretty obsolete these days.
+This is a hint that Simpana is performing a backup using native PostgreSQL commands, because a 0000000300000037000000nn.mmmmmmmm.backup file would only be created after a PostgreSQL backup of the database/instance using pg_basebackup.
+Because Simpana is performing the backup with PostgreSQL native commands, I expect that when Simpana has completed a full backup or a WAL backup, that the files in the /pgsql-backup/archive/postgres1/ directory are deleted.
+I'm looking forward to your responses and hope that somebody has a similar configuration of Simpana and PostgreSQL somewhere out there.
+If you only want to keep your WAL files long enough for them to be safely stored (or replayed) on a stand-by, you would now use "streaming replication", and thereby do away with log shipping altogether.
+We can't tell you what that something else would be--there are lots of choices.
+Or you could have a policy to permanently keep the first base backup ever taken (immediately after you initialized your empty database), and every WAL file archived since then, so that you can do point-in-time-recovery to anytime in the history of your database.
+This is just my conclusion after reading the documentation for PostgreSQL 9.3.
+This undermines my conclusion that Simpana is using the native PostgreSQL commands to backup the database/instance and its WAL Archive Log files in the directory /pgsql-backup/archive/postgres1/.
+I'm trying to figure out various things surrounding PostgreSQL and how backups should work together with WAL and Commvault Simpana.
+When I check the /pgsql-backup/archive/postgres1/ directory after Simpana has performed a backup, there will be one more file in the directory with a 0000000300000037000000nn.mmmmmmmm.backup syntax.
+This seems to be fundamentally a question about Commvault Simpana, not PostgreSQL.
+Does it just mean that the WAL files in your original archive directory have been copied to some off-site storage?

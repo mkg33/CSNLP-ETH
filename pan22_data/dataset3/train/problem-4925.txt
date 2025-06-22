@@ -1,0 +1,13 @@
+I've found that common mistakes with Sean O'Neil's shaders are related to distance between camera to the center of the sphere and forgetting that the original SkyFromSpace shader is expected to be rendered only on triangles that are backwards facing.
+In your own code, it is good idea to make each parameter adjustable real-time so that you can see how the parameters affect.
+Bear in mind, that this is only the case with these two specific shaders.
+You need to ensure that your camera is outside of the sphere's radius.
+Some parameters seem to have very little effect, while others are few tenths away from showing nothing instead of everything.
+In O'Neil's examples the planet consists of two spheres with radiuses m_fInnerRadius (ground) and m_fOuterRadius (atmosphere).
+The consensus online seems to be that the function is extremely picky in terms of parameters, which can also be part of your problem.
+This means that length of the vector from the camera position to the center of the sphere must be bigger than m_fOuterRadius.
+The shaders are based on a model that is not exactly trivial to implement and relies on a function that O'Neil found using curve approximation software.
+Best advice I can give to you is to take O'Neil's working sandbox and see the sources for yourself.
+The spheres are rendered individually where GroundFromSpaceShader is blended with the terrain texture to form surface and the back-facing triangles of the outer sphere are rendered to act as atmosphere.
+It is not entirely clear how you are applying your shaders or how you are rendering the spheres.
+The second problem is just as easy: you need to change the winding order of your triangles or use clock-wise with glFrontFace (or similar API call) instead of counter clock-wise.

@@ -1,0 +1,13 @@
+The targets are usually waiting web services (5-10s range), in which we don't want to slam, but at the same time we typically have 1000's of items in the queue (3rd part has no bulk update implementation -- one element at a time type situation).
+This is what I have come up with (naming is still a work in progress):
+I find myself having to loop through a lot of async calls all over the place in my code base.
+The current pattern we are using is to declare SemaphoreSlim(maxcount) and then await sem.WaitAsync(), Create a new task, add it to a List and then repeat.
+To control the release the new task itself has a reference to sem and does the release on final.
+Also, the library I maintain has to be used in both winform and asp.net processes, so keeping it async seems ideal.
+The calls are all async (as this is a 3rd party lib that we don't control).
+There is a step in there to look for and remove completed tasks.
+As I develop new code I was hoping to simply this into a single helper class where I can just queue the work until I hit a set limit and then have to wait to add the next once a slot as freed up.
+This is a pattern that was inherited and is used for multiple different types of async calls.
+It seems you simply need process a fixed set of work items in parallel with a fixed degree of parallelism and in an async compatible way.
+But if you want to, you can du that by feeding ConcurrentQueue.GetConsumingEnumerable() into that ForEachAsync helper.
+Stephen Toub has written a very elegant way to do that in just a couple lines of code.

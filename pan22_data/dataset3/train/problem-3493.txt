@@ -1,0 +1,15 @@
+I read that autovacuum should be canceled automatically, when submitting DROP TABLE command, but it doesn't happen.
+Can I disable autovacuum on those particular tables?
+Furthermore I don't have any delete or update operations of those tables — only inserts and drops.
+If You use Linux you should list processes with ps aux and find Autovacuum process.
+In any case, it is possible to completely disable autovacuum for a particular table, with:
+"In any case, it is possible to completely disable autovacuum for a particular table."
+No, you can not disable autovacuum if it is to prevent transaction ID wraparound.
+See Automatic Vacuuming for the relevant configuration parameters.
+Autovacuuming process holds RowExclusiveLock and ShareUpdateExclusiveLock on the table, which I want to drop.
+If so, PostgreSQL considers that an emergency and refuses to yield the lock.
+Is the autovac "to prevent wraparound" (as reported in pg_stat_activity)?
+If no delete or update happened, autovacuum shouldn't process the table, per autovacuum_analyze_threshold.
+You may set log_autovacuum_min_duration to zero to help figure out what's being autovacuumed.
+Which is rather unfortunate in this case, as once you drop the table the situation will be resolved.
+Then just kill it(autovacuum should be working as another process if it's turned on).

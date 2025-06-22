@@ -1,0 +1,12 @@
+So, always make sure to call shader.isCompiled() and shader.getLog()
+As the others already pointed out in their answers, SpriteBatch expects specific uniforms in the shader and you should either rename them or set the pedantic flag to false.
+Then the variable names should match on both the application and shader sides.
+You are most certainly trying to use your shader in SpriteBatch.
+SpriteBatch also uses some more uniforms which you must declare (and use, so they aren't optimized away).
+The solution was this paragraph from the documentation:
+Looking at https://github.com/libgdx/libgdx/wiki/Shaders, I have decided to try these shaders:
+I just wanted to add, that both those things didn't help me solve this error.
+Turned out, my shader didn't even compile properly, because it had a syntax error.
+Your application is trying to find an uniform in the shader called u_projTrans to send it the projection matrix.
+However, there is a way how to stop libGDX from crashing when it is trying to set non-existent uniforms and that is by setting pedantic flag to false:
+SpriteBatch is setting up the shader's projection matrices, which are by convention (as MadEqua answered) called u_projTrans, not u_projectionViewMatrix (see SpriteBatch source).

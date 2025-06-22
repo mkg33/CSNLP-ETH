@@ -1,0 +1,11 @@
+However, it does not, this produces a a return value of 0, I assume because anything + a NULL value is NULL, but I thought the COALESCE() statement would handle that.
+For example, shouldn't the COALESCE() statement encompass the entire line here so that any null value be filled with 0?
+What is it that causes these queries that are very similar to produce different returned result set?
+Only then are you applying COALESCE, meaning that entire SUM() has to be NULL in order for it to be replaced with zero.
+If any of those is NULL, that row's result will be NULL.
+COALESCE won't magically dig down into its arguments and replace individual NULL terms.
+If you COALESCE the individual columns first in order to replace them with zero, you will likely get the result you're expecting:
+So then you're summing up those terms, potentially with NULLs along for the ride, meaning if any of those columns happened to be null, that whole row would be left out of the sum (you may see a warning about an aggregate ignoring NULL values at this point):
+You have to work from the inside out with function calls and parentheses.
+Whereas this query produces the accurate result, but as you can see I individually SUM() and COALESCE() each field.
+Running SQL Server 2008 I can not wrap my mind around why these two queries, which are identical except for the first one has COALESCE() wrapped around the entire statement and the second one has COALESCE() wrapped around each field name in the query produce different results.

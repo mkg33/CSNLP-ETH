@@ -1,0 +1,19 @@
+Couldn't authenticate as: localuserc@LOCAL.DOMAIN: KDC has no support for encryption type
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * Assuming packages are installed
+I guess the encryption type used was not supported by the 2003 DC.
+Jun 18 10:40:55 nlxxp1 realmd[1609]:  * Performing LDAP DSE lookup on: 10.x.x.1
+Jun 18 10:40:55 nlxxp1 realmd[1609]:  * Performing LDAP DSE lookup on: 10.x.x.30
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * Using domain name: local.domain
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * Sending netlogon pings to domain  controller: cldap://10.x.x.1
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * Using domain realm: local.domain
+-- Logs begin at Tue 2018-05-22 13:03:55 UTC, end at Mon 2018-06-18 10:41:01 UTC.
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * Calculated computer account name from fqdn: NLXXP1
+Jun 18 10:41:01 nlxxp1 realmd[1609]: adcli: couldn't connect to local.domain domain: Couldn't authenticate as: localuser@LOCAL.DOMAIN: KDC has no support for encryption type
+Jun 18 10:41:00 nlxxp1 realmd[1609]:  * LANG=C /usr/sbin/adcli join --verbose --domain local.domain --domain-realm LOCAL.DOMAIN --domain-controller 10.x.x.1 --login-type user --login-user localuser --stdin-password
+I solved this by checking the error in the journal.
+Jun 18 10:41:01 nlxxp1 realmd[1609]:  * Wrote out krb5.conf snippet to /var/cache/realmd/adcli-krb5-QudocS/krb5.d/adcli-krb5-conf-8Gyp0B
+After I went into DNS and changed the _ldap._tcp.local.domain record of the 2003 DC (I gave it a heavier weight 400) It picked up a newer (2012R2 DC) which was able to join the server to the domain.
+Jun 18 10:40:55 nlxxp1 realmd[1609]:  * Performing LDAP DSE lookup on: 10.x.x.60
+Jun 18 10:40:55 nlxxp1 realmd[1609]:  * Resolving: _ldap._tcp.local.domain
+Jun 18 10:41:01 nlxxp1 realmd[1609]:  * Received NetLogon info from: dc.local.domain
+Jun 18 10:40:55 nlxxp1 realmd[1609]:  * Successfully discovered: local.domain

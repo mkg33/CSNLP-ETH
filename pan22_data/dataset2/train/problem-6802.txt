@@ -1,0 +1,12 @@
+Instead, add a class that contains that style. Saves you debugging time looking for where pink is from.
+Why are you apply this to all images on the page? There are probably plenty of linked images, that shouldn't be using your script.
+This line alone tells me that it's a drop-in script. And that alone makes me tell you to skip jQuery altogether. Never assume a website uses jQuery. Also, not all systems can run jQuery. It could be due to compatibility with another library, an older version of jQuery or license restrictions. Who knows?
+What jQuery version are you using here? Are you seriously using an old version to develop a "new" script? .live() has been removed since jQuery 1.9. 
+Extending on what Joseph wrote abotu namespacing: Your script currently breaks basically any webpage you add it to.
+Also, by namespacing your style to #MyModalDialog, it keeps your styles focused on what's inside the #MyModalDialog and avoid clobbering the user's styles as well.
+Also you remove the link (again: all links around all images). What if the author needs this link, for example, for styling or he has his own event handler on it?
+It's what you call defensive programming. What prevents the user from clobbering your styles if you have selectors such as #overlay, img, #lightbox. These names are too simple, and the user's stylesheets might contain similarly named selectors. Their styles will clobber your styles, even override them.
+With $("a img") applying this again to all (linked) images on the page. However you probably just want to work with the image of the current .each() loop. Why don't you just use $(this) again? 
+You repeat $(this).closest("a") here. Generally (not only here): If you need a reference to an element multiple times, then store that reference in a variable, instead of searching for it multiple times.
+If you styled span like span{color:red} and the user's style has span{color:green} after yours, then your styles are overridden. What you do is add more selectors to keep it specific, like #MyModalDialog span{color:red}.
+Also this set the same id to all images. Ids must be unique per page. And why do you need this ID in the first place? Later you only use it to assign a click handler. Why don't you assign the click handler right here?

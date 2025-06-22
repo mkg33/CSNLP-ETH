@@ -1,0 +1,7 @@
+The last profile with the lock on it is the new profile that windows is booting from now. The other one is my previous profile that I had before running sysprep. My desktop, my settings, images and documents are still present in that profile.
+Is there any way to 'unlock' that other profile again and be able to logon to it? 
+Your old profile and user account are still intact, but apparently got disabled somehow. Open an elevated command prompt (search for cmd, then right-click the result and choose Run as administrator).
+First, you'll need to find the technical (SAM) name of the old user account. Type cd \Users and press Enter to go to the Users folder. Then do icacls "Rick Gommers" to show what account has control of that folder. On my computer, the output for my test user's folder is this:
+The entry with (OI)(CI)(F) that refers to a specific user (not the system or the Administrators group) is the one you need to look at. Note the user part of the account name; in my case it's Test (as in MYCOMP\Test).
+Now do net user USERNAME /active:yes, where USERNAME should be replaced by the name you just found. I would do net user Test /active:yes. (If the user's real, technical name actually contains a space, you'll need to enclose it in quotes, like net user "Test User" /active:yes. Also, capitalization doesn't matter.)
+You can close the command prompt now. If you switch user or sign out, you'll see the old user still there; its old password will still work. From there, you can get at all your stuff, or just go back to using that account.

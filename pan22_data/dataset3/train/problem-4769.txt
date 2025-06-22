@@ -1,0 +1,26 @@
+Both Apache web servers are connected to a hardware load balancer / router (our customer is not very clear at this point) that routes internal requests (intranet) to one and external requests (internet) to the other web server.
+This solution is rejected because of internal security concerns and guidelines.
+Maybe you also have to set the proxyName Attribute.
+Each of these segments is routed using 2 different Apache web servers using mod_jk for simple load balancing.
+We don't replicate the sessions - every JBoss manages its own session pool.
+The connector used is AJP between the JBoss and the Apache servers.
+The 4 JBoss instances are split in 2 different segments with 2 JBoss each.
+If you use both http and https setup an second connector for https and connect by using an Apache vhost and different ajp settings.
+One is a simple rewrite rule on the last end - the hardware load balancer - that rewrites all http:// traffic to https://.
+Another solution would be to extend the SSL encryption up to the web servers which would than be able to forward the secure flag signaling SSL communication the the JBoss via AJP and the JBoss would pick this up and redirect properly.
+Set scheme to https and secure to true so the web containers knows which protocol is used at the front.
+The network of a customer of us uses 4 JBoss instances on different servers all running the same version of our software.
+Another option should be to use mod_headers in Apache to modify the Location response header:
+So we have one segment for internal and the other for external users.
+They share a common database and are running as needed.
+This would work and keep the client connected but it is rejected by our customer because its unusual and no solution to the initial problem.
+We are currently experiencing some problems with a network setup we have not used so far and I hope to get some more input how to work around this.
+The SSL encryption is terminated by the hardware load balancer.
+The client browser on the other end therefor switches from https:// - which it uses initially to connect to the web app - to http:// in the case of a 302 redirect from the JBoss.
+The channel between the hardware load balancer and the 2 web servers is HTTP (no SSL anymore).
+1) They could add a specific header to the requests from the loadbalancer that come over https so that the jboss instance knows it was originally an https request.
+2) You could suggest that the https requests get sent to a different port in apache (say for example 8080 or even 443, but unencrypted) so that apache knows that they are from https.
+The solution was to set the "scheme" and "secure" attribute on the AJP connector in JBoss/Tomcat.
+Assuming they need to cope with both http & https traffic, you can try additionally to suggest one of the following:-
+The clients use an SSL encrypted HTTPs connection via their browsers - it's a web application.
+At the end of the line the JBoss doesn't know of any SSL / HTTPs communication and therefor renders some 302 redirects with full http:// addresses instead of the https://.

@@ -1,0 +1,31 @@
+Perhaps active directory would complicate things, but TBH, I can't see why it would - DHCP should just be DHCP.
+), or even moving entire departments to a new subnet.
+That way, when both are up the primary is in charge, but if it goes down for some reason we have a hot backup which can then take over.
+Personally I'd recommend running it on a Linux/Unix server of some sort.
+You just need to learn how to set them up to work together.
+It's just easier and more integrated into other Microsoft products like if you want to run Deployment Services it will automatically create the DHCP options for you during installation.
+If you mostly manage a Windows platform and/or know your Windows better than the alternatives, go for the Windows DHCP server.
+If you go that route it really doesn't need to be a powerful machine (a desktop PC would have more than enough grunt), just one that's reliable enough not to fall over in a heap.
+new machines are entered into it as they arrive with all relevant details (incl.
+If you have a virtualisation environment a Linux VM would do the job perfectly.
+i wrote some perl scripts to extract that data and generate DHCP and DNS configs.
+that way i could maintain just a single list of "MAC address,IP address,hostname" in any format (plain text, mysql, whatever) and generate both DHCP and DNS configuration from that.
+which is what i do at work - we have an in-house helpdesk/trouble-ticket system which also incorporates an asset manager.
+This means addresses are effectively static, but we can re-organise the network as needed without having to visit the clients.
+If you have AD I would advise running DHCP on one of the Windows boxes; it's just cleaner that way.
+From a physical point of view we have two servers, one on each of our two data centres, both generate their config from the same MySQL DB, but one is set to be authoritative, the other is not.
+Needless to say, if you feel more comfortable managing another platform, go for it.
+i'd do it on a unix box (preferably debian linux).
+It may be better to use multiple small DHCP servers - one for each department.
+It all depends on whether you still want to have your IP addresses split by departments.
+Also, it may be better to put your servers as static address assignments simply because you may still want some network services to be running, even if the DHCP servers are not working.
+mac address and ip address), stored in a mysql database.
+that makes our helpdesk/asset-mgmt database the single authoritative source of data about which IP addresses belong to which machines (and if you've ever worked on networks with multiple conflicting sources of such info, you'll understand just how important it is to have a single authoritative source)
+Bear in mind I come from a world without Active Directory - we run our entire Windows domain from Linux servers using SAMBA + OpenLDAP.
+Over the years we've had to do all these things, and having DHCP has made them all so much easier.
+If you do have to use old hardware, have another machine with DHCP turned off but ready to go as a cold spare and run an rsync script or something like that to keep the config accurate on the spare.
+We have about 4K hosts, so to manage it we use a MySQL database to store the details of all our hosts, and run a simple script to generate the DHCP config from that database.
+Lots of little things like that and say easier integration with network security features in Windows Server makes the day much easier :)
+The architecture we've chosen is to have all our desktop machines on DHCP, but have DHCP issue them all the same address every time.
+You can have IP assignment done by MAC address but this will require a lot of manual labour.
+This comes in handy for all sorts of things like changing name servers, changing WINS servers, changing the netBIOS settings of machines (broadcast v WINS etc.

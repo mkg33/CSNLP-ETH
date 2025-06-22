@@ -1,0 +1,11 @@
+However I have checked my PATH variable and the PHP directory is listed, the ext folder is set correctly and php_curl.dll exists in the folder.
+More system info: Compiler MSVC14 (Visual C++ 2015)
+During my checking I have found that all of the following ddl's are present when opening them from run (to test they can be found from the PATH variable):
+PHP Warning:  PHP Startup: Unable to load dynamic library 'ext\php_curl.dll' - The specified procedure could not be found.\r\n in Unknown on line 0
+It should also be noted, that this behavior started (afaik) with PHP 7.1.
+When PHP is run through Apache, its bin directory probably takes precedence over system %PATH% variable and therefore PHP's curl extension uses libraries from Apache, resulting in version mismatch (Apache's libraries seem to be older than required).
+I have reinstalled vc++ redistributes to ensure that there are no issues there.
+I am unsure of what dependencies that php_curl could have, if you could provide any suggestions then this would be greatly appreciated.
+I had the same problem, but it only manifested when running PHP through Apache.
+The solution was to replace several files in Apache's bin directory:
+After doing the dll copying above, make sure you have the below lines in your php.ini, and that the perm file is there.

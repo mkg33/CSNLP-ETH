@@ -1,0 +1,5 @@
+One approach that might help would be to specify the (few) columns you actually need instead of just using the "blanket" SELECT *..... 
+When you define a small set of columns to retrieve, you might be able to create a covering index (a nonclustered index that contains all the columns you need) that could be used to satisfy the query, and thus possibly avoid an index scan.
+When using SELECT * ... you're more or less making sure you cannot make good use of any of the indices - since in the end, the fact you want ALL the data will always have to go back to the actual data pages (the clustered index leaf level pages) and thus more often than not, the query optimizer will just "give up" and switch to a clustered index scan.
+There's no way this can be solved with a single index unless you have a FK Constraint on tab1.col1 which references tab2.col2 which means all the rows in tab1 meet the condition and  the optimizer can tell that without checking.
+What makes you think the second scan is unneeded?  You need to share your exec plan and table structure to get any further assistance, but based on what's available your premise is flawed.

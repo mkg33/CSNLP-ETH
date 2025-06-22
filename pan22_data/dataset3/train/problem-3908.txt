@@ -1,0 +1,36 @@
+Those writes will only be briefly cached, and their performance will not be affected in any way by the presence or absence of flashcache.
+I want to improve IO performance by using flashcache.
+If your writes periodically saturate your primary storage, the performance increase could be rather significant.
+The LVM.CONF(5) manpage will explain it better than me, but I'll leave you with an example, if all physical volumes are backed by flashcache:
+Also, writeback is a bad policy for what you're doing so don't use it.
+What happens when the SSD disappears depends on the caching mode:
+However, if you are giving KVM machines direct block-device access the answer there is less clear.
+There are running KVM virtual machines on it, using LVM.
+Writethrough: All writes are written to the cache and primary storage in parallel, so the chances of a sudden SSD loss causing errors on the VMs are very small.
+If you're using file-backed virtual-disks, it'll definitely work.
+When LVM scans for PVs, it should see the partition through the actual hard drive itself, and through the flashcache "virtual" device as well.
+So double check if flashcache works with this set of applications.
+The same thing happens when you tell Linux to drop-caches but with a twist.
+With drop-caches, any unflushed writes that are in the block-cache will get flushed to disk.
+Yes, it will work fine as long as you use the right block devices.
+I found a great tutorial here which I would be using.
+Flashcache, for those who haven't seen it before, is a method for extending the Linux block-cache with a SSD drive.
+That will allow you to create hybrid devices between SSD and HDD.
+So long as you're not giving the KVM machines direct access to the block devices (you're not), the Linux Block Cache will be in play.
+If you're mostly read with some write, you'll not likely notice improvements.
+I have no access to a test system unfortunately, so could I install flashcache on a live server without unmounting the the disks?
+It's cheaper than running a server with a half TB of RAM just for caching.
+The fix, to avoid those warnings and more importantly, make sure that the flashcache device is used by LVM2, is to adapt the filter in /etc/lvm/lvm.conf.
+In the abstract, you'll get the best performance for sizing your SSD to be larger than the active-set of blocks.
+One obvious symptom should be that LVM tools complain about duplicate PVs.
+More is better, obviously, but finding the exact ratio between cache-SSD and primary storage it not a simple matter.
+I have a server with 2 HDD's (2x 1 TB), running in RAID 1 (SW-RAID).
+Writeback: All writes go to the Cache first, and are written to primary storage in the background.
+The Linux block-cache works by caching accessed blocks, not files.
+Complicating this are writes set to flush immediately, such as certain file-system operations and some database configurations.
+The performance of tier seems to outperform Flashcache.
+Finding out the exact size you need is something we can't help with.
+Writearound: All writes are written to primary storage and only cached when read.
+If you're using LV-backed virtual-disks, I don't know.
+If you get perfect caching, your performance will be similar to running your entire system on SSDs.
+The most likely to cause errors in your VMs should the SSD fail, and I wouldn't use this mode in production.

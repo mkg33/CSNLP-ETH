@@ -1,0 +1,6 @@
+No one in my group can explain it besides a guess about packet loss. Is there a common cause or set of causes for result like the above?
+If not, run "EXPLAIN" to see what the execution plan is. This will give you hints on optimization or indexing.
+Do you have the query cache enabled? I found this (closed) bug and one reason given for the long behavior was an improperly configured query cache. 
+You may find there's unnecessary complexity in the query that can be pushed to the application or just factored out.
+I'd say this really depends on the query itself, while you're only scanning 739 rows in your table and returning all 739, it depends on a few things. One how much RAM mysql had to work with for that thread/query. Also it depends on the query itself. Imagine a query with 20 inner joins and another 20 where clauses your result set would be limited but the amount of work to pair down those result sets would definitely be significant even if the result set is relatively small.
+my idea is to diagnose the entire database with some deeper-monitoring tool - I'm using nms express (free). http://bit.ly/nwwdKS

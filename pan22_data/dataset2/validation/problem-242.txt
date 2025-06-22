@@ -1,0 +1,12 @@
+You should see the service account listed in the security settings, and can adjust the permissions accordingly.
+I encountered this problem a couple of times. The issue is not with SQL Server but with Windows Permission of the folder. You have to add appropriate permission to the folder where you copied .bak file (I think System Network role).
+After adding permissions (I added Full Control, to match the default SQL Backup folder.) and restarting the SQL Server Management Console, I was able to select and restore my backup file.
+If you can find it in Windows Explorer, then you should write a RESTORE DATABASE command instead of relying on the clunky GUI to find it for you. Who knows what code is going on in there and why it might not be able to find the file - sorry I only have a workaround and not a solution.
+After spending some I discovered that it is permissions issue. SQL Server Service is running using Network Service but Network Service account did not have permissions to access the folder. After granting the permissions to Network Service. Backup file was visible to restore.
+Adding the service account is not as simple as it sounds. Here is what worked for me. (Server 2012 R2)
+Also ensure that the file is actually something.bak and not something.bak.txt (Windows may be "helpfully" hiding the extension from you. I hate that default behavior.)
+This happened to me today on my dev box. In my case, the service account had permissions to the folder, but my user account didn't. Once I granted my account permissions to the folder, I was able to see the .BAK files.
+I also came across the same issue today. I was given a backup file to restore but it was not visible to me while browsing. However I was able to acess the in file system but in in restore wizard using SQL Server management Studio. 
+We had the same issue today. It turned out to be a permissions issue, as illustrated in some of the other answers. The difference is that the account we needed to add was NT SERVICE\MSSQLSERVER.
+I identified the account by comparing the permissions of the default SQL Backup folder permissions to the folder containing the backup file.
+The easier solution is, to move the file to the default back up folder in Program Files. It has all the necessary permission. For SQL Server 2012 it is

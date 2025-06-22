@@ -1,0 +1,15 @@
+I have a mdadm RAID 6 with 11 drives. This has for years "just worked" across reinstalls and such, without any issues. I have not even had the need for configuring mdadm.conf.
+After the 12.04 release, i can no longer boot the machine without mdadm failing to mount the array, and then throwing me into initramfs shell. Under boot, mdadm takes 7 of the drives and starts them in /dev/md127, of course that will fail.
+When booted, i stop it, reassemble all drives as md0, and it is all good again. 
+The question is, how do i make it behave even during boot?
+After quite some testing, my current mdadm.conf is this:
+Note that below on the paste above, is the command used for reassembly which works just fine.
+So i figured out after some tips that the issue is that some drives is not dectected quickly enough by mdadm, so it simply stops up.
+Somebody suggested adding rootdelay=30 as kernel parameter, but Ubuntu simply ignored that.
+And rebooted, the boot takes a minute longer but then i know that mdadm has dectected all drives.
+Modification of answers found elsewhere that worked for me.
+A RAID that ran fine under Lucid/10.04 stopped autoassembling when I upgraded to Precise/12.04. RAID was assembling as /dev/md127 in Precise. In initramfs shell the following fixed the problem and allowed the machine to boot.
+Make sure mdadm.conf has the correct ARRAY line. (The fact that I could assemble /dev/md0 correctly suggested mdadm.conf was correct.)
+Create a script in /usr/share/initramfs-tools/scripts/local-top (I called it mdfix)
+update-initramfs may generate a "no such device" about /dev/md127. Put your towel over your head and don't panic. :)
+Reboot and you should get /dev/md0 mounting properly, if a little more slowly than before. (The sleeps may not be necessary, but better safe than sorry.)

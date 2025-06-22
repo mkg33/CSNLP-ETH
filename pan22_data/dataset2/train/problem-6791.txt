@@ -1,0 +1,8 @@
+I am going to assume you are a fairly new DBA. In addition to the two existing answers, there maybe a couple of related things you should look at. 
+You should only have one log file, but it is subdivided into VLF files, as a DBA you have some control over how this is handled.  There is a fairly deep look at VLFs in the post Why are virtual log files not always allocated in order? 
+I have to keep track of fragmentation within multiple databases, would it be correct to understand that I only check index fragmentation? 
+Tables with clustered indexes: the clustered index is the table data so that can fragment as with any other index
+For larger database performance the number of datafiles is appropriate for the number of processors you have. I go into some detail about it in my answer at Split .mdf datafile methods
+Stored procedures, views, etc: the definition text for these is stored as NVARCHAR(MAX) values so they are off-page and if longer than ~8kb (~4K characters, as they are stored two-bytes-per-char) they can potentially fragment, but this is not going to be significant.
+As far as I can see with research the only thing that fragments is indexes no other objects in SQL can fragment.
+Tables without a clustered index (heaps): the heap structure can also fragment, and is potentially prone to other issues too depending on use patterns (such as space/efficiency lost over time+use due to forward records, see https://www.brentozar.com/archive/2016/07/fix-forwarded-records/)

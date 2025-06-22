@@ -1,0 +1,8 @@
+From my knowledge in this setup the advantages of using iBGP would outweigh its disadvantages.
+If you'd have multiple subnets (multiple vlans or overlapping subnets) and for example 2 switches in daisy-chain topology then a single link failure could cause traffic drops between the now-discontiguous ASes, because the subnets themselves would become discontiguous.
+From routing point of view for this particular setup I don't think there is any problem apart from discontiguous AS, but that's just a cosmetic thing here.
+I think that validity of this design is dependent on if you have some kind of stateful device (firewall, ...) which would break under asymetric routing and from troubleshooting point of view it would be harder to troubleshoot any issue if you have asymetry.
+This is the same setup as if you'd have a single AS which would become discontiguous, in such case forwarding between parts of now-discontiguous AS and rest of the world would still work, but forwarding between the now-discontiguous parts themselves wouldn't work, but that is not an issue in this particular scenario because you have only one downstream subnet for each router.
+Generally, you will lose traffic engineering ability for upstream traffic, which may or may not be an issue and it will create asymetric routing and may cause unbalanced use of inter-AS links.
+For iBGP disadvantages: I would say that minor added configuration complexity (for more complex networks I would suggest peering using IGP-advertised loopbacks).
+While with iBGP you'd have outgoing traffic engineering possible.

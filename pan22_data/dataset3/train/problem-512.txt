@@ -1,0 +1,41 @@
+A Blizzard game might do something like this, it allows fast creation of simple content, that's low performance, just knock together single mesh models then paint on them with a tablet.
+Something like a house will need multiple textures if you are going to be walking up close to the walls, standing on the ceiling etc... but if it's a top down game where the house never gets closer than a specific distance then it's fine to use 1 texture.
+If you are talking about limited hardware (mobile/web).
+But you may sometimes need to trade performance for ease of use, this is a common theme between programmers and artists.
+You could just render all models at once: a huge speed boost.
+Another for ambient light (although that will often be the glow texture).
+Some more 'organic' things can only really be done with 1 big texture (think of a tree trunk).
+It's also about the content creation pipeline rather than the programming side of things.
+Or are you likely to share textures between various models.
+With the current graphics hardware one of the simplest performance optimization rule is to minimize the amount of state changes and to draw as much as possible with the least possible amount of calls.
+Maybe you use both methods depending on which LOD model is loaded.
+Or does it depend on the target platform as to what is acceptable - ie PC vs tablet?
+Or a game with simpler graphics (although in that case optimizing is less important then anyway), I think it really depends.
+This can depend on how detailed the textures need to be for some of the models, especially if text is included on the texture, and possible texture reuse.
+Following that rule means: the fewer times the material needs to be changed the better.
+You're likely to use bother depending on what kind of object you are dealing with.
+That's also why it is wise to use a texture atlas: you need to bind the texture less often and thus can render more things at once.
+This will mean each model is individually textured and unique, kind of hand crafted.
+The short answer is it depends, or use a bit of both.
+Now days I don't think you even really do textures on objects, instead you do 'materials' or 'effects' on objects.
+This is much easier on modern OpenGL where you can share uniform variables between shaders (I don't know about DirectX but I assume it's possible there too).
+They will have inputs (so you can swap between multiple different textures for the 1 material, modify the colour (maybe depending on the team the model is on), change animation speeds.
+Firstly, how close are you going to get to the object.
+And you have to make the meshes have that metadata (although that can be done automatically).
+The best possible case would be one material for all models.
+In fact if you implement the multiple texture system, that will implement the single texture option.
+And unwrapping tile objects is going to be harder in may ways due to the geometry.
+Beast answered, you want to limit the number of operations needed to draw things.
+A game that uses tiles might want the stone brick texture on 90% of them but mix in a few extra bits on most of them.
+It will depend on the kinds of objects you are going to be using.
+A material can have multiple textures (1 or more basic image textures possibly with transparency, another for normals/bump mapping, another for specular reflections (The shiny part of metal will reflect light more than the scratched dirty bits) another texture for parts that should 'glow'.
+It is not uncommon to have a simple piece of texture that is repeated on multiple different models but may still be large enough that you do not want to duplicate it in multiple image files.
+Is it better (memory, time (of developer), space) to use single model that is unwrapped and uses a single material or to break a model down into appropriate bits, each with their own smaller texture/material?
+It should also be possible for you to use multiple different materials/textures on one continuous mesh via extra vertex attributes.
+As such you may want to use multiple materials but make sure that you optimize the order of model before rendering as much as possible, i.e.
+Are you (or your artist) happier making a model, unwrapping the mesh then paining on it.
+Of course if you have different properties for your shaders then this will be harder.
+If you have a RTS with armies of people vs a smaller number.
+For the point of view of which is easiest to implement programmer wise, there about the same.
+It will also depend on how many objects you are going to be seeing on the screen at once.
+And you can also do hybrids between 1 texture over the whole object and individual textures and so on.

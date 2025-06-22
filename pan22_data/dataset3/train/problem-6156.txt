@@ -1,0 +1,23 @@
+Ok, my difference from Rudra’s setup is that I do not pass user name and password to mysqladmin in the script.
+SHELL  is  set  to /bin/sh,  and  LOGNAME  and HOME are set from the /etc/passwd line of the crontab´s owner.
+meaning that first set up the environment by running the default profile script before the actual backup.
+Linux resolves resolves ~ into the values of HOME environment variable.
+Change the crontab command to */1 * * * * /bin/bash /home/db-backup/mysqlbackup.sh
+For quick troubleshooting, liberally sprinkle your script with echo's to an output file.
+So, comment it in your /etc/crontab and see that help you!
+Additionally at the end there is redirection of STDOUT and STDERR to a logfile.
+The /bin/sh version of the shell doesn't like the $(...) construct.
+The needed environment variables are probably not be set when the script is run from cron.
+If there is no output at all, it is possible that it isn't even running, which we haven't determined yet.
+cron daemon (as per man 5 crontab) “Several environment variables are set up automatically by the  cron(8)  daemon.
+in the [client] section of ~/.my.cnf file of root.
+Depending on your *nix flavour the log may also be in .../messages or .../syslog.
+Short wording solution: comment HOME=/ directive in your /etc/crontab file
+HOME and SHELL may be overridden by settings in the crontab”
+try exporting paths and variables, in crontabs paths have to be specified, the way you are executing is fine, there are a lot of posts on StackO and serverfault where you can find answer to this problem
+Then you can look at the output file after the script is supposed to have run and perhaps see where it is failing.
+And the reason for this occurred that (for whatever reason) default /etc/crontab file (at least in CenOS 6.2) has a directive HOME=/ , overwriting the one setup as described in man.
+I found this topic because my mysql backup script , flushing bin-logs , worked just fine interactively, but failed when cron.
+End-User Guidelines for Password Security” of MySQL documentation (http://dev.mysql.com/doc/refman/5.5/en/password-security-user.html ) i.e.
+So, with that setup “mysqladmin flush-logs” should work just fine without passing it password as a command line parameter just fine, but it did NOT.
+But it occurred, that my setup was slightly different from Rudra’s, so the root cause and solution either, but still let me post it here for others with same setup as I have.

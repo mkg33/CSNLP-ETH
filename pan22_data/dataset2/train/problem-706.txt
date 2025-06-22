@@ -1,0 +1,8 @@
+Most applications can be coerced to go through that even if there's no built in proxy configuration. See proxychains
+Your VPN connection must be configured so that it doesn’t modify clients’ default gateway. This way, all traffic uses the regular route to the internet.
+Can I use the socks/proxy settings to point it to the openvpn link somehow?  Maybe I can use putty to create this link? If so, how?
+all traffic will go through the VPN, but I only want a specific application (like a browser (eg. Firefox)) to use the openvpn connection. All other traffic should go through the regular gateway.
+I had specifically this problem and couldn't find an easy to use solution. Basically the approach is still to set up SOCKS server in the VPN server. I've made this Docker image to make it actually usable
+If you’re indeed specifically asking for applications that support proxy servers, the answer is quite easy: Use a proxy server!
+I’ll assume your VPN connection uses 10.20.30.0/24 as the subnet, with 10.20.30.1 being the server’s IP address.
+Configure a proxy (squid, or maybe something lighter) on your VPN server and set it to listen for clients on 10.20.30.1. Point your browser (or whatever) at the proxy at 10.20.30.1. Traffic to this IP address will always be routed through your VPN connection.

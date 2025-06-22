@@ -1,0 +1,11 @@
+You don't even need to use joins to achieve all these operations so indexes will help a lot. Also if data will not suite in one machine - you can implement sharding scheme, like storing n_grams started from a-n on one server and o-z on another or other suitable scheme. 
+This sounds to me like the database should be a gigantic document tree, and document databases, e.g. Mongo, should be able to do the job well, but I've never used those at scale.
+Knowing the Stack Exchange question format, I'd like to clarify that I'm not asking for suggestions on specific technologies, but rather a type of database that I should be looking for to implement something like this at scale.
+As for finding ngrams that contain your query sub-n-gram, I would build an index on the observed ngrams, e.g. using a second lucene index, or any other substring index such as a trie or suffix tree. If your data is dynamic, probably lucene is a reasonable choice, using phrase queries to find your n-grams.
+Inverted indexes will store the n-gram only once, then just the document ids that contain the ngram; they don't store this as highly redundant raw text.
+I need three efficient operation types: Lookup and insertion indexed by the n-gram itself, and querying for all n-grams that contain a sub-n-gram.
+Create indexes on N-gram table/n_gram string and Mapping table/n_gram_id, also primary keys will be indexed by default well.
+Basically for this task you can efficiently use any SQL database with good support of B+tree based indexes (MySQL will suite you needs just perfect). 
+Also you can use MongoDB, but I'm not sure how exactly you need to implement indexing scheme. For MongoDB you will get sharding scheme for free as it is already built-in.
+I haven't done this before but it sounds like a job for a graph database given the functionality you want. Here's a demo in neo4j.
+I'm working on an application which requires creating a very large database of n-grams that exist in a large text corpus.

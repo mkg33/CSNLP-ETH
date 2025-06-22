@@ -1,0 +1,27 @@
+For a restore, also disable the mirror and restore into the "dead" part.
+So you either have no live database at all or you have to run it in a "read only" state or something.
+After the restore has finished, enable the mirror again in such a way that the "live" database gets overwritten with the restore.
+Run the rebuild on the other one (to clean up the possibly inconsistent state by "switching it off") and then back it up.
+It would be nice to know what OS we're dealing with, but assuming it's a recent Linux distro, your best bet will be using LVM snapshots.
+Enable the mirror to pull in any updates that have happened while you did a backup.
+mylvmbackup is a tool for quickly creating backups of a MySQL server's data files.
+That will give you two exact copies of the database.
+if you're using a filesystem that supports volume snapshots, then you can replace #2 with a snapshot instead.
+You will get a consistent copy of the files on restore, after InnoDB has finished rolling back any transactions which were in progress etc.
+This approach gives you the least possible amount of downtime.
+When you restart the mysql instance, it will recover from any transactions which were in progress at the time of the backup (by rolling them back) then come up normally.
+When it is done, the server can continue normal operations, while the actual file backup proceeds.
+* of course you'll have some MyISAM tables in the "mysql" system database.
+To perform a backup, mylvmbackup obtains a read lock on all tables and flushes all server caches to disk, creates a snapshot of the volume containing the MySQL data directory, and unlocks the tables again.
+Make sure they aren't changing during the snapshot.
+There is one issue to be aware of: Any changes made to the live database will be lost.
+To restore it, shut down mysql, wipe out your old data files, then restore the files into the mysql data directory.
+You can take your time since the live DB still answers requests.
+If the database is not completely corrupt, you can restore the data into a third one and simply copy the few tables you need (or use the "dead" part of the mirror as a scrap space).
+Put the database on a hardware RAID system which allows mirroring.
+if you want a complete copy of an entire mysql server instance with the smallest downtime using only features present in mysql server, then do the following:
+The net is full of relevant recipes and tools, here's one link that lists the most popular ones:
+The snapshot process takes only a small amount of time.
+You will have a few seconds of downtime for the DB server at this point since you must turn the "live" DB off and point the server to the restored DB.
+Use a filesystem snapshot of your Innodb database*.
+Usually, this is not a bit problem, though: You must do the restore because the database is corrupt.

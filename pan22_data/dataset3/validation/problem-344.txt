@@ -1,0 +1,27 @@
+Theoretically this should be possible, but in practice there seems to no easy way to accomplish it (at least none that I know of).
+† The closest I have come across in any download manager is GetRight's Recover lost downloads feature.
+This allows clients to resume an interrupted download (or download multiple parts simultaneously) without having to re-download the entire resource again.
+However in practice as I mentioned above no download manager I know of does this, so you are most likely out of luck.
+However this only works with files that have been downloaded sequentially from the beginning, and moreover the size on disk should reflect the actual number of bytes downloaded and not the total file size.
+You cant resume a download using a download manager.
+Torrent clients use .torrent files that store information about each file, including names and file sizes.
+those not downloaded so far) are zero bytes that are filled in gradually by the client as each piece completes.
+(Actually it "rolls back" by 4KB (default value, user configurable) to confirm that no data was corrupted at the end when the file download was interrupted, but that's a minor implementation detail.)
+Obviously given how it works this feature cannot help you resume an interrupted torrent download.
+Ancient servers that support only HTTP/1.0 (and thus can't resume downloads) are few and far between now and HTTP/2 has already become a Proposed Standard on February 17, 2015.
+In the case of a download manager like FDM that supports the BitTorrent protocol too, it could even use the .torrent file to do a hash check and then re-download only those pieces via HTTP that fail the said check.
+Like I said at the beginning, theoretically they can but there are various problems involved.
+So even though you might have 75% of a file, that doesn't mean it's a contiguous 75% data block from the beginning of the file.
+Try re announcing torrent file and get any new tracker and continue downloading
+Now multi-threaded download managers (like the Free Download Manager or FDM you used) that work with direct HTTP links can also resume downloads and download multiple parts of a file simultaneously, provided certain server conditions are met.
+Thus if you have an interrupted download where the file size on disk is say 15,000 bytes and the server reports the Content-Length for the resource as 100,000 bytes, then all GetRight does is send a Range request for bytes 15,001 to 100,000.
+In simple words, the problem arises due to the fact that torrent clients simultaneously download various pieces of each file and 'stitch' them together in the proper order on disk.
+When you pass an interrupted torrent download to an HTTP download manager however, it has no knowledge about which parts of the files are missing.
+Web servers send Content-Length and Accept-Ranges response headers to indicate to the client that they allow for GET requests with the Range header to download pieces of a resource.
+More importantly, the piece size is known and the SHA-1 hash (something like a unique digital 'fingerprint') of each piece, as also an info hash of the info dictionary as a whole, is included in the .torrent file.
+HTTP/1.1 allows for clients to request pieces of a file instead of the entire thing.
+Thus even if a torrent client is used to resume an interrupted download of a torrent it has previously never encountered, it can compare the expected hashes of each piece with the actual hashes of the data on disk to figure out which pieces fail the hash check and thus need to be re-downloaded.
+Now theoretically it could check each file, create a list of all data blocks that contain only zero bytes, then attempt to re-download these from the web server in order to fill in the gaps.
+Make sure you rename them to their proper file, and also make sure the torrent client is closed as it will put a write lock on your files.
+So now you may well ask that if download managers can (simultaneously) download parts of a file and resume downloads too just like torrent clients can, why can't the former resume interrupted torrent downloads as well?
+Its not guaranteed that the download manager will pick this up though, because the files can be different and thus it will overwrite your files and start over.

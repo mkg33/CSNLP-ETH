@@ -1,0 +1,31 @@
+Good hardware controllers with good linux support :
+I ran the file server for a very similar company/situation.
+This was all setup about 5 years ago and if I were setting it up today I would use OpenSolaris and ZFS.
+ZFS has some other very nice features that make it a better choice but there are other questions on serverfault that go into that.
+RAID is used for drive redundancy, LVM can be used to break up your RAID device into logical volumes, it is used for easy resizing, and for taking snapshots.
+It will provide lots of SATA connectors for your drives, redondancy via RAID-5 or preferably RAID-6, and may provide better performance too.
+My experience shows that unless you use dual quad-core systems, properly configured hardware RAID will beat software RAID hands down.
+Software RAID performance is often better than hardware RAID in benchmarks, however file serving and software RAID are both CPU intensive and compete for your processors while working.
+RAID vs LVM isn't really a good comparison they perform separate roles, and are frequently used together.
+You can still separate each project into its own file system but without having to micromanage the sizes of the individual volumes.
+When the project was done I could archive the job to tape and blow away the logical volume.
+You end up having to micromanage the sizes of the logical volumes trying to balance the amount of space allocated to a logical volume so that you had enough space to do your job but not over allocate it and end up wasting space.
+In my opinion ZFS simply is the best free solution available today.
+I managed the physical and logical volumes with LVM and ran the XFS file system.
+So over allocation of space to a logical volume can add up to a lot of unusable space.
+Wait a few days, download the by then released 2009.6 version and give it a go on a test machine.
+I eventually setup some scripts that monitored the trends in the available space on the logical volumes and would auto grow them.
+As a bonus: smb is integrated with ZFS in OpenSolaris and it handles Raid very well.
+To connect a lot of drives in the same chassis, a hardware RAID controller is the best tool.
+And the file server was serving a sizable rendering farm which could really pound on it.
+Our rendering farm was capable of generating many TB's of data a day and if you didn't pay close attention to this you would run out of space in a hurry.
+The main reason is ZFS pooled storage approach means less volume management.
+What I would do is create a logical volume for each project and then expand it as the project grew.
+Basically a 3 person graphics department with 30TB of storage and the shoestring budget of a small company.
+This was a very clean way to utilize our storage but there are two drawbacks to this approach.
+Even with that in place with 80 or so Logical Volumes there was a lot of unused space tied up in all the logical volumes.
+ZFS is really reliable and it sure does make your storage management hell of a lot easier.
+In my setup I ran a 3U server running Linux with external hardware RAID6 arrays attached to it.
+This would return that space back to the volume group where it would get reallocated to the next project(s).
+And about your comment ZFS being new: not very new anymore!
+I've already hinted at the 2nd problem....LVM doesn't really do thin provisioning and XFS only allows you to grow a file system.

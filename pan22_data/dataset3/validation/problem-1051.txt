@@ -1,0 +1,14 @@
+If you're using SQL Agent jobs with T-SQL scripts to perform your maintenance tasks, add in some logic to your scripts to check sys.dm_hadr_database_replica_states prior to executing to validate that the database in question is indeed the primary.
+The only differences being that some tasks are only performed on the primary replica, while others just run the job and exit quietly performing no work because of the replica state.
+Depending on how you're implementing your maintenance tasks, there are a few options for this.
+Remove the schedules for these plans and then create a SQL Agent job that runs on the schedule you want.
+Have that Agent job check sys.dm_hadr_availability_replica_states to confirm the AG in question is in the primary state and if so, execute the appropriate Agent jobs to run the maintenance plan tasks.
+Your management team may not like the idea of refactoring the current maintenance processes, but the reality is they have to if they want to automate this to handle failover, otherwise, the maintenance tasks have to be managed manually post-failover.
+Any of these options should be deployed in a fashion where the same jobs are deployed on all replicas and run at the same time.
+If you're using SQL Maintenance Plans, then create one set of maintenance plans per availability group and target only the DBs in that group.
+To do this, you must implement custom functionality.
+This has the logic for handling Availability Groups already built in, so this saves you time in designing, testing and deploying a solution yourself.
+Redesign your maintenance processes to utilise Ola Hallengren's excellent maintenance solution.
+You simply deploy an identical set of Agent jobs to run the stored procedures on every replica.
+They will all execute, but only the ones you want to perform any work will do so.
+SQL Server Maintenance Plans do not have in-built functionality to detect the AG replica state for a particular DB and act accordingly.

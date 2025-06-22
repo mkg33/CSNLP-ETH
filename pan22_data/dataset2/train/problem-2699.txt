@@ -1,0 +1,9 @@
+I've found that log viewers like CM Trace or Trace 32 have trouble viewing anything more than the firewall log headers. If you open it with notepad I think you'll find that it's logging properly.
+One thing to check: is the file >0KB? If so, it seems several applications aren't checking READ permission, and instead just displaying an "empty" file.
+I don't know is there any other mechanisms to turn it on. Should I leverage something in windows registry to make it alive? 
+The file was always being created 'inherit security permissions' turned off, and explicitly had no read access for my user account (despite being local admin).
+However, if Windows recreates the log again (following reboot, or changing log settings), the permissions are reverted back.
+Adding the NT SERVICE\MPSSVC account with Full Controll permissions on the C:\Windows\System32\LogFiles\Firewall folder and restarting the server solved my problem.
+Then I set a windows firewall log file location to D:\pfirewalll.log. It creates two files: prifrewall.log and pfirewall.log.old. These have any necessary file system permissions. And they are always blank!
+I have read many similar articles and posts on how to enable windows firewall logging. I have Win2k8r2 server without any Active Directory, DC, domains and other complicated stuff. Almost all of this article references to GPO and enabling it. The issue I even don't have it in my system. I tried to invoke "gpmc.msc" from my console but it seems I should intall it before using. 
+There are 3 profiles available (domain/private/public). You can view which is "active" on the top node "Windows Firewall with Advanced Security" of the MMC.  Please ensure the profile that is active is the one you enabled and configure the firewall logging for. You can configure the settings the same for all 3 profiles or have a unique configuration for each.

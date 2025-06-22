@@ -1,0 +1,20 @@
+It took me quite some time to track it down, mainly found the problem after starting to bisect my entire home directory (move half of the directories to a temporary directory and log in again etc.)
+In case someone else finds this page when searching, like me, for a possible cause, it is perhaps: Desktop magnification.
+After weeks of searching and trying to fix this problem, I finally got it sorted through this page: http://carlocapocasa.com/crushing-the-kworker-uprising-or-how-to-fix-your-linux-lenovo-ideapad-y560p/
+I have experienced heavy mouse lag on cinnamon suddenly.
+It would be curious to see if any errors are recorded in /var/log/Xorg.0.log.
+@reboot echo "disable" > /sys/firmware/acpi/interrupts/gpeXX
+I tried anything ... different kernels, updating drivers - nothing worked.
+(the gpe with the clear high number is the problem)
+until I could locate ~/.config/dconf/user and then finally the zoom level factor that was set to 1.0:
+I just checked that Linux Mint 14 is based on Ubuntu 12.10 and uses kernel 3.5.
+This setting seems to cause heavy problems randomly.
+Judging by the relatively high %sy value in top and based on your statement that the same hardware used to work correctly before the upgrade, I think the lag is caused by a driver.
+It is unusual for a healthy, almost idle system to spend so much time in kernel mode.
+You can check if this is the case on your Cinnamon with
+Anyway the surprisingly magic solution was to unklick the option "Disable touchpad while typing" in the mouse settings.
+Note that on newer kernels the drm_kms_helper module may not be loaded by default.
+However I had the same issue with the mouse lag in Linux Mint 14 x64 Cinnamon.
+Make sure it is turned off with Alt+Super+8, even when the screen is not magnified.
+There is a chance it will "break" something else and probably you would need to compile it.
+If it is that terrible, you may want to get 2.6.x family kernel installed.

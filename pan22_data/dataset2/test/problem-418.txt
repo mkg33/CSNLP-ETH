@@ -1,0 +1,7 @@
+People seem to imply that setting a limit is one solution to the risk of the journal growing and exceeding server resources, but I haven't discovered anyone explaining what happens when the limit is exceeded.
+https://social.msdn.microsoft.com/Forums/ie/en-US/58e12d5a-acf3-4c67-a02a-9fa7528a5912/msmq-journal-full
+If Journal is enabled on an MSMQ private queue, with a storage limit (eg, 100 kilobytes), what happens when that limit is exceeded? And can you configure this behaviour?
+In our own (very limited) test, it seemed like messages simply stopped being written to the journal. (ie, when the Journal queue reached it's limit, old messages remained in the journal, but for all future messages, the journal was effectively turned off).
+Btw. we made commercial tool which can periodically backup and empty journal, among other things - QueueMonitor
+However that might happened because MSMQ reached some other quota at that point, perhaps its global storage limit for all queues, and not just because of journal. I couldn't reproduce it just by limiting journal only. But it's anyway good idea not to let journal grow too much.
+I found reports that full journal can even block receiving messages, not just moving them to journal:

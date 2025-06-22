@@ -1,0 +1,13 @@
+If your program is running at 100% CPU (and doesn't have an unbounded other task to complete), then your CPU is doing too much work.
+do less culling) in exchange for having the GPU do more.
+When your frame rate is insufficient, then one or the other is the limiting resource — your program is either CPU-bound or GPU-bound (assuming it isn't swapping or having scheduling problems).
+Note that Minecraft uses cubical 16×16×16 chunks for its display lists, unlike for load and save.
+I strongly suspect this is your problem, given your description.
+On the other hand, if the GPU is the limit (sadly, there aren't usually convenient 0%-100% load monitors) then you should think about how to send it less data, or require it to fill fewer pixels.
+Remember that your rendering executes on two processors: CPU and GPU.
+Minecraft only rebuilds a display list/vertex buffer (I don't know which it uses) when a block is modified in a given chunk, and so do I.
+If you do that, there's even less reason to frustum cull individual chunks.
+All of this information is either hearsay or my own conclusions from observing Minecraft's rendering as I play.)
+Most rendering chunks should be either entirely visible or entirely invisible.
+You mention doing frustum culling on individual blocks — try throwing that out.
+If you're modifying the display list whenever the view changes, you're not getting the benefit of display lists.

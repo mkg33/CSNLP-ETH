@@ -1,0 +1,65 @@
+Ultimately, when a player moves, the world remains stationary, while the player is moved.
+Instead, in most cases (especially the classical case of fixed BSPs or the like) you're going to be using the camera's position within the world to query your visibility structures to determine which things are likely to be visible, and then only translate THOSE things into the camera's coordinate space.
+Well, first of all you need to understand the concept of a coordinate system.
+Other coordinate systems exist in the game, such as the Cartesian coordinate system with the camera at the origin.
+I don't think the author of the article failed to understand that; the author just tried to use a simplified analogy that in this case caused confusion rather than eliminating it.
+So, what really happens there, and what's up with the quote?
+However, when you start to bring visibility determination into the mix, the LAST thing you want to do is to translate the entire world around the camera.
+Saying "the object is in the upper left corner of my viewport and looks to be about 2 meters away" tells you quite a bit, though.
+That object has some specific real-world longitude and latitude that you can use to pinpoint it's location on Earth, but that doesn't tell you anything about what you're seeing.
+You can define any new coordinate system any way you want at any time you want, and this is done very frequently in 3D simulation to make things easier for the math.
+However, in order to show the world on the user's screen, the coordinates of all visible objects are translated into the player's coordinate system using a transformation matrix, and then additional projection is applied to create a perspective effect.
+Also note that the description from the tutorial you're quoting is a simplified explanation and not necessarily an accurate description of what OpenGL does.
+Let me quickly restore your sanity: the world doesn't move, it stays put.
+The above answers are correct but which way you visualise it are two sides of the same coin.
+Usually there is one "world coordinate system", in this system the world is stationary (more or less).
+A coordinate system gives meaning to position values.
+At the end of the day you are changing from one coordinate system to the other.
+The player also has a view camera associated with him, and this camera similarly moves around the world (despite what the OpenGL docs seem to be saying).
+Hence, an additional step is added to the rendering math to take object world positions and translate them from into the camera coordinate system.
+Now, it is also convenient to consider another coordinate system, tied to the player's eye.
+And where two coordinate systems are involved, there is always a way to transform one kind of coordinates into the other.
+Moving the camera or moving the world are two equally valid choices which both amount to the same thing.
+You've created a coordinate system relative to your head and the direction you're looking that defines where an object according to your vision.
+So in your application, you move the camera in world coords, update the camer'as view matrix, pass the new view matrix to the vertex shader as a uniform or part of block, render your scene.
+In a game this system would be chosen by the level designer.
+In a 3D application, there is generally a "world" coordinate system, which is used to represent the position of the camera and the objects in the game, measured with Cartesian coordinates with some arbitrary designer-specified origin (generally the center of whatever level or map you're playing).
+The math is not really set up to deal with information like "the object is 100 units to the right of the center of the world."
+If it helps further to understand why the math cares about camera coordinates, try this exercise: hold up your hands touching your thumbs and forefingers together to make a rectangle (let's call that a "viewport") and look around at the room you're in.
+Generally, you pick one point in the world and declare it to be the "origin", that is a point with coordinates (0,0,0).
+Not to mention that updating the positions of millions (or billions) of objects in the world at each player's move will make a rather slow gameplay...
+Of course the camera has a position and an orientation as well.
+You could also tell someone "the train station is 1 mile directly north of where I am right now."
+When the camera moves in a game, that camera position in world coordinates is moved exactly like you'd expect.
+The algorithm that actually renders an individual triangle onto your screen works in a particular way, and so it is not convenient to directly work with the world coordinates when rendering.
+But it's just an extremely unhelpful and confusing way of thinking about it.
+When you do so, ask yourself, "where is the object in my viewport?"
+However the world doesn't operate in the player's coordinates, it operates in the world's coordinates.
+Find an object, and look at it, then look around it but not directly at it.
+The math instead wants to work with "the object is directly in front of the camera, and 20 units away."
+Transformations can go either way - they are just the inverse of each other.
+Whoever tries to implement the world as moving around the player will quickly run into trouble in the multiplayer mode.
+Both coordinates are correct and identify the location of the same landmark, but they are measured from a different origin, and hence have different numeric values.
+Basically, you're moving the world around the camera only in that you're translating the world vertices into the camera's coordinate space - but this is a reversible affine transformation.
+Mahbubar R Aaman's answer is quite correct and the links he provides explain the math accurately, but in the event you want a less technical/mathy answer, I'll try a different approach.
+Part of the rendering process does convert from world coordinates to eye coordinates.
+However an easy way to model this is with a virtual camera object in your application.
+If I tell you that I'm at "100,50" that won't help you unless you know what those numbers mean (are they miles, kilometers, latitude and longitude, etc.).
+Note that the objects are not moved; they are staying right where they were before.
+If they're Cartesian coordinates (the "normal" kind of coordinates), you also need to know what origin they're relative to; if I just say "I'm 100 feet to the East," you need to know "East of what," which is called the coordinate origin.
+Thus the quote is correct if you understand as being made in the player's coordinate system.
+In this coordinate system the player is always at coordinates (0,0,0), and the world moves and rotates around him.
+The object's world coordinates only move if the object itself moves, but its camera coordinates also change whenever the camera moves, since they are relative to the camera's position.
+The camera can represent both the projection matrix (which is responsible for the perspective effect) and also the view matrix which is used to convert from world space to eye space.
+So although the vertex shader uses the view matrix to change the coordinates of your geometry to eye space, it is often easier to think about a camera object moving around your virtual world which as it moves re-calculates the view matrix.
+Obviously, there are many ways to assign a coordinate system.
+So if an object is at position 20,100,50 and the camera is at position 10,200,-30, the object's position relative to the camera is 10,100,80 (the object's position minus the camera's position).
+However, their position is now being expressed relative to a different coordinate origin.
+Positions of objects in the real world and the game world are defined with some coordinate system.
+That's basically what the triangle rasterizer part of OpenGL/Direct3D needs, and that's what the math requires that object positions and orientation be transformed from their convenient world coordinates into camera coordinates.
+This is in the world coordinates, the way the objects are stored in your game.
+There seems to be a whole lot of misunderstanding here, starting from the writers of OpenGL docs...
+You also choose three "main" directions, which you call X, Y, and Z.
+In this player's coordinate system the world actually appears to move around the player.
+At its most basic, "moving the camera" and "moving the world" are exactly the same mathematical construct - it's just that moving the world is somewhat easier to think about conceptually, especially when it comes to hierarchical transformations.
+You could tell someone "the train station is 3 kilometers north and 1.5 kilometers east of the southwest corner of the city."

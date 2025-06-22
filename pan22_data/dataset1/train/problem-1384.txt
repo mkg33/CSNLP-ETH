@@ -1,0 +1,8 @@
+A single final_loss.backward() would calculate the gradients but there are some strange things in your scheme (these may seem strange due to lack of information in your question):
+The first strange this is: why having two separate optimizers? It could only be justified if you purposely want different optimization algorithms for each network.
+The second and most strange thing is: why would you want to have a combined loss? The only reason that comes to my mind would be that module1 and module2 share some parameters. Otherwise, I see no point in combining two totally unrelated losses because they could have different scales, leading to one of the partial losses to have little effect. Minimizing each loss separately would lead to a much better result.
+So here is my network architecture as shown in below image.
+I’ve two separate networks and loss_1 and loss_2 are coming from two separate nn.Modules networks and final_loss = loss_1 + loss_2.
+Still only one final_loss.backward() would calculate grad in both networks?
+I do have two separate optimizers to update grads in two separate networks respectively.
+If not so, then what is the correct way to do back propagation in these individual networks on combined loss value.

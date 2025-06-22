@@ -1,0 +1,8 @@
+Just for fun, here is a pure bash version, tested against Bash 4.4.12(1)-release:
+If you need to generate multiple MAC addresses per host, I used to concatenate the FQDN with the name of the bridge to connect the interface to; this did a good job of spreading things out for different NICs.
+The 02 for the first octet just sets the "locally assigned" bit, which makes it obvious that it's not a vendor-provided MAC address, and guarantees that you won't collide with a real NIC's MAC address.
+First line reads 6 characters from /dev/urandom; then using the C character set print the 0-filled hex value of each character separated with a colon (the newline is optional but useful to print out the value).
+The load consumption of both variants is very similar according to quick measuring with time.
+Extracting the value of a character using printf is defined in POSIX printf documentation:
+The benefit of this method, over a completely random number, is that it's possible to reliably reproduce the MAC address based on the FQDN of the machine, which I find useful sometimes.
+I know this post is old, but for future visitors, if you want a cryptographically secure pseudorandom MAC address, without being limited to 0x02 as the OUI, here is a fast mostly platform agnostic generator:

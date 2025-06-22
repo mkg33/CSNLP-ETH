@@ -1,0 +1,19 @@
+You have to check on those machines, but it runs down to either some DNS along the way still caching (some do that longer than your TTL) or the browser not asking the server.
+Bad programming - so some browsers cache the old page a lot longer than you planned.
+Some DNS resolvers cache records for longer than the TTL allows.
+If the TTL on the old records was 86400 then you can expect DNS resolvers to take up to 24 hours to expire that record.
+Or the server saying the page has not changed due to bad timestamps on the file system.
+Some computers show the correct server but scarily some of them show the old one.
+If the DNS resolver you are using does this, you could be stuck using the old site for a long time unless you change the DNS resolver you use.
+I've checked the dns propagation using a few online checkers and they seem to show the correct ip.
+Whatever the Baidu Spider uses is an example of this.
+I don't think its a browser caching problem as even computers that have never visited the site before show the old page.
+The number in the answer section after the domain name is how long this resolver will continue to cache this result for.
+This is an example checking Google's public DNS resolvers:
+These records often have even longer TTLs of two days or a week or even 10 days.
+If "recently" means "within the last day" then everything is probably working as expected.
+You can check what records are cached and how long they have left before they expire at a specific DNS resolver by using dig.
+I have seen them hitting old IP addresses three weeks after the TTL should have expired.
+Ive recently transferred a domain to a new registrar and pointed it to a new server in the A records.
+The new server being "bad" in that it does not handle IMS (If Modified SInce) requests properly although the browser asks correctly.
+Because you also changed registrar, there are records other than the A record that might be cached such as your NS records and the glue at the parent.

@@ -1,0 +1,19 @@
+In this case, that means updating the OpenLDAP configuration by using the ldapmodify command in accordance with the OpenLDAP manual.
+Modifying cn=config the proper way with ldapmodify is very painful, and you'll end up accumulating tons of carefully hand-crafted, single-purpose, disposable LDIF files.
+This allows you to apply changes to the OpenLDAP configuration on the fly, and will regenerate the slapd.conf file (used when starting the LDAP server as a bootstrap configuration)
+In this particular case you may find that your changes to the file get been wiped out the next time someone does things The Right Way, and you will have to reconstruct your configuration (likely with no record of it, since the file you edited will be replaced).
+First, there's the highly unsupported but quick and dirty method which works fine for initial OpenLDAP configuration if you know what you're doing:
+If you change the LDIF files in cn=config manually, their contents and checksums won't match, which is not fatal, but is annoying when using tools such as slapcat.
+If slapadd succeeds without errors, you can migrate to the modified slapd.d directory.
+Second, there's a less unsupported method which involves use of slapcat and slapadd (modified from these instructions):
+In general, failure to follow instructions (like "DON'T EDIT THIS FILE BECAUSE IT'S AUTO-GENERATED!")
+You can fix the checksum errors using slapcat and slapadd as described below.
+you would do well to follow the instructions for how to properly change the contents of that file.
+The next time you fail to heed a warning like this you could render a system unbootable, or worse.
+If slapd starts, it should work ok, but it's always a good idea to tail /var/log/syslog when starting the service:
+Regardless, if you need to make runtime configuration changes, ldapmodify is  your only option.
+Compared to just editing slapd.conf it's a nightmare.
+However, if you can afford some downtime, you have two other poisons to choose from.
+According to this thread slapadd only adds data, so overwriting the original slapd.d directory contents is not possible.
+Therefore we need to move the directories around a bit:
+These two more or less unsupported methods make living with cn=config slightly more bearable.

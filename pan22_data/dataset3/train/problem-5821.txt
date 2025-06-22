@@ -1,0 +1,15 @@
+I want to mount it under same folder, /mnt for instance, that /mnt/2015/201512 will be on local SSD and /mnt/2015/201511 will be available from repository server
+I would try to solve the Problem with a read cache added to the NFS Server.
+There are similar SW packages like aufs or UnionFS.
+https://www.kernel.org/doc/Documentation/filesystems/overlayfs.txt
+Check CentOS / RHEL CacheFS: Speed Up NFS Access for details.
+I have repository server with a lot of files and data, that being used by a few nodes.
+Lately, I came across the issue of high load on the repository due to high volume of reads from nodes.
+Only few jobs, that are running on nodes require old data from the repository itself.
+In most cached, you need simply configure where to store the data and tell client with a mount option to enable local caching.
+The nfs client in Linux has a native support for caching data on local disk - so called CacheFS.
+Just make it big enough and let it run for a while, from your description you should get decent hit rates.
+Application that uses data doesn't quite have an option to go to different folders.
+I have no experience with these software packages and it seems like a ugly thing to do.
+What I wanted to do, is to have some recent data(sliding window), that being used most frequently, locally on the nodes, luckly I have some SSD space on nodes.
+Now the question is, is there any option to combine data from NFS share and locally stored under the same folder.

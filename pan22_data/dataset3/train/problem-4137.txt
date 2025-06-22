@@ -1,0 +1,14 @@
+I think aggregation is basically a column operation and data split a row operation, so they can interchange freely.
+Having said that, I don't think you should aggregate because energy consumption will likely depend on the distribution and deviation of temperatures as well as its mean or sum.
+Once your data is resampled accordingly to your satisfaction you can proceed as normal with your train/test split.
+Both use the concept of "method chaining" - df.method1().method2().method3() - to direct the output from one method call to the input of the next, and so on, as a sequence of operations, one feeding into the next.
+When either downsampling or upsampling, the syntax is practically identical, but the methods called are different.
+You can use other methods such as .max(), .min(), .count(), etc.
+cold at nighttime and hot daytime may yield more consumption than the average with low deviation.
+If you upsample (i.e., add more intervals, such as going from every 6 hrs to 3 hrs), you will have to fill in the missing values.
+You might consider aggregating earlier in your pipeline as to reduce the amount of work that has to be done afterwards (whatever steps you go through).
+Aggregating means less data points, so following steps will run faster.
+As part of your data munging process, you can resample (upsample or downsample) the data into the desired intervals.
+You can do this using either a backfill or forward fill.
+For example, if you have hourly data and want daily data, pandas will not just guess how to throw out 23 of 24 points.
+If you are training the model based on the aggregated values anyway then it wouldn't make any difference on the final dataset that is fed to the model.

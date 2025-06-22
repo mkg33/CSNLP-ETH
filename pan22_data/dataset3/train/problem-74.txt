@@ -1,0 +1,39 @@
+So for these business-critical machines I NEVER switch on anything power-saving related whatsoever for exactly the reasons you're experiencing.
+If you see any of them getting parked, you'll notice that half of them are parked at any given time, they'll all fire up, and then the other half get parked.
+There's the apparent response time (similar to network latency) and the throughput (similar to network bandwidth).
+The way it does this is by disabling half of the CPU cores in a process known as "parking".
+Very few CPU's these days are single core so this explanation applies to almost every Windows server you will run into with the exception of single-core VM's.
+I'm  not sure about servers, but the current thinking in embedded devices is not to bother with steps between low-power and flat-out because the extra time involved will eat your power savings, so basically they run low power until they get any real amount of cpu load at which point they flip over to fastest-possible so they can finish the job and get back to idling at low power.
+I always try to VM as many servers as I can but where I have to 'bare-metal' a server it's usually as I need or want totally consistent performance.
+If it's a hefty enough request, this might happen several times throughout the course of the request, changing what should have been a 5 second database query to a 15 second database query.
+As a hypothetical example, let's say you have an 8 core CPU with C1-C8.
+Basically the processors are spending more time doing busy work moving data around internally than they are fielding work requests.
+There's likely an official name for it, but I like to explain it as CPU thrashing.
+When the Balanced power plan is active, the CPU attempts to throttle back how much power it's using.
+If it is that much slower than the hard drive, or the network -- well, you get the idea.
+If you have any kind of application that needs low latency for its requests, you need to disable the Balanced Power settings.
+The system looks at that and after the burst of traffic is processed, it thinks "Hey, I should dial this back a bit to conserve power".
+Once you see how this works, it's easy to see how using Balanced Power Control settings causes performance problems and sluggish servers.
+(A timeslice is essentially a set of X CPU cycles.
+Generally speaking, in order for a VM to run, the hardware needs to have a slot in time available for each of the cores at each timeslice.
+If you're using Microsoft's Hyper-V, the power control settings could be enabled in the host OS, meaning it will propagate down to the client systems, thus impacting them as well.
+Applications and systems are so very complicated that there is no cut and dry answer here, other than "yes, reaction time and other system speeds will be affected."
+In order to prevent an uneven distribution of heat & power within the CPU cores, it has a tendency to park the CPU's that haven't been parked recently.
+What IS a problem is the fact that when CPU's are unparked, you've doubled the available CPU cycles available to the system and suddenly unbalanced the load on the system, taking it from (for example) 70% utilization to 35% utilization.
+Some versions of Windows Server ship with Balanced Power settings enabled by default.
+6 have 4 virtual CPU's(4C) and 2 have 8 virtual CPU's(8C).
+One of the underlying issues is that the incoming request needs to wait for the CPU parking/unparking process to complete before the server is going to be able to respond to the incoming request, whether that's a database query, a web server request or anything else.
+The fast answer is:  Of course power saving will affect performance.
+Sometimes, the system will park or unpark CPU's in the middle of a request.
+If you have a 16 core piece of hardware, you can run VM's using more than 16 total cores but for each timeslice, only up to 16 virtual CPU's will be eligible for that time slice and the hypervisor must fit all of the cores for a VM into that timeslice.
+And in order for that to function properly, the CPU needs to flush everything from the CPU registers (L1, L2 & L3 cache) to some other location (most likely main memory).
+The biggest thing you're going to see from using Balanced Power is that the systems are going to feel slower to respond to just about every request you make.
+If you're not sure if this is a problem, do the following:
+What the hypervisor cannot do is split half of the allotment for a timeslice to the first 4 CPU's of an 8 vCPU VM and then on the next timeslice, give the rest to the other 4 vCPU's of that VM.
+In these cases, the request will start into the CPU pipeline, get dumped out of it, and then a different CPU core will pick up the process from there.
+But in doing so, there's a good amount of overhead associated with flushing all of the data from the L1-L3 cache to make this happen so that weird errors don't happen to programs that were flushed from the CPU pipeline.
+This problem is even worse when you're running a virtual machine because there's the additional overhead of the hypervisor.
+Only half of the CPU's will be available at a time so it uses less power during times of low traffic.
+When you're talking about performance on a server, there are a few different ways of looking at it.
+When this happens, all of them become active for some period of time, and then the system will park them as follows:
+Basically, try a setting, test performance, and decide what you can live with.

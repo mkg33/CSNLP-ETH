@@ -1,0 +1,13 @@
+I'm running on a couple of different Linux distros (Fedora 11, CentOS 5 and SuSE 10.2) and  often run into a problem where a new script that I want to run as a cron job works fine when called direct from the command line, but fails when called from cron due to slight variations in the PATH or other required environment variables.
+Runs every minute, and tries to do an ls on a directory that doesn't exist.
+As a side-note, if I want to test that cron itself is working properly, and emailing the results to the correct address (VERY important) I'll add the following line to my /etc/crontab:
+Add a line to your crontab to run the script directly:
+Once it's tested out, I'll edit the crontab line so it runs on the frequency I desire.
+You basically want to set the PATH and then not have to worry about the variations.
+Also, the quick test is to run your script via SSH on all your boxes using the same environment variables.
+Is there a way I can test run an individual script as if it's being run from cron, without having to run the entire crontab or use run-parts to run the entire cron.daily/ .hourly etc.
+If I'm running an individually-scheduled cron job (a separate line in crontab) I'll schedule it for every minute or every other minute as I'm testing it.
+To ensure that you're running the script in the same environment that it's going to be in when called from cron, I'd recommend modifying my "ls" trick above:
+Back to your question: You probably don't want to modify the existing cron job to run often, both because there's a chance of forgetting to change it back, and because running your cron.hourly, cron.daily, or cron.whatever often could have side-effects, depending on what you've got in there.
+That way you can run it as often as you need to test it.
+I guess I could temporarily edit my crontab to run the script in the next couple of minutes, but I'd rather have a more standalone solution so that I don't risk messing up the crontab.

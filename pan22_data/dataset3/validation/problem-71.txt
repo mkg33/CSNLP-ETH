@@ -1,0 +1,12 @@
+Trying various innodb_force_recovery options in combination with lower_case_table_names options on copies of these data files does not solve the problem.
+SHOW TABLES query shows the table, but any query on the table itself fails with error 1146.
+Deleting the ib_logfiles and having Mysql recreate them on restart does not solve the problem.
+You see, the table was created with uppercase characters on the Mac, and according to Mysql, Windows can't handle that.
+After a Mac server crashed, I'm scrambling to recover records from an InnoDB table.
+From what I can tell, the problem all seems to boil down to "error 1146 - Table 'db.my_table' doesn't exist" when I try to reference the table in any command or query.
+I've copied ibdata1 and the two log files over to a new mysql server hosted on Windows for recovery, along with the single .frm file for the table I need.
+Viewing the contents of the ibdata1 file, I see all record data in plain text, but there's no usable pattern to parse it.
+Anyone know of a solution to extract these records?
+When running a innodb_table_monitor, in the output I can clearly see the table definition (more or less) and the row count.
+Even a normal start using copies of these files initially detects the crash and repairs it, and further startups give no errors.
+Changing the .frm file name to all lower case and restarting does not solve the problem.

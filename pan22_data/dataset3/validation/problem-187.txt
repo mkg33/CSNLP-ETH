@@ -1,0 +1,12 @@
+Can I create a new user without creating mail spool and without modification of /etc/default/useradd ?
+This change would prevent any other user creation from getting its mailbox created.
+So you can do useradd -r -m. You'll have to specify a UID/GID manually as well though, as they're picked from different ranges.
+Also I know about -d but it seems that I can't find an option for not creating a mail spool.
+If you are struggling with an already running host, just edit the /etc/default/useradd file and change the setting accordingly.
+I'm setting up a Docker image with Alpine and shadow package and got the same error.
+It that is not the desired behavior, you can just create the /var/mail folder with
+To avoid this "Creating mailbox file: No such file or directory" error I had to add the following inline replacement before trying to add user:
+A warning would appear (Creating mailbox file: Not a directory), but you can ignore.
+I just read the sourcecode and there is no option for this, though there is a workaround (sort of): maildirs don't get created for system accounts.
+I'm thinking about is there an option to use custom /etc/default/useradd file.
+I want to create a user that has a home directory and skeletion, but I don't want the useradd script to add a mail spool file to the unix system.

@@ -1,0 +1,11 @@
+Something that I've notced is that 90 % of Swap is being used, while the server has over 8GB of free RAM.
+But you are concerned with  5.00-6.00 load.  That's okay with 8 cores. (See http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages)
+Bump up innodb_buffer_pool_size to use more of the 16GB on your machine.  Too high and you run out of memory.  Look at free memory available on your box and use that as a guide to the total amount you can add.  This is the biggest thing I can see you can do.
+With multi-cores on MySQL the single mutex will create contention on the query cache.  Set query_cache_type=0 and query_cache_size=0 in my.cnf. 
+Next, make the innodb_buffer_pool_size close to the size of the database; looks like you still have memory left. This helps reduce overall IO.
+For your comfort, just trying using a website when CPU hits that load average.  If you response time is suitable everything is okay.
+I've also checked for network issues or DDOS attacks, but that is not the case. Hardware is brand new and in perfect state. So what could it be ? 
+Normally the server load stays around 0.5-0.8 but when the load spike occur it goes u to 5.00-6.00 and stays like that until I restart mysql, after which it goes back to normal (until the next spike).
+Outside of my.cnf, the queries hitting your server should use indexes. If not, they can create more IO.  And finally, to handle high IO, you want to spread IO across disk drives.  The first candidate for that is your binary logs.  If /var is mounted on /dev/sda1 then add log_bin = {directory mounted on /dev/sda2}.
+I have the solution ( thanks to Igor and the incredible people at Cloudlinux ). Apparently it's a common problem with fcgi and can be avoided by just adding a cron job. To read a bit more about it and hw to fix it check this link:
+As for PHP I'm using fcgi as the handler and Nginx ( via nginxcp ). I've tried removing nginxcp, thinking that it may be the cause, but the spikes still occurred. 

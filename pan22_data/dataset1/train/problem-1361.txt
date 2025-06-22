@@ -1,0 +1,9 @@
+Your code works, but its quality leaves some room for improvement. It should be simplified by refactoring.
+Even if it is only an exercise, utmost care should be applied when choosing names to make sure they are descriptive and clear, but also to comply with coding conventions:
+Look carefully at your instance variables owner and isLocked. Track their values during runtime with the debugger, and you will see: if owner == -1 then isLocked == false, but if owner != -1 then isLocked == true. In other words, you are using two variable to track the same piece of state.
+You should remove isLocked and replace it it with the following method:
+Doing the same string concatenations multiple times
+You have used System.out.println throughout your code, always passing TAG, a message, and a thread id. You can extract this functionality into a new method:
+That way, System.out.println is only called in a single place and can easily be disabled or replaced with a real logger. For instance, this:
+At the beginning of unlock(), you throw an IllegalStateException with the same message for two completely different reasons. That's not very helpful for debugging. Instead, check them separately:
+I have read Java Concurrency In Practice and the authors give tips on building custom synchronizers. The AbstractQueuedSynchronizer is the perfect starting point for this purpose. The AQS holds a simple volatile variable integer state which is the 'synchronization state'. The tryAcquire() and tryRelease() are the main methods required to be overridden to implement your Custom Synchronizer. These methods grant the thread exclusive access to the state of the object. The shared and interruptible versions of these methods finally invoke one of these two methods to acquire/release the lock. The compareAndSetState(expectedValue, newValue) is atomic and changes the state of the synchronizer. For a Lock this is from 0 to 1.

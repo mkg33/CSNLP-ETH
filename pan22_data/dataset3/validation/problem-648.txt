@@ -1,0 +1,10 @@
+The usual solution is to run the monitor script with sufficient privilege to be able to read the file.
+Alternately, use NOPASSWD in the sudoers entry for the script, so that you don't have to store a password in the script.
+There are permissions management setups that don't require you to use sudo -- you could give the user running the script access to the group that owns /var/log/messages (adm, on my laptop here).
+If you're really dead-set on letting the world see what's in /var/log/messages (and I'd strongly recommend against it -- there really can be private stuff in there) then what's setting your permissions back to default is probably logrotate, so check out your logrotate config and find the stanza that's doing your /var/log/messages rotation and change it.
+That will allow 'scriptuser' to perform the exact command presented without entering a password.
+If you do use sudo to grant access, then you need to be careful to limit the access scope properly.
+This is because the /var/log/messages permission is carefully chosen to hide any sensitive information that accidentally ends up in that log file.
+I am trying to write a simple script that monitors /var/log/messages file.
+I would recommend using something like this in your sudoers file:
+The file by default doesn't have read permission for users, when I allow read access to this file my script works perfectly, but the problem is that file gets rewritten each time I restart the system and all my changes get lost.

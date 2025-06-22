@@ -1,0 +1,9 @@
+You can even simulate replication lag with MASTER_DELAY or pt-slave-delay to see how your application behaves when the state of both schemas is not the same.
+The easiest (infrastructure-wise) way seems to be just have a one MySQL server with 2 same schemas (so master/slave is not server/server, but schema/schema instead).
+We mostly have Java/PHP devs who should be able to inspect state changes of master/slave databases.
+Is this easily achievable with MySQL or do we have to install 2 MySQL servers even for local testing?
+This might sound a bit crazy, please let me explain the reasoning behind this:
+Tools like MySQL sandbox makes running "n" different instances of MySQL even easier, taking just a command to setup an instance or a complex replication topology!
+You could setup a script to read the binary log, convert it to SQL (with the utility mysqlbinlog) and change the schema on-the-fly before applying the changes.
+Running 2 instances of MySQL on the same machine is very easy, and may be closer the the production deployment.
+You could also setup triggers on every table to INSERT/UPDATE/DELETE every row on the copy schema.

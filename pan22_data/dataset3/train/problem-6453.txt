@@ -1,0 +1,17 @@
+It seems to me that private/public key merely do not match.
+Try to generate a new pair and scp public key to server.
+So I compared my output from env in both sessions.
+Unfortunately I have different keys for different servers.
+I guess this is essential  for key resolution based on the result.
+I found this is the working session, which was absent in the non-working session:
+You can, for example, start a sshd in debug mode on port 2222 with /usr/sbin/sshd -d -p 2222, then connect with ssh -p 2222 user@remotehost.
+Secondly today I again have this error in only one XTerm session, and everything work great in 6 other xterm sessions to the same server/hose machine.
+If you can start a sshd on another port in debug mode, it will tell you immediately why the key is being rejected (my wild guess is that your home directory is group writable).
+There should be no newline in between the format definition (ssh-rss, ssh-dss, ..) and the public key itself.
+To be honest, sometimes it works even if there are bigger rights, but it should not.
+Key names tell us that public key is RSA key and private key is DSA.
+On that occasion, renaming my id key to "id_rsa" helped.
+I pasted that assignment into the non-working session:
+These things are always much easier debugged from the server side, if that is possible.
+I recommend to check authorities on ./ssh and user´s home directory, on key file and on authorized_keys file, as noone else then owner should be allowed to write and read there if you want ssh passwordless connection to work.
+In my case, the problem was in incorrect format of authorized_keys file.

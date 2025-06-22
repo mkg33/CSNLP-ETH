@@ -1,0 +1,25 @@
+In this scenario, you pre-load the cache for a user at connect time, making the rows that are updated in high frequencies in memory available.
+With optimized indexes, reading the many items per user is just one lookup away.
+This makes using InnoDB a whole lot more conducive since it features row-level locking and InnoDB buffer both data and index pages.
+Case and point: I have a client with 162GB buffer pool on 3 DB servers (MySQL 5.5 with dual hexacore [not a typo, 12 CPUs]).
+The items table can be indexed to store the related items (per user) consecutively, thereby giving a array like reading scenario.
+See Oracle In-Memory Database Cache It gives you a very scalable solution.
+You can use large values for innodb_buffer_pool_size if you are using a 64-bit OS.
+Once you have data loaded, you can run this formula to estimate (or guesstimate) how big an InnoDB buffer pool you are going to need:
+RDBMs were built to handle these kinds of relations and operations.
+MySQL will have no problem handling the workload you suggest.
+Technically speaking, PowerOfTwo is really power of 1024 for displaying bytes.
+You need quick response time for many concurrent sessions.
+This will read statistics about the consumption of diskspace by InnoDB and print the suggested size in megabytes and it will cap the answer at 4GB.
+Plus, storing the users and items separately will help with detailed reporting (eg: number of items added today).
+If using Oracle you could make a nice IMDB Cache scenario.
+RDBMs are pretty fast and can handle hundred-thousand operations per second, so this may not be an issue.
+As mentioned, you'll want InnoDB - and you'll want to invest some time learning how InnoDB works.
+When your items are on a different table, updates done per item will perform better than if the items were stored in a text column (as an array) in the same rows as the user.
+MySQL has no problem handling over 1000 qps and tables with hundreds of millions of rows.
+Just make sure to use page padding to allow for the future updates/inserts/deletes.
+If you use a large InnoDB buffer pool and users are consistently hammering updates, the users will be cached already and data will systematically flushed to disk at regular intervals.
+As long as you properly index the tables and have MySQL tuned (The default config should even be fine for a while)
+IF you are going to use MySQL for this application, by all means STAY AWAY FROM MyISAM !!
+All INSERTs, UPDATEs, and DELETEs on MyISAM tables will perform a full table lock before executing the update to the table, even if you are updating a single row.
+This will give you faster updates, lesser memory required for the operation, quicker locks and releases (and you may not have to lock your respective user), smaller read/writes, etc...

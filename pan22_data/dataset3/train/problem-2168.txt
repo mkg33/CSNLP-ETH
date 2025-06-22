@@ -1,0 +1,13 @@
+When I start the puppetmaster process the ssl directory looks like:
+I'm setting up a puppetmaster (2.7.6) in ec2 via gems (on rhel6) and I'm running into problems with the cert names and getting the master able to talk to itself.
+So after some investigation I figured this one out.
+The other error related to plugins is a bug about having pluginsync enabled but no plugins available to sync.
+I'd like to avoid setting server = 'x' and use dns/hosts to control what 'puppet' resolves to in order to decide which server (plays easier with availability zones, etc)
+Which is success of a sort, that source error will bite me later when I'm applying manifests.
+1. manually generate the certifcate for the master
+add dns_alt_names = puppet to the master (and the master only) before you run puppet master or puppet (causing the certs to be generated)
+I have an /etc/hosts entry on the box to point the 'puppet' hostname to localhost so that I don't have to change the 'server' option.
+Now with an /etc/hosts or dns entry connecting to 'puppet' will work just fine.
+I've tried a couple of other variations with using the ec2 private hostname and gotten mixed results.
+If I specify the certname as the server (with corresponding hosts entry) I get:
+Puppet 2.7.6 doesn't set subjectAltNames on the server certificate when it generates that cert for the master (it really doesn't know that it's a master at any point).

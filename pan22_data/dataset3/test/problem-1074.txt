@@ -1,0 +1,18 @@
+I have a linux box with 9 NICs on it, and I want eight of them to have unique addresses on the same subnet, e.g.
+It seems you want a test environment equivalent to 9 separate machines, and believed that 9 interfaces on one machine could emulate that.
+In Linux it simply cannot do this through a single stack for reasons David Schwartz described.
+You will also need filters to prevent packets from being accepted if they arrive on the wrong interface.
+The weak end system model is built into the entire Linux TCP/IP stack, and it's not clear what might go wrong with subtle issues like multicast.
+So I rummaged around and ended up making some changes to sysctl such as this:
+Again, you have chosen the wrong tool for the job.
+You will have to fake every piece of the behavior you need, from ARP to policy routing to source address selection.
+Bonus Points: Solution must be compatible with Linux 2.6.27.27.
+The default ARP behaviour is extremely counterproductive in this case, since it results in all traffic for all IPs passing exclusively through eth1, which is pretty much the exact opposite of what I want.
+It's not clear how you would choose the output interface for broadcasts, for example.
+from a second computer on the same switch, only 192.168.123.1 responds to ping)
+I'm guessing that I need to do something with arptables or iproute or SOMETHING, but I'm lost at sea in this field.
+A better solution might be to run 8 or 9 discrete virtual machines in your one host, and bridge 8 or 9 interfaces to these virtual machines.
+Linux is fundamentally built around a weak send system model, so it's really not a good OS choice for this application.
+What is the right behavior if the stack gets an outbound broadcast with a source address not assigned to one of the interfaces?
+That did prevent eth1 from impersonating all the others, but I still can't ping anything other than eth1's address successfully.
+Unfortunately, there is no consensus on whether these three steps are all that is needed.

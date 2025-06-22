@@ -1,0 +1,12 @@
+The issue seems to be linked with Kerberos authentication.
+You can perform a quick test to check if your issue relates to Kerberos authentication by:
+cscript "F:\inetpub\AdminScripts\adsutil.vbs" get w3svc/NTAuthenticationProviders
+Also, if anyone knows how to force NTLM authentication only for specific application pools rather than the entire IIS web server please also let me know.
+I could not access the site externally (401 - Unauthorized), but on the server itself I could access the site.
+If anyone has a deeper understanding of why Kerberos authentication fails please let me know.
+This issue occurred for me several times when i migrated sites from IIS6 (defaults to NTLM) to 7 (defaults to Kerberos).
+I did not want to configure Kerberos, so instead i forced my IIS web server to use only NTLM with the following command:
+If you disable Kerberos, you might find that you can actually access the website from an external machine:
+I also had this issue occur when I switched my IIS application pool account from NetworkService to a domain user account.
+cscript "F:\inetpub\AdminScripts\adsutil.vbs" set w3svc/NTAuthenticationProviders "NTLM"
+IIS 7 attempts to use Kerberos first and can't authenticate properly - (must require more configuration).

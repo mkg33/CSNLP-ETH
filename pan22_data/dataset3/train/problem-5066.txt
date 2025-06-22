@@ -1,0 +1,25 @@
+Variations of this question seem to crop up frequently, but none of the questions I've read here on Superuser seem to directly address, or offer a fix for, this problem.
+1) In my Windows network adapter options, under Properties for the adapter I use to connect to the LAN, I had to make sure the VMWare Bridge Protocol box was checked.
+On the windows host, go to Networking Connections, and "disable" any VirtualBox network entries there.
+However, I'd like to understand what's wrong and fix it.
+I've updated VMWare Tools in the guest OS, with no effect.
+De-select the Hyper-V, leaving only the physical adapter.
+However, you can specify which adapter to bridge to, and that resolved the problem for me.
+Happy to provide logfiles or other info to help debug the issue.
+Go into your VM Network settings, select Bridged, and then click the Configure Adapters button.
+Diagnosis of that led me to VirtualBox being the culprit.
+Your "Bridged" VMWare connections will start working again.
+Alas, I don't know which Mint upgrade, or VMWare Player upgrade broke the functionality, or when.
+Recently, I had need to switch to Bridged, and the guest Linux OS failed to connect.
+After doing those two things, I restarted my computer and then my VM and the network connected successfully.
+2) In the VMWare Network Adapter settings, as others have mentioned, make sure the only adapter checked in Configure Adapters is the adapter you are using to connect to the LAN.
+Switching over to VMWare (using NAT) worked just fine, but VirtualBox had left a host-only adapter in Windows Networking, which was (silently) making "bridged" mode in VMWare not work.
+I found that in VMware Player, there is no network editor.
+I have a similiar problem, and it was caused by that I have 2 network card(eth/wifi) on my host and both connected to internet.
+You don't have to disable the VirtualBox adapters in Windows.
+In VMWare Workstation Player, I had to do two things:
+In the past (earlier versions of Linux Mint, and earlier versions of VMWare Player), I could switch networking between NAT and Bridged, and both would work as expected.
+Switch back to NAT, and everything reconnects and works fine.
+This will fix your problem and leave the VirtualBox adapters functional in Windows so that you can use both VB and VMWare on the same system without having to constantly switch settings.
+I hit a similar issue installing "boot2docker" (which uses VirtualBox) on an other machine which had VMWare working, which then stopped after installing "boot2docker".
+Since I can use NAT as a work-around, this isn't urgent.

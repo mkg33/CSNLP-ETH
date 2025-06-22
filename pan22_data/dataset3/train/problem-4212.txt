@@ -1,0 +1,12 @@
+On the server, edit your ~/.ssh/authorized_keys entry that corresponds to the key from you client:
+Then on the server, make sure to allow client to pass certain environment variables in your /etc/ssh/sshd_config config file:
+In session.c after the child_set_env(..."MAIL"...) just add the enviroment variables you need(This is a hack I know...) but just incase someone needs some hardcoded envs for a session if you are compiling from source you can do this.
+@emptyset's response (which didn't work for me) led me to this answer:
+You can specify in the sshd_config the location of the authroized_keys file but for some reason the environment= only work for environment variables in the ~/.ssh/authroized_keys.
+Editing the /etc/profile wasn't an option and I had to load ssh in a non-standard directory.
+I was making a custom build of OpenSSH for a device with a cramfs in the home directory and /etc (Cram FS is read-only) so ~/.ssh/environment would not work not without rebuilding the entire FS and these were field deployed devices(Embedded Systems Hence the use of CRAMFS).
+Look at this link in the section Forced Command for a little more detail.
+On your local client, in your ~/.ssh/config you can add SetEnv, e.g.
+export VARIABLE=<something> was immediately exiting, and the SSH connection was closed (locking me out of the server), whereas /usr/bin/env ... $SHELL will run your default shell with a modified environment.
+You could try invoking a custom command, assuming you have password-less ssh login setup.
+You can add this command to your ~/.ssh/authorized_keys file:

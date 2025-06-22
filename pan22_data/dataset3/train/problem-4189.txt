@@ -1,0 +1,7 @@
+There is a fail2ban jail on the haproxy that blocks clients by IP after a number of failed logon attempts.)
+In secpol.msc open Local Policies | Security Options set Network security: Restrict NTLM: Incoming NTLM traffic to Deny all accounts.
+Basicly source WorkstationName is lost and now it show RDSH server name instead but you get IpAddress in exchange.
+I'm using this setting on several Win2012 R2 session hosts and did tests with several sucessful/failed logon sessions from mstsc.exe clients on Win XP machines (latest mstsc.exe version 6.1.7600 for XP).
+This shows the change that happened underneath "LogonType":"3","LogonProcessName":"NtLmSsp ","AuthenticationPackageName":"NTLM" is changed to "LogonType":"10","LogonProcessName":"User32 ","AuthenticationPackageName":"Negotiate"
+This cannot be used with NLA but works with SSL (the SSL info icon on the topbar of mstsc.exe client confirms server identity) and sucessfully records source network address in failed Event ID 4625 in the audit log.
+(The log above is from rsyslog on a haproxy load-balancer that collects audit logs from RDSH boxes that are being forwarded by nxlog service in JSON format.

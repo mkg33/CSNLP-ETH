@@ -1,0 +1,11 @@
+So essentially, the method iterates through all possible combinations of two balls. If the distance between them is less than the sum of their radii then a collision is detected and the velocities of each ball are changed.
+I have a program which simulates many bouncing balls. The balls can bounce off each other and off the sides of the container.
+I'm not sure whether SIGGRAPH has published anything more recent, but the paper which I used as a basis for multiple collision handling in my most physics-demanding game was
+That should follow immediately after updating the velocities to make sure the balls move away from each other.
+I have tried adding this code when a collision is detected. I expected this to solve the problem by moving the balls to their last position before the collision, but the problem persists
+The problem I am having is that sometimes when two balls collide, they get stuck together, overlapping very slightly. They will not come apart on their own, but may disperse if another ball knocks into them.
+I would say you have to get the balls out of  each others radius first. Let's say push the target ball 1pixel out of the second ball's radius so the collision detection won't happen in the next loop. Then you can reverse the velocities.
+The loop checks whether the two balls are colliding and moves both of them if they are, until they are no longer within each other's range.
+The next method to run will update the positions of the balls, before the above method is called again.
+It appears that my problem occurs when a collision is detected, but on the next pass of the function, the ball is still seen as being inside the other ball and receives a collision whilst trying to get out. 
+Handling simultaneous collisions between more than two balls (e.g. balls A and B simultaneously colliding with C) is hard. And yet it's bound to happen when you have a lot of balls in a small space. You want to think not just in terms of separating pairs of balls but in terms of conserving energy and momentum while respecting each collision's restitution.

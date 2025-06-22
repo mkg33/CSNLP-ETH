@@ -1,0 +1,8 @@
+You should however update the state of these objects in the show() method - not in the constructor - to ensure that the state is updated every time you show the screen to the user.
+If you for some reason need separate viewports / cameras per screen you should create it in the constructor for the same reason mentioned above. 
+Viewport creates its own camera, you don't have to create one yourself unless you're going to use a camera that isn't OrthographicCamera.
+The reason I used to do this was just a misunderstanding of the framework. As you may (or may not) know you have to put all initialization logic into or after your create() method of your game. To understand why let's say you decided to create 2 viewports and pass them into your screens as parameters. You might do something like this:
+Create viewports separate from your screens and simply supply them as parameters wherever needed (i.e. your point 2).
+These should be initialized separate from your screens and then passed into your screens as parameters of some form (new GameScreen(uiViepwort, gameViepwort)). This means that you limit GC by only creating these once during the entire lifecycle of your game. 
+This will crash the game. Can you spot the bug? We are using Gdx.graphics before it is initialized! Gdx.graphics is initialized just before create() is called, but the viewports are created before that! Things like this just led me to assume that I should initialize all variables in the show() method as well, even though I don't have to.
+There is no "correct" way to do it design wise per-se but if we go a bit deeper and start to think about garbage collection (GC) this is not good design at all. Realistically you should probably have 2 viewports:

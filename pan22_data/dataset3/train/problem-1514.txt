@@ -1,0 +1,10 @@
+The comments are added to the log, and pt-query-digest can parse fields out of comments with the --embedded-attributes option.
+You can query the transaction for your current thread:
+MySQL Slow log is completely a separate entity from innodb_trx information which you get from Information_Schema innodb_trx table.
+But you find no row in that table until your transaction has created any locks.
+The extended fields that Percona added are not available in stock MySQL.
+MySQl slow log logs all slow running queries specified while enabling it, it does not matter whether queries are within TRANSACTION or not slow log will record all slow running queries according to options specified in my.cnf file.
+I suggest to understand these tables from I_S Innodb_trx, innodb_lock_waits and innodb_locks tables from I_S and analyze result of it.
+The only other option is to add a comment to your SQL query in your app.
+That is, a transaction that does nothing but SELECT will not show up in that table.
+You could simply embed CONNECTION_ID() into your query comments, on the assumption that grouping by connection is as good as grouping by transaction.

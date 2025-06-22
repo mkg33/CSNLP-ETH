@@ -1,0 +1,16 @@
+We want to move to a single AD forest design with a root domain and no more than two other domains.
+Once the higher level DCs connect then two way coms could be established and AD could function as usual.
+We are currently looking to flatten our AD structure a bit to make things a bit more manageable, but we still want to keep our security posture as near as possible to where it is now.
+Given that, I wanted to know if you guys have any thoughts on how to best do this.
+The clients on the lower domain had to go through a  transparent firewall to talk to the DCs in the DMZ.
+Question is, what's the best way to secure the DC to DC traffic that goes through a firewall boundary?
+Currently, we have AD forest islands segregated by firewalls and none of the forests talk to each other, except for a few exceptions for offsite replication for DR purposes.
+The accepted solution was to put the DCs in the lower level zone in a sort of DMZ.
+I know that using sites we can control replication so it is initiated one way only, but I want to be sure that this controls the flow of all ports needed for traffic between the two DCs.
+I highly doubt that we are the only organization that you support that has these requirements.
+You could use an unencrypted transport to satisfy your IDS/IPS requirements.
+I had a similar requirement in a project several years ago.
+Thinking outside of the box for a moment - could you have a VPN server on the lower domain that only the higher domain DCs could connect into?
+We then restricted the ports used by active directory replication, set up an IPSEC policy for those ports and  and other ports when talking to some predefined IP addresses of DCs in the higher level domain.
+I also know that we can use IPSEC tunnels to limit the ports that need to be opened on the firewall and make the tunnel unencrypted so that IDS/IPS can still analyze the traffic.
+Our current posture is that no lower security zone is allowed to initiate inbound traffic (no ingress) to a higher security zone, so two way communication between DCs would only happen when a DC in a higher security zone wants to talk to the DC in the lower security zone (egress initiated traffic only).

@@ -1,0 +1,32 @@
+"Does my class properly generate and filter license plates?"
+The text and number generation should arguably be separated.
+An alternative approach would be to have the filter not be a generator.
+The second option is easier to test because it allows you to pass in a license plate generator that is rigged to generate bad words.
+If you tell the fake generator to generate "ABCD" and you tell the filter to reject "ABCD", you can then test success by whether or not the filter generator returns "ABCD" in any of the generations.
+Despite a fairly simple requirement, to test this with granularity would require breaking it down into quite a few pieces.
+Testing your random generator means just checking a few outputs.
+It looks correct to my rusty-with-Java-eye anyway.
+(Note: I completely bastardized the class names in my examples.
+A consuming class doesn't need to know whether it has a LicensePlateGeneratorRandom or LicensePlateGeneratorFiltered; it just needs to know it has a LicensePlateGenerator.
+Note that separating this concerns allows you to test them independently.
+You then configure this fake generator to generate a certain stream of words ("ABCD", "DCBA", etc).
+Your professor would probably think you got a bit carried away if you truly made this testable.
+That would allow for easily reusing generated numbers when a bad word is in the word part, but other than that, the added complexity would probably not be worth it.
+becomes "Does class X properly generate license plates?
+Unfortunately it requires that the code become a lot longer.
+The easiest way to test it would probably be to whittle down the set of possible characters from A-Z to A-D and then make ABC a bad word.
+Obviously this is just a little homework assignment, so it would be a bit overkill, but I would put the license plate generation in its own class in a real application.
+This just made me realize: did your professor specify that the bad words would always be four characters?
+I would also pass the banned words as a parameter to the constructor instead of to a method -- that allows your instance to carry around the words without any farther down consumers having to know what the words are
+It doesn't really matter when there's only 4 characters (so 4 * A.length runs), but when doing a linear comparison, you should typically bail out of it with break or continue
+Instead, your consuming code would be responsible for configuring its own filters and then generating plates until a suitable one is found.
+After a lot of test runs, you could be fairly certain that it was throwing out any ABCX or XABC.
+I can code this up if you want, but for the sake of brevity and time, I'll just describe it here.
+(I would probably define this as an anonymous class in actual testing code, but my Java is too rusty to remember the syntax for that :p)
+The code formatting on here makes namespaces a bit clumsy though, so I didn't use them.)
+Note how this is transparent to any consuming class.
+Some small notes (actually the last few are more or less small comments to Corbin's great answer):
+Checking your filter could be done by rigging a generator:
+Then, you pass this fake generator to the filter, and give the filter a list of words you know that the fake generator will generate.
+The main problem with testing this is that all of the concerns are mixed together.
+A few suggestions, and then I'll get to how to test it:

@@ -1,0 +1,12 @@
+However, I haven't been able to find this setup....
+With this set up, each virtual gateway will be on a Layer 2 segment.
+If I have a router that has several LANs on it, and each of these LAN is attached to a second router, do I need to use different HSRP groups for each LAN?
+I have seen this used in production with no issues; 100+ VLANs on a 6500 router pair all using HSRP group 1.
+Like you, I can't find any documentation blessing this right now.
+Since according to the RFC, the group number of the packet is in the HSRP multicast packets, my guess is that I don't need different groups, and that multiple groups are only needed when they are all on the same Layer 2 segment.
+Will this work, or do I need standby 1 ip 192.168.2.1 on the F2/0 interfaces?
+If you wanted to combine them into one subnet (192.168.1.0/24), but maintain both existing HSRP addresses while hosts were reconfigured, the following configuration:
+One example I have seen where multiple HSRP groups used were used on the same interface was for combining subnets.
+(When no group is specified, the default group is 0.)
+And within a router, no interface will have multiple gateways.
+If these LANs are all on separate L2 segments, you can safely use the same HSRP group number on all of them.

@@ -1,0 +1,10 @@
+I was wondering if anyone could explain why the slave's SQL thread needs to be stopped for the entire backup?
+When using --master-data with a replication master, global locks are obtained a single time and then released, allowing the regular application-load to continue during the dump operation.
+I'm using --single-transaction and I'm expecting to get a consistent snapshot as of the time the backup is started.
+I can also understand wanting to at least pause the slave SQL thread so that the get-stave-status the start-transaction operations could happen consistently, but as soon as the dump operation begins, the slave SQL thread could be re-started, right?
+Why can't this be done on the slave in the same way?
+That should be possible even with transactions being processed by the SQL thread.
+Any information anyone could provide would be greatly helpful.
+I realized recently that I was using --master-data to dump a backup from a replication slave when what I really wanted was --dump-slave.
+After switching to --dump-slave, I see that mysqldump will stop the slave SQL thread during the backup (which was clear from the documentation -- it wasn't a surprise).
+Even if the slave SQL thread is completely held-up due to some lock that mysqldump has acquired, the slave should be allowed to continue to (try to) execute SQL DML statements during the backup.

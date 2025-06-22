@@ -1,0 +1,15 @@
+Monitoring thread stopped reporting any value change.
+In my experience Linux driver I2C problems usually return IO error 5.
+The problem happened once and on prototype board, whose wiring is surely not perfect.
+I don't know if there can be a conflict of any kind.
+The daemon reads and writes value to chip connected with I2C bus.
+The pigpio bb_i2c* functions use bit banging and there is a 10ms timeout per bit (which I will probably make considerably larger).
+I think that it was stuck on some I2C IO operation, since there is no other blocking operations in it.
+The pigpio i2c* functions use the Linux I2C driver.
+You need to find out what, if anything, is blocking.
+This choice derives from the fact that MCP4728 need some commands that does not fit SMBUS transmission paradigm.
+do pigpio library has the possibility to set read/write timeouts?
+If any change occurs, it's notified to a remote host.
+I did some research and discovered that I2C specification does not have any timeout condition (http://www.i2c-bus.org/i2c-primer/obscure-problems/ and SMBus specs at page 58).
+In addition, two different libraries are user for I2C communication.
+The daemon has a monitoring thread that performs read on the chips, sleeps for some time and repeats.

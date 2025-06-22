@@ -1,0 +1,16 @@
+It can backup windows machines via samba, and obviously also backs up linux/unix/macs
+This won't relieve you of the requirement to get data off site somehow, but it will definitely help lower the amount of space required by your hot/live backups.
+So we end up being able to restore archived data in seconds, while also maintaining off-site storage.
+We have a replica SAN at another data centre that we snap and backup from.
+In our old system, we had to cart tapes and disks home since every day about 200GB of files were modified.
+As a result, we are able to backup everything to a remote site over a T1 in a few minutes (and under an hour on a very heavy maintenance day).
+We have ~1TB of data, and backup everything nightly using custom rsync scripts.
+you might want to look into backuppc, it has to run on a linux box but it stores files using hard links so if the file hasnt changed since the last inc/full then it just hard links to it (so the amount of space to store 4x full backups is vastly smaller than other backup systems)
+You can get 3TB drives for well under $200 US and smaller drives for considerably less.
+You are looking for a storage system that provide data deduplication: http://en.wikipedia.org/wiki/Data_deduplication
+The nice thing about rsync is that it only copies modified bytes (not the entire modified file) ... plus it compresses the data before transferring.
+Luckily disk drive space has kept up with our company growth ...
+I think our total solution at both locations cost ~$1000.
+Since your data is easily dividable into more manageable discrete units (project or job or whatever you choose to call it), why not just make a copy onto an inexpensive USB drive and store them somewhere?
+But with rsync only the 1GB or so of modified data within these files are transmitted, and compressed down to ~200MB.
+The scripts also utilize Linux hard links to maintain 30 days of full archives (not incrementals) using only 2-4TB (before compression) of space.

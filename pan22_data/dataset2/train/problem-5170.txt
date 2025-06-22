@@ -1,0 +1,9 @@
+At my site, we just moved an important service, and made the appropriate DNS changes internally and externally to make it work.
+I would check the hostname at Squish to see what/who is involved in DNS resolution and the results that are currently being reported. 
+On Solaris and Linux there's getent (ex. 'getent hosts www.google.com') .  This uses the system libraries to do the resolution rather than going directly to the name server (like nslookup).  This is particularly useful when there are several naming services in play (local files, nis, dns) any of which could have an answer.
+Another possibility is that the client machines on the network are going through an HTTP proxy server that picked up on the IP address change before they did.
+For your last question ("is there any way to tell which IP a browser came up with for a site"), I recommend, if you use Firefox, an extension like ShowIP or Site Information.
+I'm perplexed.  How is it that the browser resolving the new service but nslookup is not?  [No, there is nothing about the site in /etc/hosts].
+When you bring up the site in a browser, it works fine.  (Works in Safari, Chrome, Opera, Firefox, on computers that have been on the network for a while and ones that have been off it for some time.)
+That's good, to be sure.  But when I type nslookup <hostname> or dig <hostname>, I get the old IP for the service.  (If I put said IP in the browser, I get the former server for this service).
+Don't forget that DNS can take a while to change over depending on nameservers involved and cache times. If you are only having issues locally there is probably some local DNS cache at play, and you need to reboot or let it time out. When it comes to DNS you have to think globally.

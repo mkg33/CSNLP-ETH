@@ -1,0 +1,15 @@
+Usually labour intensive daemons are a good match to run on a web server as web servers rarely use much CPU time.
+The first and most important matter is to find out if these servers are actually struggling.
+This might be an obvious thing to seasoned Ops but, please, bear with me on this one (I'm a dev with the side effect of having to manage our servers too).
+At the moment, one of several servers (load balanced), in addition to running the usual customer-facing web server also runs a number of labour intensive daemons (they interact with the caching server, db server, and several 3rd party web services).
+My question is, would you say it's better to move these daemons to their own server that isn't sharing resources with having to also function as a regular web server?
+If the daemons high CPU usage is indeed causing issues with the server's reaponsiveness it is likely better to first try fiddling with their priorities and niceness to prioritise the web server.
+The work done by these daemons increases with the number of current site visitors (visitors across all web servers).
+It is up to you to determine if additional servers will improve the user experience.
+You are the person most-capable of determining the requirements of your applications.
+If the unusual daemons do not need to run in real-time (i.e.
+they do not service users) then it would likely be a good idea to put the somewhere else.
+Alternatively, would moving this one server that runs them into a new one with more run time memory available to it be beneficial at all?
+If this is not enough I would as you say next try to run a more powerful server before separating the daemons off, this could help but splitting them off to their own server is very unlikely to help as most daemons as before use different resources to a web server and will not contend them.
+If users rely on them, web servers might be the best place for them and maybe you just need more webservers (and daemon servers).
+You need to run some latency tests at peak load times and find out if transactions are of unsatisfactory speed.

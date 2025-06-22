@@ -1,0 +1,13 @@
+Essentially, you configure an endpoint on the remote system that when connected to, removes all cmdlets from the session and exports only the cmdlets you've white-listed.
+What I don't want is for this service user to be able to do things like login to a computer.
+I have a limited set of scripts that I want to run from a central location against a set of servers using a designated service account.
+Is it possible to only delegate a enough permissions for a user to only be able to utilize a Remote Powershell session?
+It requires some work to set up, but in the end decreases the chance that the remote user breaks something by accident.
+A Powershell Remoting/WinRM session is a network logon.
+In addition to denying interactive logons, you might want to restrict the remote users access to a remote endpoint that exposes a constrained runspace.
+This also allows you to expose proxy functions with additional input validation and logging, rather than giving the remote user "full control".
+Does removing the right to login also remove the right to execute a Remote Powershell session?
+So if you want to prevent that user from logging in to a computer interactively, deny him or her the ability to log on to the console and deny the ability to log on through Remote Desktop.
+Do this through either the local security policy, or through Group Policy if the computer is in a domain.
+This means the user account will still be able to establish a Powershell Remoting session, but will not be able to log on to the same computer interactively.
+It's the same approach used by the PowerShell v5 "JEA" module (Just-Enough-Admin), but you can implement constrained runspaces starting from version 3.0

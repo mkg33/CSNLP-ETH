@@ -1,0 +1,9 @@
+You could try to use the debug command in Windows commandline ftp. Perhaps it will show you some extra information which leads to the solution.
+The way our FTP server (proftpd) works is that it listens for connections on port 21, and then *once connected, bumps the connection up to the 60000 range** (set in proftpd.conf as PassivePorts)
+It might help to check which ports you're blocking for incoming traffic.  I'm pretty sure FTP only uses 21 for incoming connections (i.e. you can connect to something, but you can't dir on it).  
+I think, I've got the same annoying problem at my office with IPtables, except we know it happens and don't want to fix it. 
+Our NAT was originally set up to only forward port 21 to the FTP server, and we saw similar behavior to what you are seeing.
+By restricting PassivePorts to a specific range, and forwarding that range in the NAT configuration, it solved our problem.
+It could be easily tested however by temporarily NATting all ports, and seeing if it resolves the issue.
+The little-bit-of-text that does get through suggests it might be some sort of MTU problem.  The best way to move forward is to install Wireshark on the gateway and capture all the traffic involved in the FTP connection.  If you see a large packet being sent multiple times, it's MTU.  Otherwise, paste the trace somewhere and someone can interpret it for you, if it isn't clear to you.
+I'm pretty sure that the port you get in return is negotiable, so it might be a good idea to scrap FTP and use SFTP in this case if you can.

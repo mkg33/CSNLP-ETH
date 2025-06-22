@@ -1,0 +1,9 @@
+MysqlRepositoryFactory is not specific to your MySQL implementation at all - just call it your RepositoryFactory.
+Why do you even have a variable _disposed if it is only ever assigned to once as soon as the objects do get disposed?
+The way your design works, you could not ever use the same unit of work (and transaction) for two or more service calls.
+Those nitpicks aside, I would argue that the responsibility of creating, committing and disposing the unit of work should be somewhere else.
+One usual way of solving that with ASP.NET is to create the unit of work once for every ASP.NET request, inject it into the services/repositories directly, and commit it in Application_EndRequest.
+Furthermore, you would end up creating a lot of duplicate code if you do that for every public method of every service.
+Instead of an ApplicationException, your application would be better off throwing an InvalidOperationException, since that actually tells someone who uses your library a bit more about the problem.
+In a Windows service or WinForms app, you could still scope the unit of work for every logical action in - which might still span over more than one service call.
+Apart from that, GetRepository<IUserRepository> should not work in the current version, because it is limited to classes?

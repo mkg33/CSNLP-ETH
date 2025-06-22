@@ -1,0 +1,16 @@
+Alternatively, can you double check that when you set a window size greater than 256 with the -w flag, that it does actually get sent "on the wire" by verifying with tcpdump/Wireshark?
+You should make sure you are using paravirtualised virtio network interfaces, and that the VMs are on the same bridge.
+To reason about network performance you really need to get the best case performance up to the point where hardware is the limitation.
+Receive window sizes (rwin) will increase and decrease automatically during a TCP session depending on how lossy the connection ends up being.
+Look at the RTT and CWND to get information about actual runtime window size.
+Also, use -i 0.1 to get sampled values as these are dynamic.
+As window size doesn't appear to be restricting the bandwidth, is there anything else which could be consuming it - are you performing these tests over Wifi?
+With iperf 2.0.9, -e on the client will give the RTT and CWND (Linux only).
+If these values are larger when you're not setting -w, you know the answer, i.e.
+It is therefore possible that when you omit the -w flag from iperf the window size is being dynamically scaled higher than your static values.
+As an aside, you have a serious throughput issue if you are only getting 250Mbps between VMs on the same host under the most favourable circumstances.
+Based on that graph however it appears that your bandwidth caps out at 70Mbit or so and raising the window size isn't having any impact.
+These day we automatically tune the amount of RAM assigned to TCP buffers (aka the maximum TCP window size), and by specifying the window size you are turning off the automated tuning.
+The flat-topping at around where the bandwidth-delay product would be about 64KB suggests to me that a suitable Window Scale Option isn't being negotiated, therefore the effective TCP buffer is held at 64KB.
+Other ways to get these is using tcpdump and tcptrace.
+Remember that maximum theoretical throughput is rwin/delay.

@@ -1,0 +1,9 @@
+select @backupSetId = position from msdb..backupset where database_name=N'''+@DB_name+''' and backup_set_id
+Another approach is to build a WHILE... loop structure to handle this.  This does not rely on the cursor engine in SQL Server to handle your logic and can give you better reliability for getting all your databases(this is incomplete code, you will need to add backup/error handling logic to make it work):
+These are two approaches if you decide to move forward with writing your own scripts for backups.  Overall, I would strongly recommend you check out Ola Hallengren's backup scripts.  They are highly recommended by members of the community, well documented, and thoroughly tested.
+I have found using the FAST_FORWARD option is much more reliable for iterating each item in a data set.  Also, it can have other benefits.
+Use a Maintenance Plan to do the backups on a schedule. SQL Agent will log the scheduled job' s execution results.
+I have an alternative suggestion, applicable if you are running an edition of SQL Server rather than Express.
+The problem may actually be that in using your cursor, you're not encountering errors, but databases are simply getting skipped.  I have had situations in the past where a default cursor will skip records.  I've never been able to determine the cause, but I have found some ways to handle it better in the code.
+One is to put some better definition around your cursor declaration.  Since this kind of cursor will always iterate forward, you should declare it as such:
+However, it looks like you could possibly be getting either an empty string or just a partial result with:

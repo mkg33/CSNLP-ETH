@@ -1,0 +1,8 @@
+Load only the modules you need and make sure to load mod_expire and set expiry dates for your image files if they are not going to change.
+Also you need to increase your max open file descriptors in your config file, otherwise you will get errors in your logfile and your server will hang.
+This Lighttpd server will need to very quickly serve different image files (say about 500 requests per second).
+This page explains the file descriptors setting and contains useful information for tweaking your kernel tcp performance as well: http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_Performance
+You should not need to setup memcache, your kernel virtual memory management should be able to use your ram to automatically speed up your server out of the box.
+This page details setting up mod_expire: http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs_ModExpire
+What would be the best way to setup an efficient lighttpd server that would only be dedicated to this task?
+I would suggest you try looking at only setting up proper expires on a lighttpd server running on port 8080 or so, then put a dedicated http cache solution at port 80 in front of it. Varnish being my suggestion cause of how widespread and well performant it is. Right from the start it will work good with your expiry headers holding a server cache for as long, only if you have cookies involved on the image host you will need a tiny bit of special configuration.

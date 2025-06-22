@@ -1,0 +1,20 @@
+All of my desktops work perfectly, except for one, which was recently rebuilt.
+The computer 'example-config.cfg' preference item in the 'Default Domain Policy {31B2F340-016D-11D2-945F-00C04FB984F9}' Group Policy object did not apply because it failed with error code '0x80070040 The specified network name is no longer available.'
+The only thing that's different about this desktop is that the hardware is different (NIC, Gfx, motherboard etc.)
+For some reason, this loses the ability to be able to access the network share while it is updating its Computer group policy.
+How would I go about diagnosing what the problem is here?
+The strange part of this is if I RDP to the desktop, I can navigate to the network share containing the config files just fine.
+If I switched my network share to a Windows box, the problem was fixed.
+I noticed this because all of the GP-managed config files were missing from the desktop, and a bunch of entries existed in the EventLog similar to:
+I have no idea why this is the case, but I'll make sure that all my GPO files are hosted by a Windows box in future.
+There's a couple of group policy items set on these, and some of these involve copying files from a network share locally (things like config files etc.)
+The gpupdate process then runs for far longer than usual, and once it's complete I can access the network share again.
+Move the computer account to the right OU, wait 15 minutes, then boot again.
+The network share is accessed through an IP address, rather than a DNS name (I know, I know), so I don't think this is a DNS issue.
+Detach the box from the domain and reboot, rename it MACHINEA or something and reboot, then reattach it and boot again.
+I have a kind of solution, but it's not a very satisfying one.
+The PC connects to the network shares for part of Group Policy using the computer's account.
+I've got a bunch of desktops that are members of a domain.
+About 90% of the time that sorts out GP issues at the Computer level.
+The network share was being hosted by a Solaris 11 box, running the SMB daemon.
+However, if I open a cmd prompt and hit gpupdate /force, I'm suddenly not able to access the network share.

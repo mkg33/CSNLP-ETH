@@ -1,0 +1,14 @@
+I would take a look at Jet Profiler for MySQL - It'll show you what queries are using the most cpu (among many other things) and suggest improvements.
+Beyond that you may want to configure graphing of mysql performance in Munin or another graphing solution.
+The idea there is that all of your database reads will be directed towards the slaves, and the writes to the master.
+With that high of concurrency, you really ought to look into something like memcached.
+When implemented correctly, it can greatly reduce the load of your database servers by caching (in RAM) frequently-accessed bits of content.
+You may also consider spinning up a mysql slave or two.
+Hard to know if any anomalies or long term trends in mysql performance exist without something like this.
+At this point restart mysql and let it run for a few hours; so as to have representative performance values available.
+You might want to start by using one of the example config files in /usr/share/mysql.
+There are several to chose from depending on the system resources available.
+Turn off storage engines that you aren't using as well:
+Integrate any already customized options from your existing my.cnf into the example config.
+Of course, your ability to do this somewhat depends on the application code and its support for clustered database systems.
+Then, as was recommended previously, download and run mysqltuner.

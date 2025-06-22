@@ -1,0 +1,10 @@
+What you can get away with depends on your performance and capacity needs are, constrained by things like how many disks fit in your array and how much you want to spend powering it.
+You might get 100 random IOPS out of a spindle, with lower cost per GB.
+Even the best spindle arrays have difficulty getting low single digit ms response times for a cache miss.
+We're using LVM on them, so iostat shows numbers for both the logical volume and the physical disk, and they often don't match at the transaction level, and I'm trying to decide which metric matters: tps or total blocks read+written, and for the physical drive or lv?
+If you want, say, sub 1 ms response times, that implies solid state.
+Random IOPS, as each VM is doing IO to different parts of the underlying storage.
+I'm trying to analyze server requirements for a set of virtual machines.
+The sum of TPS of the physical volumes approximates the IOPS.
+Much more out of solid state storage, with lower cost per IOPS.
+My guess is physical drive total blocks, but tps will take into account seeks that blocks won't, which will be important as the key decision is whether or not we can get away with running these on an array of spinning disks instead of the flash drives they currently are (we're about to double the storage).

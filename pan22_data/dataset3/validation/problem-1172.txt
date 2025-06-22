@@ -1,0 +1,29 @@
+Note however: I'm using Btrfs on a single SSD, there's no RAID in my case and I don't know if it makes any difference (I'm counting on your feedback).
+The SSD doesn't know which blocks are really free, you need to trim it.
+I've never had a problem of this type with a Btrfs filesystem on a HDD, but I've had the same on my SSD.
+That will balance the first 10 data and metadata chunks that are less than one quarter full, which should complete in a few seconds in most cases.
+To help compact things completely, repeat the above command with increasing values for the -dusage option.
+The second command should trim a lot of space this time.
+/dev/sda                          448G  135G  313G  31% /mnt/ssd
+Inside the filesystem 133.29GiB is used by actual data though.
+But when I'm trying to copy 10GB test file system say no disk space on this device.
+The total values indicate how much space has been allocated to that type of chunk, while the used value shows how much space is in use within those chunks.
+I think this whole space is "in use" as long as fstrim is concerned.
+Balancing the filesystem should shrink it and only then fstrim is able to do its job.
+Once a chunk has been allocated, the space in that chunk can only be freed by moving all the data out of it.
+In your case, you have 446.32GB of space allocated to data chunks (almost the whole disk based on regular df and btrfs filesystem show output), but only 133.29GB of that space is actually in use.
+I usually bump it by 5 each time up to about 50 (past 50, you're usually wasting time).
+That's why I've learnt to perform the above maintenance periodically, especially before apt-get upgrade.
+You can help head off issues like this in the future by running something like the following regularly (I usually run it daily on my systems):
+To recover from this, you'll have to run a balance.
+So, what exactly does this mean in terms of your filesystem?
+That will remove all data chunks that have no actual data in them, which may be enough to get things working again for now, but will still leave you vulnerable to the same problem in the future.
+Given this and the symptoms described, BTRFS is trying to allocate a metadata chunk but has no space to do so (because all the free space is inside already allocated chunks), so you're just getting an error instead.
+The first stage allocates large chunks of space (actually called 'chunks' in most of the documentation) which get used for exactly one type of allocation, either data (used for the data in files only), metadata (things like file names, directory structure, access times, ownership, permissions, etc), or system (used solely to store data about chunk allocations).
+The usage filter (specified above for just processing data chunks) will tell balance to select chunks that are only at most that percentage full, so by incrementally stepping it up bit by bit, you can more easily compact things without running into other issues.
+But when the problem happens fstrim -v /mnt/ssd shows almost no space being trimmed!
+To understand what's going on here, you need to first understand that BTRFS uses a two-stage allocator.
+A balance quite literally sends all the data from selected chunks (or all of them if you pass no options) back through the allocator, which has the net effect of freeing up empty or mostly empty chunks because it packs things back into partially full chunks.
+Well, your output from btrfs filesystem df shows the following:
+About the confusing part: Btrfs as a filesystem can enlarge or shrink itself inside a device (or devices) assigned to it.
+After this my free space is really available to me.

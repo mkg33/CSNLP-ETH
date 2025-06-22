@@ -1,0 +1,16 @@
+I used the basic iostat (iostat -h) tool to get an idea of how many iops I was currently using.
+You could do some back of the envelope calculations to approximate the number of I/Os per insert, multiply it by the number of transactions per second, add in some buffer room etc, but it's much easier to just test it.
+The easiest thing to do is to allocate a best guess, then go back and increase or decrease it to match you're real world testing.
+I say start out with the bare minimum of  100 IOPS and scale up if necessary.
+For me that worked out to 780 IOPS so I went with 800 IOPS.
+Again it's just a guess though as the specifics depend on the number of indexes and whether your traffic flow will be smooth or spikey.
+Each transaction will do somewhere between 1-5 IOP (primary insert plus a couple index tree inserts) so let's say ~35/s.
+With EBS volumes you can't just increase the number of IOPS, you'd have to scale up the size of the volume as well1.
+There will be some downtime but if you're data isn't huge it shouldn't be much as it'd be a raw copy.
+KB/t helps you determine if the amount of the transfer is less than the chunk size, 256 KiB.
+I use iostat to determine the amount of IOPS my application is performing.
+You can always just create a new volume and copy your data over.
+Burst Bucket Metric Now Available for Amazon EBS General Purpose SSD (gp2) Volumes
+From that I extrapolated how much I'd use if I was under 4 times that amount of load and went with that amount.
+The size of each row isn't particularly relevant as it's less than the size of a single I/O (4K).
+This is one of the luxuries of using a cloud based environment, hardware changes are low in capital costs and such changes usually require only config updates.

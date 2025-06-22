@@ -1,0 +1,12 @@
+I would be very wary of doing anything CPU intensive on a micro instance.
+because if it doesn't, SSL Handshake/Negotiation block reads on /dev/random instead.. which is bad for a micro instance really.
+Oddly enough, Chrome also says that the site's certificate is invalid, but far as I am aware the certificate is (and was before this all happened) valid.
+Recently, I had about 5k hits in about 40 hours, and after a little while,the SSL site hung on request, with chrome returning a timeout.
+On an EC2 small instance (or better), the CPU resources are guaranteed.
+Since CPU resources are on-demand, if/when you you do something demanding for a substantial amount of time (doesn't have to be that long), your processing power will be throttled.
+I'm running Nginx on an Amazon EC2 micro instance, with some some backend node processes and mongodb.
+I restarted the VM, and that did let the site load, but now it still hangs upon requesting the SSL site.
+(I did not edit configuration before or after the restart).
+You will be able to see this as stolen CPU cycles when running vmstat or top (%st is the column to look for).
+We avoided this issue before by using Ubuntu 11.10 on EC2 micro instance.
+So next time when nginx is being unresponsive, check to see if you are getting stolen cycles.

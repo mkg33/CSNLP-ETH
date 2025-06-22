@@ -1,0 +1,13 @@
+My doubt is basically if on situation 1, only table A is going to be locked, and if on situation 2, only table B is going to be locked.
+Now if you go up higher into Read Stability (RS) or Repeatable Read (RR), then you start to get into where it will lock more rows in the result set (and even the whole table in a join case)....
+If possible, I'd like to know where IBM is keeping this information.
+I'm guessing this is not likely (or at least hopefully someone didn't write the view that way....) and you are using CS, in which what I explained at the beginning is more likely how it behaves.
+So if the default is CS, but the view was built with a SELECT that uses RR, then you are using RR and probably locking on all rows in both the result set and all rows utilized by the engine to create the result set.
+What would be the locking behavior when executing an UPDATE or INSERT statement in the following situations:
+All other rows are not technically locked in any sort of way.
+Consider I have a View that is merely a simple join between 2 tables, selecting all columns.
+I’ve searched for the answer in IBM’s documentation, but couldn’t find an appropriate answer.
+The short answer is that it depends on the isolation level of your connection and/or statement being run.
+If you are taking the default isolation level (which is usually Cursor Stability - CS) in DB2, then I would assume it only puts a lock on the actual rows being modified (as an update lock) and it puts a read lock on the row currently being held by the cursor.
+You may wish to check out the Isolation Level settings in the DB2 Information Center, as this will give you a better picture of how it will act.
+Also note, even though there is a default isolation level for the connection, this can be overridden in the session, as well as at the statement level, including the underlying statement that builds the view.

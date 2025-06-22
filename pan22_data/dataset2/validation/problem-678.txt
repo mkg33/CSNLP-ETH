@@ -1,0 +1,10 @@
+If the amount of data to be replicated outpaces the available bandwidth, the replication is not going to be very successful at all. Therefore high bandwidth would be important.
+If you're doing replication of individual transactions (can be done through different means with different database engines), you may be generating traffic that is bursty small packets.
+When considering the placement of an offsite slave database, which is more important in a network connection for maintaining up-to-date replication: low latency or high bandwidth?
+However, low latency would be important if you are making lots of small updates. So, it depends on whats being written to this DB.
+This might depend on how much activity your database is going to receive, or changes that will be produced on the source db.
+That depends on the database, the type of replication, and quantity of data being replicated (workload / transactions per unit of time, log updates, etc).
+Log shipping usually means that your unit of replication is fairly large (multiple KB), and you're probably going to benefit from more bandwidth moreso than lower latency.
+My general rule of thumb for this is that you want a lower latency connection for an OLTP-type system [online transaction processing] with active mirroring (lots of small transactions) or an actively mirrored ODS [operational datastore], but you will want a higher bandwidth connection for a data-warehouse (or any other kind of setup) where you are mirroring in batches.
+Your best bet is to mock it up in as close to a real-world implementation as possible and measure. You can talk to people using similiar software and having similar workloads to get a feel for scale. In the end, you're going to probably need to do it to see how it works.
+If there will be a large amount of data changing on the source db then I would opt for higher bandwidth to keep up with the changes. 

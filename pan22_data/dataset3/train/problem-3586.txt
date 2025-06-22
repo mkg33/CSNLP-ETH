@@ -1,0 +1,38 @@
+See, this is all hard-coded, and I'm not about to get into the deep details of this process here.
+There's nothing stopping you from mapping things in another way.
+The trick here is to realize that this projection is no different from the kind of projection you use to render.
+But the actual math itself, the formulas you use, are all identical.
+Division by a coordinate is not a linear transform, and it is this division that makes perspective projection non-linear.
+When you do projection texture mapping, you're projecting a portion of a 3D scene into a 2D texture image.
+To do the projection, we apply another 4x4 matrix transform, leading us into 4-dimensional clip-space.
+In the latter, you're using the post-projection positions as texture coordinates.
+A texture mapping is the "mapping" from a surface into a texture image.
+Because the next step after the VS is dividing the position by the 4th component, the W component.
+Indeed, OpenGL even has special Proj texture accessing functions which take that W component, so that you don't have to do the perspective division yourself.
+Of course, since 4x4 matrices can be composed, we can do this with a single matrix multiply of a composed model-to-clip-space matrix.
+A "projection" is merely the transformation of a position from one dimensionality to another.
+That is, each vertex has a texture coordinate, which says "for this position in space, get your texture data from this location in the texture."
+But this is merely one particular kind of mapping.
+Oh yes, you will use different camera and projection matrices than the one you use for rendering.
+Instead of projecting the scene onto a screen-sized area, you're projecting it onto the [0, 1] normalized texture coordinate area.
+Between a triangle's vertices, the texture coordinates are interpolated, creating a smooth mapping across the planer surface.
+All of the math for doing projection texture mapping is exactly the same as you would use for rendering.
+And since we're casting a 2D image over a 3D scene, that sounds like "projection", since we're changing dimensionality.
+So we have to perform projection: we take the 3D scene and project it onto the 2D image.
+This is done with a 4x4 matrix transform, going from model space to camera space.
+When you render, you're projecting a portion of a 3D scene into a 2D screen image.
+That division, called the perspective divide, is important.
+Now, before we do the meat of the projection operation, we generally want to transform the positions into a space relative to the camera.
+At that point, we're done with the vertex shader, because OpenGL or D3D will do the rest of the projection work converting from a 4D clip-space position into a 2D screen-space position.
+When it comes to triangle rasterization, the texture mapping is typically created on a per-vertex basis.
+First, let's talk about what "texture mapping" means.
+Since we're computing texture coordinates, we are performing "texture mapping".
+We want to compute texture coordinates for our objects so that it appears that a texture is projected over the objects in the scene.
+When you render a 3D scene to the screen, you are performing some kind of projection operation.
+Your surface is defined by vertices, and each vertex has a position.
+In the former case, you're projecting to do rasterization.
+In our case, from 3D space into a 2D space, namely the screen.
+Perspective projection is not a linear transformation, and a 4x4 matrix can only encode linear transformations.
+We have 3D points, and we want to do stuff on a 2D image (namely, the screen).
+So we set the W component to the value that needs to be divided in order to do perspective projection.
+OpenGL/D3D does this step for us automatically when rendering.

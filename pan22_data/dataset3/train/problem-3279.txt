@@ -1,0 +1,30 @@
+As others have noted various vendors have toolkits for this, but to really answer what is involved, we need a lot more information about what traffic you have, what problem you are solving, and what tools you have available to you already.
+For centralized monitoring, NetFlow is probably your best bet.
+Cacti (free) may have support for the "Weather Map" report that you are looking for.
+I assume you are asking about prioritizing traffic based on specific aspects of the application layer control protocols (btw, I use TCP/IP terminology rather than OSI ones when discussing TCP/IP because IMO the OSI model does not map to TCP/IP as well as one might think --- for example try to understand how H.323 fits on the model, both as originally designed and when over TCP/IP).
+Needless to say different application protocols will have different requirements and possibilities.
+How would you classify the traffic and actively monitor and respond (dynamically prioritizing traffic)?
+I think this depends heavily on the platform on which you want to accomplish this.
+How can one perform quality of service based on layer 7 traffic?
+There are various free and paid tools that can collect and report this data (the router pushes this data to your management station).
+NBAR is the Cisco feature that is capable of classifying traffic at layer-7.
+For example, IOS uses NBAR to classify transit traffic, primarily for QoS and security mechanisms.
+To do this you need either routers or the like which can understand the protocols you wish to shape traffic based on.
+Are there any solutions which provide a kind of weather map?
+But as far as I know, NBAR QoS configurations are entirely static.
+The bundle simplifies deployment of the NFDUMP capture, dump and analysis tools and gives you a nice frontend to view it all in and make graphs for management.
+For monitoring of traffic Netflow & NFSEN is your friend.
+I have never done this so I cannot comment on how easy or hard this is.
+Again there are many tool options and Cacti is a good place to start.
+Also for monitoring you may want to look into a reporting tool that uses SNMP to gather the usage and drops from your traffic classes.
+For custom applications you need to write your own PDLM.
+This is way too broad, but here is an effort to answer what I think you are asking.
+It would be advisable that you configure your device with 'snmp mib persist cbqos' if you go that route (this keeps your ifIndex values static across reboots).
+For this reason, it depends on the platform, the protocol, and what you want to accomplish.
+As a simple example, maybe you want to prioritize TFTP requests for PXE booting over other TFTP requests, or perhaps you want to prioritize H.323 signalling of some types over others.
+I have personally found the IP addresses and/or ports have worked well for classifying my traffic into my supported traffic categories.
+As far as monitoring goes I would agree with Jeremy that NetFlow is the best feature to use.
+These routers then need to be able to inspect the packets deeply at least when required, and then shape the traffic based on what they find.
+NBAR uses something called a PDLM (Protocol Description Language Module) which is basically the logic for determining is traffic is a match.
+This feature allows the use of the 'match protocol ...' command within your class-map so that you can then take action, such as marking the DSCP value or policing, the matching traffic.
+What follows is more information concerning Jeremy's answer above.

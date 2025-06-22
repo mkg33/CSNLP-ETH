@@ -1,0 +1,7 @@
+I have not yet tried the new LVM segment types, but the overview is that they are support for the Linux MD RAID personalities in LVM. That is, they are RAID levels 1, 5, 6 etc. using the MD code with the eventual goal of removing the duplicate functionality of LVM's mirroring and having both MD and LVM use the same code.
+This is very new stuff so may not be appropriate for a production setup yet.
+For example it is still considered a technology preview in RHEL 6.2:
+http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/6.2_Release_Notes/storage.html
+The practical difference is that the 'raid1' mirror segment type always stores its logs (in fact, metadata subvolumes) on-disk on the same PVs as the lv being mirrored. You no-longer need a third pv for the log, or to store the log in-memory, and consequently the --corelog and --mirrorlog disk/core/mirrored options to lvconvert are not applicable to the raid1 mirror segment type.
+Another practical difference is that you need an additional 1 PE on both PVs (original and mirror) in order to store the log(s), allocated when the mirror is created.  If you see an error like 1 extents needed, but only 0 available when trying to create a raid1 type mirror with lvconvert, this is probably a failure to allow 1 PE additional space for the log on each of the PVs.
+Since about September 2013, raid1 has been the default mirror segment type in lvm2.

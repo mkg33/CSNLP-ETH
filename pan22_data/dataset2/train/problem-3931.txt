@@ -1,0 +1,13 @@
+Accordingly, NGINX's documentation advises against disabling proxy_buffering, as it will potentially waste upstream server resources.  
+I have a "single page" web application which requires bi-directional communication between client and server.
+However, because my clients use XHR Streaming, my server is already obligated to hold an HTTP connection open for each active client (right?).  Therefore, disabling proxy_buffering shouldn't negatively impact my Tomcat server; is this correct?
+I can very reliably reproduce this issue through experimentation - the behaviour is deterministic, but I can't explain the relationship between the configured buffer size(s), the size of data being transmitted, and NGINX's behaviour.
+Therefore, I believe that NGINX's buffering policy is fundamentally incompatible with my use case, and plan to disable proxy_buffering; is this wise?
+The application was originally designed to rely on WebSockets, but has been modified to use SockJS, with WebSocket support disabled.
+NGINX only sees a long-lived HTTP stream; dividing the stream's contents into individual command responses (for immediate despatch) would require NGINX to understand SockJS's proprietary protocol, which it can't.
+My observation is that data pushed from the server (a response to a client's request) might sit in NGINX's buffer until the next server-generated SockJS heartbeat occurs for that client.  The effect of this is a delay of 25 seconds transmitting the response to the client!
+NGINX's documentation does not adequately explain the behaviour of the buffer: it is not obvious under what circumstances the buffer would be flushed (i.e. when data would actually be pushed to the client) if data is being streamed (from Tomcat) over a long-lived HTTP connection.
+Clients, using the SockJS library, tend to use "XHR Streaming" as a means of bi-directional communication.
+My server's responsibility is to generate responses to clients' command invocations; each response will vary in size (from a few bytes to tens of kilobytes), but is self-contained.
+The server is a Java web application, using Spring's implementation of a SockJS server (from Spring's WebSocket module), hosted in Tomcat.
+NGINX's documentation suggests that if proxy_buffering is disabled, the upstream server (Tomcat) will be forced to keep the HTTP response open until all data has been received by the client (which seems a reasonable definition of buffering!).

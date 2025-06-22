@@ -1,0 +1,6 @@
+But there is the concept of Initiator - this node will be the node who receives the connection and will compute the query plan, divide the workload among the nodes and then gather the result sets and format the output.
+As for the multi-read and multi-write. Vertica is fully ACID complaint, this articles will give you more info.
+https://my.vertica.com/docs/7.0.x/HTML/Content/Authoring/ConceptsGuide/Other/Transactions.htm
+As noted in another answer, a Vertica cluster doesn't have a single master but has an initiator node that manages an operation using multiple nodes.
+Vertica can parallelize a load if the data is available to multiple nodes.  Nothing's going to help you if the data you want only exists on one local file system, but if it's in a shared location, you can take advantage of that.  See the documentation of the COPY parameters "ON ALL NODES" and ON NODE {node-set}" -- guide, reference.
+While you might not want to write your own data-loading extensions, you might also find the UDx documentation on load-parallelism interesting.

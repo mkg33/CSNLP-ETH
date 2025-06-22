@@ -1,0 +1,9 @@
+In looking at New Relics information on long-running processes there is no information provided that would suggest any php processes ran for 20+ minutes, however, these processes were killed manually which may be why they're not visible within New Relic - I believe it may not record processes which are killed.
+Are there any tools, or other information I am overlooking here which may help me in my search to determine which particular process is causing this issue?
+We have CloudWatch monitoring setup to notify us on slack when average connections go above 40 for more than 5 minutes (normally connections don't go much above 10).
+I'm trying to figure out what is causing my system to open a large number of PHP threads. This issue has occurred 3 times over the last 2 weeks, and is capable of crashing our application if undetected for several hours, as once it opens up 300 database connections it prevents anyone further from connecting.
+The primary identifier that something is going wrong is high number of database connections, as shown by this graph:
+Looking at New Relic I can also see that the number of php processes steadily increased by 1 per minute. This is on our operations server which just handles background processing and tasks, and does not handle any web traffic.
+The last time this happened I could see all the php threads running, and could see they had been running for some time, but had no idea what they were doing or how to find out what they were doing, and to prevent the database from becoming overloaded I had to kill them all.
+While this issue has now occurred 3 times, I'm still unsure what is causing the problem or how to debug what a particular running php thread is doing.
+The application is based on CakePHP 2.X, is running across multiple EC2 Instances, which share an RDS database.

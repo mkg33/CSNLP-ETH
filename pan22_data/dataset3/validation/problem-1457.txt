@@ -1,0 +1,18 @@
+If BindsTo is used, whenever svc-init is restarted, this service will be restarted as well.
+Assuming you can't get rid of the scripts and have systemd do all the setup itself (which you almost certainly can, but whoever wrote the scripts might not know how; yell at the vendor/developer until they learn) I think you should be using only one unit file for this.
+The unit will fail to start if the program called here fails to exit successfully.
+Configured like this, when svc-init starts from a stopped state, it will wait to trigger any svc instances until after svc-init finishes launching (Before/After) and will only do so when svc-init finishes launching successfully (BindsTo).
+If svc-init is given a stop command, all svc instances will be stopped at the same time as svc-init (BindsTo).
+In a single unit file, you will run the init script in an ExecStartPre= option.
+BindsTo tells systemd that if the named service is stopped for any reason, this one is too.
+If svc-init is given a restart command, svc-init and any depending services will be stopped and then started.
+Either of these is a stronger version of the Wants you list in your examples.
+Systemd can be hard to reason about, but this seems like a good experiment to try:
+Before tells systemd that svc-init needs to be all the way done before any named service will be started.
+Using it with an After or Before declaration ensures that this stopping happens in the correct order.
+This should give you your explicit must-complete ordering.
+After mimics the Before in the svc-init service, and may be more convenient for you.
+Once that is done, then any svc instances are started.
+If svc-init is intended to launch-then-exit, you might need a SuccessExitStatus= declaration in its Unit section to tell systemd which exit-codes are expected on a successful launch.
+Depending on your needs, you may want to use Requires instead of BindsTo, since Requires indicates that only stop this service when the named service is explicitly stopped.
+Declaring it in both places is not an error, nor is it required.

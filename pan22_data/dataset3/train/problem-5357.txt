@@ -1,0 +1,19 @@
+In general caching works poorly with dynamic content, especially with content that contains things like "recently viewed" that will change every singe page load.
+I think for content like this caching is best done in the application itself.
+However you can do more caching at the layers upstream - with WordPress specifically, it has a decent pluggable object cache.
+I've had very good performance results using NGINX microcaching.
+If you really want to use caching then the first step is to disable that plug in so that there's a theoretical chance that someone might be served the same page twice.
+However, I'm still not sure how to best handle server responses that have the Set-Cookie header.
+woocommerce_recently_viewed cookie would be updated on each product view so all subsequent requests to other products would cause the server to include the Set-Cookie header.
+Some default caching configuration that I'm using with my NGINX includes this:
+This means, that while the page itself won't be cached, you can store much of the database load within a ephemeral store such as memcached (batcache) or redis.
+These KV stores are much faster than MySQL, and since they work at the object and application level, they are not directly impacted by the cookies sent by WooCommerce.
+For example, when you visit an avarege e-commerce site running WooCommerce, theses cookies would be set upon your first visti:
+The application should understand which parts of the webpage are dynamic and need to be regenerated every page load, and can assemble the webpage from new and used parts to give the user the correct response.
+If the answer is negative and Set-Cookie responses should always by-pass the caching layer, this would have very negative consequences on performance.
+If I include woocommerce_recently_viewed cookie in the list, the cache would be by-passed most of the time.
+Should Set-Cookie responses be excluded from caching this would mean that cached content would never be served for a first visit in any e-commerce store.
+From that point on, you will have to stop caching once the session cookie has been created (otherwise, if the customer only hits the cache for a while, the session will expire on both the customer and the server sides).
+The second step is to only start a session when someone does something that requires one: logs in, puts an item in their cart, etc.
+Also, when browsing products on a WooCommerce store, the plugin would set woocommerce_recently_viewed=xxxx cookie.
+DerfK is right about dynamic content at the full page level, you absolutely don't want cookie leakage to occur.

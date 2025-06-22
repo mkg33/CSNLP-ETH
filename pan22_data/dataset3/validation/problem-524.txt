@@ -1,0 +1,12 @@
+balance-xor may or may not require switch configuration.
+You need to set up an interface group (not LACP) on HP and Cisco switches, but apparently it's not necessary on D-Link, Netgear and Fujitsu switches.
+You may need to tweak various settings (miimon, updelay) to get stable networking.
+Most of these points are quite thoroughly described in the /usr/src/linux/Documentation/networking/bonding.txt documentation file from the linux source package of your favorite distro.
+balance-alb and balance-tlb may not work properly with all switches; there are often some arp problems (some machines may fail to connect to each other for instance).
+Speed of failover is controlled by the "miimon" parameter for most modes, but shouldn't be set too low; normal values are under one second anyway.
+802.3ad absolutely requires an LACP group on the switch side.
+So when aggregating GigE interfaces, a file transfer from machine A to machine B can't top 1 gigabit/s, even if each machine has 4 aggregated GigE interfaces (whatever the bonding mode in use).
+Note: whatever you do, one network connection always go through one and only one physical link.
+balance-rr, active-backup, balance-tlb and balance-alb don't need switch support.
+It's the best supported option overall for augmenting performance.
+balance-rr augments performance at the price of fragmentation, performs poorly with some protocols (CIFS) and with more than 2 interfaces.

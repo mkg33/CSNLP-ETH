@@ -1,0 +1,25 @@
+(for the sake of this question, I'm ignoring if this is a good approach to threading...  another example could be that this is a transaction context.... or some other wrapping context ).
+However for clarity you may want to assign the lambda expression to a Func or Action variable, and then do your threading code.
+In my opinion no preferable answer can be given without seeing the exact code.
+This would help in making the threading code easier to understand on sight without mixing in the details of the actual code that is being threaded.
+If the code of the thread is and can only be used locally, I would leave it in there regardless of the LOC.
+This provides for better encapsulation, which is a core principle of OO which makes it shine.
+Even if it is only used once, a name would be a good way to describe what is this lambda doing and it would be way more significant than a comment or something like this.
+If it makes sense to test the code separately (and if its more than line or two, it probably does), then it is much easier to test properly using a separate method than a lambda inline.
+ignoring the splitting things into smaller methods debate...  the code is already in a method.
+If you put the thread body in a separate method, then you can test it's logic separately from the threading logic.
+Also as a sidenote; I realize you probably just named your code as to get the idea across, but I'd make sure the name of Method would indicate it only starts a certain action, but doesn't finish it.
+I find that this applies to most cases where lambdas are used.
+This avoids all the difficulties and pitfalls of trying to unit test threaded code (starting, stopping, waiting, etc).
+Setting aside the debate of short vs. long lambdas for a moment, something I don't see mentioned in any of the other answers yet is testability.
+I think that a method this long really deserve a name.
+Its easy to see this from the perspective of 'lambdas' and have a rule that lambdas should be short and to the point.
+But in this case its more using the utility of lambdas to wrap threading around a chunk of code.
+So there is utility in using lambdas to wrap contexts around chunks of code without having to break them into a separate method.
+But as long as its not an excuse for badly factored code and it seems to make sense given the context of what you are doing.
+The part to do with threading is a tiny amount of the method.
+The lambda is just a construct to make the code multithreaded.
+If the code of the thread were to be reuseable, I would rather think about splitting the behavior in a separate class than in a separate method, unless the code only makes sense in the original class.
+Using a lambda has the advantage that you don't 'pollute' your class with an extra private method which is only called from one location.
+I don't like splitting code into smaller methods just for the sake of making methods smaller, as opposed to Brian Reichle's answer (and many other people that follow this approach).
+In other languages it is not uncommon to declare the method to be threaded inside of the method that is calling it (javascript, ada, f#, etc.

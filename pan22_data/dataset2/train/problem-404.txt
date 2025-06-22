@@ -1,0 +1,7 @@
+Sort data in the descending order, and scan it once, marking rows and columns invalid as you pick up the values. That shall drive the performance from \$O(sZ^3)\$ to \$O(sZ^2 \ln{sZ})\$.
+This does impact readability and maintainability so it should not be used unless the optimizing compiler doesn't do it for you.
+You want to base your register allocations on what is being used most, since k is only used twice it shouldn't be a register. The variables mm, nn, a and b are used the most (sZ * sZ * sZ) so they should be registers. 
+Testing for equivalency of floating points is to be discouraged because of rounding errors (floating point errors).
+First, register assignment isn't guaranteed, it is only a recommendation to the compiler. You want to move your register variable declarations up. The compiler ignores your register allocations when it runs out of registers.
+All of what I'm suggesting here will be done by a good optimizing compiler. Some of what I'm suggesting is computer architecture dependent so you should depend on the compiler rather than doing it if you can. Generate assembly code and look at it to better optimize.
+On many computers counting down (auto decrement) is faster than counting up because decrement and test for zero is one opcode:

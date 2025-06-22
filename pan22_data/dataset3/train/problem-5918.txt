@@ -1,0 +1,33 @@
+In this case, a default constructor doesn't really make sense, so I'd argue for deleting it.
+If you're going to copy a parameter in the body, just take it by value as a parameter and if you're lucky you'll get copy elision - at worst you'll get the same performance.
+I would also remove that unnecessary //FILL comment you have as it is clear from the function name what you're doing.
+Many of your functions can be simplified now that we've included <algorithm>.
+I would look into using some smart pointers to avoid having to worry about this issue(std::unique_ptr).
+Now that we have that header included, we can use it to reduce the size of some of the functions you've implemented.
+If you define a fill function, use it in the constructor.
+I also removed the default-value from the constructor as I think that if we're using a fill constructor, we should be providing it with a value to fill it with.
+This exists in another header already, so you should probably put this into its own namespace instead of the global one, then you can include both of them with somewhat more safety.
+You've already calculated the distance, so just save that as a variable.
+I'm a big fan of private hpp files for the implementation of templated types, it makes the class much cleaner to me.
+Your implementation of empty is questionable at best - if we're assuming that a dynarray is always full then its fine, but in general I'd argue for a distinction between size and capacity.
+Therefore, you should be delete-ing your entire copy, move, and assignment operator functions.
+As it stands, your class leaks memory each time it is copied.
+Anytime I see this, or something similar, I consider it a (small) code smell.
+There are certainly reasons to do this, but I don't know that this one is.
+As a note, the container is intended to be neither copy nor move-assignable.
+I personally don't find it helpful or more readable when people do this
+Technically, your implementation isn't correct but you've addressed that in your post.
+If you do switch to a smart pointer allocator, then you don't even need to provide a destructor as cleanup is done for you by the smart pointer.
+You need to include <algorithm> if you're going to be using std::swap.
+If this is your own personal preference or is required by a style guide wherever you work/code, then don't mind this.
+According to the link you provided, a dynarray is:
+I'd like to see doxygen comments all over the place.
+I'd also like a default constructor, or a deleted default constructor.
+Most of your comments are pretty inane - we can read, and recognize a constructor when we see it.
+I'd like a constructor that didn't fill things up for me
+I understand that you aren't conforming exactly to the specification, however I'd argue that when you diverge from it you should do so with a clear, documented purpose.
+You'll have to adjust the rest of your interface to take into account your new unique_ptr implementation but your implementation is now leak-free.
+adding extra whitespace like that generally isn't more readable imo, but I do know people who feel differently.
+I understand that the interface calls for the data member function, but quite honestly I don't see the point of it.
+You could use some header guards, or #pragma once here too.
+In your copy c-tor, you never delete the memory you're holding on to before allocating a new piece.

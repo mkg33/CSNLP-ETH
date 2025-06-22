@@ -1,0 +1,5 @@
+A third option is the Windows 2000 compatibility mode, where it stores the zones in the main AD container.. but this obviously isn't something you're interested in doing.
+What's best depends pretty heavily on your network's architecture and your DNS forwarding layout.  There's no drawback to using Forest, other than the increase in replication load (still very light), but you'll want to lay things out in a way that makes sense and is clean and easy to manage.
+For the domain zones, AD's default is the way to be.  The _msdcs zone gets put in ForestDNSZones, and each domain's zones get put in DomainDNSZones.
+Say, for instance, reverse lookup zones.  If your root and child domains reside on different network segments, then make a separate zone for each and store it in the DomainDNSZones container.  However, if they're sharing subnet(s), store the zone in the Forest container.
+For something like a zone unrelated to your namespace that you want to hit with internal clients, just pick wherever's easiest.  The one thing I'll advise you not to do is have two copies of the same zone in the different levels of the domain.. that's not fun.

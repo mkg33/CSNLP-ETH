@@ -1,0 +1,8 @@
+You're not supposed to pass an arbitrary number of lights to a shader because it won't work, as you've discovered.  This isn't just a software or API limitation; this is a hardware limitation - each light must fit in GPU register space, of which there is a limited amount (increasing all the time, but still a hard limit).  Adding together the contributation for each light would also cause you to hit limits on GPU instruction counts (not so relevant any more, but it used to be a big deal in the earlier days of shaders).
+So, the main limit is register space, this limit will vary across different hardware generations, and therefore you can't just specify an arbitrary number of lights.  You need to find an alternative solution.
+One method may be to sum individual light contributions across multiple passes - Doom 3 did this, with one pass per light, and it worked well enough there.  On more modern hardware you could sum lights in groups of 2, 4, 8 or whatever, which would get the number of passes down.
+Another method might be to use a deferred renderer instead (Google for info).
+Finally, and if you know that you're never going to exceed a certain number of lights, you can just specify your own hard limit.
+I want to render an arbitrary number of lights in my fragment shader. I do not understand how you can properly pass them into the shader though. For example, I want something like this:
+I've only seen documentation and examples use 'numberOfLights' as a constant and I cant get above to work so I am guessing you cant have a dynamicly sized struct in glsl. 
+So, how are you supposed to pass any given number of lights to the shader?

@@ -1,0 +1,17 @@
+Perhaps the easiest way to sparsify a file in place would be to use fallocate utility as follows:
+They aren't like mpeg or jpeg compression that is lossy.
+For instance - say you had a file that had an average of even 1 non-zero bit per 512 byte block - it can't be written "sparsely".
+Should produce what you want (might even be possible to stick the last step, haven't tried).
+I don't think you can directly mount the resulting images, but going:
+There's now a tool called virt-sparsify which will do this.
+It requires installing a lot of dependencies, though.
+On the other hand, if you need to do random seek reads into the file then compression might be more trouble than it's worth and you're back to the sparse write.
+And trying to write sparse files won't work in all cases.
+If I recall correctly, even sparse files take up a minimum of 1 block of output storage where the input block contains ANY bits that are non-zero.
+I suspect you'll require a custom program written to that spec if that's REALLY what you want to do.
+PartImage can create disk images that only store the used blocks of a filesystem, thus drastically reducing the required space by ignoring unused block.
+A competent C or C++ programmer should be able to write something like that in an hour or less.
+If you've actually got lots of all-zero areas then any good compression tool will get it down significantly.
+It fills up the empty space with zeros and then copies the image to a sparse file.
+fallocate(1) is provided by util-linux package on Debian.
+By the way, you're not going to lose data if you compress the file with zip, bzip, bzip2 or p7zip.

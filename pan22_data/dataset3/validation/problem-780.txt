@@ -1,0 +1,15 @@
+I have created two image files (.img) of my two Hard disks which were RAID0.
+if you don't know the dev name of your disk, you can find out with fdisk -l.
+I'd recommend you start with TestDisk, a partition recovery tool, which should be able to scan your media, identity the partitions, and write a new partition table for you.
+2) Due to the RAID0 does it required MBR from both hard disks or just the first hard disk?
+your MBR is stored on the first block of your disk, so you can grab it with dd (use a linux live CD if you are running windows).
+The only correct MBR (List of partitions) are in my image files.
+failing that, an Intel MBR is 512B long, with the bootstrap code occupying the first 446, and partition table info following.
+Now I need to copy MBR bytes from my image files in order copy them to mentioned hard disks, because I have re-created the RAID0 in those hard disks and now their MBR has faild.
+this is important if you want to restore it to a disk with an existing partition table that does not match the disk the MBR came from.
+1) how can I Read and Copy MBR bytes from image files (.img)
+Since you are using Raid0, be sure to check this howto for determining the physical order of the disks, and how to determine the location of your MBR.
+My RAID0 had failed due a bluescreen crash and then I have created two images from my hard disks and then recreate the RAID0 but I has forgot to backup MBR before RAID0 recreation and its recreation caused the MBR changes.
+the command will take the first 512B block ('bs=512 count=1').
+where /dev/sda is the disk you wish to backup from, and /tmp/mbrsda.bak is the file you wish to store it in.
+in that case you only want to restore the first  bytes.

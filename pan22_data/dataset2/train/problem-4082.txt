@@ -1,0 +1,10 @@
+Puppet does not support this kind of configuration, but the restriction can be easily bypassed. The reason is in two basic puppet "rules":
+you should use standard class (but you can't call it class default as it is a reserved word), a file manifets/01_common.pp:
+We do not need the $venvname and $venvpath variables, they are specified as default values in the definition. The name django-env::er adds the definition into django-env namespace and allows automatic import (see below).
+With these automatic imports and the resource definition, you can define multiple virtual environments very easily. Change node 'centos-dev':
+Files are loaded in an alphabetical order, so you should ensure that "base classes" will be loaded first (numbering might be a good idea).
+er-dev and er-bce-dev both include the class er. But the class cannot be included two times, so er class is executed only with the default $venvname = "er", or with overridden $venvname = "er-dev", but not both.
+The solution: Change er class to a definition (see "Definitions" from Puppet Language Tutorial (http://docs.puppetlabs.com/guides/language_tutorial.html)):
+use rather (resolves classical multiple inheritance problem, so called diamond problem), e.g. defined in manifests/web.pp
+Note: there is a very strong exception to the last rule: Puppet module lookup. include statement does automatic imports in many situations. Here are some of them:
+Puppet syntax evolved, since Puppet 3.7 you'll get a lot of deprecation warnings. Keywords import and inherits are deprecated. Instead of using layout like:

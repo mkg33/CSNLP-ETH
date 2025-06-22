@@ -1,0 +1,6 @@
+I had this problem because I was sent the content of an IIS-style .p7b file pasted into an email.  It has "-----BEGIN CERTIFICATE-----" and "-----END CERTIFICATE-----" tags, just like .pem, and the content uses a similar looking base64 encoding.  I converted it to a *.pem file like so:
+I recently had this issue using Lets Encrypt (letsencrypt) on Windows.  The cert came back encoded as UTF-16LE. Converting it to UTF-8 (using dos2unix) solved the problem.
+Just went round and round in circles on this, and it turned out I had the certificates around the wrong way - e.g.
+For anyone arriving at this page with a similar error when trying to read a Certificate Signing Request (CSR) (note that OP is reading a certificate): make sure to use the right OpenSSL command. x509 is for certificates and req is for CSRs:
+In my case, I found my certificate had different "-" characters. Must have been a copy/paste issue from the admin that placed the cert onto the server, with the text editor replacing -- with a special unicode character along the way.
+This took hours to diagnose, and in the end I just guessed at it, and edited the cert in vi and deleted the existing "-" characters, and retyped them. 

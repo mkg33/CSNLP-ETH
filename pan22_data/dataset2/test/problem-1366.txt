@@ -1,0 +1,10 @@
+Because in the current situation I find the naming not 100% clear. Certainly because EmailModel (which sounds generic/basic) derives from CreateEmail (which is specific). It should be the other way around, a specific class should inherit from a generic/basic class. 
+Depending on how robust you need the API to be, one method used is to create an API transformation layer. 
+This model is what the POST verb operates on, since it's just setting a subset of the Model's properties.
+Of course, you can use more robust methods of transforming the object to JSON, but a simple StringBuilder demonstrates the principle.
+Or is this complicating things for no reason, but still when another developer sees the code it's immediately clear what the model does. No model property is unneccessary.
+I'm currently all about separating things where it makes sense. We've come to conclusion that small, slim, only-what-really-need models are the only one accepeatable.
+I would not over-complicate the matter by splitting it up in several models. But if you want to stick to the choice of splitting it up, I would define an abstract base class and create a Create and Read model.
+As an alternative, consider if you had a UserModel with a Password property. The API should never have to expose that property but it does always exist in the model. Splitting the UserModel into different classes based on the API verb makes it look like that Password property isn't always there (or you might have to jump through hoops to strip it out of child classes). With a transformation, it's explicit that the Password property is a part of the model but that it isn't supposed to be exposed by the API.
+There is additional api for atttachments ofcourse api/v1/emails/attachments with POST to upload attachment and GET to retrieve email attachments.
+And then a transformation for that model for GETs (or however many transformations you need for different uses of that model):

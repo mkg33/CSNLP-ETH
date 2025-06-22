@@ -1,0 +1,10 @@
+rsync -savz user@server:"/my path with spaces/another dir/" "/my destination/"
+If I try the same command and escape the backslash and the space to get past the local bash prompt and maintain the backslash for the remote server (three backslashes total: /path/to/dest/some\\\ dir/), it does indeed send the backslash to the remote server, but the remote server then interprets the path as /path/to/dest/some\/ rather than /path/to/dest/some\ dir/ still stripping the space and the characters after it.
+Initially I was using a path that had a " - " (space-hyphen-space) segment in it, and the remote server was returning an error rsync: on remote machine: -: unknown option which is what started this whole space-escaping endeavor in the first place.
+So what must I do to get this working properly with the remote server, without having to remove the spaces or other erroneous characters like hyphens from the remote path?
+A simple backslash escapes the space for the local bash prompt, but on the remote machine the space is then being read as a break in the path, thus marking the end of that path.
+When using SSH to connect rsync to a remote server, how do you escape spaces and such in the remote path?
+So it too only works to get past the local bash prompt.
+If I try to wrap the path with quotes, it behaves pretty much the same way, effectively cutting the path off at the space.
+So when I do rsync -avz /path/to/source/some\ dir/ user@host.tld:/path/to/dest/some\ dir/ what happens is that the remote server is reading that as just /path/to/dest/some/ and since it can't find that destination remotely, because the actual destination is "some dir" rather than just "some".
+Use -s ( protect args ) and enclose your path in quotes :

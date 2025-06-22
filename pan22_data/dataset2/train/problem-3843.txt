@@ -1,0 +1,11 @@
+Another thing, I've seem some SATA expansion cards can only handle SATA2 speeds for example, so it slows down the bus to SATA3 disks. Some can only handle SATA1.
+Your simplest most straight forward bet is to backup the data, delete the raid volume, create a RAID 10 volume, and restore the data.
+I recently configured a RAID 5 partition in Server 2008 with 4 RAID 5 disks.  These disks are connected through a SATA expansion card that uses PCIe.  This morning, I checked and they had finally finished synchronizing, and so I tried to do some speed tests.
+Also remember that a degraded RAID5 array is much slower than a healthy RAID5 array and might influence the decision of which RAID to go for.
+I would start by checking the specs of the controller, and the specs of the exact disks you are using.
+It sounds like a classic case of misaligned partition in RAID 5. Server 2008 should prevent that from happening with software based RAID but if the controller card is doing the RAID and presenting a single "disk" to the OS the RAID controller determines that alignment issue.
+Copying off the disks started pretty much fine - speeds began at > 125MB/s, then trailed down to about 70MB/s, which I found odd but not worrying.  Writing TO the disks however is a completely different story.  I attempted to copy some of my VM host ISOs onto the disks (~2-4 GB apiece) and this resulted in speeds of approximately 10MB/s.  I tried copying both from a local disk (connected directly to the motherboard) and from another server  ththe gigabit network and results were the same.
+I checked the performance monitor while transferring the files and the only thing that stuck out was that my memory hard faults shot up to 6,000 per minute (spiking around 200/s) by explorer.exe.  The system is running 2GB of DDR667 ECC RAM and a quad-core 2.3GHz opteron.
+You could buy a better controller and fight with RAID 5 or 6, you could spend more time making RAID 5 work with the existing hardware. But to me it's just better to avoid parity based RAID altogether.
+Is there anything I can do to fix this performance issue (buy more RAM? move the drives to a faster box?, etc) or am I just screwed so long as I stick to windows.
+Just for reference, search for "iops calculator" in your favorite search engine. Learn that more disks make more IOPS in a RAID10 configuration, for example.

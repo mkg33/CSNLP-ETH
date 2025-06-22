@@ -1,0 +1,11 @@
+If I understand correctly, you currently try to predict the next code among 5500 possibilities. I think that's too many options to choose from, you can't expect a good performance with that.
+Since the task is about predicting the 15 error codes I would represent the problem as a sequence labeling problem: the label at each step is either "nothing" (often represented as "_" in sequence labeling tasks) or one of the 15 error codes. The label would represent the most likely outcome for the next step, not for the current one. This way the system can use the history of the codes (regular features) without having to predict all of them, only the critical ones. Note that if several error codes can happen at the same time, you might have to select a single one as label (maybe they can be ranked by priority?).
+As far as I know, the standard method for sequence labeling is Conditional Random Fields (CRF). In the traditional approach you would have to do some feature engineering: for example try to not give only the codes as features but also features such as how many times a code happened in the last N steps. I think the modern approach consists in training a RNN and using the vector representation as features for the CRF, but I might not be up to date with this.
+I need some advice for a problem i'm working on with automobile data. The vehicles provide a series of codes at every second which are bieng stored, though it can vary how many.
+For example , at time step one the vehicle might send 3 codes:
+and there can be a varying number of time steps.(Before an Error occurs)
+Now some of these codes have associated Error values. For example (1 , 2) might be a critical error denoting a problem with your tire. But the vast majority of them don't have this. There are about 15 of these critical errors while 5500 of other codes.
+The codes are actually made up of two separate independent codes.
+The task is to predict ahead of time if is its likely that any of these codes will appear. 
+I tried to do this with a single layered GRU RNN Network with embeddings for all the codes. I am predicting the probability of the next code in the sequence at every step. (considering each code to be a step) .
+I tried tweaking the parameters like the number of neurons etc, but i'm not getting any results with this (Accuracy less than 5 percent after several epochs). 

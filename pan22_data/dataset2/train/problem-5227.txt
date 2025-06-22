@@ -1,0 +1,6 @@
+Try to do /bin/ls -N | less -S and look if there's any file name with suspicious or control characters. Less would show this characters as hex-codes in angle brackets, for example <BF>.
+If the directory isn't empty, it's possible you've got a corrupted filesystem - run fsck to check.  If the filesystem is okay and the directory isn't empty, next up is to question ls - perhaps your copy of ls has been replaced in a very primitive form of rootkit?
+Apart from the suggestions above, I've also seen this problem when there is a very large number of files in the directory you're listing, which amy be causing the file system to run out of inodes.  If this is a possibility, try just leaving the ls command to see if it completes after a while.  
+Maybe there's a file with a name, which contains a sequence of bytes which block your terminal. You can sometimes unblock a blocked terminal sending Ctrl-Q keyboard shortcut (Ctrl-S blocks it).
+Existence of a file with characters with a code lower than 32 (from <01> to <1F>) may be a sign of system compromise. Or a memory management bug in some program which create files there.
+ls without any flags will return nothing if the directory is empty.  You need at least ls -a if you want to see anything in the event of the directory being empty.

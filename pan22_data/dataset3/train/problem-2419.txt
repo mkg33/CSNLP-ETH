@@ -1,0 +1,11 @@
+You're saying to run awk only if the find pipeline fails.)
+(Possible caveat is file names containing newlines, but in practice I have never seen these.
+If by "top 5" you mean by size, then you need to tell sort which column to sort by; the default will go through all the columns in order, meaning it's going to sort initially by the number of links.
+Additionally, without some kind of extension the "human readable" size is not going to sort at all sanely except in GNU sort; portable sort -n does not know about suffixes like B, K, etc.
+Perhaps you want to try -exec ls -lhS {} \; | head -5 (omit the separate sort).
+Note also that you lose the sort information you asked ls for because it's being run on individual files under control of find.
+And then your sort sorts from lowest to highest, so even fixing that you get the five smallest images from head.
+Combining all of this and optimizing by using xargs to batch things up and combining the head into the awk, what you want is to make sure you have GNU sort, then use
+The S in your ls command already sorts by size, but r reverses the order, sorting smallest to the top.
+I will process this output to get the output in desired format(i.e.
+Requires some simple modification to account for that as well)

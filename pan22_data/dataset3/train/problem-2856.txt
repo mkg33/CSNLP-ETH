@@ -1,0 +1,47 @@
+This can be done lunch time as the interruption is very minimal.
+You could also set up a new temporary prefix at each side, and route that before going live.
+Also, can I test the LAN interfaces configured like this WHILE the VPN tunnel is still alive?
+That won't work, because both 10.74.1.0/24 and 10.74.2.0/24 are both in use.
+Connect X2 to the PtP interfaces of your ISP's device (eg.
+Configuring the X2 interface on the Arlington sonicwall as: LAN, Address of 10.74.2.1, mask of 255.255.255.0.
+And the Destination is: The network on the other side (instead of just an IP) -- so from Arlington the Destination would be: 10.74.2.0/24.
+You should then be able to use the Diagnostic Ping (or CLI ping) commands from each router to ping the other router's X2 interface (eg.
+Or would that cause some issues with routing between the two networks?
+Again, I don't know if the Sonicwalls will bypass the crypto to route these over the ptp, but it might be worth a try.
+Less useful if it's the same ISP in both cases...)
+This assumes the link is just a Layer 2 link, no routing is being done by the ISP.
+And yes: backup your configs FIRST, and again after :)
+If not, you've got a documented ordered list of what was done.
+You should use a separate subnet that you can route through (to the other network).
+I would suggest using something like LAN Speed Test (even the free version):
+Essentially each modem has a port that is a direct link to the other with a dedicated 100mb pipe.
+If you want to be able to test then you should convert your existing VPN to Tunnel based VPNs first:
+Then on Arlington, add a route: 10.74.2.0/24 -> 10.75.0.2 and on Dallas: 10.74.1.0/24 -> 10.75.0.1.
+Currently, both of our offices are running a sonicwall NSA 2600 and hold a VPN tunnel between each other (using the sonicwalls).
+As long as the Zones for X2 are the same as your X0 networks then no Firewall rules should be needed if you have Interface Trust enabled for the LAN Zone.
+Make a similar route on Dallas router (but swap all the IPs, so from a Dallas IP to the Arlington IP, the Gateway will be 10.99.9.1 this time).
+If things are working then you can create a Routing policy to test:
+We have a two-location business with our head quarters in Arlington, and a remote office in Dallas.
+I would suggest using something larger than a /30 block (in case you ever add additional locations) -- a /29 would allow you to expand to 6 locations for example.
+Lastly, after EOB, set up the routes, see what happens, disable the VPN, and see what happens.
+Then configure X2 on each router with 1 IP from your Point-to-Point range:
+I don't believe you will need to make any changes to NAT as everything will be routed (with respect to the internal networks).
+And configuring the X2 interface on the Dallas sonicwall as: LAN, address of 10.74.1.1, mask of 255.255.255.0.
+To test the speed to/from your test machines over the VPN first and then again after putting the routes in.
+As others have said you can't use IPs that are already in use.
+Put 10.75.0.1/30 (255.255.255.252) on Arlington X2, and 10.75.0.2/30 (255.255.255.252) on the Dallas X2.
+I've never used a SonicWall before, so I don't know if the VPN will take precedence over the newly installed routes or not.
+You should see a speed difference as the traffic goes over the MPLS.
+My question would be, how do I configure each X2 interface?
+I would use something separate from your existing networks (so it stands out) but not adjacent (in case you expand).
+Do this during a period of downtime as the VPN will be down while you switch to a Tunnel interface in the VPN and then create the routes.
+All the traffic will go over the MPLS for everybody.
+Backtrack until you get original status-quo working again, and go from there.
+We recently purchased a point-to-point connection from our ISP between the two locations.
+This has the advantage that you can then more easily make routes to test than Policy based IPsec VPNs.
+How I would test this is take a single IP from each side's LAN, and route those over the new PtP.
+Not only that, a PtP connection requires a mutual prefix.
+I'm wanting to replace the VPN tunnel with what I assume would be an additional LAN interface on each sonicwall pointing towards the other networks subnet.
+So, on a laptop set as 10.74.2.10 on one side, and 10.74.1.10 on the other, on Arlington, route 10.74.2.10/32 -> 10.75.0.2 and in Dallas, route 10.74.1.10 -> 10.75.0.1.
+You could then disable the VPN, or leave it and configure Probes on the routes, so that the MPLS' routes are disabled if the probe fails (allowing it to fall back to the VPN.
+We need these networks to communicate the same way as they do over the VPN tunnel right now.

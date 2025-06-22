@@ -1,0 +1,6 @@
+I have a table as listed below in SQL Server 2012. There is a clustered index on RequisitionID – but this column is not unique. There can be many ProductID for one RequisitionID. 
+I searched a lot and found that Clustered Index can be non-unique  - but only on limited scenario. Only scenario mentioned appropriate is when there is a Range Search. In my case almost all queries will be based on RequisitionID only – and there is no range search required. 
+You should delete cidx_RequistionProducts and make the primary key clustered instead. The index that is created to support the primary key will do the job for you when filtering on RequisitionID.
+I see no benefit of having two indexes when one is enough to get the job done. Removing the extra index will save you disk space and IO cost when updating the table.
+Usage scenario of this table is that it has frequent inserts. Hence I will introduce a surrogate key (identity column) and make it as primary key and clustered index. Ever-increasing clustering key – the Clustered Index Debate……….again!
+SQL Server internally adds uniquifier to make clustered index unique, if it is not so. So I will better add ProductID (which is int) myself into the clustered index.  DBCC commands for testing this is present in Understanding and Examining the Uniquifier in SQL Server - Ken Simmons. 

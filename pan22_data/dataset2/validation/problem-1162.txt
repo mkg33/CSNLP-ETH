@@ -1,0 +1,7 @@
+I run Monit to keep check on processes on a Debian server. It's working as normal for all other services (Apache SSL, Postfix, SSH etc.) but Monit's checks on Dovecot are failing repeatedly. I think this may have started after installing some package updates, but I'm not sure when. 
+Dovecot is working correctly for client connections as email is still working. I've tried testing with open_ssl s_client and all seems fine for SSLv3, TLS1.1 and TLS1.2 from there too.
+Option 1 is the only real solution as the other two force the you to test something different that you were hoping to test, but they do at least easily provide a similar test while you wait for the update.
+'dovecot' failed protocol test [IMAP] at INET[localhost:993] via TCPSSL -- IMAP: error receiving data -- Success
+If you want to monitor dovecot in general, you might consider monitoring port 143 without SSL by using the following configuration:
+The problem is caused by http://osdir.com/ml/ubuntu-security-announce/2014-05/msg00023.html as TomDogg mentioned.
+I thought it might be something like this https://secure.kitserve.org.uk/content/ssl-tls-version-conflict-zarafa-monit but I've tried replacing 'sslauto' with all of these options in turn, but with no luck: SSLV2|SSLV3|TLSV1|TLSV11|TLSV12

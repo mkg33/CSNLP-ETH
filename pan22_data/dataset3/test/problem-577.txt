@@ -1,0 +1,8 @@
+If you have more than one app being proxied in the vhost, be aware that you'll need to put the PPRs inside Location sections at the very least to differentiate them.
+When Rails sees that header, it uses it to construct the Location: header of any HTTP responses.
+It can't be disabled with HeaderRequest unset x-forwarded-host, nor with ProxyVia, nor with ProxyPreseveHost.
+The fix, luckily, is quite easy - change the above vhost config to:
+Apache's mod_proxy appends a header, x-forwarded-host, to all outbound requests.
+Now look at the typical example of ProxyPass and ProxyPassReverse that's described everywhere on the net - including (essentially) your question and an alternative answer given here:
+Because Rails/ActionPack/dasFramework, in it's wisdom, is trying to help you by "correcting" the Location: header, the second half of the PPR line isn't correct: instead of matching
+For reference, in the version of Rails vendor'd with Webistrano 1.4 (the app that was tripping me up with mod_proxy ) the relevant code seems to be on line 88 of vendor/rails/actionpack/lib/action_controller/cgi_process.rb, inside the function host_with_port_without_standard_port_handling.

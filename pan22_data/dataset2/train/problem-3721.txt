@@ -1,0 +1,9 @@
+SysInternals\PsExec.exe -u username -p password -accepteula \\ServerC -i 0 -d -w \\ServerB\Nightly\Server \\ServerB\Nightly\Server\server.exe
+The best way to approach a troublesome operation involving remote systems that I have found is first try to run it locally, then slowly start moving different components to remote boxes and getting them to work from there.  That way you figure out exactly where the problem lies in your syntax of your original attempt.
+Without knowing what your application does, do you need to define the working path? I may be wrong, but I don't believe UNC paths are supported?  What about a little trickery, and doing a map of a network drive, and bundle it up in a script? Something like:
+Alternative I recommend you to test this free software that let you run remote commands very easy with a simple GUI: PQD Deploy.
+The 2 switches "-i" and "-d" contradict each other since -i makes it run interactively and -d says only to use it with non-interactive applications.  I have never had a need to use either switch.
+In your script you can copy the thing that you want to run to the local machine disk and after run it delete it. 
+For your case running using Sysinternals PSExec you can try make a bat that runs every bat line started with PSExec. You can use enviroment variables in the bat using the SET command for things like the username.
+The pushd command maps the next available drive letter to the share, and then changes directory to that new map. popd returns back to the previous path, and unmounts the drive.
+try it with the -e switch as well (doesn't try to load the user's profile) not too sure about the "-accepteula" switch either since psexec doesn't prompt for one AFAIK and this doesn't appear to be a valid switch for psexec...

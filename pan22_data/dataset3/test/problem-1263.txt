@@ -1,0 +1,12 @@
+To work around this problem, you can either use a Windows Domain, which is most likely overkill, or you can only use well-known groups for your permissions.
+Well-known groups have the same SID on every Windows OS, so even if you install a new Windows, the SIDs used in the ACEs do exist and work.
+Windows (NTFS) file permissions are stored in Access Control Lists (ACL) which are made up of Access Control Entries (ACE).
+Some well known-groups are everyone, users or administrators
+When displaying permissions to a file, the OS takes the SID and looks up the name for it.
+This should explain why you can not access the files, the users with permissions simple do not exist in your current installation.
+Because you set permissions on files with a different OS, the SIDs used do not exist on the current OS and the system can't resolve the names (so it displays the SIDs).
+If the users group does not work for you, you could use the Replicator group because as far as I know, it doesn't have any side-effects to its members.
+Every user/group has a unique internal Id, called the SID, these SIDs are stored in the ACEs.
+To see more well known groups on your OS, open a PowerShell and run:
+Not all these groups are good candidates to be used for NTFS permissions, because they give their members additional (unwanted) permissions/rights or their membership is only applied when running as an elevated process (Administrators, Power Users).
+When you install a new OS and attach an previously existing drive you may see ACEs for users with a name such as S-1-5-21-12345678-....

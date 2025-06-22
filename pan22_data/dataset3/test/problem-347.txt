@@ -1,0 +1,14 @@
+Note: It would be easier to fix this issue if your original video was encoded with a wrong constant frame rate.
+Furthermore, I don't think that it's possible for OpenCV's videoWriter to output variable frame rate either (but I'm not an expert on this).
+This leads to asynchronicity "building up" over time, since the timestamps in your AVI/MP4 have constant offsets.
+In other words, I assume that the videoWriter you refer to created a constant frame rate video from a variable frame rate one, creating incorrect timestamps.
+You could then force ffmpeg to assume another framerate for the input video, effectively removing the original timestamps and generating new ones, assuming a constant frame rate.
+ffmpeg can't fix this for you, because the input timestamps are already incorrect.
+I think the issue is that your input video already has wrong timestamps due to the way it was encoded.
+Then, any subsequent conversion could synchronize the content with an audio stream.
+For example, if your video conversion ended up creating a 30 fps video, but your original input was 29 fps, do this:
+I understand that the original webcam video was outputting frames of variable length (i.e., a variable frame rate video), but an uncompressed AVI file can only store frames of constant length.
+Without knowing when or how that frame rate changed, you cannot fix the timestamps.
+Your only option would to re-generate the video stream from the webcam with a container that supports variable frame rate (such as MKV or MP4/MOV).
+Thus, reading that AVI file (or any subsequently compressed MP4 file), ffmpeg will assume that it's a constant frame rate video.
+But since that webcam feed is probably live, there is no way to go back.

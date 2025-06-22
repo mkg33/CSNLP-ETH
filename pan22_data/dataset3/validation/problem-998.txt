@@ -1,0 +1,15 @@
+It makes sense to call Mirko from my source code, but it does not make sense to call Mirko from SDL (high level lib calling an high level lib).
+We do the same in our engine, because SDL doesn't support all of our targets.
+Yes, there is a cost incurred with every additional (virtual) function call and those coordinate conversions aren't strictly free... but this overhead is probably insignificant in the grand scheme of things.
+In my experience, the gain of having these abstractions (namely the option to switch an underlying API out if/when needed) generally far outweighs the performance cost.
+What I proposed above was an interface that calls high level libraries, but it indeed add an additional call.
+I wouldn't worry too much about the performance implications.
+Similarly, our renderer has an internal abstraction layer so we can support Vulkan, DirectX 12 and potentially other graphics APIs.
+For example: The Gamepark has an SDK called Mirko SDK designed for game programmers.
+I would be more logical to extract the low level code in Mirko and make an SDL "driver" for it.
+But I would need deep understanding of the game park which I don't
+But I might need understand the low level logic of that platform.
+This kind of layering is bog standard in game engines.
+By thinking about it, it could be more suitable to use C macro system.
+While it is true that SDL already provides support for multiple platforms, it is of course possible to build another layer on top to abstract the specifics of SDL away from the rest of your code.
+I understand that macro are not perfect and could lead to errors, but that could be an alternative solution.

@@ -1,0 +1,7 @@
+That tradeoff in flexibility buys you a tested, proven, documented solution that any FreeBSD admin will understand out of the box (or be able to read the handbook and figure out) -- to me it's a worthwhile trade-off :-)
+"zpool import" should be able to import the existing zpool from the iSCSI LUNs vdevs.  You may have to force the import if the pool was not exported cleanly but internal metadata should keep the data in a consistent state even if writes were interrupted by the database node failing.
+It's not a direct answer to your question, but a more traditional architecture for this sort of thing would be to use HAST and CARP to take care of the storage redundancy.  
+Another thing to be aware of is that your storage architecture won't be as flexible as it would be with the design you proposed:
+"zpool status -x" will output whether all pools are healthy or output the status of ones that are not.  If a iSCSI LUN vdev goes offline a cron job running a script based around that command should give you a way to have cron alerts on a regular basis.
+The big caveat here is that HAST only works on a Master/Slave level, so you need pairs of machines for each LUN/set of LUNs you want to export.
+With the ISCSI mesh-like structure you proposed you can theoretically add more machines exporting more LUNs and grow as much as you'd like (to the limit of your network).

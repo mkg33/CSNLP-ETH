@@ -1,0 +1,6 @@
+My problem was the private keys file id_rsa created and saved by puttygen has a different format than the one created from a ubuntu machine. After I created a pair keys from ubuntu machine, copy these files back to Windows machine under %UserProfile%.ssh folder, then add the new generated public key to Gitlab. No more Permission Denied for me
+ssh prompts me for a password for any host that happens to have a '-' in its name.  This would seem to be purely a problem with ssh configuration file parsing because adding an alias to ~/.ssh/config (and using that alias in my git remote urls) resolved the problem.
+If you're using environment variables to pass the key, you should base64 encode them, otherwise they will probably fail with an error asking for your passphrase.  This means that the key is corrupted.  If you see:
+Replace /home/git with whatever your home directory for the 'git' user is, if it was different in the tutorial. If it's not permissions, then please let comment and we'll see what else might be the issue.
+Providing that you have loaded your private key on your client, then it sounds like this might be a permissions issue on the 'git' user home directory and .ssh directory.
+This can happen if the host has a '-' in its name. (Even though this is legal according to RFC 952.)

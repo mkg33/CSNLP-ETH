@@ -1,0 +1,12 @@
+The vast majority of hard disks use 512-byte logical sector size on their native (usually SATA) interfaces.
+Overall, therefore, I recommend you focus on the first option.
+Also, this option will lock you into using the disk either directly via SATA or via a USB enclosure that does not do sector-size translation.
+At least part of your problem is likely caused by sector-size issues.
+Many external USB enclosures "translate" sets of eight 512-byte sectors into one 4096-byte sector.
+Thus, I think that what happened was that your disk was partitioned via a USB interface that did this translation, which meant that your disk had approximately 488,378,646 4096-byte sectors; however, when you plugged it directly into a computer's SATA port, it was read as having 3,907,029,168 512-byte sectors.
+Because partition tables record partition starting points and sizes in number of sectors but don't provide any hint about the size of the sectors, you end up seeing the mis-match you've identified.
+(Note that the "physical" sector size reported by fdisk is irrelevant to this discussion.)
+The second option should work; however, if you make a mistake or run into some unexpected problem, you might end up making matters worse, especially if you write to the altered partition.
+The partition table was written with the assumption of fewer but bigger sectors.
+Fundamentally, there are two fixes to this problem:
+This enables over-2TiB disks to be used with the old Master Boot Record (MBR) partitioning system, and I suspect it's also necessary to fully address the disks over a USB interface, at least with certain enclosures.

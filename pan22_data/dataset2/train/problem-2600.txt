@@ -1,0 +1,9 @@
+Check out this article, it explains how to fix diagnosis and track down the cause of connections stuck in "sending reply" status http://techmythsworld.blogspot.com/2011/11/solving-httpd-maxclients-and-modstatus.html
+I have also seen this issue when PHP-FPM wasn't functioning. Sites were down, and processes stayed in status 'W'. Restarting PHP-FPM solved the issue.
+1. Find the script that is getting stuck in W's and whatever is being posted to it (it might be very unique variables that cause it to get stuck.
+Do you guys have any ideas why an Apache request might decide to never return, or any thoughts on what could be going on here?
+Fix the script. and repost the variables, you should see that the stuck in W for your ipaddress is gone.
+Ensure that you can recreate the situation by posting the causing variables to the script. You will see a connection show up from your ipaddress that will remain stuck in W.
+PS. You must restart the webserver with every test to reset your connection (command "service httpd restart" should do 
+It appears you have the dreaded Persistent Bush Syndrome (PBS for short)....which means you are stuck with way too many W's (sending reply). Luckily, there's is a very simple fix. The cause may be that your script is performing a long winded query that never completes. 
+I run a decently high-trafficked webserver (dedicated Apache/PHP), and while it works fine most of time, about once a day it dead-locks and refuses any new connections.  Restarting Apache fixes the problem.  I have caught it a few times right before this lockout, and Apache Status shows all W's (sending reply) for every request.  The last error in the http-errors.log is that MaxClients was hit (which makes sense because no request is returning).

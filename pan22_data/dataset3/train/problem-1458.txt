@@ -1,0 +1,15 @@
+Then when you need to use a resource for drawing, you just use the resource that's already been loaded.
+Instead what you should so is have knowledge of all UI resources needed at startup time, and load them all during program startup.
+In that case, once a resource has been loaded, you keep it loaded: don't unload it.
+You dont want to constantly free things you loaded, once something is loaded keep it in memory, when its needed again, its already loaded in memory.
+If you can't have that knowledge (and you may consider it desirable to not require your startup routines to have knowledge of your UI requirements) you can load on-demand, which is a technique that some games use (the Quake series, for example).
+It then stays in memory until the player dies and is teleported away, or it's Defeated.
+For example if I have a Mesh for a Boss monster, I load it in memory during the transition to the room with the boss.
+Even in cutscenes, leave them in memory and just don't render them that way when the cutscene is over.
+Use neither, because both approaches involve loading and freeing GPU resources at runtime, which is slow and will lead to constant thrashing of video RAM.
+For GUIs its slightly different, since they will almost always be on screen(excluding cutscenes) they should be loaded at the start of the game, and only be freed when exiting or closing the game.
+During the boss fight however I do not want to Free the mesh because its still in use.
+In addition operations like file reading are expensive in themselves.
+you dont need to read in all the GUI elements again.
+Generally you should only Free something like that when you will never need it again.
+Then the next time you need it, you can once again just use the already loaded resource instead of having to load it again.

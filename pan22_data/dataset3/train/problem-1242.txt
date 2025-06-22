@@ -1,0 +1,11 @@
+The Original server to hold a zone is that zones Start Of Authority [SOA] and contains its SOA Record.
+Phishing would be a trivial matter if a local DNS server could be tricked into handing out the wrong IP for a banking site for instance.
+I'm sure you can see how important that is for Internet security.
+On Microsoft Domain networks, any DNS servers other than the Domain Controller(s) are automatically set as Secondary servers, and if correctly configured will automatically request a zone transfer, but MS behavior aside, any DNS server requesting a DNS Zone Transfer from another server will not be an Authority for that domain, and will recognize the authority of the SOA server on that zone.
+DNS Zones are databases of name info on one or more domains.
+For fault tolerance, load balancing, and resolution performance, a Zone is often hosted on multiple servers, but that comes with a major drawback: how do you maintain the zone consistently on each server that holds it, ensuring that it is always complete, consistent, and correct?
+It is important to note however that these changes flow from parent to descendant(s) exclusively, and cannot be reversed under normal run-time circumstances.
+DNS on the public internet must be propagated world wide, and the zones are stored on servers under thousands of different peoples control.
+The DNS ecosystem solves this with the idea of Authority.
+So, all this together means that you cannot edit a zone held on a server that is not its SOA.
+When everything is working properly, a secondary (or tertiary, or n-ary) server will periodically check the master servers SOA record, to see if the version number has been incremented, indicating a change in the zone, and will then request another zone transfer (full or partial depending on the configuration and server capabilities) to get the changes.

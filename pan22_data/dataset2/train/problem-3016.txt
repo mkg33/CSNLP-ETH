@@ -1,0 +1,11 @@
+By setting innodb_lock_time_out and tuning the specific query, you can solve this issue. I hope this answer will help you as a starting point.
+If a transaction has been running 837 seconds, I suggest that its is poorly designed.  I don't like a transaction to last even 5 seconds, much less the default innodb_lock_wait_timeout=50.
+I started having the following error on two different applications that write to the same database and table:
+If you would like to discuss this further, let's see your whole 'transaction', either at a high level, or with specific SQL statements.
+At the beginning I thought it was caused by some slow queries creating deadlocks, but I haven't been able to find any evidence of that.
+Killing the transaction is not a good idea, you should try to fix the issue. For example, if some update query takes longer time, you can check for table indexes or trying to rewrite the query in a way, it should execute in shorter time.
+From your query, the locking occurs when a query accessing the table my_table for longer time and another query is waiting for previous query to complete its task.
+Increase the value of innodb_lock_wait_timeout, you can do this by using one of the following two methods,
+Can't wait for user - A transaction should not include any user interaction.  Waiting for a user might mean waiting for him/her to take a phone call.  If you need something locked for some kind of user 'session', BEGIN...COMMIT is not the way to do it.
+autocommit=0 is bad - Another possible mistake is autocommit=0 then forgetting to COMMIT.  For that reason, I recommend never using that setting.  Instead, be explicit about including BEGIN and let it be a reminder that you need a COMMIT.
+Transaction locks occurs when two threads trying to access a same row (innoDB) or table (MyISAM). In our environment, most of the time, transaction locks occurs due to one query updating a row and another query trying to read from that row.

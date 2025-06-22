@@ -1,0 +1,21 @@
+This incurs a small window of possibly lost data, but I'm sure you would never try this outside of a maintenance window where any data loss would be unacceptable, so this should be fairly inconsequential.
+Hibernation would ensure that all filesystems are quiesced, helping avoid possible corruption.
+As for potential side effects, any AD connected machine must be (by default) within 5 minutes of the DC's time.
+My suggestion would be to avoid this problem altogether.
+This can be mitigated by only allowing synchronous writes to your storage, but at the cost of performance.
+This would allow you to patch either one of them (but not both at the same time) without affecting the availability of NFS or iSCSI served by the cluster.
+The next-best solution would be to enable hibernation in your VMs.
+Next, you could take a snapshot of the VM with memory state, forcibly terminate the VM's process, then revert to the snapshot when done.
+Worse yet, I/Os may have been re-ordered by a lower layer for a more optimal write pattern.
+It still isn't a supported solution, but it does at least allow some flexibility in maintenance at the cost of increased resource overhead (mainly however much memory you give to the second storage VM) for storage.
+This could allow data to have been partially written out of order.
+Utility provided by SysInternals for Windows: http://technet.microsoft.com/en-us/sysinternals/bb897438.aspx), and perform your maintenance quickly so clocks don't get set back too far.
+On database servers, don't do these things when the server is busy, as it increases the chances of filesystem corruption.
+If changing the architecture is completely unacceptable, then the safest option would be to shut down the VMs.
+This solution is as quick as making a snapshot, ensures VMs don't complain about lost disks, but does incur potential data loss.
+You mentioned that increased costs and a complete re-architecting are show stoppers, but what you could consider in this situation is to have two storage VMs on the host in a two-node failover cluster.
+The main risk in all of the options beyond a normal shutdown or highly-available storage is that of corruption.
+Perhaps the row count was incremented before a DB row's data was written, or a checksum updated before the checksummed data was physically changed.
+Lastly, if you want to pause the processes (and have tested that it actually does work), then I would strongly suggest that you sync all disks in the guest first (in Linux, this would be done with /bin/sync.
+There will potentially be some I/O in a buffer that will be dropped which the application may mistakenly think was completed successfully.
+Therefore, after any solution where the VM is not continually available other than a normal shutdown, I would suggest that you force the resumed guest to update its clock.

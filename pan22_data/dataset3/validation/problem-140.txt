@@ -1,0 +1,8 @@
+You can also set it to rotate just by month, or by weekday, or by hour, or minute, or second, whatever you need.
+If you're really ambitious, you could write your own Perl script or whatever to read from stdin and write to log files or perform actions (like emailing you) using whatever rules you want, and pipe Apache's logs through that instead.
+This doesn't answer your question directly, but it might give you some more options.
+It doesn't rotate out to files named error_log.1, error_log.2, etc, but instead it can do so by date and/or time.
+Removing the file and sending HUP signal to the process writing to the log file is the canonical thing to do.
+Apache allows you to pipe the output of your logs to processes that read from stdin.
+My preferred strategy for avoiding enormous logfiles is to pipe Apache's log output through a utility called cronolog that's available as an optional package on most Linux installations.
+This will send error logs from February 1, 2012 to a file named error_log.2012-02-01 and as soon as the time rolls over to February 2, 2012, it will start writing to error_log.2012-02-02 and so on.

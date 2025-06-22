@@ -1,0 +1,8 @@
+Just had this issue on a Windows 7 client joined to a domain it turned out to be incorrect DirectAccess settings in the registry.
+None of the solutions here worked for me. What did work for me was reconnecting to my work's vpn using OpenVPN. Then after disconnecting everything continued to work.
+Try ipconfig /displaydns and look for wolfman. If it's cached as "name does not exist" (possibly because of a previous intermittent failed lookup), you can flush the cache with ipconfig /flushdns.
+For example, if in your DNS, you have a record for www.example.com - 10.0.0.20, but then you have an entry in your client's hosts file, 10.0.0.20 somethingelse.com, you will not be able to ping www.example.com
+Basically, if you have any entries in your hosts file, that are the same as the IP your ping is trying to resolve to, it will fail.
+If that helps, look under Group Policy Management Console for two policies called 'DirectAccess Client Settings' and 'DirectAccess Server Settings'. Check if they are configured correctly or even needed in your scenario. They are sometimes created automatically with certain settings for the Routing and Remote Access role on a server and this was the cause of the issue on our part.
+Just today we had the same issue, but the solution was different. So I thought, I'd add it for reference as this was the top most search result.
+I believe the issue was related to the power going out while my computer was connected with openVPN. The only way I figured this out was by using WireShark. I noticed that the destination IPs for all the queries were going to IPs on my work's internal network.

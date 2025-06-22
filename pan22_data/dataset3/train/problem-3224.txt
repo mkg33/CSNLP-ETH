@@ -1,0 +1,16 @@
+In the linked server dialog box, on the security section, do you have "Be made using the login's current security context" selected?
+Is your windows account set up on the server you're trying to connect to?
+There is no setting you can change which would make this work.
+You have to figure out which account runs the sql server service.
+if you have access to any windows 2008 server on the domain with a domain user, you should run this CMD command to check what is register already (read access is allowed).
+If one would exist, it would be by definition a bug, as it would break the domain policy on constraining delegation only to trusted accounts.
+to use a linked server without kerberos the only option is SQL Logins.
+And any other work around I would give you would put me in a position to help you violate your domain policies.
+if that's not an option you should really try to fix up kerberos auth.
+So unless you make the AD change to mark the SQL Server 'in the middle' as trusted for delegation, you won't succeed doing a double hop.
+if it is a domain account, you should ask for someone to register the SPN for the user.
+you should check for setspn -l sqlmachinename and see if it is registered, and the sqlserviceaccount.
+Since this registries should not have duplicated items you first need to remove and then register the new one.
+Then ask for someone in the network to register this spn's (as the service needs to be restarted after the register you should make this only on a time window)
+This is indeed a case of constrained delegation (ie .
+Since it seems you understand the technical problem, I'd recommend you knock at the right doors: the masters of your domain and/or the stakeholders of your requirements.

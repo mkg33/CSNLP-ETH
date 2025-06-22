@@ -1,0 +1,12 @@
+In this example, you are using the 'Studentblog-Devl' backend if both conditions are true:
+When you use HAProxy to terminate SSL, as you are doing, then you get access to all of the information in the HTTP message.
+So, you can directly inspect the Host header in you ACL statements (you don't need to check SNI -- although you can, with the 'ssl_fc_sni' fetch method.
+If you only want to change the Studentblog to listen on port 443 and not the mainadmin site, then it's better to create two 'frontend's and separate them out so that they can listen on only the ports they should.
+port of 8443 to a system on 443 (or vice versa as needed).
+Or, if this doesn't conflict in your environment, you could change your web servers to listen on 443 in the first place (though based on your question, it likely does).
+Your frontend can have multiple 'bind' lines that each specify a different port to listen on.
+Yes, you can use HAProxy to proxy port 443 or port 8443 and route it to servers on the backend that are listening on different ports.
+In keeping with your question though, if you wanted to do it based on configuration only, you could configure another front-end server and configure it to publicly listen to port 443 and then forward that traffic internally through a redirect.
+Firstly, you could use NAT and PAT (NAPT) to translate traffic with a dst.
+There's actually numerous ways you could forward traffic from port 8443 to 443.
+That would be something you'd have to get in touch with a network administrator if you don't have administrative control over the routers on your network to configure this functionality and that's assuming that your network implements NAT/PAT (most private networks do to conserve IPv4 address space).

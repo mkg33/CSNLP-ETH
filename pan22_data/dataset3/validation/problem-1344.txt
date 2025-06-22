@@ -1,0 +1,7 @@
+If it's always an isometric view like this, you can probably get away with calculating depth = ±X ± Y - Z, where the ± means: pick the sign that makes depth increase as you get further away from the camera.
+(Negative because in right-handed coordinates with X and Y aligned with the screen, Z will be pointing out of the screen.)
+As @dreta mentioned in the comments, the typical way 3D engines solve this is with a depth buffer and using the hardware depth test, which allows you to draw arbitrarily-shaped objects in any order and will keep track of the closest surface at each pixel.
+That will depend on the orientation of your X and Y axes.
+However, if you do want to sort objects, you'll need to calculate a depth value for each object, then sort by descending depth.
+To get the depth, if you're using a typical 3D engine setup, you'll need to transform each object's center point through your view matrix (which goes from world space to view space), then take the negative of the Z coordinate of the result.
+Manually sorting objects is also possible, but will not necessarily handle nonconvex objects or overlapping objects correctly.

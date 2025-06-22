@@ -1,0 +1,12 @@
+Unfortunately, you're going to have to write the logic yourself.
+You will need the contentType "text/plain", ContentTransferEncoding of the old ContentTransferEncoding, a new content stream, and CachingMode CachingMode.Copy
+I personally wouldn't know of any, and the cost of supporting them is probably much higher than just upgrading the email clients.
+Fortunately, with transport agents, you can script the hell out of exchange.
+Copy-paste from the documentation: Execute Install-TransportAgent -Name "MyCustomAgent" -TransportAgentFactory "MyAgents.MyAgentFactory" -AssemblyPath "C:\myagents\MyAgent.dll" in the Exchange Management Shell.
+You can basically follow the instructions at http://msdn.microsoft.com/en-us/library/office/aa579185%28v=exchg.140%29.aspx
+Write the contents of the stream of the old MimePart unchanged into the content stream of the new part (since you indicated you will not be using any characters outside of 7bit ASCII anyway, the content is actually identical.
+The adjusted email will now be in 7bit ASCII and have the correct recipient.
+If it's not, read the stream as 7bit ascii, base64 decode the resulting string to a byte stream, decode the bystream with UTF-8 encoding to a string, replace what you need to replace, write to a bytestream with 7bit ASCII encoding, base64 encode the resulting bytestream, write the resulting string to the target stream encoding with 7bit ASCII) (phew!
+If you are going to attempt this (I don't suggest you do) and get lost with the coding part, those questions would be in scope of StackOverflow.
+Compile the thing and attach the dll with the compiled agent to Exchange.
+Exchange can't automatically transcode an email message.

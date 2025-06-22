@@ -1,0 +1,18 @@
+I don't know whether Synology NAS firmware supports LLMNR or NetBIOS, but it certainly supports mDNS.
+Can anyone help me to understand what is going on?
+It just tries to redirect you to the first address you mentioned (http://diskstation.local:5000).
+For example: When the device reports that its hostname is "diskstation" and obtains an address via DHCP, the router adds an internal DNS entry diskstation.home with the address it leased.
+DHCP clients often report their own hostname as part of the address lease request, and many home routers maintain an internal DNS domain (e.g.
+"http://diskstation:5000"or "http://find.synology.com".
+Either it finds the correct address by trial-and-error or it doesn't.
+Of course, for this to work, one of the above methods (mDNS or LLMNR) must already be active.
+When your computer obtains an address via DHCP, the router also informs that the local DNS suffix is ".home" and therefore diskstation should be expanded to diskstation.home, which then can be resolved through the router's internal DNS server.
+If that doesn't work, it redirects to http://rackstation.local:5000, then to http://synologyrouter.local:5000, and so on.
+I guessted that the NAS may get an arbitrary IP using DHCP (this might be also wrong), but... how that can be accessed with "http://diskstation:5000"?...
+Many devices support serverless name resolution using Apple's mDNS, Microsoft's NetBIOS or LLMNR.
+During setting synology NAS I just get curious how it works.
+I can't add any additional information to grawity's answer, but your router is the place where you're most likely to find out.
+The NAS can be accessed by another computer on the network with the address
+Finally, the "find.synology.com" website does nothing magic at all.
+When the browser needs to resolve a dotless name like diskstation, instead of asking DNS the operating system broadcasts the query on the local LAN network  and waits for any random device to reply.
+Generally mDNS names are always in the form of <name>.local instead of dotless, but the recently-added mDNS implementation in Windows 10 actually accepts both versions.

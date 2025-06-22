@@ -1,0 +1,12 @@
+Those systems see that the source IP is 123.123.123.99 and sends the response directly to 123.123.123.99.
+Disabling reverse path filter on the realservers did the trick:
+Alternatively have the real servers (where ipvs is load-balancing to) on a private subnet, but you'd need a separate (V)LAN for that.
+However the client there is not expecting any traffic from 123.123.123.123 or 123.123.123.124, and sends a TCP RESET.
+The problem is that no source NAT is happening, so when client 123.123.123.99 connects to 123.123.123.117, it gets sent to either 123.123.123.123 or 123.123.123.124.
+If I connect to 123.123.123.117 I get a response from either 123.123.123.123 or 123.123.123.124.
+Meanwhile it's still waiting for a reponse from 123.123.123.117, which will never come.
+Ok, the problem is that the kernel checks if the packet is routable through the interface which it came.
+tcpdump tells me, that the request goes through the loadbalancer to the realserver but there's no response.
+Loadbalancing works perfect from from external ip's.
+If I try to connect from a random server within my network, it won't work though.
+The setup did work on Debian Squeeze but since I switched to Ubuntu Trusty it doesn't.

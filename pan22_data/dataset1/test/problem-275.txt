@@ -1,0 +1,20 @@
+I am in the process of creating a new simple game in mobile and I've spent several days on the following part. 
+For simplicity, let's say that I have two fighters. The only attribute of them is Attack and Defence. When the first attacks, the only thing that matters is the attack of him and the defence of the opponent. And vice versa.
+They don't have equipment, items, stamina or health. Just Attack vs Defence.
+The fighting process will be just a single attack which will determine the winner. So, no multiple attacks or rounds. I don't want to make it deterministic, but add a light version of unexpected. A fighter with lower attack will be able to win another fighter with higher defence (but of course not every time)
+My first idea was to make it linear and call a uniform random number generator.
+Example with attack 50 and defence 80, the attacking fighter will have about 38% to win. However, it seems to me that the unexpected is too far and worst fighters will win a lot.
+I was wondering how you have worked on similar situations.
+P.S. I searched a lot in this QnA and other sources and I found similar questions mentioned as too broad for SE. But those have had many attributes, weapons, items, classes etc that could make it too complicated. I think my version is far simpler to fit it in the QnA style of the SE.
+This is what I used to determine the winner of a battle in my Lords of Conquest Imitator applet.  In this game, similar to your situation, there is just an attack value and a defense value.  The probability that the attacker wins is greater the more points the attacker has, and less the more points the defense has, with equal values evaluating to a 50% chance of the attack succeeding.
+I wrote it in Java, but it should be easily translatable to other languages.
+For example, let's say that att = 2 and def = 2, just to make sure that the probability is 50%.
+The battle will be decided in a maximum of n = att + def - 1 coin flips, or 3 in this example (it's essentially a best of 3 here).  There are 2n possible combinations of coin flips.  Here, "W" means the attacker won the coin flip, and "L" means the attacker lost the coin flip.
+The mathematical probabilities arising from this simple algorithm are more complicated than the algorithm itself.
+The number of combinations where there exactly x Ls is given by the combination function:
+The attacker wins when there are between 0 and att - 1 Ls.  The number of winning combinations is equal to the sum of combinations from 0 through att - 1, a cumulative binomial distribution:
+The probability of the attacker winning is w divided by 2n, a cumulative binomial probability:
+Here is the code in Java to compute this probability for arbitrary att and def values:
+The probabilities are 0.0 if the attacker has 0 points, 1.0 if the attacker has points but the defense has 0 points, 0.5 if the points are equal, less than 0.5 if the attacker has less points than the defense, and greater than 0.5 if the attacker has more points than the defense.
+Taking att = 50 and def = 80, I needed to switch to BigDecimals to avoid overflow, but I get a probability of about 0.0040.
+You can make the probability closer to 0.5 by changing the att value to be the average of the att and def values.  Att = 50, Def = 80 becomes (65, 80), which yields a probability of 0.1056.

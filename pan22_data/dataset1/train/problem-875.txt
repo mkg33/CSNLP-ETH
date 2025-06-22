@@ -1,0 +1,15 @@
+I've looked around for solutions to lock a whole database, and the only one I found so far is FLUSH TABLES WITH READ LOCK.
+This is fine for backups, but unfortunately I can't use that to prevent other accesses to the database while I'm patching my database with schema changes. If I run an ALTER TABLE after FLUSH TABLES WITH READ LOCK, I get the following message:
+Is there a way to just prevent other database connections from accessing the database temporarily while I'm patching the database?
+I don't want to actively refuse the other connections, I'd just like to put them "on hold" until the patching is finished (a matter of seconds).
+You should be able to lock all of the tables you intend to alter (or otherwise want to isolate, in order to modify triggers) with one statement, and your session will hold the lock while you make the changes, until you release the lock.
+Example, I have 3 tables here, t1, t2, and t3.  I'm going to make changes to t2 and t3, and I'm going to use t1 to illustrate whether I am actually still holding locks on t2 and t3.
+Obtain write locks on t2 and t3.  Any time you lock table you implicitly release any other table locks, so you have to lock them all together.  Your session will block until you get all the locks, then your prompt returns.
+I also have access to t3 (which happens to be empty):    
+However, I didn't lock t1, so I can't even select from it.  When you hold one or more table locks, you can only access tables you have locks for.
+Now, to test creating a simple trigger on t2, which is still locked.
+Ha! That's a typo: I incorrectly said "after insert on t1" instead of "t2" and the server stopped me from touching a table I didn't lock, while I hold other locks.  I can, however, modify triggers on a table I have actually locked, if I type this correctly.
+After all this, I can confirm that I still have locks on t2 and t3 by selecting from them, and I can also confirm that I have locks on "something" by trying to touch a table that I know I didn't lock, (t1 again):
+Changes complete, release the all of the locks you originally acquired.
+The only caveat that comes to mind is that if something fairly serious goes wrong (not a syntax error, but a low level error like IO errors, data corruption, and OS permissions) while altering a table, the table can become implicitly unlocked... and the fact that, as I mentioned, you have to obtain all of the table locks in a single statement, because the next LOCK TABLE will unlock anything you already have locked.
+Other threads trying to access the tables you've locked should block until you are done or lose your connection, which would implicitly release the locks, since they're associated with your connection/session.

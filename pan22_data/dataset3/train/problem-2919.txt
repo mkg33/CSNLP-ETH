@@ -1,0 +1,13 @@
+It's also important to note that turning portfast on does not disable spanning tree.
+The downside is that if you happen to have portfast turned on an inter-switch link that you could begin flooding traffic that creates a transitory loop (..which would likely destabilize the larger network).
+If, for example, you've got an end host like a server or PC connected then this may cause a problem as the OS could boot and then fail to pull a DHCP address because the port isn't yet functional.
+It's generally considered to be good practice to use bpduguard along with portfast for edge ports.
+The idea here is that end hosts do not generate BPDU's and that the only way an edge port would ever see one is if someone either plugged in an STP-speaking switch or, alternately, mistakenly formed a loop (..by, say, plugging in two wall ports to an unmanaged switch).
+Spanning tree only runs between switches, never to standard end hosts.
+This is a feature that looks for spanning tree BPDU's and, upon receipt, will shut down the receiving port (either temporarily or until an admin resets it).
+Bear in mind that, under normal circumstances, a port supporting spanning tree will (when it first comes up) run through a sequence of first listening for BPDU's, then learning source addresses and then finally forwarding frames.
+This can take ~30 seconds, during which the connected device won't be passing traffic.
+The win here is that we have immediate network connectivity.
+Enabling the portfast feature basically means that the port will skip listening for BPDU's and immediately begin forwarding.
+It's generally considered a good idea to have portfast configured on anything facing end-hosts (servers, workstations, printers, standard access points, etc).
+The next point is how to deal with the possibility of user-generated loops and rogue switches.

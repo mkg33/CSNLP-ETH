@@ -1,0 +1,24 @@
+But I got a bunch of failures since it does not appear to specify which database the query should be executed against.
+Repeat steps 2 through 4 until you find no more of theses errors.
+I collected queries on our Master using the following tcpdump command:
+How is one supposed to use pt-upgrade when queries are collected amongst multiple DBs?
+What we ended up doing is grepping out queries from the slow.log based on table name into database-specific (raw) log files.
+Then I ran pt-upgrade against two Slaves like this:
+Communicate the issue to the developer and run your edited slowlog again.
+I have missing tables and missing USE statments as well.
+Fianl issue : i found that the queries with like and "%" are a pain as well because the parser cannot understand them.
+sed -e '...' | sed -e '...' | sed - '...' > correct_aa
+Sometimes the USE statement is present but with the wrong database.
+(From my point of view the developer needs to put theses informations for debugging purposes and it is part of our historic framework anyway).
+(Prelude) My first issue : my slow.log is 60Go long so
+You can run you list of sed through this kind of command
+I used this article as a starting point but it is outdated.
+I then ran this file through pt-query-digest using the following command:
+AFAICT this isn't specified in the documentation anywhere.
+It takes several hours to parse my gigantic tcpdump capture so any guidance here is appreciated.
+Then we specified --type rawlog and --database with pt-upgrade.
+Are you supposed to use --filter with pt-query-digest to just output queries for a particular database and then specify --database with pt-upgrade?
+The queries are executed amongst several databases.
+pt-query-digest doesn't have a --print option anymore.
+It is not clean, it is long but it allows me to find all the queries that do not fit our framework although they made it to the prod somehow.
+And since we are very late in our mysql versions, it is my pleasure to get them to work for me eventually.

@@ -1,0 +1,23 @@
+In the ROM, one pretends that the function SHA1(.)
+One could think that the appname prefix is a salt (but not necessarily a nonce).
+Better yet, if I had in my possession a permutation function $z = perm(x_1,x_2)$, and if it is desirable and cost effective, I would use it (instead of concatenation) to increase diffusion:
+By the principle of confusion, I would, at the very least, do the following to generate the HMAC $y$ out of both the salt and $x$:
+$y = HMAC_{salt}(x) = SHA1(\mbox{  }SHA1(salt) + SHA1(x) \mbox{  } )$
+The strings "application1" and "application2" are not kept secret.
+In your situation, you could alternatively justify your design by assuming that the keyed function $F$, defined by
+A standard way to justify and analyze a design decisions like this is via the random oracle model (ROM) methodology.
+Or does this open up significant weaknesses compared to using completely different secret keys for each application?
+To do this right in a product you'd have to be much more careful about all of this than I have been.
+(I'm ignoring issues with input/output lengths not fitting together, and so on.
+Usage of the ROM is sometimes regarded as a heuristic that theoretically results in a security weakness.
+In a system that uses HMAC for a number of different applications, it is important to use different keys for different applications.
+a truly random function that is available to everyone through an oracle.
+Nevertheless, ROM analysis seems to be an excellent tool for verifying that protocols and algorithms do not have certain structural weaknesses of the sort you should be worried about.
+Either way, we are searching for some way to justify that each of the HMAC keys you generate will look uniformly random and independent to an adversary.
+$y = HMAC_{salt}(x) = SHA1(\mbox{  }perm(SHA1(salt),SHA1(x))\mbox{  })$
+After that step, we could give a standard reductionist/"provable security" analysis of HMAC composed with your key derivation step.
+Of course, this is never true in reality because SHA1(.)
+Your idea sounds reasonable, at least in theory (and that's what we do here, right?
+Now, this is an assumption that has a reasonable shot at being true, unlike the situation with pretending that SHA1 is a ROM.
+Is it safe to generate unique keys by prefixing the application name to the secret, so that the key for application 1 ends up as SHA1("application1" + secret) and the key for application 2 ends up as SHA1("application2" + secret)?
+Bellare and Rogaway (CCS'93) gave a nice description of ROM analysis, and are generally credited with suggesting that it be applied in practical cryptography.

@@ -1,0 +1,27 @@
+The real problem here is that AD DC uses SQL Server already as his own internal database engine with some special customizations to ensure a good performance (the so called Windows Internal Database).
+Especially if you experience any security or performance issues.
+I hate to say it but if they need to run an application in SQL Server and it is going to be a mission critical application there is no reason for them not to invest in running that application.
+Now with that said, Window Small Business server used to be the one stop shop for a situation like you describe.
+However with Window Server 2012 they changed this to Window Server Essential Edition, and I am not sure what roles you get with this Edition.
+The reasons you gave are the primary reasons for avoiding the combination of SQL Server and a domain controller.
+If you must combine AD and SQL Server, be aware of the risks, and do what you can to mitigate them.
+I setup one of these servers for a department one time.
+That said, it's not necessarily uncommon to see SQL Server installed on a domain controller in a small business - you only have so many resources to go around, and you sometimes have to make do with what you have.
+A feature you get with Standard is licensing to run two guest OS virtual machines via Hyper-V.
+I have never seen a company put these two roles together out of choice.
+One main reason you are going to have against doing this is Microsoft Support.
+It is an AD, Exchange, and web server all on in one; and if I recall also had an installation of SQL Server but I can't remember.
+There is also the issue of disk performance for services and applications other than AD-DS on the DC, however that can be fixed by installing SQL Server and placing the DBs and log files on a different disk than the one holding the NTDS.DIT AD database.
+Although your performance is all on one server it provides a boundary separation and would be a fully supported setup by Microsoft.
+Hardware is cheap these days and it does not take much for AD to run if your organization is that small.
+If you size the hardware appropriately it will allow you to run your SQL Server instance in one VM and then your application in the second VM.
+As it states in documentation you should not install it, they are not likely going to provide support.
+[Disclaimer: I would never consider combining AD and SQL Server in anything other than a very small business.
+It states on this KB article that the setup will fail, although the applies to only list up to 2012 version.
+You could even go and get 2 or 3 year old hardware for that matter.
+The points you have listed are shown in BOL here, and even though it quotes:
+The bottom line: Avoid combining server roles if you can.
+There are too many risks, and server loads are usually much heavier.]
+Unless you fork over a good bit of money they are probably not going to do much for you.
+If you install SQL Server on a DC, it will get in conflict with this implementation, so you will face not only problems promoting or de-promoting DCs, but also with database itself.
+I would suggest though you simply spend the money to get Standard Edition.

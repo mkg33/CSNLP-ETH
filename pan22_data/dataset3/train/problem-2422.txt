@@ -1,0 +1,45 @@
+Expand this LV when needed, as you planned to do in each VM separately.
+A bonus question: If I go with my current plan, would you recommend creating partitions on the disks (pvcreate /dev/sdX1 vs pvcreate /dev/sdX)?
+I did consider your approach with thin provisioning and LVM, and I think it would work as well.
+2) In linux, run echo 1 > /sys/block/EXAMPLE/device/rescan, where EXAMPLE is the device names under /sys/block/.
+Each time a VM reduces its storage usage that space will become available for all your VMs ;-)
+Currently I'm planning to create big, thin-provisioned disks - but with a small LVM volume on them.
+I commonly do this, but I don't know what your storage setup is like or how VMware might complicate things.
+A FileServer will allow you a centralized backup strategy as well as a centralized storage usage monitoring.
+As far as whether to partition or not if the disk is only going to be used by LVM, I always partition.
+Partitioning the disk prevents any warnings about bogus partition tables from coming up when the machine boots and makes it clear that the disk is allocated.
+This way you are always aware how much space is allocated to each of the VMs and you can't accidently run your VMFS out of space from inside a guest.
+As you said, not having a partition table makes it easier to grow the virtual disk.
+setup a fileserver which will hold all your userdata.
+Since your clients are linux based you can use NFS which is said to be faster than Samba.
+With a partition table, you have to unmount any filesystems, delete the partiton table, recreate the partition table, then run pvresize.
+If you wish to, you can create a ha-setup (drbd + heartbeat) with one copy of your fileserver in the SAN and a second copy outside or alike.
+New VMDK files can be added live to a VM, you just have to rescan (echo "- - -" > /sys/class/scsi_host/host?/scan).
+Create your LVM setup as you intended (in your example 100gb LV on a 500gb PV, just change the numbers matching the sum of storage your VMs need).
+However, it seems that a 500 GB ext3 filesystem with only 50 GB of data and quite a low number of writes still easily grows the disk image to eg.
+1) On your SAN or in VMware, do whatever you need to expand the volume.
+If you do decide to go the LVM route, I recommend not partitioning the disks.
+3) Monitor filesystem growth so you can resize volumes proactively.
+Use quotas on your fileserver if needed or desired to prevent a single VM from filling up your fileserver.
+These are virtual machines on a VMware vSphere cluster.
+3) In linux, run resize2fs /dev/EXAMPLE, where EXAMPLE is the device name under /dev.
+I dont know how it works in VMware but Redhat RHEV-M/RHEV-H its possible and it support RHEL 4.8 to 5.X and same time for win 2k3 R2 and win 2k8.
+You can partition the new disk, add it to your LVM and extend the filesystem all live.
+I think it's against conventions to use raw disks without partitions, but it would make it a bit easier to grow the disks, if that is ever needed.
+Probably the size of data will grow significantly faster on some machines than others.
+For more info http://studyhat.blogspot.com/2010/05/rhev-for-servers-22-installation-and.html
+That way I could more easily grow the LVM volume and the filesystem size as needed, even online.
+It's hard to detect and categorize as you usually don't have something to easily compare against but if the OS filesystem isn't aligned properly with the underlying storage then you can end up with extra IOPS required to service requests which cross block boundaries on the underlying storage.
+BTW, there's even no thin-provisioning tag on serverfault.com.)
+The other option is creating sufficiently sized VMDK files to handle your current usage and expected spikes in growth and just add more VMDK files as your application data usage grows.
+(I was surprised how little I found on the subject with Google.
+It's a bit of voodoo but I also make sure to start the partition at 64 to help make sure the partition and filesystem is block aligned with the underlying storage.
+(that is, to grow data size as needed without downtime.)
+If I understand thin provisioning correctly then it could really cause problems if you aren't monitoring your VMFS filesystems growth closely and allow your VMDKs to fill up your VMFS volumes.
+I have a setup of about 20 Linux machines, each with about 30-150 gigabytes of customer data.
+With no partition table, you can just run pvresize and linux will recognize that the physical volume has grown.
+Are you able to expand a volume without shutting down the virtual machine using it?
+That fileserver of course should be managed with LVM for your online capacity management purposes.
+In theory, I would just create big disks for each machine and use thin provisioning.
+I'm trying to find a solution that would use disk space sparingly, while still allowing for easy growing of individual machines.
+You've seen in your testing that thin provisioned disks tend to grow to fill their available space quickly and that they cannot reclaim space that may be free inside the OS.

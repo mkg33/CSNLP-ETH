@@ -1,0 +1,8 @@
+If I'm reading this right, you actually have logicalreferenced 87.6 GB of data on the volume. The 170 GB number you're looking at is how much physical space that data uses. So if you have your drives mirrored, I would expect referenced to be about 2x logicalreferenced.
+VOLSIZE represents that size of the volume as it will be seen by the clients, not the size of the volume as stored on the pool.
+When creating a volume, zfs will estimate how much space it would need to use in order to be able to present a volume of "volsize" to its clients. You can see that difference in the vtest-16 and vtest-3 volumes (where refreservation is 102GB and volsize is 100GB). The calculation can be found in libzfs_dataset.c (zvol_volsize_to_reservation(uint64_t volsize, nvlist_t *props))
+What is not taken into account by that calculation is the third source. The third source has little impact on vdevs that are created with disks that have 512 byte sectors.
+From my experiments (I have tested that by filling an entire zvol to check that out) it does make quite a difference when the vdev is created over newer 4K sector disks.
+Another thing I found in my experiments is that having mirrors does not show differences between calculated refreservation and what ends up to be used.
+These are my results when using 4K drives with volumes that have the default volblocksize (8K). The first column represents the number of disks in a vdev:
+These are my results when using 512 bytes sector drives and default volblocksize of 8K. The first column represents the number of disks in a vdev:

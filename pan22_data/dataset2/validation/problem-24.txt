@@ -1,0 +1,12 @@
+You're subtracting 1 from x and y every time through the loop. You could calculate the values with the 1 already subtracted out in interp2() rather than in interp2_mx():
+That takes you from 8 multiplies to 3, but from 9 adds to 10. So that's likely from 17 instructions to 13.
+My function interp2 requires a T (intended float/double type) pointer to Z (mz by nz matrix) and interpolates the points in XI and YI into ZI (which are all the same size mi by ni).
+Likewise, mz and nz are confusing, too. And even worse in iterp2_mx(), mm2 and nm2 are not only confusing but easy to mix up! mz and nz should be something like imageWidth and imageHeight (or matrixWidth and matrixHeight, or inputWidth and inputHeight), and the other variables and arguments should be appropriately named as well.
+which is 2 adds and 1 multiply. Doing that also removes the need to calculate x1mf and y1mf. So your inner loop would become:
+You might also have luck by keeping track of a pointer to the next input pixel just incrementing it instead of calculating line every time through the loop, too.
+It would be nice if you could pick more easily understandable names for your functions and variables. Why is this called interp2()? What is interp1()? You should name it bilinearInterp() or something obvious like that. And what does interp2_mx() mean?
+Looking at your error handling, I'm not convinced it's sufficient. You check if xp is less than 0 or greater than nm2, and the same for yp. But what happens when xp exactly equals nm2? line ends up pointing to the last pixel in a line. But then you calculate line + 1. That gets you the first element of the next row. And for yp, it means reading a row that doesn't exist when yp equals mm2.
+Why do xi and yi have an i in their names? That makes them look like integers, but they're declared as type T, which you say will likely be float or double.
+Using x and y to represent horizontal and vertical offsets is fine. Those are well-established traditions. But you're naming the start of your image z which is really weird. z is usually reserved for depth, at least when used with x and y. That makes your code very confusing to read.
+I wrote this under VS2010 and it is intended to be called from MATLAB as a MEX function (thus the minus one subtraction in interp2_mx because indexing in MATLAB is from 1:end as opposed to 0:end-1). 
+I have spent countless hours trying to speed up my bilinear interpolation up. I even tried implementing an SSE version (a double version and a float version), but that was even slower than this version.

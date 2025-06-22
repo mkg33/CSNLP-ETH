@@ -1,0 +1,17 @@
+You would have to add a lot of folders to the .gitignore  file though like proc, etc.
+All I would naively think is necessary to check the integrity of the system: Mount the linux partition every week or so using a rescue system, check if the git repository is still untempered and then issue a git status to detect any changes made to the system.
+So under /var mount an fs with rw,noexec,nodev and remove write permissions to /var/tmp (afaik, it is rarely needed by daemons and that should be configurable).
+@Sirex provided a very good answer already, but if you want to make a step further with security, the best way to deal with it is first prevention then detection.
+I am thinking about putting my whole linux server under version control using git.
+I don't think this is likely to work, but as an experiment I'd like to see what happens if you do this with just the /etc folder.
+Some distributions provide extensive documentation on system hardening.
+The reason behind it being that that might be the easiest way to detect malicious modifications/rootkits.
+Apart from the obvious waste in disk space, are there any other negative side-effects?
+Use a firewall with the most restrictive rules possible.
+Try setting up a system with / filesystem mounted read-only.
+Also use a security patch for your kernel to further limit access to resources by users, try grsec for example.
+Make /tmp a separate ramfs mounted with noexec,nodev option.
+For the system to work, you really only need /var to be mounted read-write.
+Is it even a secure way to check against rootkits since I most likely would have to at least exclude /dev and /proc ?
+That's where most of the configuration information is kept.
+I think it's a good idea to analyse the changes a tool makes in your system:

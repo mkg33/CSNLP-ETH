@@ -1,0 +1,17 @@
+Each VirtualHost may have a unique "SSLCertificateFile" directive.
+http://www.linode.com/wiki/index.php/Apache2_SSL_in_Ubuntu
+Apache ignores the file names, you have to define the IP addresses in the Virtual Host definitions.
+I am hosting several domains on my VPS which only has 1 IP address (is this called name based virtual hosting?
+So I hope someone here can explain what's happening and if I'm doing things correctly.
+I'm following this guide to install SSL certificates:
+Presumably you would want to toss either a DocumentRoot, mod_proxy, or mod_rewrite rule into there.
+I'm setting up my own LAMP server on a VPS for the first time.
+I have one file pupeno.com.conf which includes the definition for non-ssl and ssl pupeno.com virtual hosts.
+In creating a /etc/apache2/sites-available/bikestore-ssl and /etc/apache2/sites-available/toystore-ssl,  will Apache know that https://bikestore.com should reference IP address 1.1.1.1 with ssl certificate bikestore.crt and that http://toystore.com should reference IP address 2.2.2.2 with ssl certificate toystore.crt?
+Essentially, Apache chooses which VirtualHost to serve according to the IP address, ServerName, and ServerAlias entries.
+I consider http://pupeno.com and https://pupeno.com the same thing thus it's on pupeno.com.conf.
+For SSL sans-TLS, it is sufficient to simply concern yourself with the IP address, since you're assigning each VirtualHost a unique IP.
+Think about what you want to enable and disable in one go with a2ensite and a2dissite.
+Two of the sites on my VPS, bikestore.com and toystore.com, will eventually become ecommerce websites that accept credit card information.
+I'm in the process of enabling an https version for both sites, so I purchased 1 new IP address for each.
+When inspecting the contents of bikestore-ssl and toystore-ssl, it's not clear to me how apache will know which *-ssl file to assign to which https:// domain.

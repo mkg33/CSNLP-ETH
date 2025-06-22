@@ -1,0 +1,20 @@
+There are two extended events query_pre_execution_showplan and query_post_compilation_showplan that have similar descriptions, but differ by one important word:
+The trigger is compiled in the red box and the plan is inserted into the cache as shown by the sp_cache_insert event.
+It was still compiling each time it got triggered.
+It does compile each time, but I hadn't checked if a trigger compiles each time it is triggered when it doesn't reference the DMV and instead hardcodes a value.
+Here you can see the first compilation happening for the insert statements as prepared plans being auto-parameterized in the green box.
+We are troubleshooting a server that has high CPU utilization.
+Our first thought was that maybe referencing a DMV in a trigger would cause it to compile each time, or maybe just this specific DMV would cause it.
+After running an XE session looking for compilations, we are seeing thousands of compilations per second.
+After finding that the queries weren't really causing it, we started looking into compilations.
+The XE event being used is leading you incorrectly to think the trigger is actually compiling every execution.
+The events aren't exactly the same in description and occur at different times from further testing using your repro.
+Then in the orange box the trigger execution gets a cache hit and reuses the trigger plan for the second INSERT statement in the batch, so it's not compiling every execution of the INSERT command and the plan does get reused as you can see with the sp_cache_hit event for the trigger.
+If we run the two INSERT statements individually again after the first execution the trigger doesn't compile again as shown in the events below:
+The trigger gets a cache hit and doesn't compile again as shown in the red block of events.
+Using a much larger event session definition, it is easy to see where compilations actually are happening.
+However, in every case you still see the query_pre_execution_showplan event firing which I can only attribute to the difference in being optimized vs compiled in the event description, but the trigger isn't compiling for every execution as shown by these series of events.
+Performance Monitor is showing less than 50 Compilations/sec and less than 15 Recompilations/sec.
+The green block of events repeats this behavior for the second INSERT statement run as a separate batch.
+Here the first statement encounters a cache hit for the prepared auto-parameterized version of the statement in cache but a miss for the adhoc batch that was submitted.
+The triggers reference sys.dm_tran_active_transactions.

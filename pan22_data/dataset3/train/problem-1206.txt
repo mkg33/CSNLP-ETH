@@ -1,0 +1,15 @@
+Restart ssh (service sshd restart or service ssh restart, depending on your distribution) and ssh will only be accessible from inside the VPN.
+Edit /etc/ssh/sshd_config and add this directive (assuming the VPN IP address for the server is 102.168.10.1):
+Now, the last step is block all incoming traffic with  iptables -P INPUT DROP
+The risks of someone having my 4096 bit private RSA key are pretty minimal.
+If you have a VPN service configured on your server, you can make SSH listen only to the VPN interface.
+Now you need to restart the service with /etc/init.d/knockd restart
+Change the default 22 for anything else, and restart the sshd daemon.
+At this point, you can try to open ssh port, using the script, do this, if you have console to get inside your server if you block out.
+To change the SSH port, you can change the Port directive on /etc/init.d/sshd_config.
+If your server has a vpn connection, perhaps you can set your ssh's server ListenAddress to the local vpn endpoint, instead of the default of all local addresses.
+Depending on why you want to block port 22, it might just be good enough to move your sshd from port 22 to any other port, like 22222 or 12345.
+To open and close the ssh port, I have one script in my pc:
+You can have more than one active port, just by more than one such port line in the config file.
+to /etc/ssh/sshd_config and reloading sshd config like
+I have a Debian 8 server with a public ip and block and open access when I want using knockd:

@@ -1,0 +1,14 @@
+This allows for all AWS access to be brokered via Okta and allows for MFA login to be required for both console and CLI access.
+We have set up IAM roles that allow federated users that are authenticated with Okta to gain access to the AWS Console.
+Is there any way for those users to create temporary access keys in the AWS console or a shell script?
+You can start using it today with just a Python and pip.
+This tool allows developers where their AWS access is federated with Okta to pull keys via STS that are written out to ~/.aws/credentials  for them under a profile name they choose (optionally) so you can easily manage keys from multiple accounts or roles.
+Some of the users need temporary AWS access keys to use the AWS command line tools locally.
+I have ended up creating a small webapp we run internally that will issue temporary AWS credentials for our users ussing AssumeRole.
+Support for most MFA factors comes out of the box and it's built to be easy to use and deploy on developer workstations without needing any additional services or crazy dependencies.
+So, I wrote a tool that will generate temporary AWS credentials (from STS) using a SAML assertion generated from an Okta login that can be used with the CLI.
+This functionality would need to be provided by the entity in charge of the long-term AWS credentials (Okta), which could offer handing out the resulting temporary credentials triplet for copy/paste into the AWS CLI scenarios.
+In a recent project I needed to be able to have users utilize Okta to access both the AWS console and use the AWS CLI.
+If I understand your use case correctly, this is not possible as such, because the resulting temporary credentials from the backing GetFederationToken API action cannot itself be used to call these STS APIs, see the table Comparing Features of AWS STS APIs for details.
+I have a solution for this; https://github.com/nathan-v/aws_okta_keyman
+The tool, okta_aws_login.py, can be found at GitHub and additional details can be found at this blog post on a series I wrote about setting up user federation with Okta and AWS.

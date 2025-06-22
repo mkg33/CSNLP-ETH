@@ -1,0 +1,6 @@
+The monit process reads from a ~monit/.monitrc file, and monit insists that the file is only readable by the the user it runs as - i.e. the monit user.
+However, that's where it all falls down - the source control directory is written to by Mercurial when I pull the latest scripts, but the pull command isn't running as monit, so the monitrc file is writable by another user... which monit doesn't like, and won't run.
+I can constantly chowning and chmodding the monitrc file before and after each pull, but that is fraught with oversights.
+I'm being good by having process monitoring: I have monit watching some key processes, and restarting them if they fail. 
+I'm being good by not running as root: Monit runs a web-server, and I don't want it to run as root in case there is a security issue. So, I have a special 'monit' user, that has the permissions required to start and stop some key processes, and that is about it.
+I'm being good by storing all my operational scripts and configurations in source-control (mercurial), so I can rebuild machines with the same specs. I, or other devs, check-in changes to the scripts to source control, and then I pull the results onto the production machine. Symbolic links point from ~monit/.monitrc into the source control directory.

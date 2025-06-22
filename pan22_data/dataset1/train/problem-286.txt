@@ -1,0 +1,11 @@
+Your "irregular" location setup is intriguing, if a bit vague.
+There are several approaches to identifying nearest neighbor, including exhaustively enumerating candidates as in your code, or sorting by X and/or Y to focus on fewer candidates, or sorting by bit-interleaved X+Y to give one kind of quadtree representation. One can also quantize to support hashing.
+I'm going to forego such fancy techniques in favor of a simple, visual argument. It relies on the notion of "in expectation" when finding the average.
+Based on your input data and desired accuracy, pick a pixel grid size, and render your circular objects on the grid.
+Cycle through your desired angle settings. Uniformly pick a random location on the grid, or to the left on the Y-axis. Constrain to a conveniently small bounding box in the grid, or bounding interval on the Y-axis, so we are sure to run into objects.
+From the uniformly distributed starting point, start drawing a line (a ray) in the desired direction. Note when you enter a rendered object, and when you exit an object. Once an "exit" event happens continue extending the ray until next "enter" event, and record the freespace distance.
+At this point, your specification doesn't make it clear to me if you want to keep extending the ray to make additional freespace measurements since the irregular locations leave varying spaces, or if you prefer to end the iteration at this point.
+Now iterate: go back to choosing another random starting point, and make additional distance measurements, until you have N of them.
+Finally, report the average as sum(distances) / N.
+I don't fully understand your problem statement, could you elaborate? I asked about your definition of distance because unless the distance you are interested in is some projection of the euclidian distance, it should be constant regardless which direction you are looking.
+In any case, I did your problem manually and found a different result than your program above reports. So here's my implementation with inline comments:

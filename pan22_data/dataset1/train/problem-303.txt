@@ -1,0 +1,9 @@
+Changing the URL structure like this isn't something you should do in .htaccess alone. First and foremost you still need to change the URL structure in your application. All your internal links (href attributes) need to be changed to the new URL structure. ie. Where you previously had "/path/to/page" in the HTML, this now needs to be changed to "/pl/path/to/page".
+Since you already have a front-controller (ie. everything passes through index.php which routes the request) then there is nothing you should really need to change in .htaccess. However, your front-controller (index.php, etc.) needs to be modified to handle the new URL format.
+Once your application is working OK with the new URL structure then you can implement an external redirect in .htaccess to redirect /path/to/page to /pl/path/to/page. This is for the benefit of search engines and any inbound links/bookmarks that are linking to the old URLs.
+For example, before your existing internal rewrites (front controller) and after your canonical www to non-www redirect, you could do something like:
+If the requested URL does not start with /pl/ then prefix this to the URL and redirect.
+That would be a potential problem, since you are having to redirect all root requests to /pl/... in the interim and some/many existing inbound links may not get updated. You will need to disable the redirect when you implement the English version in the root, or intelligently redirect only the required URLs. Or, implement the English version with an /en/ prefix?
+A client of mine has a website, served as example.com. He wishes to serve it as example.com/pl, saving the root path for a future site version in English.
+I'm wondering whether this is doable using .htaccess rules. The current .htaccess is as follows:
+Can the rules be changed to achieve what the client expects? If so, how?

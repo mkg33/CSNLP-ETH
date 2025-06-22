@@ -1,0 +1,11 @@
+If your file is primarily downloaded by viewers in India, you may want to consider hosting the content in the S3 region in Mumbai and serving it directly from S3, rather than using CloudFront.
+If transfer acceleration is not used on any particular download, you don't pay the $0.04/GB increased price, because the downloading user is connecting directly to the bucket.
+The "acceleration" is a result of the way the TCP sessions and payload are unwrapped, buffered, and rewrapped, inside the edge network, of persistent connections from edge to bucket, as well as of the fact that the RTT on the viewer-facing TLS session is potentially much shorter, because it's handled at the edge when acceleration is active.
+"Optimal" usually but not always means "geographically close."
+It only charges for delivering the files to the requesters, so the charges shown are for each download by each user.
+CloudFront, via a hidden/automatic integration with Route 53's georouting database, serves content from what is calculated to be the optimal edge location for each viewer requesting an object.
+The price you pay for each download is determined by which edge location the viewer connects to when they do the download -- as determined by the custom response generated when the viewer does the DNS lookup.
+S3 Transfer Acceleration is an S3 feature that uses the CloudFront transport network (also called the "AWS Edge Network") but not the CloudFront cache, to deliver content to users.
+Using S3 in Mumbai is only $0.1093/GB with transfer acceleration disabled, or $0.1493/GB with transfer acceleration enabled.
+CloudFront does not charge for fetching your files from the origin server (where they are permanently stored).
+The feature, if enabled on a bucket, is designed to be active on a given download if the system decides it will be beneficial -- again, with a hidden/automatic integration with Route 53 georouting services providing this decision.

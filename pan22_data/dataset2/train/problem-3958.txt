@@ -1,0 +1,7 @@
+Now I've created subdomain dev.example.com for my stage infrastructure instance. It should be something like foo.dev.example.com, bar.dev.example.com, etc.
+GKE default ingress (GCE ingress class) will automatically spin up and setup an HTTP(S) load balancer that has path-based routing capabilities.
+Currently, is not possible to attach all the external load balancer addresses to a single one in GCP.
+However, you can use GCE ingress's features to handle multiple hosts. In this case, *.example.com and *.dev.example.com, can be pointed to a different set of services and deployments within the cluster using the same ingress (and hence, the same public address).
+You can also use other ingress controllers that will create Network load balancer resources and will automatically bind to an external address.
+I've got some domain example.com with some subdomains (foo.example.com, bar.example.com, etc). That's hosted in GKE and contains one ingress with the mass of routing. This all used to be deployed manually.
+I want to deploy everything via helm. I've got a standard chart structure for my services (like deployment/stateful set + ClusterIP service + ingress). So I need a load balancer that would send all requests with host *.dev.example.com to GKE ingress controller avoiding using external static IP address per ingress. Is it possible? Or I could I bind all my ingresses to one static IP address?

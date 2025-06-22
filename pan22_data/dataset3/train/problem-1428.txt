@@ -1,0 +1,19 @@
+However the graph approach might be overkill so I'm not sure.
+(And I can fill in more details on the specific grid structure here if you need them, certainly.)
+I've considered using an undirected, connected graph where each node is a bubble.
+However it seems like answering "which bubbles (if any) should fall now?"
+What data structures are common for storing the bubbles?
+Instead I would maintain the core data structure in a grid; there are very standard approaches for storing hex grids (which is what the bubble grid amounts to - imagine 'inflating' the bubbles until the gaps between them fill in) in rectangular 2d arrays that are directly applicable here.
+that doing anything too complex with it smacks of premature optimization; this just shouldn't be a huge part of your frame time.
+Perhaps being able to grab a list of neighboring bubbles in constant time for a particular "bubble slot" is useful.
+Assume this is just the basic "three or more same-color bubbles that touch pop" and all bubbles that are separated from their group fall/pop.
+This seems like it could help answer the question "which bubbles (if any) should fall now?"
+Another consideration for the data structure is collision detection.
+So the collision detection would be something like "moving bubble is closest to slot ij, neighbors of slot ij are bubbles a,b,c, moving bubble is sufficiently close to bubble b hence moving bubble should come to rest in slot ij".
+after some arbitrary bubbles are popped and corresponding nodes are removed from the graph.
+Finding connectivity in a general graph is usually done with floodfill-style algorithms (i.e., breadth- or depth- first search and variants thereof) anyway, so I don't think that abstracting out the process in the way you're describing is actually any great help.
+The one small 'catch' is that you probably want to initialize your flood fill/search structure by adding all nodes adjacent to the top or walls to your 'to be processed' queue; this is likely to be quicker and more straightforward than flood-filling from each of the connected bubbles in turn.
+I think the answer is all bubbles that were just disconnected from the graph should fall.
+A game like this could be probably be made with a relatively crude grid structure as the primary data structure.
+I'm starting to make a bubble shooter game for a mobile OS.
+Regardless of how you do it, though, the connectivity pass should be so fast (you're iterating over probably not more than 100 items!)

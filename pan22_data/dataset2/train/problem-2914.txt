@@ -1,0 +1,6 @@
+IMO you shouldn't return IEnumerable<TEntity> from GetAll and Find, but IQueryable<TEntity>. There reason is that by returning IQueryable you can compose queries comprising multiple repositories that will result in one expression tree and, hence, one SQL query. (I'm assuming that all repositories in a unit of work will receive the same DbContext instance.)
+One thing you do need to consider though: multiple column primary keys. That's why Find takes an array (params). You're making a method that will throw if the object has a multiple column primary key (Get).
+It can't be any shorter. It's basically a thin wrapper around a DbSet. But I do have a remark about the design.
+... you would pull all Customer records from the database before the actual join is made. By returning IQueryable, this would turn into a SQL query containing a JOIN and (obviously) far less traffic.
+If you're worried about repeating Context.Set<TEntity>() about the place, you can assign a field in your constructor instead:
+I would say that I don't generally like generic repositories but I won't get in to that now. A lot of people use the pattern and I don't know of any canonical 'this is bad' sources so am happy to disagree over it.

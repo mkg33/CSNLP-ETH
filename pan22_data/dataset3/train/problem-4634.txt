@@ -1,0 +1,24 @@
+While C# isn't nearly as slow to compile as C++ tends to be, you still don't want to have to load Visual Studio and recompile your game every time you make a minor change to the map.
+You'll need some way to asynchronously load and unload chunks, but this is highly dependent on how your game or engine works.
+Depending on how many chunks you have loaded at one time, you could just do this whenever the player cross a boundary from one chunk to the next.
+I ran into a lot of additional complexity due to the engine I was using, but that's pretty implementation specific.
+This lets you simply break up the world into X by Y tile chunks, and load those.
+Rather than considering the positions of each 3D object in the level, you already have your level split nicely into tiles.
+Since you're using XNA, you have an option of using the Content Pipeline with a custom exporter for your level content.
+If you've got any questions about what I did, please comment and I'll do what I can to help out.
+This is a quick run down of how I'm doing it, with some side notes on how to make things a bit easier on yourself.
+After that, you can look at optimizing how you load to minimize garbage.
+It's really nice to be able to change how large a chunk is, re-export, and then see the effects of that on performance immediately.
+Finally, think of any little things that might help you down the road.
+Your second image is exactly correct -- you need to determine what chunks should be loaded or unloaded, and make the appropriate requests to make that the case if it is not already.
+You're probably going to want to play with this number a lot until you get a good balance between performance and memory consumption.
+Since you're using a tile based map, that step becomes significantly easier.
+You want to be able to know that you want to load or unload chunk C, and then generate the filename you need to load to do that at run time.
+Another important thing here is to make sure you use a good naming convention for the files containing your level's chunks.
+As far as actual architecture goes, you're going to want to abstract the process of actually loading and unloading the data from memory from the process of determining what should be loaded/unloaded.
+After all, either way, you want to make sure that enough is loaded that even in the worst (reasonable) load time, the chunk is still loaded before the player can see it.
+For me, the first problem was breaking the world into smaller chunks that would be appropriate to load and unload on the fly.
+Unless you know of some way to run the export process without recompiling, I'd honestly recommend against it.
+You're going to want to do that automatically, rather than by hand.
+For your first iteration, I wouldn't even worry about performance of loading/unloading and just get the simplest thing that could possibly work, and ensure that you are generating the appropriate requests at the appropriate times.
+I've been working on something very similar for my current project.

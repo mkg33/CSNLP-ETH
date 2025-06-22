@@ -1,0 +1,11 @@
+Is there any way to use dhcp on the router, but not its DNS?  I'm wondering if it might be better to just re-flash the router with dd-wrt.
+FYI- I am seeing the exact same issue on my ASUS WiFi router.  I have an Asus RT-N16.  I also configured the dhcp server to give clients a different DNS server.  However, this asus insists on also giving clients the router's 192.168.1.1 address.  This is bad for the reasons you mentioned.
+I am using a small wi-fi router (ASUS RT-N66U) as DHCP (and as gateway). In the DHCP config page I set up as DNS the ubuntu server IP (it is fixed 192.168.1.14).
+If in the browser I type http://redmine.engserver/ it works most of the time, but sometimes it ends up with a yahoo page search or something else. In the DNS cache it shows as (Server not found). ipconfig /displaydns
+In the DNS lookup I added the Redmine server name (redmine.engserver <-> 192.168.1.14) and as forwarders the outside ISP DNS IP adresses.
+If you have DNS on the ubuntu box, you can also remove the DNS entry from the router's DHCP (so it gives only the router itself as DNS to the client) and add the ubunto as primary DNS server and a fallback as secondary DNS server.
+Before changing the DHCP setting on the router, I would always get only one DNS server: 192.168.1.1 (which uses probably DNS forwarding to external public DNS services).
+I just set up an internal http server for internal use (I set up Redmine), in a small network (30 or so PCs).
+I looked with wireshark and it seems like sometimes the client PC interrogates the secondary DNS (192.168.1.1) instead of the first 192.168.1.14.
+Is it even legitimate to have 2 DNS (one internal and one forwarded by the router) which are inconsistent?
+Now when I connect a new PC to the network, the DHCP router issues its new IP and as DNS servers it issues: primary: 192.168.1.14 (ubuntu machine) and seconary 192.168.1.1 (the router itself).

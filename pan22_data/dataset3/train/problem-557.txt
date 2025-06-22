@@ -1,0 +1,10 @@
+You also need the various static binfmt binaries from qemu to enable this per architecture.
+When you have everything configured correctly, you should see the following:
+See this issue and consider installing the binaries in a different way or use an unstable version.
+At last check in stable, Debian doesn't load these binaries in a way that supports a chroot type of environment like you have in Debian, it will look for the qemu static binaries inside the container rather than using the files on the host.
+This typically won't work without something to interpret the binary.
+On Debian the static binaries are available in the qemu-user-static package with one catch.
+On Linux there's Qemu plus the binfmt_misc kernel module that provides this support.
+From the tag on your image, it looks like you are trying to run ARM based binaries on a x86 based host.
+Two important things to look for, first that the binfmt_misc and qemu-arm directory and file exist.
+And second, that the flags section includes a F to indicate the binaries is fixed and won't be affected by the container root filesystem changing.

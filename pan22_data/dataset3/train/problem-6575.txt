@@ -1,0 +1,17 @@
+Apache won't serve new requests until the old ones are served, so you'll be waiting until they all finish up.
+Whereas, stop attempts to terminate all child processes immediately, which could leave end-users hanging.
+New workers should already be started to handle new connections.
+If someone is downloading a 500MB file at 68KB/s you may be waiting a LONG TIME, during which no other serving is happening.
+If the server is in an abnormal state it may fail to restart gracefully (perhaps thats why you are considering a graceful restart)
+If you are restarting to pick up a new config then there is a risk there may be a config error which could prevent the server restarting properly.
+The aforementioned graceful parameter tells httpd to begin the restarting process by first signaling all of its child processes to complete their current tasks.
+My preference is graceful — a better choice for your business-class server — because it’s friendlier than abruptly terminating child processes that are serving customers.
+Link: https://www.godaddy.com/garage/tech/config/how-to-restart-apache-without-rebooting-your-centos-linux-server/
+If Apache is serving static files, and isn't acting as the front to something like passenger, it's pretty smooth.
+When performing a graceful restart, existing connections should run to normal completion at which point their workers will terminate.
+Most users won't even notice, and those that do will consider it normal glitchiness.
+From experience, the UX for interacting with that server will be very bad until the app server is up, loaded, and the caches are warmed.
+You shouldn't notice any connection failures or slow page loads but in practice you may see new connections queue briefly while the config is re-loaded by the master thread (mine takes under half a second)
+If Apache is fronting an application server, the situation can be very different.
+After all the child processes (the ones that are serving up http requests) have finished their tasks, they will close; if any child processes aren’t currently serving requests, they will close immediately.
+Many admins and especially programmers use stop to stop their server, often because they don’t know that graceful even exists.

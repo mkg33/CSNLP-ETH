@@ -1,0 +1,8 @@
+And I modified the include/autoconf.h: enabled the commented out line: #define CONFIG_CONCURRENT_MODE 1
+The compilation succeeded without giving me any errors, but upon inspecting the 8192cu.ko file generated after compilation, I find out that its compiled to the wrong kernel version. Below is the vermagic information when I ran modinfo ./8192cu.ko:
+I'm trying to use realtek 8188cu module in concurrent mode(both station and AP mode simultaneously). I downloaded the driver source files from here: https://github.com/raspberrypi/linux/tree/204050d0eafb565b68abf512710036c10ef1bd23/drivers/net/wireless/realtek/rtl8192cu
+And I built the kernel module using the command: make -C /lib/modules/$(uname -r )/build M=$(pwd) modules
+But I don't even have kernel sources for 4.9.58-v7+.. What is going on? Can somebody help me to compile the driver successfully and to get it working with latest raspbian stable release? 
+However, there are only branches for each minor version, and the current sublevel if you look in the Makefile for 4.9.y is 4.9.80.
+Running make bcm2709_defconfig should give you the configuration for v7+, and if you are lucky, building a module against that will match your kernel.
+If you look at the history of the Makefile, though, you'll find the commit from upstream for 4.9.59 was October 27 last year.  The closest release from the Rpi tree is October 29, and if you download that it is indeed 4.9.59.

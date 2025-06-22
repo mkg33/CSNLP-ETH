@@ -1,0 +1,12 @@
+Handling simultaneous collisions between more than two balls (e.g. balls A and B simultaneously colliding with C) is hard. And yet it's bound to happen when you have a lot of balls in a small space. You want to think not just in terms of separating pairs of balls but in terms of conserving energy and momentum while respecting each collision's restitution.
+I'm not sure whether SIGGRAPH has published anything more recent, but the paper which I used as a basis for multiple collision handling in my most physics-demanding game was
+Complementarity Based Multiple Point Collision Resolution
+http://isg.cs.tcd.ie/cosulliv/Pubs/GiangEgirl03.pdf
+I have a program which simulates many bouncing balls. The balls can bounce off each other and off the sides of the container.
+The problem I am having is that sometimes when two balls collide, they get stuck together, overlapping very slightly. They will not come apart on their own, but may disperse if another ball knocks into them.
+Here is my collision detection and resolution code: 
+So essentially, the method iterates through all possible combinations of two balls. If the distance between them is less than the sum of their radii then a collision is detected and the velocities of each ball are changed.
+The next method to run will update the positions of the balls, before the above method is called again.
+It appears that my problem occurs when a collision is detected, but on the next pass of the function, the ball is still seen as being inside the other ball and receives a collision whilst trying to get out. 
+I have tried adding this code when a collision is detected. I expected this to solve the problem by moving the balls to their last position before the collision, but the problem persists
+Actually for multiple balls, I'm not sure the above snippet is a good idea anyway.

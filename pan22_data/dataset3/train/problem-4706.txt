@@ -1,0 +1,9 @@
+I have a Synology DSM which is configured to use VPN clint to connect to company intranet.
+You'd need a local DNS resolver like DNSmasq, configured to forward requests for .local to one nameserver, and all others to your general purpose nameservers.
+OpenVPN connection is stable but the DNS servers are not added to the top of the resolve list.
+How can I configure DSM in order to use VPN dns for a specific domain (like example.com) and use the other ones (local) for other domain.
+DNS (what you can put into /etc/resolv.conf) can't deal with split DNS, so you have to put those smarts into the DNS server.
+I think this setup is called split-DNS, something that works very well with Viscosity OpenVPN client.
+Instead it seems that they are added in the middle:
+and dnsmasq's config would have something like this pair for each domain you want to direct elsewhere.
+Depending on your environment, this DNS resolver could run on the Synology NAS, or on a pfsense firewall, or even on your normal desktop if its up 24/7

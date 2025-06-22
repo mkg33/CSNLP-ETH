@@ -1,0 +1,15 @@
+The only complexity is the clusters, so you'll only see 1/5 of the web traffic and 1/3 of the database traffic.
+Of course, we're assuming you've checked the basics - your servers aren't starved for resources, right?
+Also, if you are re-checking the basic make sure you verify that all of your networked devices have the correct speed and duplex settings.
+I agree with @Rich, the problem could be anywhere.
+: cpu not maxed, still have free RAM, page file not maxed.)
+To be specific, use a logging library for your dotNet app and check that, check your IIS logs, and maybe use SQL Server Profiler on your database servers.
+Otherwise, turn on sticky sessions so you always hit the same server for your entire testing session.
+If you don't have basic monitoring you might want to consider setting it up so that the F5 can make intelligent decisions about the nodes
+It's amazing how often a single server with an interface that is set to half duplex will ruin an otherwise functional application.
+If every request is 45 seconds slow, then I guess tracing any request will tell you the problem.
+If you enable the default monitoring it checks every 5 seconds and would mark the server offline after 12 -
+You should have no trouble determining the source of your problem once you have a record of where your request, and its subsequent response, are during the 45 second window.
+So you would know if the problem was between the F5 and the web servers.
+Any of the components you mentioned could be the cause of the problem.
+The best way to troubleshoot the issue would be to sniff the inbound and outbound interfaces on a client, the IIS servers and the SQL servers.

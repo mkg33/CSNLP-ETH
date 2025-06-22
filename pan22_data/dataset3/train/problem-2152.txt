@@ -1,0 +1,19 @@
+https://blogs.technet.microsoft.com/askpfeplat/2013/10/20/storage-spaces-how-to-configure-storage-tiers-with-windows-server-2012-r2/
+I've read that you can tell the storage space it's connected to a battery backup (the computer is plugged into a UPS) or use an SSD cache array, but I don't know the pros and cons here, nor the PowerShell commands to do so.
+During transfers I see about 1.5 GB of memory in use, and only 3-4% CPU.
+It's a bad idea to use file copy as a progress indicator of anything.
+I'm wondering what my options are for speeding up the write speed to my storage spaces that's using parity.
+I'd suggest NOT to use any third-party DRAM & SSD cache.
+https://blogs.technet.microsoft.com/josebda/2014/08/18/using-file-copy-to-measure-storage-performance-why-its-not-a-good-idea-and-what-you-should-do-instead/
+I assume the write performance should be a little better than this, right?
+You can use Windows built-in SSD based caching software or configure tiered storage spaces where your SSD will act as a WBC or performance tier.
+Consider adding SSD drives as WB Cache or switching your Spaces to tiered configuration.
+Format-Volume said "the specified file system is not supported."
+Microsoft clearly recommends to only use the “Parity” Spaces layout without WBC for archive-like scenarios in which only reading takes place almost exclusively.
+If adding SSDs is not an option for you, consider using "Two Way Mirror" (aka RAID10) configuration, this will significantly increase write performance.
+I set up the storage space using PowerShell because I was attempting to do ReFS with parity, and though it's an option in the GUI, the GUI was giving me trouble.
+https://msdn.microsoft.com/en-us/library/windows/hardware/dn567634(v=vs.85).aspx
+The write performance you achieve is absolutely normal for your configuration.
+So, it's an NTFS volume at 26.1 TB, provisioning type is fixed, resiliency is parital, physical disk redundancy is 1.
+Stick with DiskSPD or you'll get random & unreproducible numbers.
+With such a powerful processor, I wouldn't expect parity calculations to slow it down too much.

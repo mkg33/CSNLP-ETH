@@ -1,0 +1,9 @@
+There is no way that I know of, aside form limiting each VM to one vCPU which is the default, of throttling CPU use per VM in VMWare Server.
+You could run the VMs as a specified user, and use PAM and the /etc/security/limits.conf to limit the resources run by the user.
+I would recommend setting the 'niceness' of the each process that corresponds to the VM. This doesn't really limit how much CPU is used, but rather sets the priority that the scheduler will give it.
+I'm 99% sure there is no resource control in regular Server, there's loads in ESX though but that's no use to you.
+I'm not sure if vmware server can do it, but if you install ESXi (free) then you can limit the CPU usage per vm. Note, this will overwrite the entire system, effectively giving you a dedicated vmware device.
+You can change the priority of a process with the renice command.  -20 is the highest priority, 20 is the lowest priority:
+Disk IO can be one of the problems with VMs.  You can get some number of disk performance with the iostat command which is part of the sysstat package.  You can then use the ionice to change the disk priority. For example, to set a vm to 'idle' disk priority:
+For a very simple solution, take a look at cpulimit, which lets you set a CPU usage limit per process, expressed in percentage. 
+The amount of Memory a VM gets is set with the VM properties inside of VMware Server, I would start with that.

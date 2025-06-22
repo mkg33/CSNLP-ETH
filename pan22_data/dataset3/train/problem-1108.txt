@@ -1,0 +1,11 @@
+For CtrlC, the terminal emulator simply sends the single byte 0x03.
+These bytes are interpreted and handled specially by the kernel, according to the terminal line discipline.
+In an open session, choose edit > preferences > shortcuts
+To discover what is currently assigned to CTRL+C in Gnome terminal.
+What you're asking about is determined to two factors;
+Check the output of stty -a, it probably contains intr = ^C which means that CtrlC (the byte 0x03) is the interrupt character.
+I've been messing around with Gnome Terminal recently, trying to customize what happens when I press Ctrl-C (I'd like it to copy when I have text selected and send SIGINT otherwise, but that's not part of the question), but I can't seem to figure out where in the stack Ctrl-C is recognized (or where Ctrl-Shift-C is recognized if Ctrl-C is rebound, for that matter).
+CtrlA – CtrlZ send the bytes 0x01–0x1A (decimal 1–26), respectively; furthermore, Ctrlspace is 0x00, Ctrl[ is 0x1B, Ctrl\ is 0x1C, Ctrl] is 0x1D, Ctrl^ (or often simply Ctrl6 without Shift, assuming US keyboard layout) is 0x1E, and Ctrl_ (or often Ctrl- without Shift) is 0x1F.
+So, what library or program is responsible for actually handling that keyboard combination?
+See the manual pages of stty, termios, ioctl, ioctl_tty and related websearch matches (including for the term "line discipline") for more details.
+; CTRL+C (^C) is almost always assigned TERM or HUP (hangup).

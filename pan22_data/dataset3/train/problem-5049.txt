@@ -1,0 +1,33 @@
+We'll first try to find a function $P(k, n_{on}, n_{total}, m)$ which is the probability of a state occurring.
+I'm not exactly sure how to make this formula more amenable to computation.
+Then the expectation of zero bit numbers should be:
+$P(k, n_{on}, n_{total}, m) = {n_{total} \choose n_{on}}(n_{on}/n_{total})^{km} - \sum_{i=1}^{i<n_{on}} P(k, i, n_{total}, m)$
+The key idea is to approximate the expectation of the number of zero bit.
+Let X_i be a discrete random variable which is 1 if the bit at i'th position is 1 and 0 otherwise.
+Let there be $k$ keys, $n_{on}$ bits on, $n_{total}$ bits in total and $m$ elements inserted.
+i = \frac{\ln(z)}{k\ln\left(1 - \frac{1}{n}\right)}
+Each bit is a bin, and it's set if it has at least 1 ball in it, each object inserted throws $k$ balls, where $k$ is the number of hash functions, and $nk$ is the number of balls thrown after $n$ objects have been inserted.
+If $n_{on} = 1$, then we are looking for the probability that $km$ hashes fall in the same bucket, the first one can mark where the others should go.
+$N e^{-\frac{Kt}{N}}$ approximated by the observation $N - M$
+Given that $b$ bins have at least 1 ball in them, what's the probability that at least $t$ balls were thrown?
+We already know the probability that they'll fall in $1$ bucket so let's subtract that to give the probability that they'll fall in exactly $2$.
+$P(k, 2, n_{total}, m) = n_{total}(n_{total} - 1)(2/n_{total})^{km} - (1/n_{total})^{(km-1)}$
+If $km \lt n_{on}$, then $P(k, n_{on}, n_{total}, m)$ must be $0$, ie it's an impossibility.
+I have used this in practice, and as long as your filter does not exceed its capacity, the error is generally less than 0.1% for filters up to millions of bits.
+If you have inserted $i$ elements into a filter of size $n$ using $k$ hash functions, the probability that a certain bit is still 0 is
+If $n_{on} = 2$ then we want to find the probability that $km$ hashes land in $2$ distinct buckets and at least $1$ falls in each.
+You can measure this probability as the proportion of 0 bits in your filter.
+As the filter exceeds its capacity, the error of course goes up.
+For each bit, the possibility of being zero after t insertions with K hash functions is: $(1-\frac{1}{N})^{Kt} \approx e^{-\frac{Kt}{N}}$.
+So we want to find the probability that $km - 1$ hashes fall in a specific bucket.
+Naively implemented, it would result in exponential time execution time, though it's trivial, via memoization, to achieve linear time.
+Interesting question, lets look at some specific cases.
+It's then just a case of finding the most likely $m$.
+Probability that a particular bit is 1 after n insertions is:
+ But the problem with that formulation is that I don't see a straightforward way to calculate $P(t)$ or $P(b)$, but finding the value of $t$ which maximizes that probability shouldn't be too hard.
+If you assume that for each hash function for each object, a bit is set uniformly at random, and you have a count on the number of bits that have been set, you should be able to bound the probability that the number of objects inserted was within a certain range, maybe using a balls and bins formulation.
+$$P( t \mbox{ balls} | b \mbox{ bins}  ) = P(b \mbox{ bins}| t \mbox{ balls}) \cdot P(t)/P(b) $$
+Finally we got $t = - \frac{N}{K} ln(1-\frac{M}{N})$
+My instinct says that there will be a single peak so it may be possible to find it very quickly, but naively, you can definitely find the most probably m in $O(n^2)$.
+If total number of set bits are S, then: E[X] = S which implies m * P = S. This could be solved for n.
+There are $n_{total}(n_{total} - 1)$ pairs of buckets and the probability that the hashes land in any specific $2$ is $(2/n_{total})^{km}$ so the probability that the hashes fall in up to $2$ buckets is:

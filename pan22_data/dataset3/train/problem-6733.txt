@@ -1,0 +1,14 @@
+Check out what the author Of High Performance MySQL (2ed) and the Maatkit tools has to say about the subject: http://www.xaprb.com/blog/2008/08/06/how-to-scale-writes-with-master-master-replication-in-mysql/
+http://www.mysqlperformanceblog.com/2009/11/13/finding-your-mysql-high-availability-solution-–-replication/
+Imagine a case where two people update the same record in different ways.
+http://www.mysqlperformanceblog.com/2009/10/09/finding-your-mysql-high-availability-solution-the-definitions/
+In a Master<->Master environment, there is no right.
+It will end in tears, but if you do it right they're your tears not your employers or customers tears.
+Because no two people use the term exactly the same, no two people setup the servers exactly the same, nobody automates failover the same, and very few people have the mysql mastery to pull it off in a way that actually helps the environment rather than just adding complexity.
+So it'll go through and apply them sequentially, causing a data inconsistency.
+http://www.mysqlperformanceblog.com/2009/10/16/finding-your-mysql-high-availability-solution-–-the-questions/
+And you have to do an ugly hack to get around the problem of duplicate autonumber fields (server1 auto increments odd 1,3,5 and server2 auto increments even 2,4,6).
+Inevitably both will get updated in contradictory ways in between updates, and all hell will break loose...Or at least you'll get unpredictable behaviour.
+If you're using mysql, you also tend to end up with problems from row-level locking...Those rows often don't replicate.
+Part of the issue is that there is pretty much never a reason to have a master-master environment.
+The right way to do things is to use caching layers and batch your writes to the database.

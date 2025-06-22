@@ -1,0 +1,10 @@
+I was setting the "range_offset_limit" in squid.conf to -1 so that if any part of a windows update was requested, the whole file would be downloaded.
+I would guess you're seeing those because your users are hitting sites that subscribe to their services.
+Notice how in your output, your proxy also has direct connections to google.com and acast.com?
+Amos Jeffries from the squid-users mailing list tipped me off that this could could backfire if a client requested only a small piece of a large file (like a video) hosted from one of these CDN's; squid would be forced to download the whole file, even if the client stopped listening.
+Thanks to audiophilth and James Sneeringer for getting me on the right track.
+You generally don't want to block them, otherwise you're going to break a lot of high-profile sites, if not make them completely inaccessible to your users.
+llnw.net is just a CDN source, not sure what you mean by "bogus" connections.
+It isn't blocking the connections because your caching proxy is initiating them, and you have no OUTPUT rules, and the default OUTPUT policy is ACCEPT.
+I would guess that just about all of your outbound traffic on port 80 behaves the same way.
+MSECN is Microsoft Edge Caching Network, and LLNW is Limelight Networks, both of which are content delivery networks similar to Akamai.

@@ -1,0 +1,18 @@
+Ideally, before anyone can really give you a definitive answer on the problem you need to have a telnet or something and get a server response telling you why you cannot connect in the first place.
+The message you posted is a failure to connect which doesn't necessarily mean they refused your email, it seems more likely a dns issue or some other connection issue. Some things to check/think about are:
+Where is the NDR coming from, presumably your IIS SMTP server, although I don't work with IIS SMTP very often so I'm not sure if the IIS SMTP server is capable of generating NDR's.
+This was the issue we had specifically.  Our local DNS server was resolving the domain to a 127.x.x.x IP address.  That was identified immediately as the problem and we tracked it down to an issue with MalwareBytes not allowing the DNS server to resolve the domain.  We had to disable MWB, clear the DNS cache and then query the domain again to get the correct IP.  
+In any event make sure to enable logging in the properties of the IIS SMTP server and then check the logs after you receive an NDR. If there are no entries in the log file that correspond to the email that generated the NDR then I would suspect a problem with the IIS server's dns client being able to resolve the MX record for the recipient's domain. If there are entries in the log file that correspond to the email that generated the NDR, then the SMTP status codes in the log file should clue you in to what's happening.
+I may be a day late and dollar short but I just recently ran into this and alas, your question came up.  My turned out to be bad DNS resolution as a result of MalwareBytes.    
+If it does not connect or just gives a black screen, press ENTER.  If it dumps you back out to  the command prompt it's not connecting or the server is refusing it.
+Do the domain names you are sending from have spf records and if so, is the ip you are sending from included in the spf record?
+Who are you hosting your application with? I've had problems with shared hosts having all sites hosted on their servers blacklisted into the spam hole.
+Are reverse DNS records setup properly for the IP you are sending from for the domains you are sending as?
+Step 2:   Telnet to the mail exchanger domain on port 25.  You should see the following.  Try to type EHLO domain.com if it connects and you should see some more things pop up.  
+I ran packet capturing on our firewall to see if I could see the traffic going out of the e-mail server.  It was not so I knew the packets were stopping within the network.  I also did not see any blocking messages in the firewall logs specifically blocking the traffic.  
+Ideally, before anyone can really give you a definitive answer on the problem you need to have a telnet or something and get a server response telling you why you cannot connect in the first place.
+Just because your application isn't sending spam doesn't mean that another app on the shared host isnt. Since it's a shared host, all smtp traffic comes from the same source, which can end up being blocked.
+I could see the e-mails hanging out in the IIS SMTP queue and eventually it would fail.  Here is some things I did and ultimately figured out the cause.     
+Can you check your application server to make sure it is properly resolving the dns and MX records for the domain you are trying to email.
+Step 1: Go to MXToolbox and plug their domain name in for the MX Lookup Tool.  This will give you the correct IP address you'll verify in step 2.  
+The message you posted is a failure to connect which doesn't necessarily mean they refused your email, it seems more likely a dns issue or some other connection issue. Some things to check/think about are:

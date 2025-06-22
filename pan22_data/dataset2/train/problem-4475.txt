@@ -1,0 +1,10 @@
+So, if you lose remote access to your server immediately after reboot, don't panic, it's probably doing some maintenance work and will come right back online after it's done.
+After further investigation of the event log, I think I have found the problem. There was this error almost exactly after the restart was initiated:
+Verify that it actually rebooted - if you can do a "net use" against the remote server, then connect to Event Viewer to see if it actually did reboot. I've seen plenty of Win2k3 servers that, when rebooted from an RDP session, don't actually reboot but stop responding to RDP. If that's the case, you can do a shutdown /i against the server or use some other out-of-band method of actually executing the reboot.
+I had a problem using remote desktop on a server 2003. I connected and after seeing some status messages I was disconnected before seeing the full desktop.
+The Problem was, that the server had a wrong time because the synchronization failed for a few month (I think there was a time difference of about 30 minutes).
+Remote Desktop can also behave oddly if you have older graphics drivers. On a server, I wouldn't think this would be an issue, but updating the graphics drivers is something else you can try. (It fixed a similar issue on an XP SP3 machine for me.)
+And if this is the case, in the future, don't reboot from a regular RDP session. Reboot only from the /console or /admin connection, or use shutdown /i, or other remote methods.
+I got here through Google with the same problem with my Windows Server 2012 (7 years later), so I'll add my own experience with the problem for future searchers. Here's what happened:
+So the problem was that some the services were shut down, while this particular service was hanging. It seems to have been killed after a timeout occurred (one hour), after which windows has rebooted as intended.
+Now the only remaining question is how to prevent this in the future. Obviously I'd like future reboots to run a bit faster than this...

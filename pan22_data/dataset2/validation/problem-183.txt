@@ -1,0 +1,8 @@
+I need to implement Linux-HA configuration in two servers. I've decided to use DRBD for block level replication on both hosts, mainly for MySQL data replication.
+A better solution for MySQL HA is to use circular MySQL replication. This article explains it further, but the basic premise is to make each server the slave of the other. You will need to set up some sort of load balancer in front. 
+One thing to worry about is that database connections may be long-lived and you will need to configure applications to reconnect if they die. 
+As I understand, in DRBD configuration there's always a primary server, others are slaves (which can have slave of their own).  Replication is only passed to from masters to slaves, not the other way around.
+Provided that this configuration will go in conjunction with Heartbeat, it would be Heartbeats' job to ensure that MySQL runs only on the master, but lets assume for the moment, that Heartbeat failed for some reason.
+"Can't happen".  DRBD will ensure that only one server has the block device active at once.  If you get a "split brain", where both DRBD hosts think the other is dead (so they're both active), they won't reconnect and you need to resolve the inconsistency by hand (usually discard the changes on one master or the other).
+So what happens, if I have MySQL processes performing writes on both servers at the same time, one of which is master, the other is slave?
+If you need DRBD "mainly" for MySQL replication, maybe it is easier to use the replication features built into MySQL? 

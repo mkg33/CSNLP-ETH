@@ -1,0 +1,15 @@
+While the Apache server was fine as is, apparently we previously had a specific DH param snippet saved in the certificate file.
+Unfortunately that downgrades our certificate from A+ rating to a B, but I'm not allowed to upgrade the Java server from 6 to whatever newer one.
+Once I added that snippet to my ssl cert, the reporting server was able to access the images over https!
+This snippet was added because the reporting server that asks for the images and files runs on Java 6.
+First clear all caches on the "reporting server" and see whether it helps or not.
+After this, there's no use for the RewriteCond %{REQUEST_URI} !^/files/ as everything should be rewritten unconditionally already, giving you the possibility to simplify your configuration:
+I would NOT disable http until you've resolved the problem:
+The blank page problem doesn't seem a server side issue caused by your Apache at all.
+from http://httpd.apache.org/docs/current/ssl/ssl_faq.html#javadh
+https://www.futurehosting.com/blog/troubleshooting-the-most-common-apache-problems-youll-encounter/
+Also, fix all http:// URLs on your content to https://.
+That tells the browser to internally rewrite every request for the domain to HTTPS.
+If so, the consistency between the redirection and the HSTS policy might prevent such caching in the future.
+There's no details how this "reporting server" works, but the blank page might for example be a result of not displaying a cached HTTP URL image on a HTTPS page due to a changed mixed content policy.
+The fact that you can access the URL from another computer pretty much proves it.

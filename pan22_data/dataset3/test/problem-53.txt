@@ -1,0 +1,44 @@
+Of course this is all very generic, but so is the Question..,.
+The short answer is that using a two-disk RAID1 with SAS drives just for the host OS is a waste.
+I would be a little scared running the hypervisor off an external harddrive or USB flash memory however.
+RAID5 only allows for a single drive failure and due to the tendency of drives to fail at close intervals combined with the fact that the server may not be monitored frequently for issues, this could lead to data loss.
+The past few years I have been doing some server virtualization for situations that don't require a second physical machine, or for consolidation when it comes time to replace old physical servers.
+Is there another configuration that would be better than the RAID 1/RAID 5 config above for these situations?
+I have deployed configurations like this using ESXi and direct attached storage, but hate it more and more.
+You lose a lot of flexibility and management control on the storage side.
+And if you need more disk performance, RAID10 is usually faster than RAID5 and larger HBA BBWC makes a big difference.
+QNAP has some pretty affordable stuff (SATA only) but there are lots of other options as well.
+I do IT infrastructure support primarily for small businesses (up to ~50 users).
+Personally I'd drop the mirrored drives and grab as many of the larger drives for the RAID5 as the budget allows.
+My current strategy is to simplify the server: just go bare bones, minimal drive bays, and no fancy controller.
+The array is almost always going to be faster than the mirror (with a good RAID HBA) and a well installed/configured ESXi/Hyper-V Server isn't going to need much for the base OS.
+You should only be looking for SAN storage if you need host clustering (using two or more VM hosts to provide fault tolerance at the host level).
+90% of these environments are something like a Windows SBS server and another 1 or 2 Windows servers, usually to run some line-of-business application, accounting software or whatever else doesn't play well with SBS.
+If you do go for a SAN, keep in mind that booting up 5+ VMs on a SATA based SAN will take AGES (we had to reevaluate and purchase some SAS drives after discovering just how slow SATA really was in a VM environment).
+This config has seemed to serve me well, but it seems like I could be limiting my I/O performance if I add more than a couple VMs to the host (unless I add another RAID 5 to gain more spindles).
+I know there are reams of questions similar to portions of this question...I've just spent a few hours reading ~50 of them, but I haven't been able to come to a conclusion on this.
+I agree with the idea of using internal flash storage for the hypervisor.
+As always, you need to evaluate the cost of the options vs the cost of the downtime for your specific application.
+This hardware change will save a lot of costs; all you need is 1U, lots of RAM and CPU and that's it.
+Some of the higher end dell machines come with a RAID1 compactflash card setup which is very nice - not sure if that is an option on the server you are speccing.
+The long answer is that it would be worthwhile to consider an alternate strategy.
+ESXi rarely writes to its own volumes, so the media will last a long time.
+They all have much better network management, hot adding capability, thin provisioning, reporting, and so forth.
+Even with the best controller, you won't be easily able to remotely manage the card.
+Personally I wouldn't stick data on a RAID5 array at a small business due to the frequent neglect that the server(s) may see.
+I would like to know more about the customer(s) you are installing at, specifically how often the server(s) are monitored and what the backup policies are like.
+Run the ESXi hypervisor from CF or USB or some SATA drive.
+I would prefer RAID6 or possibly even RAID10 for their higher fault tolerance.
+Especially if you have multiple physical servers you will save a lot of time on management, and have less downtime.
+My go-to server configuration for these businesses is usually:
+Having recently done a full scale SAN deployment at a small business I would tend to disagree with Wim Kerkhoff.
+Also, RAM is like money, can't have too much; and more cores, most software is licensed per CPU, not core.
+You'll be forced to shut down all your VMs and reboot just to check basic health.
+Not good in an environment where no one is checking the "blinking red lights".
+I can't count how many times I've seen a server lose two drives within a week after having no faults for 2+ years.
+Correctly architect-ed SAN deployments are not cheap as they require additional switch ports, NICs, cabling, much more configuration/troubleshooting time, and often cause you to be locked into a vendor's marked up drive prices.
+I like the T610 because it has 8 SAS slots, so I can add another RAID 5 with 3 drives in the future if more space is needed.
+Most of the businesses are something like 10-25 users.
+Like drop the RAID 1 and use those slots more efficiently for something else?
+I put the host OS on the RAID 1 (ESXi or MS Hyper-V) and the VMs on the RAID 5.
+Then money you save on the server should be put into a SAN.

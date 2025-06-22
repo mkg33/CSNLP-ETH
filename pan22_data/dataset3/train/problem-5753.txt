@@ -1,0 +1,14 @@
+I guess the easiest thing to do is to remove the LUN and see which one disappeared but who knows if the order of the partition changes (i.e.
+I inherited an environment where there was no LUN masking or proper zoning.
+It wouldn't be a problem which devices you mount if you can be sure that they wont change, but you can't.
+Another question, i noticed the server has /dev/sdg and /dev/sdf and they are identical, I know because I was able to mount both and show identical data.
+With that said, I need to identify the correct LUNs that are presented to a particular server.
+At a minimum you could use udev to ensure you have a persistent device naming across reboots and changes in the environment which but it's no substitute a proper multipath mapper which will give you path failover and load balancing as well.
+I see 6 LUNs if I run "fdisk -l" One of these LUNs is the "new" one I added but of course I can't tell which one it is since the sizes are the same.
+If a path fails or more storage is presented the LUN behind /dev/sdc may end up on /dev/sdd or something else if you reboot.
+You really should work on the zoning and masking on the SAN too - performance will probably be suffering if zoning isn't right and the risk of accidentally destroying data if masking isn't correct is significant.
+It's OK to mount and work on for a bit but it isn't safe to leave it unattended for long.
+Regarding the multiple identical LUNs, I'm assuming that is due to multipathing.
+DM-Multipath is the way to go unless your storage is presented by a vendor (like EMC) that provide their own multipathing solution (Powerpath in EMC's case).
+Try looking into DM-Multipath a bit, and see if that's being used: http://www.redhat.com/docs/manuals/enterprise/RHEL-5-manual/en-US/RHEL510/DM_Multipath/
+If so, it's also pretty likely that your six entries via fdisk are actually 3 LUNs in total.

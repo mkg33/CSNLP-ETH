@@ -1,0 +1,8 @@
+I had a link to a file in my home directory, and the link was in the project directory. After I deleted the link and moved the linked file into the project (rm mylink ; mv ~/myrealfile ./), then it worked.
+Not only must the file be in a directory in the current build context, but the file cannot be a soft link to a file outside the build context either.
+It found it strange at first because when i had the Dockerfile in the apps root directory it worked fine. This will help if you want to manage your environment docker files a little better.
+I had the COPY failed: stat /var/lib/docker/tmp/docker-builder929708051/XXXX: no such file or directory and managed to resolve this by specifying the docker file.
+By adding the context I was able to define where the files should be referenced. You can reference the Docker docs here: https://docs.docker.com/compose/compose-file/#context
+I was running into this issue and found out that I was able to add a context to the build variable in order to load my Dockerfile(s) from other directories. This allowed me to change my default Docker file structure a little more to my liking. Here is a snippet from my docker-compose.yml:
+Note: If you build using STDIN (docker build - < somefile), there is no build context, so COPY can’t be used.
+I finally solved this issue in my case was Dockerfile that executes copy was in a deeper level of the project.

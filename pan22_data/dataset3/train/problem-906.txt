@@ -1,0 +1,16 @@
+An alternative is to have an intermediate server or two elsewhere that aren't mission critical and ssh through one of them, then you can limit access to ssh on your important server from only those IP addresses in iptables.
+Ideally, you will use key-based authentication, where you would have your ssh private key on the machine when connecting to the server.
+In real life you see ssh attacks just hammering on port 22 moving across your servers.
+Consider a non-standard port, use something like port knocking if you can, and only use public key authentication.
+On the server, restrict the users who can ssh into the box.
+This is the AllowGroups or AllowUsers setting in /etc/ssh/sshd_config.
+The fact that your client machines have different (and dynamic) addresses doesn't make a lick of difference.
+If that isn't possible, you should make sure you have a good password.
+That may be the case if an attacker is targeting your server.
+Moving to another port reduces the noise in the log files if nothing else.
+That appears to be sufficient from what I have seen.
+Moving sshd to a different port may sound like security through obscurity and you may find articles saying this is not effective.
+How much control are you going to have over those machines that will be ssh clients?
+Exclude users such as root, etc., from being able to ssh.
+Set up your keys and disable password login, install fail2ban or denyhosts.
+If you do have password auth enabled, install fail2ban.

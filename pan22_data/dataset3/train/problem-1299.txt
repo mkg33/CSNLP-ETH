@@ -1,0 +1,26 @@
+This is a few multiplications, no trigonometry involved.
+Thus, you only need to compute the z component of the cross product.
+If you look at the problem space carefully, we can go even further than that.
+With rotation, every hour of the day can actually be mapped to any other hour with an appropriate rotation.
+You do need trigonometry to compute the position of the end points of the hands.
+The cross product will only be non-zero along the z-axis (it's perpendicular to the plane formed by the two vectors).
+The first is recognising that there is a lot of redundancy in the problem space.
+And note that you only have unique values over 8 of those angles (the first 45 degrees), the rest are trivially derived from those.
+As such, I'd wave off trying to optimize how you generate your values as unnecessary and just commit the results to memory.
+polfosol's graph helps a lot here: we can see there are clear, regular local maxima roughly once per minute plus a clear maxima once per hour.
+Thus, all you have to do is find the area of each piece of the three pieces of the triangle, and add them together.
+Sometimes optimisation is finding ways to do the minimum number of calculations rather than doing calculations themselves faster.
+This makes the solution incredibly simple: for segments larger than one minute or so we're guaranteed to find a maxima with a simple search within boundaries; searching <30 maxima for the biggest is not computationally intensive.
+It is possible to instead do the same using only 3 sin functions and some other math that will take far less time.
+Or you could even pre-compute sin and cos for all 60 possible angles.
+This means we can precompute a small segment of non-repetitive calculations and then map any other times on to that.
+If we manage to select a time period that does not contain any maxima, the maximum value is guaranteed to be either the first or the last value (which, for 2 calculations, is cheap to calculate on the fly to be worth optimising away).
+The second is that those pre-computations do not need to factor into your runtime; it makes a lot more sense to load them in and just do a lookup.
+Equally, the first half of an hour is a reflection of the second.
+This z-component is the area of the parallelepiped spanned by the two vectors.
+This currently uses 15 trig operations to calculate the area of a triangle (3 cos, 3 atan, and 9 sin).
+The points are defined in 3D, with a zero z component.
+For segments less than a minute we still have to check the local maxima and, if none are contained, do two calculations for the bookend values: one of them is guaranteed to be the maximum in a no-maxima containing segment as the segment must be either a 'u' shape or a slope.
+The area of the triangle given points A, B, C is half the magnitude of the cross product of vectors AB and AC.
+The basic idea of how to do this is that if you have two side lengths of a triangle, and the angle between them, the area of the tringle is the product of the side lengths divided by two times the sin of the angle between them, or sin(θ)*a*b/2.
+If we already know those maxima and if any given time period contains one or more maxima the maximum is guaranteed to the the largest of those values.

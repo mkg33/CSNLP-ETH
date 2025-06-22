@@ -1,0 +1,19 @@
+The only way we can clear it up is to restart the replica set member.
+Inside of each database is roughly 15 collections.
+Mainly I'm just wondering why enableSharding for a new database would slow down so much.
+The application leveraging this MongoDB "cluster" creates thousands (greater than 10K) of databases.
+Normal behavior for the application also includes dropping and creating this databases somewhat frequently.
+The databases and collections are created and initialized at runtime by the application as needed.
+We are trying to mimic the MongoDB architecture that we plan on going to production with.
+All other operations on the primary node proceed as normal.
+Part of the initialization is to invoke "enableSharding" on the database and then create the collections and finally shard the collections.
+Currently I have only one replica set (three nodes) which represents one shard (just one shard for - plans to scale horizontally in the future).
+Should our application be initializing databases and collections at runtime so frequently?
+The command does complete, but associated application logic "times out".
+One other notable item is that we use "listDatbases" as part of our monitoring.
+Again the enableSharding command completes - it just takes five to six minutes.
+This implementation is not yet in production but still in development phase.
+I'm seeing some odd behavior when invoking the enableSharding command for a database.
+However, it seems about twice a month the primary member of the shard/replica set will begin taking five to six minutes to complete the enableSharding command.
+Is the greater than 10K databases * 15 collections going to come back and bite us?
+I do notice that the call to "listDatabases" also begins to slow down when the enableSharding command for a database begins to take five to six minutes to complete.

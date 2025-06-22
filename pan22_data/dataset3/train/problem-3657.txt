@@ -1,0 +1,17 @@
+You can not use the Tarsnap software to create backups against your own storage servers.
+The simplest thing would probably be to go the other way with the backups, ie.
+Archiving is simple enough by backing up to a new tree each time and associating unchanged files with the previous backup using hardlinks, which saves space and transfer time.
+So, I'm assuming here that you're doing proper archival backups, and you're monitoring your backups well enough that any attempts to eradicate the backup by sending an empty backup set will be detected before any permanent damage is done.
+It allows me to to create subkeys with read, write and/or delete capabilities.
+The other way to go is to use pull backups, where the backup server initiates and manages the rsync operation -- this means that the client machine doesn't even have the ability to run a restricted rsync command, which means the attacker has no power to delete files.
+If you're doing a naive backup (single copy, overwriting all data) then there's no way of achieving what you want -- an attacker can always "backup" a pile of empty files (or an empty file set) which will result in all your data going bye-bye.
+If your rsync-over-(presumably)-SSH uses a forced command to run rsync on the destination, then you're about as secure from deletion as you can be.
+If the attacker can get access to it via another means, you're boned regardless of what you do.
+This all assumes that your backup server is secure.
+So, I learned that there are two basic strategies:
+Since you only want to run a specific rsync command, you can hardcode all the arguments and then the only thing it can do is write new data.
+At times when I need/want to prune old backup archives I do that using the master keys from my local desktop computer.
+This is one of the features I like about the Tarsnap backup service.
+Of course your backups must be incremental, and you should have some monitoring system in place, to prevent scenario when hacker backups junk data to eventualy "displace" real data from your incremental back up system.
+Quote from rdiff-backup manpage related to second strategy:
+On my servers I generally keep subkeys with read and write capabilities.

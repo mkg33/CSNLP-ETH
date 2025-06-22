@@ -1,0 +1,10 @@
+Check the syslog config file in "/etc/syslog/syslog.conf", and specify the log destinations accordingly. 
+The cause seems to be on the ownership of the file, should be syslog instead of root. Couldn't found the bug report.
+The details of syslog.socket (https://cgit.freedesktop.org/systemd/systemd/plain/units/syslog.socket) offer some explanation of what is going on:
+See https://coreos.com/os/docs/latest/using-systemd-drop-in-units.html (for example) for a bit more on drop-ins. 
+Aptitude shows that I have installed the package inetutils-syslogd, and the package rsyslog is not installed.
+Or, in other words, you should probably consider leaving rsyslog enabled  (sudo systemctl enable rsyslog.service), unless you have a specific reason for wanting to use another syslog implementation. 
+rsyslog is the default log server present in your system, and you can find its config file in  "/etc/rsyslog.conf". Dont try to remove it simply disable the rsyslog daemon by executing "systemctl disable rsyslog", so that on the next boot it wont restart automatically.
+In more practical terms, journald uses /run/systemd/journal/syslog to bridge to syslog (any syslog implementation), and syslog.socket links that path to whatever the OS's default syslog is. 
+I have found out that there is a service called rsyslog, which is breaking my normal syslog service. But rsyslog is not installed on my system, so I have no idea what is going on, and how I can permanently remove rsyslog.
+The syslog.socket unit is a generic unit that (in effect) simply ensures that a socket exists for journald to speak to a syslog daemon when it needs to.

@@ -1,0 +1,8 @@
+You could use scp to move a backup image across - but you probably need to be root to unpack it correctly. Howver if you get problems then the only recourse you've got is to repeat the whole process again - rsync only copies the files which have changed.
+Failing that, use rsync from a clean development environment. Make sure the code is owned by and running as the same user, then do this:
+I'd recommend building an release on your development system (so you can check it has deployed correctly) then using rsync to clone the image on to the server.
+The best thing really to do will be to use ANT or a build script to export from your CVS/SVN/GIT/whatever, with a particular tag, so that the next time you upgrade the code, if something goes wrong, you can always move back to the original codebase.
+Next thing is that where you are creating files, you want to do so with the correct permissions. The easiest way to do this is as root user (then you can create the files as any user you like). But you really don't want to allow root scp/ftp access. So that means you pull the files onto the server - not push them.
+As your first and clean deployment in your new production server, if you have ssh access, use RSYNC or SCP. Check this out: Using Rsync and SSH
+Instead of uploading files using FTP from my local machine, there is other way to transfer code from one server to other.
+As Glen said, the best deploy plan is to use ANT or build your own script to export your code, if you have any problems during deployment, you can rollback.

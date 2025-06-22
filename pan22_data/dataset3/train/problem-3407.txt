@@ -1,0 +1,9 @@
+Is there a way to do what I'm trying to do, or even to route all traffic to a certain IP on a virtual interface to the VM's device?
+To complicate our situation the provider uses port-security on their switches, so I can't run the guest interfaces in bridged mode, because then the switch detects a "spoofed" MAC-address and kills the interface (permanently, forcing me to call the support, which I'm sure will get them a little bit angry the third time ;) ).
+Our server has only one physical interface, so the intended use is to add virtual interfaces on eth0.
+So my second guess is to use the source IP of the packages to the public interface.
+My first guess was to use iptables and NAT to forward all packages from one virtual interface to another one, but iptables doesn't seem to like virtual interfaces (at least I can't get it to work properly).
+That doesn't give me the intended results either (accessing the server times out).
+One VM-host, multiple guest VMs, each one gets its own IP-address (and domain).
+iptables -t nat -I PREROUTING --src public_ip_on_eth0:0 -p tcp --dport 80 -j DNAT --to-destination 192.168.100.2:80
+Let's assume libvirt creates a virbr0-network with 192.168.100.0/24 and the guest uses 192.168.100.2 as IP-address.

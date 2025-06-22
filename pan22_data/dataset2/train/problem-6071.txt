@@ -1,0 +1,8 @@
+As far as I know, this means you need to either be running a local DNS server on your network/machine, or you need to add entries in /etc/hosts for every dev domain.
+In the Apache config we're using so-called mass-virtual-hosting to avoid having to edit the config for every new site. This way we can simply create a new directory with the correct naming convention and it will be found.
+Unfortunately you can not add wildcard entries to /etc/hosts file. That being said This Article demonstrates a method that works with Tiger. Although I think launchctl is deprecated as of leopard but it may still work.
+We setup the BIND DNS-server on a linux machine to point the *.dev TLD to an Apache machine. We advertise this DNS-server to all LAN clients via DHCP, so all requests go through this server and can resolve .dev.
+Right now I just keep making /etc/hosts records for each one and I would rather it be like wildcard DNS and let Apache handle the domains then manually entering it each time.  I like the flexibility to update this when I do something odd or someone gives me a strange request but 90% of it I think would be best automated.
+Setting-up the wildcard response in the apache configs is straightforward, but apache has nothing to do with your local name resolution - it only accepts connections that have been handed to it, so it's up to the network stack to direct the connection in the proper direction first.
+I would like to route all my *.local or *.dev domains to a specific IP, either the IP of my Ubuntu VM or localhost. Is this possible?  Can I use the /etc/hosts file?  
+Run something like dnsmasq, which will let you add a few custom DNS entries, but forward everything else to your normal DNS server.

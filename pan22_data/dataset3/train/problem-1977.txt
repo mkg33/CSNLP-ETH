@@ -1,0 +1,19 @@
+You can use ionice -c3 as a prefix for your commands, that way those commands will run within idle I/O class, meaning they will only get I/O time when no other process needs it.
+You can patch rsync with fadvise support to avoid putting the stuff read by rsync into cache.
+It depends on your distribution how much is turned on by default.
+Or do you have tens of millions of small files around?
+In addition to ionice(1) rsync might be pushing blocks needed by mysql out from disk cache.
+This will set the I/O class of this program to idle, which means it will get IO time when nothing else is asking for it.
+That causes slowdowns for systems having lots of writes, since everything tends to get fragmented.
+There are various kernel PREEMPT settings that can be turned on that will avoid lockups, such as during heavy disk load (perhaps at some cost of performance of server apps).
+However, that kind of behaviour is usually symptom about something else.
+Those could be meant for desktop usage and/or real time usage.
+In Debian backports there now is for example linux-image-rt-amd64 which includes the PREEMPT_RT realtime patch set.
+And check what kernels your distribution provides that may have more aggressive PREEMPT settings.
+This requires your system to use CFQ I/O scheduler, though.
+Look around in the kernel documentation that comes with the source of your kernel to see what would work for you.
+Provided they're part of the standard distro those should get the usual security fixes.
+It's the default I/O scheduler in most Linux distributions, nowadays.
+You may want to have it set to something more aggressive.
+where <pid> is the process ID of the process you want to slow down.
+This patch set may help even more, however it may have its own problems...

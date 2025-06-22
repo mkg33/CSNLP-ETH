@@ -1,0 +1,12 @@
+If A and B are huge BLOBS, it most likely will increase the estimated cost.
+Now it boils down to the cost - If you have 1M rows, and IF the optimizer can realize that your query will return 1% = 10,000 rows.
+So it may estimate that ~10% of the rows will be returned, and with that info the estimated cost will be much higher.
+That means the cost of using the index is performing the index seek, getting 10K rows, and then performing 10K lookups to bring back columns A and B.
+C is most likely not the only column in the table, let's say you have both columns A and B as well.
+The answer is "It Depends, you didn't provide enough information".
+I don't know - that depends on the size of the table.
+The alternative, is to scan 1M rows and filter 'on the fly' without using the index.
+Unfortunately, MySQL does not maintain histograms like some other engines, but only the density vector...
+If A and B are both BOOLEAN columns which take up very little space, it might think that it will be cheaper to scan the table.
+That means that an index seek on C will require a lookup operation for each row to bring back A and B from the table.
+BTW.. if instead of using * (which I assume you only gave as an example), you would list only the minimal set of columns that you need, let's say A and C, then a composite index on (C,A) will always be the cheapest choice as you just saved yourself the lookups..

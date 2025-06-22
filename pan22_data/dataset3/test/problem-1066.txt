@@ -1,0 +1,14 @@
+Aside: I know that SQLAlchemy had trouble with IPV6 addresses in the past, but this was fixed in the 0.8.7 release - Release Notes
+A suggested work around is to add another line for the link-local address prefix in your pg_hba.conf:
+Try adding local all all ::1/128 trust to your pg_hba.conf file..
+I also realize that the error says "host" - but I don't think that means it has to be a host entry in pg_hba.conf
+and doesn't even bother resolving an ip address .. it just does a direct connection.
+Try what I suggest and see if you still get an error when connecting to the computer hostname.
+Might need to restart service after modifying pg_hba.conf.
+When you connect to "myComputer" (which happens to be your computer name), I'm pretty sure your OS is smart enough to say "oh hey!
+It apparently does not like when it is passed the socket which does not exist in pg_hba.conf;
+When you connect to localhost, it uses the loopback address 127.0.0.1 (unless that configuration on your computer has been tampered with) to connect to your system, which counts as a "HOST" connection..
+That still works because it's still using a HOST connection (instead of a LOCAL one).
+It seems this might be an issue with Postgres and local connections - it affects connections using both psql and psycopg2.
+Disclaimer - I'm not a huge sys admin buff, so my information may not be correct..
+Then either restart the server, or connect as a superuser and issue select pg_reload_conf() (preferred method).

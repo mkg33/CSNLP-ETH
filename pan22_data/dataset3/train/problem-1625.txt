@@ -1,0 +1,29 @@
+For OpenSSL 1.0.2 and above, you can use SSL_CTX_set1_curves.
+Your question is ambiguous and the answers are quite different.
+Also see Issue #3179: Feature Request: Set Preference List for EC Curves in Client.
+If either the "temp" curve, or the cert curve when the cert is ECC, is not in the list allowed by the client, then ECDHE or ECDHE-ECDSA can't be negotiated.
+Only the configured curve is used for key-exchange.
+Finally new in 1.0.2 there is an option for OpenSSL to automatically choose an ECDHE curve acceptable to the client while "matching" the strength of the authentication.
+Again for ECDHE-ECDSA, the curve in the cert for authentication may be different, was already chosen before issue and can't be changed, and if not acceptable to the client can't be negotiated.
+If this curve is not acceptable to the client, ECDH can't be negotiated.
+Can I "ask" the process the curves it is able to use?
+In general, I'm not sure how to do this through a CONF file.
+pref_list is no longer present when grepping the sources.
+But I'm not sure it works in practice because I use the patching method described below.
+If it specifies more than one, the server can choose any of them; if it specifies one, that's the only one the server can use.
+For ECDHE-ECDSA the publickey in the cert used (with its matching privatekey) to authenticate, can use a different curve; that key and curve was chosen before the cert was issued and "approved" by the CA and can't be changed now, whereas the "temporary" ECDHE choice is made by the server code or configuration.
+This should choose a curve acceptable to the client, unless that is unacceptable to the server.
+For 1.0.1 and below, you can modify the sources to t1_lib.c.
+Here's from one of the OpenSSL devs in a private email.
+OpenSSL server through 1.0.1 can be configured in advance of handshake, either for all connections sharing an SSL_CTX or for each SSL connection separately, with ECDHE "temporary parameters" which is (are?)
+The supported-curves extension in the ClientHello message specifies the curves (standard/named, or 'explicit' GF(2^k) or GF(p)) the client is willing to have the server use.
+1.0.2 adds new API calls to control this extension, see https://www.openssl.org/docs/ssl/SSL_CTX_set1_curves_list.html .
+In particular, find ssl_prepare_clienthello_tlsext and pref_list and change it to what you like.
+OpenSSL client to any server through 1.0.1 always sends this extension to allow all named curves (in rfc4492) and no explicit curves.
+nobbles its OpenSSL builds to P-256, P-384 and P-521 only.
+If the server does not support the or any specified curve, the negotiation cannot select any EC suite, and unless other suites are supported by and acceptable to both ends the negotiation fails.
+In server for static ECDH the curve (and key) used for key-exchange is the one in the cert, which as above was chosen before the cert was issued and cannot be changed.
+Instead of configuring in advance, the server can set a callback invoked by OpenSSL library to choose the ECDHE curve (or key) for a particular handshake.
+So either code and build your client program against 1.0.2* and not on RedHat, or get whoever maintains your client program to do so.
+Is there a possibility or command in openssl to force a server to use a specific elliptic curve that I am requesting with a certificate or key?
+The SSL_CONF_* API calls (shown below) seem to indicate it can be part of a configuration file.

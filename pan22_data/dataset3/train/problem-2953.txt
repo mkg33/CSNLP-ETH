@@ -1,0 +1,9 @@
+If I understand correctly this is because my editor doesn't access the same WorldView instance, but rather a copy it received through serializing and de-serializing my original instance.
+I'm looking into keeping everything state related in a separate library outside of unity, but this has it own downsides.
+Pushing this dictionary through the serializing process is a performance nightmare and not supported by Unity out of the box.
+Later from a Editor WorldViewEditor I call WorldView.SetBlock() that tries to access this dictionary, but finds it empty.
+I could try to leverage ISerializationCallbackReceiver but this still requires me to pull the entire dictionary through some serialization process.
+This dictionary should never be shown in any editor, is private to the instance and initialization will be called every time the scene is loaded.
+This sounds like a perfect case for keeping it somewhere outside the serialization process.
+Is there a way to put this dictionary in a place where its state is kept?
+In my game I have a MonoBehaviour WorldView that, when created at editor time, initializes a large dictionary.

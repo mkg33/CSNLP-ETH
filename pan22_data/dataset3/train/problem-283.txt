@@ -1,0 +1,11 @@
+Note that the data will still remain, but will be inaccessible.
+FOREIGN KEY constraints do not have to be dropped in advance.
+Disabling Non-Clustered (NC) Index: This will straight away delete the index pages and thereby freeing up the space in the database.
+Any queries that reference the table will fail, as a CLUSTERED index is itself the data.
+You can browse the net for the typical guidelines concerning this, but I tend to ignore anything below 10-15% fragmentation, reorganize anything between that and 35%, and rebuild anything above that.
+Disk space wise, it's usually a better idea to reorganize mildly fragmented indexes, and rebuild the heavily fragmented ones.
+SQL Server retains the metadata about the index and the usage stats in sys.dm_db_index_usage_stats.
+Rebuilding an index drops and re-creates the index thereby removing fragmentation and it reclaims disk space by compacting the pages based on the specified or existing fill factor setting, and reorders the index rows in contiguous pages.
+Only way to again access data is to REBUILD the index.
+The Query optimizer wont be able to use the index and any of your queries that uses index hint referencing the disabled index will FAIL.
+Disabling a CLUSTERED Index: All related NC indexes and views become unavailable and FK's are also disabled.

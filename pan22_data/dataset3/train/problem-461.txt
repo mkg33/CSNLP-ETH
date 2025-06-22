@@ -1,0 +1,13 @@
+You could update the vertex shader to let it know which mesh it's processing via a uniform variable, but I assume you want something all GPU side.
+Is there a GLSL command similar to the discard, but it discards the whole mesh and not just a fragment?
+If you place it behind camera, it will be clipped and not processed.
+The fragment shader runs on fragments only, and has no concept of other fragments, the primitive that created the fragment, the vertices that made the primitive, or the original object.
+Object culling (discarding a whole mesh) must be done before submitting your drawing commands to the GPU.
+I also think there is no way how to "discard" whole mesh, but you can transform every vertex of the mesh to the same output vertex, so whole mesh will "implode" into one point in space.
+Well, I'm pretty sure, the fragment shader doesn't have a concept of a mesh.
+However, I'd love to be wrong, I think that would be pretty useful.
+And operates on the vertex level only - it has no cinder of any other vertices, primitives, or the rendered object at all.
+If you want to selectively disable a mesh based on some kind of GPU processing, you will need to do multiple passes.
+Remember that the shaders are running at various stages of the pipeline.
+Things like occlusion queries can be used, or transform feedback.
+The vertex shader is run after submitting objects to the GPU.

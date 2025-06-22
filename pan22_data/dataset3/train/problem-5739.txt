@@ -1,0 +1,24 @@
+Recently we faced a performance problem in our ESXi 4.1 hosted in Dell R710 server.
+I recall walking into one place where management had dictated that 100 VMs go on one server.
+What works for one setup won't necessarily be acceptable in another.
+Network utilization, CPU on host, drive subsystem, drive controller, older/buggy drivers, VM guest OS, VM tools installed in the guest, drive filesystem, fragmentation, host utilization, memory use and availability, drive speed, RAID type, cache on RAID controller, number of host CPU's, virtual CPU's, day of the week, noise in the server room affecting drive vibration, I/O due to backing up systems or migrating them, virtual switch load, number of VM's on the machine...what doesn't have some affect on VM performance?
+What are all the common other factors which would affect performance of VM?
+When we replace one more disk (SAS 15 k rpm ) , it was better some how.
+The disk subsystem was thrashing itself to death both for swapping memory for the VMs since there was not enough physical RAM and also swapping whole VMs in and out to disk to allow others to run.
+Is there a specific instance where you're facing a particular bottleneck you're trying to monitor or discover?
+Everything that can affect an application can affect VM performance: In other words everything, to varying degrees dependent on your specific situation.
+Personally I would have your machine with 6-8 discs + SSD as cache ;)
+In your case you went to a faster drive and things got better, have you considered a RAID setup whose overall throughput would be higher still?
+The next step up would be a SAN array over fiber channel.
+Pretty much always disc subsytem because people very often are totally ignorant (as the person ordering you system )to what "IOPS" means and how a virtual paltform stretches that.
+Having an exclusive binding also lessens the overhead on the hypervisor for arbitrating access to a given resource from multiple VMs.
+Finally i came to know that the server had only one SATA disk which has 7.2k RPM
+Just like driving a corvette on public highways at 150mph, just because you can do something it may not be the brightest idea to actually do it.
+Enough RAM, cpu load are  what every wannabe VM admin sees, but few have even a clue about IO.
+DISK and Network are the slower of the four, with CPU and RAM the faster.
+Not pretty, but management did not see the issue since (a) they did not have to use the VMs and (b) It was running with their dictate.
+You can oversubscribe any of the items which would result in either needing more of a resource or just a wider path.
+With enough spindles your time to retrieve data can approach the seek time of an individual disk.
+Having a larger/wider bandwidth set in these areas will almost always improve the overall performance of a system.
+Consider the classical system performance envelope fingerprint of DISK, CPU, RAM or Network.
+On the network front, consider multiple network adapters and binding some high need machines to particular interfaces exclusively to avoid conflicting with other VMs.

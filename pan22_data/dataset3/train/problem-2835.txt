@@ -1,0 +1,11 @@
+Yes, conceptually it's a decent way to convert the stack trace..... but... there are concerns, and is there a better way?
+Yes, you should be opening/closing the printwriters each time.
+I am just sharing the method that i am using to convert stacktrace to string.
+The reality, though, is that those methods can never fail because the IO is to a StringWriter, and there's no actual IO component.
+You can see this running in ideone: https://ideone.com/rKj9mT
+Note that the method is now static, and it does not need the finally section to clean up.
+The issue is that your code is checking for impossible conditions in a way that's overkill.
+This stacktrace is then being used in AWS Lambda to log.
+Still, using some Java 7 semantics, you can use try-with-resource functionality, and get a much more concise method:
+None of your exception handling can really happen... it's just not going to fail (the "Titanic Logger").
+The most significant concern is that, if there's a problem writing to the PrintWriter, the call throwable.printStackTrace(printWriter); will fail, and the method will return a default value.

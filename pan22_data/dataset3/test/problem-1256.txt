@@ -1,0 +1,20 @@
+You can have a weekly,monthly,yearly summary table also if needed for things like reports.
+In this approach, the real time balance is guaranteed to be in sync with the transaction table.
+You can have your negative balance check if needed.
+We can have one balance record at the end(and/or begin) of day.
+Although I would have my design to only allow inserts into the transaction table.
+And it does not matter if stored procedures or psql or jdbc is used.
+As you know every bank has operational day to open and than close it to do some summary operations for this day.
+So in this case we can get balance just by locating the last summary record.
+In Oracle you could do this using just the transactions table with a fast refreshable Materialized View on it that does the aggregation to form the balance.
+The trigger detects the [in]valid data and raises an exception, where it rollback the transaction.
+You can use database permissions to control access to these tables.
+Based on your requirements, option 1 would appear the best.
+Main idea is storing balance and transaction records in the same table.
+I don't know sqlserver but maybe it has a similar option?
+A better variant is decreasing number of summary records.
+It allows us to easy calculate interest by using every day balance record, for example:
+To get the real time balance, it is a singleton query.
+If the Materialized View is defined with 'ON COMMIT', it effectively prevents adding/modifying data in the base tables.
+And have the trigger on the transaction table, to update the real time balance table.
+A nice example is here http://www.sqlsnippets.com/en/topic-12896.html

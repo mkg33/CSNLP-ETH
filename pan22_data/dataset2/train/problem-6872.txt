@@ -1,0 +1,8 @@
+Here's how I would do it. Create the KVM+Ubuntu VMs in the raw format using less than 10 GB for the "disk".
+However, you can export your running KVM/Xen instance as an image file, and then import the image file into OpenStack.
+Connect to it with VNC and install whatever apps you want but store no data on that disk! If you need to store data, create separate volumes for it. Treat each KVM VM you create as a template that you will use to create instances of when you move to OpenStack. Some VMs/templates you might want to keep more general so they're more flexible. Some VMs/templates you might want to be very specific so there's less work to do to make them useful after you've started an instance of them.
+In OpenStack, you will have to export your images from your old hosts, import those image files into Glance (the image service), and then start them up inside your OpenStack environment.
+I am totally biased, but why not stay on Xen when you move to OpenStack + Ubuntu? It should stop you needing to convert the images.
+When you're ready to move to OpenStack shutdown your VMs and add them to the OpenStack Image Service (Glance), see the section Bootable Images.
+OpenStack does not have any built-in support for taking a running instance that was created outside of OpenStack and adding it so that it is managed by OpenStack. 
+All the cloud orchestration pieces I know about deal best with the "greenfield" cases. In terms of importing images currently running on a hypervisor, it just doesn't fit their model of fully managing your whole environment: Storage, Networking and freshly installed Hypervisor.

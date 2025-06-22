@@ -1,0 +1,13 @@
+Looking at the Various Monitors, there is a peak in processor and network usage at the time of the freezes, although this seems to be more associated with the server catching its breath after it unfreezes. 
+I always blamed Novell's client 32 for the overhead, and eventually used the old zero administration kit to strip out functionality out of the users logon sessions till they were running as lean as possible.
+It turns out Vista's TCP/IP stack has some receive window optimizations that actually cause poor performance with certain routers for apps such as RDP.
+Are your clients running on Vista?  I had a similar issue with very capable Windows Server 2003 and 2008 boxes which had practically no load on them (I was the only one using them at the time).
+I later had a terminal server using 2003, and no Novell and had the same issues.  I found the roaming profiles to be the issue.  The "freeze" would happen as it tried to load the new users profile over the network..Now it happens as we sync offline files from the home drives.
+Check and see if you've got something running that's doing a lot of disk accesses all at once.  Had an issue with MySQL 5.0 completely decimating a 2008 Terminal Server for no apparent reason just last week, put MSSQL on there and it worked.  
+The Application ran fine on RDP in Windows Server 2000 (up to 100 users) (Although it started to slow down as the server ran out of memory)
+In the past I have run large terminal servers on the edge of my environment to control access of the persons using our system.  We have had this issue from the time I was using Windows 2000 Terminal server.   What I found to be the issue to be is when persons were logging in and out it would "freeze" the server for all involved.  The "freeze" would get worse as more persons used the server.
+We think it may be something to do with unloading/loading Hives as users log on, but this is a guess. 
+The Application is quite disk heavy, but we've changed the drives from Raided SATA to a faster SSD Disk, and there has been no improvement. 
+We're running an Application as a remote App using Remote Desktop on Windows server 2008, and we're getting situations where (after we've got about 40 people logged in) the server can freeze for a number of seconds (e.g. 20 seconds). 
+(I'm Not an M$ troll, and I didn't do this personally, my sup did. I just overheard him beating his head against the wall for a few days and later he told me this is how he "fixed" it)
+Notice that this is a list from most likely to least likely. I/O is very frequently a bottleneck. You can diagnose this using the performance monitor. 

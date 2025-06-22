@@ -1,0 +1,13 @@
+This data changes very often during work hours and is on a samba file share.
+I also looked at rdiff-backup and unison, they both appear to use similar algorithms and do not keep enough meta-data to do this intelligently.
+It's actually been used for years and is so incredibly simple, anyone could delete the ENTIRE 40GB share (imagine that dialog spooling up... deleting thousands and thousands of files) and it would actually be faster to restore by moving the latest copy back to the source than it took to delete.
+Anything out there that does "Remote Differential Compression" on Linux?
+Now to top this off, I need to efficiently replicate this 960GB of "mostly similar" data to a remote server over WAN link, with the replication happening as close to real-time as possible -- think hot spare, disaster recovery, etc.
+Now you might be thinking that I'm an idiot for setting dreaming this up.
+Rsync sees it sees a deletion of the folder that is 24 hours old and the addition of a new folder with 30GB of data to sync!
+I have an hourly cron job that copies about 40GB of data from a source folder into a new folder with the hour appended on the end.
+Is there a smarter way to replicate Samba shares as close to real-time as possible?
+The contents of each new folder compared to the last one usually doesn't change very much, since this is a hourly job.
+Best thing that I can find "out of the box" to do this is Windows Server "Distributed Filesystem Replication" which uses "Remote Differential Compression" -- After reading the background information on how this works, it actually looks like exactly what I need.
+One approach to this I'm looking at is this, say it's 5AM and the cron job finishes:
+When it's done, the job prunes anything older than 24 hours.

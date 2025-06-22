@@ -1,0 +1,7 @@
+It's been a while, but from what I recall, if you boot the box with the kernel arguments -v -m verbose, you'll get kernel messages (-v) and SVCS messages (-m verbose) displayed to the console. At least that way, you could get a better idea what's it trying to do... 
+Alternately, in debugging I'd look at using the -x option to sh or ksh in the startup, assuming you can get at the scripts still.
+I agree with David, check there are no NFS mounts from this server that might be held open and that this server does not mount other NFS filesystems that may not be available.
+tail /var/svc/log/rc6.log helps if you performed an init 6.  However, any instance of fmd problems can cause it to hang.
+Two things come to my mind immediately. Firstly, I've had NFS do this when a client was shutting down and there was no server available.
+/var/svc/log contains log files for all services that fall under SMF control. That's at least a starting point for debugging issues with SMF processes. 
+You can still do the old fashioned putting echos in the scripts when using SMF.  Just go into /lib/svc/method and edit away.  Just from that process list I'd say it was AFS related, but I haven't use that.

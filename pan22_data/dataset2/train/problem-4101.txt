@@ -1,0 +1,8 @@
+We were already using it to connect VoIP phones. The feature exposed defined VLAN as tagged on all affected ports and also effect in this VLAN being advertised over LLDP to phones, which will automatically attempt to communicate over advertised VLAN.
+Also, there was no problem with forwarding a tagged Magic Packet through VoIP phone. The trick works both with directly connected and phone-bypassed computers.
+(it remains to be proven if this approach has any downsides, if you suspect any, please let me know)
+We have a working 802.1x configuration on all our access ports. I want to enable WakeOnLan, but have no idea, how to target computers with Magic Packet.
+Obvious solution is to send Magic Packet over default VLAN, but for several reasons this is not feasible for us (we do not want to propagate default VLAN between various segments of the network due to security and maintenance reasons).
+We tried to send Magic Packet over 802.1x' Guest VLAN, but it soon prooved to be working only in certain situations, eg. when client computer was connected through VoIP Phone:
+There was a doubt if a tagged Magic Packet would be recognized (and thus successfull), but tests with wide range of devices prooved positive.
+But as soon as we reconnected computer directly, the port was still up, but JunOS downgraded the port to default VLAN (1):

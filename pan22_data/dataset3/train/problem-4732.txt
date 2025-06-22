@@ -1,0 +1,8 @@
+I'm trying to debug hardware issues, and my first target is the SSD hard drive.
+(If the setting doesn't persist across reboots, you can put the 'smartctl -s on /dev/sda' command in /etc/rc.local or similar, to apply it during the boot process.)
+I assume the poster of the Sept 2008 smartmontools-database list message had to use -T permissive to get the output shown there; too bad he didn't mention that fact in the post....
+(At least this worked with both the 4GB and the 16GB ASUS-PHISON SSD drives found in my Eee PC 900.)
+That's what the '-s on' option to smartctl does, so once you've issued that command, 'smartctl -i /dev/sda' should give you the proper result.
+Because the Asus-Phison SSD drives incorrectly report that SMART is not supported, smartctl normally aborts without actually trying to enable SMART -- but you can indeed force it to try using the -T permissive option:
+However, the drive does not have SMART enabled, and pretty much all recommendations for checking SSD health include using SMART-related tools.
+judging by this message from the smartmontools-database list -- the firmware on your SSD looks to be an only slightly newer revision of what's on that fellow's unit, and from the output listed there, sending the SMART ENABLE command to the device will produce the result you're after.

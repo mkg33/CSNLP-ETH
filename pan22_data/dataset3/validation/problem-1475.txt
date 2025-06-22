@@ -1,0 +1,20 @@
+At least not without some carefully planned circumvention activities (we fear neglect, not malevolence).
+Can we keep her profile in AD and in all the usergroups she currently is in, but by adding some personal rule to her account override all the current and future shared folders access grants, to enforce them all being read only?
+So I think that maybe AD or group policies have their own user-grained deny-SMB-write rules?
+Domain Controllers are Windows 2003, the fileservers are 2003 or 2008 or 2008r2
+Like "user xxx@domainyyy when accessing shared SMB folders others than (whitelisted folder(s)) should be denied all the writes, no matter which grants for the share were set for her or her usergroups there locally on the servers".
+This is tedious and this is fragile (any new shared folder created/tuned in the future, that would be shared to some of her user groups, would implicitly be accessible to her).
+Then, an experienced admin can build a template so that a group called "GoodGuysFromOutsideThatMightHelpBadGuys" always preset ntfs and share denies on newly created shares via gpo.
+Arranging that she would not be able to RDP from that her office desktop into another network machines, and then anchoring the same deny-SMB-write rule to her desktop account rather than user account would be okay too.
+I won't explain how, the web is full of how-to's for this.
+We think there would be a risk, that her home computer can possible get infected by viruses, or the children/guests can get access to it, then via her office desktop get access to internal services/servers and damage the information kept.
+You should set ntfs and share permissions using GPOs on all servers.
+One way would be converting her user account from NT Domain user into local user.
+"Is there such a functionality in NT domain or GPOs ?"
+Is there such a functionality in NT domain or GPOs ?
+Another way, would be to tediously enumerate all the servers and all shares on those, and then adding NTFS "deny write" privileges on every of those for that user.
+Historically there were born quite a number of servers with accumulated information, and the user is member of several user groups, gaining her permissions both individually and via the groups.
+We have a long time fulltime employee going into working from home via Remote Desktop connection to her office (Win7 or Win8, don't quite recall) machine, that would work 24x7 for it.
+While the users are all described in Active Directory, the network shares are administered locally on all the servers (servers are in the domain, but the ACLs to their shared folders are locally created, not AD-pushed).
+But that way ALL her network access grants would be removed unconditionally.
+Now we want to keep her profile and all the working environment she made on her office desktop, want to keep her local administration rights (software development, including installing and uninstalling of helper apps, managing shared folders on her PC, etc), want her to be able to research old files for for years accumulated information.

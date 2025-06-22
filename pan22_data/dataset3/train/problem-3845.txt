@@ -1,0 +1,15 @@
+And if most VMs ran from one host, there might be a single point of failure.
+# Be sure to install the necessary package, avoid the "devel" ones
+Given CentOS 7, the systemd example is relevant, specifically:
+A previous "service with numactl" question  How do I run a service with numactl  happens to be about mongodb.
+I wonder how I could permanently fix this numactl startup as I don't want to start mongod manually every time.
+Another design option would be to split up your NUMA host into VMs no larger than one node each.
+https://docs.mongodb.com/manual/administration/production-notes/
+Editing /etc/systemd/service/mongod.service.d/numactl.conf  to override the exec:  ExecStart=/usr/bin/numactl --interleave=all -- /usr/local/bin/mongod $OPTIONS run
+Mongo has a clustering capability, although that would be more complex than scaling up.
+In first instance be sure that numa is installed and loaded during the startup:
+(I googled and couldn't find any service files I could edit on my server).
+I installed MongoDB 3.6 on my centos 7 machine and in the startup log I see a warning because I am running NUMA hardware:
+I usually run sudo service mongod start and I want that this command starts MongoDB every time with the numctl prefix.
+/etc/systemd/system/multi-user.target.wants/mongod.service
+The  is the path to the program you are starting and the  are any optional arguments to pass to the program.

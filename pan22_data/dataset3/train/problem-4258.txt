@@ -1,0 +1,25 @@
+We generally combine it with some other kind of server already running on hardware, such as for example DHCP or DNS servers.
+Generally virtualization software vendors have guest tools (Vmware and Virtualbox do) to correct that problem, I experienced drifts before installing vmware guest tools on our ESX.
+I've had massive problems if using VMWare Server and a VM running NTP.
+The easiest way to add the firewall rules is by running the following at an ESXi shell:
+For example, NTP is such a lightweight service that it could be added to just about any other production server with no load increase.
+Altough the time doesn't drift dramatically (a few seconds of max deviation) however it definately will have an impact if you host a timeserver on it.
+Set up at least two, make them peers of each others and synchronize them to a known set of good servers.
+Source: http://www.v-front.de/2012/01/howto-use-esxi-5-as-ntp-server-or-howto.html
+Yes, clock drift can be more drastic on hosted virtual machines when compared with physical hardware.
+(Normally you would set the VMware host server to sync with your NTP server of choice, then have the VMware Tools in each of the virtual machines sync with their parent host.)
+On the other hand, have you considered other options?
+Once complete simply tick the box next to "NTP Daemon" in your ESXi servers Firewall Properties.
+(Heck, if you have a Windows domain, one of your Active Directory controllers is already acting as an NTP server for the domain members.)
+Pool.ntp.org might be OK or might not be good enough, depending on your requirements.
+What those might be depends on where you are; check with your ISP(s), national authorities on time, etc.
+Firstly setup your time sync as per normal on the ESXi host pointing to one or more external ntp servers (check out pool.ntp.org).
+Why not make use of the ntpd running on ESXi itself as your local ntp server?
+In order to allow other hosts to make use of ntpd running on ESXi you will have to add a custom firewall rule to allow it to be used as a server.
+Or, is it possible to use an existing NTP server from the Internet (see http://www.pool.ntp.org/en/ for a huge list)?
+It can be difficult enough just getting a VM to have a consistently accurate time, to within a second.
+In general, running an authoritative NTP server on a VM is a very bad idea.
+You really need to run it on metal of some kind, but as ewall said it's usually a light weight service (if it's only for internal usage).
+(This question might better fit on StackOverflow's sister site, ServerFault.com.)
+Time being generally based on counting processor cycles maybe some virtualization platforms support guaranteeing the frequency of CPUs given to a vm, that could help.
+But I'm not sure it's a reason to avoid a virtual NTP server...

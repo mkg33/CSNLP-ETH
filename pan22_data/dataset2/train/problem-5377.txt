@@ -1,0 +1,6 @@
+Does nginx really need this enabled or is there some way to work around it? Overriding all discretionary access control looks risky, but perhaps it's common within the AppArmor constraints.
+nginx runs fine unconfined, so I don't think there is a permission issue, but I'm new to AppArmor so I may be wrong.
+The solution is either changing the permissions so that root can also write to these files, or adding the dac_override capability to the AppArmor nginx profile.
+The default file permissions for nginx logs in Ubuntu are rw-r-----. These files are owned by www-admin:adm.
+nginx starts under user root, which has CAP_DAC_OVERRIDE capability by default (remember that root can read and write to any file in the system) but once AppArmor confinement kicks in, the process loses that capability even though it runs as root, so the master nginx process cannot open the log files.
+I am building an AppArmor policy for nginx in Ubuntu 14.04 and I cannot make it work without enabling the dac_override capability.

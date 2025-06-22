@@ -1,0 +1,9 @@
+From my experience: On small locations where you have 10-20 APs and WLC on site it is easier to put them in the same VLAN.
+I like to use DHCP vendor specific options for the discovery process since it is easier then manually configuring the lwapp ap controller ip address but gives more control especially when you can't use different domains for some reason and want to be able to send different WLC IPs to the APs.
+It is possible to have WLC and APs in the same subnet, but unlikely since it is hard to manage especially in large environments or when you deploy new access points frequently.
+VCI is sent in option 60 by DHCP client during the initial DHCP discover broadcast and is used to identify the specific class of devices (hence the name).
+For matched VCIs DHCP will send option 43 with 102 or 241 suoptions that you will configure to hold IP addresses of your controllers (and other clients will not see them).
+When you have more complex networks, either because of specific requirements or maybe bad design you can use DHCP option 43 (or static configuration).
+Using DNS record is a simple solution for discovering the controller especially if you have only one in your domain or you don't care which WLC the AP will join.
+On larger installations where you have one (or more redundant) centralized WLC and a lot of APs that are (geographically) scattered, easy-to-configure and 'clean' solution is to use DNS for discovery process.
+You can create scope-based policy that have DHCP option 43 with IP address of the controller for the VCIs (Vendor Class Identifiers) of your access points.

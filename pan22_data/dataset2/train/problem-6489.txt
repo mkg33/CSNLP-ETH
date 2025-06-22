@@ -1,0 +1,7 @@
+(2) Use a Stored Procedure to encapsulate as many of the SQL statements as possible, then deploy that on the remote Master.
+We have our main MySQL server in city A. We have the bulk of our customer service staff in city B. The staff are complaining that the connection is too slow to the server. The options are:
+One thing that can make a remote master painful is if the user's "unit" of action translates into many SQL statements.  That can/should be solved by
+So, back to what I see as the only viable solution:  A single writable master, plus any number of slaves.
+2 is much preferable, but as you can probably tell by my description I have absolutely no clue how to implement it or even if it is 'clustering.' The best I could find for MySQL Cluster is that it would require using NDB tables and I'd rather not convert our entire database to that. What are my options here? Thanks. 
+Reads (other than "critical reads") can/should go to a slave, behind a load balancer.  And some mechanism should ensure that reads are usually "local".
+How far apart (ping time) are the two cities?  80ms is what we experience going across the US.  It is not bad.

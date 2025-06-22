@@ -1,0 +1,15 @@
+I think what you want is to have another rule immediately after rule #5 that then drops any packets with just SYN set.
+It will have no effect AFAIK (I'd expect the kernel to drop any packets with that source address arriving on an actual external network interface), and just confuses things a bit.
+However: stateful rules for inbound traffic can be considered harmful under high traffic scenarios, where the firewall state tracking becomes a bottleneck.
+If the rate limit rule is exceeded, processing will hit that rule and the packet will be dropped.
+Short answer: probably not, because then you'll need to pair each inbound rule with an outbound rule allowing the reply packets to make it out (also a stateless rule, but with the source port being,, for example to match your Rule 7, ports 22, 80, and 443.
+After the rate limit is exceeded, that rule is not hit, so processing proceeds to the later rules in the chain, which then hits Rule 7, permitting the traffic.
+   That rule is being hit, and up to the rate limit, the packets are being accepted.
+I wish I could find a citation for this (there's an epic rant about it somewhere, but it's not coming to hand)
+Dropping the others is fine, IFF your VPS only has a public IP, and isn't (like AWS, for example) on an RFC1918 network, with NAT doing magic to give the appearance of a public IP.
+3) Whether the rules must be stateless or not (watch for new connections only):
+2) About inclusion/exclusion of some private IP ranges (or maybe delete rule #1 at all)
+Maybe put the ICMP together, or rather use the built-in "Useful ICMP" group instead of the drop of bad ones and the allow of "any ICMP".
+If you are only ever expecting low-medium traffic, and are ok with it all falling down under a DoS (which is likely anyway in a single-server situation, where a DoS could easily find the limiting factor to be CPU/memory, not concurrent connections), then don't worry too much about going stateless.
+Looks pretty ok; there's not that many, probably doesn't make that much difference.
+I recommend you try this carefully first, perhaps adding port 80/443 as destination services as well to those rules, so you don't lose SSH access if you get it wrong :)

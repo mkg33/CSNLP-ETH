@@ -1,0 +1,18 @@
+I think that is the expected behaviour - at least if both processes have an I/O share near 100%.
+Distributions seem to default to deadline scheduler.
+This difference may depend on the CPU priority, too.
+Thus it might help to reduce the CPU priority of the cron process (maybe even making it SCHED_IDLE).
+If I check both process in iotop I see no difference in the percentage of io utilization for each process.
+The less I/O a process causes the bigger should be the idle prio process's impact on it.
+Thus it may happen very often that a non-idle prio application demands I/O and does get the next slot but because there is an IOP just being executed for the idle prio process the lantency increases.
+Look at /sys/block/xvdh/queue/scheduler to see which you have enabled.
+I/O prio idle doesn't mean that the system is not affected at all.
+Also, the funny thing is that whenever my system for some reason starts using swap memory, the updatedb.mlocate io process is been scheduled faster than kswapd0 process, and then my system gets stuck.
+If non-idle processes do not consume the whole available I/O then the prio idle process gets I/O bandwidth, too.
+To provide more information about the CFQ scheduler I'm using a 3.5.0 linux kernel.
+ionice only works if you're using the CFQ kernel scheduler.
+There should be a small difference but 100% is the limit and if you are already at 96% then getting just half of the I/O results in 98%.
+If you check the /etc/cron.daily/mlocate file you realize that the command is executed like:
+A serious difference should be discernible in the absolute transfer values.
+I have been testing the ionice command for a while and the idle (3) mode seems to be ignored in most cases.
+I started doing this test because I'm experimenting a system lag each time a daily cron job updatedb.mlocate is executed in my Ubuntu 12.10 machine.

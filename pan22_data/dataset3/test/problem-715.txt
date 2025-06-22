@@ -1,0 +1,12 @@
+The service sends you an alert whenever it doesn't hear from the cron job on time.
+You can do this by adding a line such as the following to /etc/aliases:
+If you don't feel that a larger-scale monitoring solution is the right match for your situation, you might consider having the administrator e-mail forwarded off of the server to someone's actual e-mail account.
+Where user@example.com is somebody's actual e-mail address.
+When your jobs run, they ping Cronitor and if Cronitor doesn't get pinged at the right times it will send you an alert.
+The idea in a nutshell: you set up your cron job to make a HTTP request to the hosted service just before the cron job finishes.
+(Full disclosure – I'm the founder of Healthchecks.io.)
+Nagios with passive checks and then wrap your scheduled jobs to send a message (send_nsca)to your nagios server indicating what happened when they complete.
+Hosted Dead Man's Switch style services would be a perfect fit here.
+Mind that your server will need a functioning MTA to send e-mail, and if there are any conditions that prevent the system from sending e-mail (ie loss of network / no space on /var), nobody will be notified.
+check out https://cronitor.io -- you can monitor a single cron job for free.
+More relevant to the problem you're seeing is that you can also set nagios to alert if it hasn't heard from your cron job for too long, so you can spot jobs that are failing silently.

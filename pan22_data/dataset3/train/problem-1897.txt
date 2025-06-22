@@ -1,0 +1,15 @@
+We use this internally to prioritize VoIP and Citrix traffic on our VPN tunnels.
+Consider a SMB packet which has traversed your bandwidth limited download link and reaches the SonicWall.
+The guys there all have Aastra VoIP 'hard' phones on their desks.
+I guess my suggestion to increase VoIP quality is:
+I would think this would be your best option since it utilizes existing hardware.
+We have recently opened a branch office for developers to work out of.
+SonicWall devices have QoS configuration options in the Enhanced OS version.
+Well, the sending client gets the TCP retransmission and has to send that SMB packet again which increases the overall bandwidth usage on your link than if the packet had been allowed in the first place.
+The SonicWall sees that this is Windows file sharing, which is low priority, and drops or delays the packet due to higher priority VoIP that is also being received.
+Unless you are dealing with a point-to-point circuit or MPLS connection between your branch offices, simply adding QoS to your SonicWall or other VPN/Firewall device won't be enough.
+Is there some easy (and cheap) way we can make the VoIP traffic a higher priority?
+The main office and branch offices are linked together via a VPN (using two Sonicwall Firewalls) the VoIP PBX we have is a Trixbox installation, interfacing to 4 PSTN lines.
+In fact, added any QoS policies to inbound traffic can cause more network conjestion.
+Most of the time this setup works great, but if someone opens a file on a server at the 'other' end of the link the call quality drops off.
+If your SonicWall's are using public internet connections, they will have no control over the inbound data received for the WAN and outbound QoS will be stripped off once it hits your ISP's router.

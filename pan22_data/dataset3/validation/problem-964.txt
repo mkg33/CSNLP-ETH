@@ -1,0 +1,13 @@
+I think this is talking about a couple of different technologies.
+Log Shipping is a high availability feature of SQL Server where a database copy from a specific point in time is made available to a different server using full backups + scheduled transaction log backups delivered by an internal mechanism of SQL Server.
+Log shipping will copy the transaction logs from the primary server to the secondary server(s) and apply them to the respective DBs.
+That part is talking about using log shipping to get the data to multiple servers for backup purposes.
+That part is talking about using merge or transactional replication to spread the workload and using either Network Load Balancer (NLB) or a hardware load balancer across multiple SQL Servers which are all in sync.
+You can choose one of two settings to be able to query the secondary DBs: 1) The users are disconnected when the logs are being applied or 2) The application of the logs are delayed till the users disconnect.
+It's no new functionality of SQL Server (if I recall correctly it's at least from SQL 2000).
+If you want to read from the secondary server, the appropriate DBs will have to be in the standby mode.
+You can read about it here: Log Shipping Overview.
+Snapshots can only reside on the instance where the database resides, so there is zero high availability if you are looking for a hint of that.
+If you want to have better synchronization and not worry about the disconnection issues while being able to read the DBs, you will have to look into something like transactional replication.
+What is meant by using the secondary server(s) as a reporting tool is that instead of using norecovery for the t-log restores on the secondary server(s), you can use standby to put the database in a mode where SELECTs can hit the secondary database(s).
+It's composed of some SQL jobs and some executables and is accessible by a wizard - right click a database -> Properties -> Transaction Log Shipping.

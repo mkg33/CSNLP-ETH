@@ -1,0 +1,16 @@
+As explained by @womble, Your nagios solution should be dynamic.
+", and trying to change that overnight is going to be a struggle, so you might have to learn over time that you're in the cattle-herding business now, not running a pet store.
+You then need to teach your EC2 instances to register themselves with your chosen service discovery system on startup, and deregister themselves when they terminate cleanly.
+And immediately do active checks to the hosts and services.
+There's a strong argument to be made that you shouldn't ever care when a single machine dies, and I agree with it, but if you're using Nagios, your organisation's mindset is probably very set on "machines are important!
+Your scripting language of choice will come in handy here.
+The client side isn't really any different in AWS -- your AMI or configuration management system sets up NRPE, installs plugins, etc, as required for your environment.
+And tell to Nagios to be aware of new settings that the servers have.
+How do we design/configure such that a Nagios server can automatically push correct check configurations to each of the servers scaled up/down and how do we know what when a server is scaled down or up, Nagios will not say that it was an alert or a problem and instead it will tell that "it's your server being scaled down".
+As you note, AWS ASGs are dynamic, so your Nagios configuration needs to be dynamic, too.
+Previously, setting up Nagios server to do monitoring is easy since every agent servers are static.
+IP addresses in AWS is not static after the ASG scaled up/down servers.
+Check this blog which explains entire solution with scripts and it is working perfectly fine for me.
+For the "source of truth", there's any number of service registration and discovery systems that'll do the trick, but for simple use cases querying the EC2 API to get a list of instances works quite well.
+Practically, that means that the "source of truth" for your configuration needs to live somewhere outside of Nagios, and you have something that queries that data store and writes the configuration files (and reloads Nagion) when anything changes.
+Might be that when servers get scaled down, delete config from Nagios, and when servers get scaled up, push config to Nagios.

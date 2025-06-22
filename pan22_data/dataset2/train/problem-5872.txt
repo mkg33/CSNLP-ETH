@@ -1,0 +1,12 @@
+This might not be possible in your situation, so I hope I don't get down-voted in that case, but it might be more efficient to change your backup strategy.  If you back up specific data instead of VM snapshots, your backups would run much quicker, and it would be easier to capture changes.
+Depending on your VMs and what they're used for, you can just have them back up data to where you store the snapshots now daily (or whatever schedule is appropriate), and then JungleDisk can back up just the data.  That would more efficiently transfer changed files, and the space required for backups as well as time needed would be reduced.  In addition, you could still take snapshots to retain, and just do that much less often (weekly, for example).
+If you measure your changes and find them low enough you could try DRDB with a 3rd mirror offsite - It's only going to work if the number of writes is extremely low on your VMs.
+zfs does it great, you already mentioned knowing that though and the downside of not working great at the 2 server scale. It also isn't going to give you the DRDB failover, i.e. Nexenta will be a single point of failure. 
+In this case, you could always just bring up a new VM and restore data, or use an older snapshot to restore the VM, and then use the data backup to restore to the most recent point.
+There are lots of good VMWare backup solutions, I've personally used VzionCore. You can then do some slick stuff with snapshots and point in time recovery.  There is even an ability to fail over to a remote site. 
+backuppc has a clean web interface allowing you to download some parts of a backup directly as a zip file. It can be monitored by nagios using check_backuppc.
+You can consider trying to get VirtualBox on OpenSolaris or NexentaCore but not as simple as ProxMox + DRDB so you can re-use your existing machines.
+Consider an 'in guest' file backup solution of which there are many. Backuppc, Urbackup, bacula, amanda etc...
+I run a large proxmox cluster and have to suggest you change your backup strategy away from the built in vzdump snapshot style backups, which take ages, are always full therefore large in size and make restore of individual files extremely long winded.
+I'm not sure, how much architectural change you were planning to make to increase your scalability.  However, if you would be open to switching VM platforms you could look at VMWare.  
+further more you can easily wrote a black list of folder who does not have to be backuped. For instance: temp/ /tmp .garbages/ ...

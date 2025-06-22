@@ -1,0 +1,14 @@
+That works most of the time, but I have seen a few systems where it did not.
+as the latter expects a password hash value rather than the plaintext password.
+SELECT user, host, password, PASSWORD('password') FROM mysql.user
+If it works for you, it is a good way to avoid maintaining pairs of grants for each user ('user'@'%' and 'user'@'localhost')
+Socket connects do not match the host wildcard '%'.
+They only match the host 'localhost' as a security measure.
+This would explain why you're unable to login with any of the passwords you set.
+I am doing this as root and I did try to flush privileges.
+The reason it's working without a password is probably because you have different credentials set in ~/.my.cnf
+Anything different happen if you specify the host?
+I can create a user with no password and login works.
+The wildcard hostname is only matching TCP connections, not the socket connection used by localhost; you'll need an entry for % and for localhost.
+And make sure the password in the db and the result of the PASSWORD function are the same?
+I tried this with countless users but it does not seem to work.

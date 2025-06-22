@@ -1,0 +1,26 @@
+If your goal is to remove clutter from the screen during debugging by not displaying columns with large data values, then you can use the following trick:
+I wrote a simple proof of concept below showing how bad performance would be with a very simple dynamic execution in plpgsql.
+PS: Why would you want to select all/some columns without knowing/writing exactly your table structure?
+Basically the dplyr package sends SQL (and specifically PostgreSQL) queries and accepts the -(column_name) argument.
+The only way you can (don't say you should) do that is by using dynamic sql statements.
+the caveats is that "test" has to be a table (an alias or subselect won't work) since the record type feeding into hstore must be defined.
+So this method will not work for 'select all but' unless you want to remake this function for all your tables.
+Dynamically as stated above is the only answer but I won't recommend it.
+There's a workaround I have just discovered, but it requires to send SQL queries from within R. It may be of use to R users.
+At least it will not confuse the optimizer (but it may still confuse you.)
+These kinds of functions would tank any kind of complicated query that needed to use indexes or join tables in the right order.
+That means that indexes will not be used and joins will not be done intelligently.
+It's possible but I still recommend writing every needed column for every select written even if nearly every column is required.
+(install "hstore" contrib package if you don't already have it:"CREATE EXTENSION hstore;")
+For a table "test" with col1,col2,col3, you can set the value of "col2" to null before displaying:
+As you can see the function call scanned the whole table while the direct query used the index (95.46 ms vs.
+This has been a requested feature for decades and the developers refuse to implement it.
+It's easy (like DrColossos wrote) to query the system views and find the structure of the table and build proper statements.
+The column match will be wrong and your insert will fail.
+Without forking the code and writing the feature yourself or using a programming language interface you are stuck.
+The real answer is that you just can not practically.
+Notice also, that below I have to coerce a function returning a generic record into a specific row type and enumerate the columns.
+What if you add more columns in the long run but they are not necessarily required for that query?
+You would be much better off with some sort of macro system like m4.
+The popular answer suggesting querying the schema tables will not be able to run efficiently because the Postgres optimizer considers dynamic functions a black box (see the test case below).
+You would start pulling more column than you need.

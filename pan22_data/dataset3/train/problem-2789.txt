@@ -1,0 +1,9 @@
+Without the lock, one thread could start evaluating Push by evaluating value::_stack, then another thread could modify _stack and the original thread would then overwrite _stack with the old value of value::_stack (and so the effect of the other thread would be lost!)
+Logically, the agent-based version is quite similar to the one you have using locks - it might be a bit nicer for other reasons (getting locks right is hard, agents do not make it possible to do the same kinds of errors), but that really depends on what you want to illustrate!
+All access to the _stack field is protected by a lock, so I do not see why this wouldn't be thread safe.
+If the idea is to have multiple threads sharing the state, then they'll need some way of sharing & mutating the state.
+Another option would be to use Interlocked.CompareExchange.
+Some synchronization is necessary, but it doesn't necessarily have to be a lock.
+Another approach in F# would be to use an agent and keep the current _stack as a parameter of the asynchronous loop - in that case, you're not using mutation in the F# code you write (but there is hidden mutation and synchronization going on in the agent).
+A nice coincidence of using immutable lists is that you can also nicely implement IEnumerable<'T> or even just return the list of all elements currently in the stack - because the data type is immutable, it can be safely shared with other threads (this means, you won't get into the usual troubles with "Collection was modified; enumeration operation cannot continue" that you'd get in C#.
+But doing that is more complicated, so I would stick with the lock, unless profiling showed that the lock is what's slowing your code down.

@@ -1,0 +1,18 @@
+Not the same answer, and not a meaningful one either, because -- would you believe -- that's exactly the limitation imposed by my table_open_cache variable.
+The "tuning-primer" script does things to your server that can alter the subsequent values that the script uses to draw its conclusions... As just one example, it queries information_schema.TABLES while gathering InnoDB stats.
+Too small, and you end up opening and closing the same tables over and over.
+Too large, and you demand more file descriptors (and probably small amounts of additional memory) from your operating system than your workload justifies.
+Aside from the obvious values like innodb_buffer_pool_size, most parameters are best left alone unless a specific reason can be identified why that particular parameter has a value that's not appropriate for your environment.
+Better still, flush the tables, wait a while, and then run the "file" test again.
+To see this, flush the tables on your server and then run only the "file" test from tuning-primer.
+Depending on the number of tables you have and the level of traffic on your server (such as how many tables were open when the script was started), this script can completely fill the open table cache and then incorrectly report that the cache is 100% used.
+Production Environment Disclaimer: FLUSH TABLES should be a harmless operation -- it "closes" all of the tables as soon as any running queries are done, and they will be immediately re-opened by the next query that needs them, and, if you're primarily InnoDB, this is generally almost instantaneous... but on a busy server or with a lot of MyISAM it could take a few seconds, during which your performance may dip slightly.
+My final thought: the best "tuning strategy" from my experience is to tune as few parameters as you can, as seldom as you can, in MySQL.
+But if I do this (with or without a FLUSH TABLES before it):
+What you're seeing here with tuning-primer is partially explained by what we might loosely refer to as the observer effect -- changing what we're measuring, by the act of measuring.
+Tables that are "open" were used at some point since the server was restarted, yet may not have been used for days or hours ... but there's no point in MySQL going around looking for something to do, closing tables that haven't been used in a while, because it will eventually just have to open them again... unless, of course, we want to proactively avoid unnecessary consumption of system resources... and how aggressively it closes idle tables is the gist of the purpose of table_open_cache.
+The developers of this script obviously put a lot of work into it, so it's not my intention to be critical of it.
+But just like any tool that tries to make informed decisions based on observing a complex system, its conclusions should not be taken as authoritative without corroboration and investigation.
+A single "open table" instance means different things in different storage engines, but you can have more "open tables" than you actually have... tables.
+:)  (It may not actually open all of them, depending on some under-the-hood details in the implementation_schema, but it at least opens all of your InnoDB tables).
+An hour later, running it again (without flushing the tables) I get this:

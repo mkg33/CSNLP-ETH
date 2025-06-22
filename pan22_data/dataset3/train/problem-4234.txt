@@ -1,0 +1,15 @@
+It's much cleaner to add a new table, receipt_item.
+However, you have an indeterminate number of menu items to attach as well.
+However, this is messy - you leave a lot of columns empty (even NULL columns consume some space), and you still run the risk of eventually having a customer who orders more than that number of items.
+So, each row in receipt would be connected to a customer, and would need to be able to have several menu_items associated with it.
+One option would be to have 5, 10, maybe 15 columns, each of which could be tied to one menu item.
+Each receipt can have many menu items; each menu item can be on many receipts.
+First, you'd add customer_id as a column in the receipt table, to tie the receipt to a customer.
+This is normally handled by creating a "bridge" table.
+In the case of a restaurant, you might have other columns as well: instructions, to note that the steak should be medium rare, for example.
+So, each receipt could have anywhere from one to dozens of receipt_item rows connected to it, and each of those ties to a menu_item.
+Further, let's assume each one has a primary key column (uniquely identifies a given row), <tablename>_id.
+This table would have its own primary key (receipt_itme_id), and would tie to one receipt (so it has a receipt_id column), and one menu_item (so, add the menu_item_id column).
+That's just a thought from your example; all a bridge table must have is the ID values from the two tables it connects.
+What you're describing is called a "many-to-many" relationship.
+Let's assume you already have the following tables: menu_item, customer, and receipt.

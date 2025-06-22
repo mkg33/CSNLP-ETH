@@ -1,0 +1,23 @@
+One thing about this method will be that you will probably want to get more IPs, which will cost a little more.
+Containing things within an os is tricky as you mentioned.
+Everything is group readable but only user writable.
+I would use mod_suexec in Apache and run all scripts as CGI.
+This allows you to set the user to run as in the virtual host definitions.
+So buying a whole machine, and some IPs, will probably cost you more.
+Instead, it creates containers which isolate a set of Linux processes from other processes running on the machine.
+But I think that would be cheaper than buying the same amount of VPSs.
+So the Apache server runs as (using Debian's settings, as that's what I know) www-data.www-data, all the virtual host directories are set as group www-data, but a user based on the client.
+You can then set each virtual host subdirectory to a different owner, but same group.
+Michael suggestion is to use VPSs, I agree with that, but I believe you said you have a VPS right now, that is probably either XEN or OpenVZ already.
+So on the whole, my solution is just to spend a little bit more by leasing a server and getting IPs, but in the end I think it will make everything simpler for you.
+As a note, the way I usually set up virtual hosts is with the following directory structure:
+So I would recommend virtualization for containing things too, but I think if you have a bunch of sites, you might want to rent a whole server, and run OpenVZ or Xen on it.
+You could maybe work something out with reverse proxies, but that is probably more trouble than it is worth.
+Then put each site or groups of sites in its own container.
+This doesn't completely prevent malicious viewing, but goes a long way.
+You can have whatever else you'd like there, but Apache points to the html directory.
+Then, since suexec controls the user to use, scripts and anything else can be in a client-specific group, making them unreadable by other clients.
+If you are not worried about certain sites interacting with each other, put them in a container and use virtual hosts, otherwise give them their own virtual machine.
+Unfortunately, I haven't traditionally used suexec in the past, since I've always owned all the sites.
+It is not a virtual machine system like XEN or Virtualbox because it does not simulate a CPU.
+For this kind of application I would seriously look at OpenVZ which is virtualizes Linux systems.

@@ -1,0 +1,15 @@
+It says here that you can set a OOM_DISABLE "flag" on a process:
+I think your best bet would be to evaluate why the cronjob is using up so much memory and if its perhaps best suited for another host or to be rewritten to consume less memory.
+You can also change the Virtual Memory over commit behaviour.
+For example, you can change the value of /proc/sys/vm/overcommit_memory to '2' -- meaning do NOT overcommit memory.
+Short answer: No, the OOM-killer is not configurable, and there is/has been resistance to changing that.
+Find the leak, redesign the memory-consuming process, add more ram to the box, etc.
+You can also use "ulimit -m" in your script to set the max amount of resident memory to use.
+After you have launched a process you can set the value of /proc/<pid>/oom_adj to a negative integer.
+which will tell the OOM killer to kill the process that triggered the OOM condition, but this is not guaranteed to be your cron job.
+(Do not just change this value without understanding what it does.)
+This will affect the affinity of OOMKiller towards the process and its children .
+So rather than have the OOM killer go and wack your old, long running process(es), the new guy asking for RAM is told 'no'.
+It doesn't sound like you are addressing the root cause of the issue by actually debugging why this cron job is using up so much memory.
+When your system hits an out of memory condition, other processes will be killed.
+In 'no overcommit' mode, whatever new process asks for more ram, will receive an error when it tries to allocate.

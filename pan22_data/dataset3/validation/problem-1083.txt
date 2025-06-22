@@ -1,0 +1,26 @@
+This is a more "machine learning" approach to time series forecasting and it works quite well for datasets that you appear to have; but it requires a lot of feature engineering (in general).
+Probably a more accurate method than 1), but more computation required.
+I'm trying to do something similar, and am still muddling through it myself, however the following might be helpful:
+According to me, time-series ML Model are bit different than other routine ML  models.
+To associate the qty with the item, you might use the qty as the item column's value.
+Depending on what you are trying to do, this might be okay, but you are still losing information here that could be useful.
+You are throwing away a lot of valuable data by dropping "duplicates" because these observations are not really duplicates at all; your data appears to be a collection of distinct time series from a variety of different stores.
+So sale of store 38 will be comparatively high in comparison to other store and so on.
+There are clearly a lot of duplicates in the date column (since it depends on the stores and the items , that was expected), and since my task is to make a prediction and return predicted values in numeric of the qty variable - the target prediction variable "qty", represents the total quantities sold at the ITEM/DAY level- i think i can drop the duplicated dates (I'll be using the ARIMA model) and keep only the date , item and qty column for my prediction .
+1) Aggregate each individual time series/row by date (i.e.
+In effect, you are trying to learn unique patterns specific to each store while also learning "global" patterns over all time series (if they exist).
+As time-series model is based upon the sequence of previous values, dropping a Date may impact your solution.
+You can still use ARIMA here, but ARIMA is a univariate time series method.
+Then all you would have left is one row per date, where each column represents an item, and the value is the qty.
+2) Fit a single ARIMA/automated forecasting method to each individual time series you have in your dataset (so, fit a forecasting method to each individual store) and then use hierarchical time series methods to reconcile the fitted time series to the actual sum of all time series you observed in your dataset.
+take the mean/median) so that you have an overall time series that is now independent of the store number.
+Rest you can try two different models one with Date and another without Date and compare the results as well.
+For eg consider store 38 is located in Area where on "2017-03-15" is holiday.
+Specially in this case where sale is definitely dependent upon the particular day.
+I wanted to know if my approach was right, any suggestion would be much appreciated , Thank you.
+Incorporate lagged values of the target variable, or moving averages to (hopefully) capture short term trends.
+ML algorithms look at numbers as indicating a level of something, so when you have item numbers, you are probably going to need to one hot encode those, which will give you a very wide data set.
+Indicate holidays/significant events on calendars, or promotional sales if you have access.
+3) Leave your dataset as you have shown, but change the date column to a time feature(s), example: 2017-03-15 is now 2017 + 74/365, or 2017-03-15 is now many columns; year = 2017, month = March, day = 15, week = 3, dayofWeek = Monday, or something like that.
+If you wanted to further reduce the number of rows, you might consider just doing a separate run for each store, and remove the store column(s) all together.
+Now, treat the problem as a supervised learning (regression) problem.

@@ -1,0 +1,10 @@
+This MDA needs to be configured to return an SMTP 4xx status code whenever the mailboxes are unavailable, so the sender will retry later.
+The frontend (mail reception) side can be any number and type of MXes.
+As a temporary solution on your existing platform, you can set the option -o soft_bounce=yes on your delivery agent, but be warned that this will retry ALL rejected messages.
+solved this with a script that will probably need improving:
+Would it be easier to create a script that would check if the mail queue is too big and if it is restart postfix with a different config file, for example one that would make it only a backup mx server and relay mail to the other one.
+I don't know if posfix even supports something like this, because if the domain is in my_destinations then the delivery is local and can't be through a remote system.
+Now I would like postfix to try and send the emails to the secondary mail server if it can't do the delivery locally.
+I have a problem when the mail server can't access the shared storage and then the emails start piling up in the mail queue.
+The proper solution to such a quandary is to separate mail reception from delivery to mailboxes.
+On a machine that has dependable connectivity to the backend mail stores, implement a mail delivery agent (MDA), which can be fed by a postfix instance, but may be any MDA that speaks SMTP or LMTP.

@@ -1,0 +1,9 @@
+It will really pound the server, so either nice it and/or run it when the machine can handle the extra load.
+As Nexus suggested, du is your friend.  I personally use du -hs *, which will list the total size of a file or directory, including all subdirectories.  Then just rinse and repeat for your largest directory(s), to drill down to where that disk space is being used.
+Things like running find are ok, but what happens if you have an app that is rotating (but not deleting) logs on a daily basis, no one knew about it, and 3 years have gone by? Small files add up too...
+This will give you a sorted list of all files, starting with the largest at the top, in KB and without crossing onto other mounted drives.  If you only have a single, huge / partition, then replace "/foo" with "/".  More often than not, you have a small number of large files that are eating up space, such as log files, core files, or crash dumps.
+Note that if there is a problem with your binlog index file, this setting will appear to not work.  I believe you can just manually ensure the contents of the index file match all of the existing binlog file names to resolve this.
+That way you get your top offenders at the top of the list. Then you can drill down on the obvious offenders first and find the true source of your full disk issues.
+Alternately, find works too.  find . -size +1G will show you all the individual files that are larger than 1GB.
+...where -h is "human readable" and -max-depth controls how many subdirectories deep you'd like to go.
+In general, it is real handy to set up cron scripts using that to audit things like home and share directory trees. Run that in home, and you can easily identify the logins of the file hogs...

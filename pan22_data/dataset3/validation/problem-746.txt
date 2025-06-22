@@ -1,0 +1,14 @@
+You need to check that none of the intermediate certificates in the chain up to the root are signed with SHA-1.
+Google chrome will start to warn users that their SSL connection is insecure under the following conditions:
+NSS features an environment variable, NSS_HASH_ALG_SUPPORT, which can be used to control what hashing algorithms are available to progams using the library.
+That 256 in the string makes it sure look like it is using a 256 bit algorithm, even though I know it is not because I myself did the cert request with $ openssl req -new -newkey rsa:2048 -nodes.
+Here is an example of a SHA1 cert on another server that I maintain, that expires in the 'safe' timeframe:
+You have to take a look at the certificate instead, like this:
+How could I have determined that this cert is SHA1 from the string DHE-RSA-AES256-GCM-SHA384?
+Googling around I found this resource or supported ciphers but I don't see how I could determine the cipher strength from that document.
+Therefore I am trying to script a method to determine if a cert is affected.
+How could I determine the cipher strength via curl, so that I could script it?
+This string just describes the cipher suite used for encryption and is independent from the certificate itself.
+If curl is compiled with NSS support, and an SHA-1 certificate is in use, the output will look like:
+Note that it's insufficient to verify that the certificate contains an SHA-2 signature.
+This environment variable will be respected by a number of programs, including Firefox, and by curl if it's compiled with NSS support (as it is on, for example, Red Hat Enterprise Linux and Fedora).

@@ -1,0 +1,17 @@
+100 users we had 32MB of data, the read speed would be X records/sec.
+I'd love to hear both what the DB sizes were and roughly what performance change, if any, you saw.
+The store would slow down as the mmapped file grew beyond to .5GB.
+And instinct now tells me that MySQL should have the same characteristics and that enabling hugetlb/large pages But without some examples, it's a hard sale to try out.
+a proprietary nosql distributed mmapped key-value store.
+At 3000 users, we'd be around 1GB, and the read speed degraded to X/2.
+The observation was along the lines of ; if we stored active user sessions, and at eg.
+So, has anyone tried using hugetlb/large pages for performance gain, and what was your experience (good/bad/neutral) ?
+And there's plenty of posts (example) on the topic.
+Now if the users logged out, the store's data file would remain the same, even though the key/val space would shrink back to 32MB, hashtables were rebucketed etc.
+It turned out to be TLB cache misses, and using hugetlb/large pages meant that the speed would stay around X even as users crept towards 10000 and the file grew larger and larger.
+It didn't degrade particularly more even at after 2 or 3GB.
+Read speed covered both hash lookup and copying data.
+All access was machine local, so it was memory to memory copy.
+But does anyone have examples of what performance changes they saw ?
+But the read speed stayed at X/2, and did not climb.
+I have seen other database systems gain performance from using hugetlb.

@@ -1,0 +1,16 @@
+Ignoring the 870 for a minute, and just concentrating on the 5505 side of the network, how do devices on different vlans communicate?
+We've been banging our heads against this thing for 2 days so any immediate help would be great.
+Most 802.1q enabled switches (including the 5505) will allow you to define ports that have 802.1q tagging turned on or off and what default vlan untagged packets belong to.
+For instance, I have 3 VLANs, and on my primary switch, I have a trunk port defined that is a member of all 3 VLANs and has tagging turned on and untagged packets (though it receives none) are by default a member of vlan 1.
+We've had an existing VPN between a 5505 and 870 for some time.
+The 5505 is only going to see traffic from that vlan.
+We've just added VLANs to the network on the 5505 side.
+We're thinking we might have to use a router of sorts to handle the routing before hitting the ASA.
+The ASA5505 then is connected to that port and thus receives all necessary traffic from my switch on any of the VLANs.
+What vlan is the port the 5505's "inside" interface is connected to on?
+If you have routing setup between vlans, and you added a route to the 5505's inside interface, then traffic from those vlans could make it over the vpn tunnel to the other side, and you probably need routes on the other side to get the traffic back, unless you have a default route to the tunnel, or are running a dynamic routing protocol over the vpn.
+Of course due to the nature of switching, traffic between PCs on a switch does not need to traverse to other switches/the 5505.
+Vlans are by default isolated from each other, and can't communicate with each other.
+We can't seem to figure out how to get devices on the VLANs to communicate with devices on the 870 network which have no VLANs.
+The short of it is, if the 5505 is your only switch (small network to be VLANing...) you probably don't need to change anything, but assuming you have other switches, make sure all ports connected to between them and the 5505 have tagging on and that they are a member of any VLANs you want the 5505 to see/pass over the VPN.
+You can define ports that have multiple VLANs enabled so long as tagging is enabled on that port.

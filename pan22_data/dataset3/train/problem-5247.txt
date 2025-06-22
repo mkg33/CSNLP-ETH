@@ -1,0 +1,56 @@
+Also, knowing your environment is mandatory for the proper sizing of a SAN -- It is not only about the availabe dise-space.
+As Hutch stated, move off of RAID 5, especially for logs and TempDB, has these have high amounts of writes (RAID 5 has a write penalty for the parity).
+In general I think it is safe you say that you will need to gather more precise information before you can decide how to best attack your problem.
+Is the cache shared between multiple logical drives?
+    Index management:  Are the needed indexes in place and are they correctly defined
+Without knowing the underlying cause(s) means the addition of a SAN will only be a temporary boon.
+    Drive fragmentation can lead to file fragmentation.
+Thinking about this, I come up with the following items:
+    Besides IIS, what other processes on the SQL Server system are competing for the
+As Chopper3 says, FusionIO drives are some of the fastest drives around currently.
+    Upgrading from SQL 2000 to SQL 2005 or (better yet) 2008 or 2008 R2
+While the answers posted so far are good and correct for given conditions, there is so much more.
+As more of your data pages are stored in RAM, the less physical I/O that needs to happen for queries to run.
+      Indexes become fragmented over time and need to be reorganized or rebuilt.
+The immediate thing that leaps to mind is to look into converting that RAID5 to a RAID10 or a pair of RAID1's.
+Oh and you should move to 2008R2 64-bit too of course, plus load up on memory.
+SQL Server 2005 introduced some big speed enhancements in certain areas that might benefit you depending on your setup.
+Probably the easiest thing you can do to relieve disk I/O is to increase the memory on your server.
+The SQL Server performance counters are a good place to look.
+Depending on your workload, if you can afford to move to a SAN, then you will probably want to look at splitting up your TempDB, logs, and data files onto seperate physical disks (you may want to look at this MS article around storage top 10 best practices for SQL Server: http://technet.microsoft.com/en-us/library/cc966534.aspx).
+First off, clustering the server won't give you any performance benefit, only increase in availability.
+On servers running multiple applications I usually like to configure SQL Server to use exactly a certain amount of RAM by setting the minimum and maximum to the same value (e.g.
+Move your data and logs to a FusionIO drive, very very expensive but as far as I'm aware you can't get faster persistent storage right now.
+      SQL Server 2008 and 2008 R2 have built-in tools for helping to identify problem
+Not to mention the fact that you can obtain a 64-bit version of SQL Server 2005/2008 and run it on a 64-bit OS to give it even more memory, and memory is by far one of the most important things for a SQL server.
+4 15k RPM drives in a RAID 5 should be able to handle quite a reasonable load with a decent RAID card (of course what's reasonable and/or decent is relative).
+Is SQL server actually able to use all that memory?
+In a stressed environment with a stressed DBA, this is worth the upgrade.
+This is a huge topic, but I might be able to offer some tips to help you get started.
+This topic needs a huge "It Depends" for the answer.
+      Are the DB's and T-Logs on different drives?
+    Have the heaviest queries been identified and optimized?
+If so, then you know that you will need to upgrade the disks (or fix the queries, possibly).
+      Row relocations during an update cause all sorts of performance issues.
+(I'll ignore the possibility of looking at the queries that are running slowly and attempting to find out if there are ways to improve them.
+You can even view how much memory SQL Server "wants" -- check out the SQL Server: Memory Manager counters (if they are available on 2000, can't remember off the top of my head).
+Knowing if the cause of your performance speed-bumps is due to table-scans, improper foreign-key management, row-relocation during update, some other issue, or "all of the above" is very important.
+I do not know your environment and could not give a reasonable answer as to what you should do; also my above list is really the tip of a topic to which many thoughtful books have been dedicated.
+This is a huge topic, but using the query analyzer can help you to determine if you are missing an index or of a query should be completely rewritten.)
+      Running on Windows Server 2008 x64 or Windows Server 2008 R2 x64 complements the
+By default SQL Server assumes its on a dedicated server and tries to dynamically allocate as much memory as possible; depending on the needs of your IIS processes this may not be a good thing.
+If you have the budget for them, that is definitely one area to explore (especially for your TempDBs).
+SQL Server) waiting on disk I/O to perform operations?
+You can use a program like the sysinternals process explorer to look at how much memory is actually being used.
+      clean, a large number of extents for any DB or T-Log file has a negative effect.
+      Where is the TempDb and how many files are associated with TempDb
+      in order to be utilized by the queries which need them?
+    Are the Updates causing row relocations or are they able to "Update in-place"?
+I would start out by using the Performance Administrative Tool to look at a few key metrics.
+Adding a SAN is not a bad idea, but you need to understand the environment.
+In the end it will probably come down to a memory issue or a disk issue.
+If you're running MS SQL Server on a server that's also running other heavily loaded services, you may want to look into manually configuring how much memory should be used.
+Yes, moving off of RAID-5 to RAID-10 is a huge check-mark in the "Do this now" column, but what about the pieces we have not been told?
+On a 32-bit system you'll need to use PAE to use all 6 GB, and even then I believe the SQL server process itself will only be able to grow to 4 GB.
+The server is running SQL Server 2000 so I will assume it's a 32-bit server OS.
+@Hutch is correct that RAID 10 will offer better performance than RAID 5 for a database server, but really that is only going to come into play if you're waiting on writes.

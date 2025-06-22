@@ -1,0 +1,17 @@
+In addition old HDDs have higher failure risk during RAID5/6 rebuilt.
+Also RAID6 was not as common 9 years ago as disks were smaller, so there was less perceived need.
+While I would gave put / on the LVM as well, its not unreasonable to keep it separate to allow for easier setup.
+For backups – it can be ok, for user shares and another workload is questionable.
+I'd usually recommend relying on hardware raid where its available for stability and performance reasons.
+Maybe they knew LVM really well and just stuck to what they knew.
+To avoid that, another software-based RAID0 layer should be put on top of the mirrored pairs - either via plain md or the newer striped LVM setup.
+From the specifications you posted above, it seems that the Areca controller does not support RAID10 or other nested RAID modes.
+For this very reason, in performance critical setups I generally use RAID10, or stripe over mirrored pairs (note: RAID 0+1, or mirror over striped pairs, should be avoided due to lower resilience).
+However, RAID6 comes with significant performance penalty especially during a rebuild.
+We can only speculate, but this setup seems entirely reasonable to me.
+Without specifics on the make/model we don't know if this was done due to a limitation of the hardware or something, but if ont I'd be surprised it it was due to anything other than a misunderstanding of the available RAID options or a lack of understanding of how to set it up.
+It's true, but together with larger capacity and guaranteed 2 disk redundancy, you’ll get much slower performance on random write operations compared to RAID10 (the best setup in your case on my opinion) .
+However, with so many relatively big disks, I strongly suggest avoiding RAID5 due to high chances of second drive failure during a rebuild.
+If the old sysadmin decided to avoid RAID6 due to its performance and long rebuild time implications, concatenating the individual arrays in a bigger volume group was the simpler approach.
+That said, it is not the better performing approach: as the arrays are just concatenated, the low queue depth streaming performance (ie: single process sequential read/write) is going to be bound to that of a single mirrored pair.
+Premise: I agree that a RAID6 array would have made a lot of sense.

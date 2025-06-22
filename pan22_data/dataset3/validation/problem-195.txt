@@ -1,0 +1,21 @@
+Do I need to share sessions between the two servers?
+Server 2 does not share sessions with server 1, and the user is kicked out.
+In addition to reconfiguring your load balancer you may want to consider sharing sessions across the two servers.
+This means that you have to install the SSL certificate into load balancer.
+[If you can tell us what kind of load balancer you're using helpful information on configuring it may go here :-)]
+You said that the load balancer was set up to tend to keep sending the user to the same server as their first request -- sounds like that is not working on SSL, but was working before SSL.
+Your load balancer is likely using HTTP header data to determine which box it's sending your users to (instead of judging by IP address).
+For .NET see: http://support.microsoft.com/kb/317604  For PHP see: http://kevin.vanzonneveld.net/techblog/article/enhance_php_session_management/
+I traced the issue to the fact that while initial authentication is performed by server 1, clicking on internal links leads to having the request sent to server 2.
+This worked fine for our web apps until we added SSL to the setup.
+If you want to have session stickiness in your load balancer, then you have to terminate the SSL on the load balancer.
+(The advantage of sharing sessions is that your servers provide seamless redundancy: If server 1 is down for maintenance server 2 can pick up all of its sessions without forcing users to log in again)
+Sounds like a config issue with the load balancer; are you able to provide info on what it is and how it's configured?
+I have two physical Apache servers behind a load balancer.
+A 3rd solution would be to keep the sessions in a common database (e.g.
+Now the user can successfully login, see the home page, but clicking on any other internal links logs the user right out.
+Another solution is to configure the load balancer to use source IP stickiness for SSL (HTTPS).
+It sounds like (hard to say for sure without more information) that persistence is not fully implemented in your Apache configuration for the load balancer.
+If so, could you point me to a good guide for doing this?
+The load balancer was supposed to be set up so that a user would always be sent to the same physical server after the first request, to preserve sessions.
+Take a look at the Load Balancer Stickyness section on the Apache documentation for mod_proxy_balancer.

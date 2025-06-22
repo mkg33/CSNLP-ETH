@@ -1,0 +1,10 @@
+As a result of the object's SAMAccountType being empty, it cannot be deleted (or modified).
+It was suggested, and seems likely to me, that after the object was restored, but before the change had completely replicated, it was deleted again, along with its parent OU, causing the restore to fail, and resulting in it being considered an orphaned object by at least some of our domain controllers, landing it in the LostAndFound container.
+I'm convinced I could also rid myself of it by booting all the domain controllers to LiveCDs and manually editing the AD database, but short of those two non-options, I'm stuck with it.
+According to the Microsoft support engineer I spoke with... and the Microsoft engineer he escalated me to... and their manager, the short answer is that the only way to rid myself of this cursed object is to do an authoritative restore to before this object's appearance in the LostAndFound container.
+Beats troubleshooting printers... and frankly, it turns out that a computer telling me "WILL_NOT_PERFORM" is a challenge I cannot resist.
+The SAMAccountType attribute is a value that cannot be changed by any user, and attempting to do so throws the below error:
+We ran a repadmin /showobjmeta against the object (to peek into its metadata) and were able to determine from the object's isDeleted version (2) that it was deleted, then unexpectedly and unsuccessfully/partially restored, which is what is causing the problem.
+However, since this is too interesting of a case for me to simply walk away from, I'm going to poke around for a while and see if I can't come up with a way around this, or at least expand my knowledge of AD a little bit more in the attempt.
+We can't restore the object to get the system (Security Accounts Manager) to set this attribute because of the partially-restored state it's in, and we can't delete it (or modify it) without a valid value for that attribute.
+As a result of the partial restore, it cannot be restored.

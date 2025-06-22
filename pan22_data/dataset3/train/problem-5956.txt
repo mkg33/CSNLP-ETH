@@ -1,0 +1,15 @@
+I restarted the service, and checked all the websites, everything seems to be running smooth.
+HOWEVER, the scan should have told you what to do to resolve the issue I would think.
+Does anybody have more understanding of SMB service or windows permissions, and can turn me in the right direction?
+Using the "sc sdshow iisadmin" command I was able to see that "Everyone" had "Access" in the "Discretionary" permissions:
+Either way, it seemed a good idea to remove the "Everyone" entry from discretionary.
+A vulnerability scan of our network has turned up this response:
+I've been looking at the services, and reading up on Windows SMB (Server Message Block) but still am not able to really detect what the problem is here.
+I've looked at the services, there is an "IIS Admin" service and I've checked the permissions on the executable (C:\windows\system32\inetsrv\inetinfo.exe) but it doesn't list anything abnormal:
+You still have to be careful, because there are certain special permissions on the IIS admin service for the Everyone group: http://support.microsoft.com/kb/903072
+I'll have to wait for another scan to know for sure, since the scanning company didn't give any more details then what I reported in the question.
+You can look here: Secure the Root Folder of Each Disk Volume (IIS 6.0) and check and see if that's the issue.
+The SMB service has insecure permissions for Everyone:  IIS Admin Service (IISADMIN) : DC, WD, WO http://oursite.com"
+I wrote about it here: http://bit.ly/18dYVYi for anyone interested.
+I simply removed that "WD" entry by resetting the permissions with:
+It's been a while since I've worked on a 2003 server, but it's possible that the scan (sounds like a Nessus scan to me) is picking up a best practices issue.

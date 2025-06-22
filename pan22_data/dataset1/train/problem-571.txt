@@ -1,0 +1,7 @@
+I solved this by adding another user and then changing the Tomcat webapp/ directory to be owned by that regular user.  That regular user has no problem authenticating with keys and that user can execute commands via ssh and scp (remote re-deploy to Tomcat).
+Another security precaution that RHEL takes is to disable the Tomcat manager application so I can't remote deploy through the Tomcat manager either.  (I tried adding the manager application back in and setting up admin and manager users but the manager application wont' run).
+I had the same issue after installing Gitlab 6.4 on RHEL 6.5. No matter what i did i could not SSH using public keys for the main system user (git). Again the SSH keys were fine, as were the permissions on ~/.ssh (700) an ~/.ssh/authorized_keys (600). The issue was that seliunx was "enforcing" and the contexts in the .ssh directory were wrong, probably because the user was created as a system user. You could fix as @Dean-Schulze did by changing the user to normal user, but i managed to fix the contexts for the affected user using the restorecon command which may solve the issue you are having.
+I found that the "type" context needed to be "ssh_home_t"
+To fix the ssh directory login/su as the affected user and then run
+If that does not work you may need to fix the context on the users home directory
+More info I found useful http://themattreid.com/wordpress/2012/11/02/selinux-solutions-fixing-a-newly-provisioned-server-that-refuses-ssh-key-based-login/

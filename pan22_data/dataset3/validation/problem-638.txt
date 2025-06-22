@@ -1,0 +1,18 @@
+It is difficult to completely understand your network environment because lack of answers to my questions (where is the switch connected, what has 192.168.1.1).
+If you use a static ip address from this address block you violate specification.
+You have to ensure that only one DHCP server is running on your broadcast domain (subnet without router connection).
+The pool on your DHCP server is set from 192.168.1.2 to 192.168.1.254 (I guess because you write IP range is 192.168.2 - 254).
+When using a static ip address and a DHCP server is also running on the network you should ensure that the ip address is outside the range that the DHCP server will give to devices.
+If the interface does not have a static ip address and if it does not find a DHCP server on the subnet it is connected to then the avahi daemon will give it an ip address from the reserved ip address block 169.254.0.0/16 (Link-local addresses).
+More detailed answers to this feature you will find at Does dhcpcd prevent a remote DHCP server serving an IP address that is declared static?.
+You should set it for example from 192.168.1.128 to 192.168.1.253 (192.168.1.254 is used for the wifi router itself).
+If a device has DHCP lookup enabled and it does not have an ip address it will broadcast into the subnet it is connected to and request for an address.
+Otherwise each DHCP server will response to a request from a device with a different ip address from its different pool.
+There are mainly three ways to give an interface an ip address in this priority:
+So I can only give general information about how DHCP is working but it may help you to find what's going wrong with your setup.
+The DHCP server may check this conflict by pinging the address and avoid to give the same ip address from its pool to another device.
+avahi will also give a DNS name to the ip address from the also reserved DNS domain .local, for example raspberrypi.local.
+But this only works if the conflicting device is just online.
+You are always on the save side if you use a static ip address outside the pool from the DHCP server.
+avahi ensures that the ip address it gives to the interface will be unique on the broadcast domain.
+Link-local addresses work ad hoc on (small) networks without a DHCP server.

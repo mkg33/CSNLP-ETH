@@ -1,0 +1,14 @@
+To fix this issue, execute the following commands, in case if it is an ext2/3 filesystem:
+With the "-S" option, only the superblock and the group descriptors will be reinitialized.
+The first thing I would do is clone the entire drive using dd to a spare drive, and work on this one for recovery.
+Obviously, only the filesystem superblock is corrupted.
+When growing, you should perform actions in this order
+For other FS, it is expected to use the corresponding mkfs commands.
+If the fsck passes, you can then resize the file system.
+The "fsck" command right after the first one is run in order to fix/adjust the group descriptors.
+If you still get an error with the fsck you might have done irreparable damage.
+If you are lucky and you didn't use any of the LV available extents and thus the blocks on the disk haven't changed, you might be able to resize the LV back to what it was previously, then attempt a fsck on the file system.
+lvresize now supports file system resize when passing an additional argument -r|--resizefs which mitigates the need to resize in a particular order and drastically reduces the potential for error.
+It sounds like you've tried to resize a volume and filesystem in the wrong order.
+/dev/XXX has to be replaced with the corresponding device.
+When shrinking, you should perform actions in this order

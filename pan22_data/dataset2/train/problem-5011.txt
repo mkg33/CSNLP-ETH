@@ -1,0 +1,8 @@
+Omitting braces with your if-elses is a filthy habit.  Saving those few characters of source code just isn't worth the danger!
+A function that performs computation shouldn't also print output, since that would be an unexpected side effect that hurts code reusability.  If you must print something, print to stderr to avoid contaminating stdout.
+If I were writing htoi(), I would just keep things simple and have just return a success/failure indication without being more specific.  In practice, checking for individual error codes is probably more trouble than it's worth.  (That means I disagree with @Jamal's advice.)
+In htoi(), you check for a null result.  To be consistent, why don't you also check for a null str?  (In C, it's customary to assume that the caller isn't stupid enough to pass you a null pointer, and dispense with such checks.)
+Very few people know all 17 levels of precedence of C operators by heart.  I don't, either.  Just make it a habit to use parentheses generously.
+Your 2nd version is incorrect (doesn't work): because it doesn't initialize msnibble and digits if ('0' != str[0]).
+For this kind of reason it's dangerous to declare local variables before you assign a value to them.
+You defined an enum status, but your htoi() function just returns an int.  Either return an enum status, or just #define your status codes without bothering with the enum.  If you do use an enum, make sure it is complete — you omitted SUCCESS (which I would prefer over EXIT_SUCCESS, since you aren't exit()ing the program).  Also, you never use NOINPUT.

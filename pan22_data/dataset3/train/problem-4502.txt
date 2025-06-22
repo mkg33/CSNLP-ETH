@@ -1,0 +1,35 @@
+Then we also need to override the VisitMembers to swap out member assignments
+I changed the Mapped Converter to to a IPropertyMappingProvider
+The conversion only has to handle Expressions of the form Expression<Func<Dto, bool>>
+We also have an abstract generic provider and persister pattern which handle the conversion between the dtos and the entities, and all of the database interaction.
+Using it is just as you have done in your ExpressionVisitor implementation:
+Where MappedConverter<Dto, Entity> is the following:
+Could be replaced by using Automapper and referencing the mapping configuration that is registered.
+This pattern works well for us, but I have been investigating how to manipulate expressions so that I could put the following in the base provider:
+I tool follow a similar pattern of surfacing a DTO through my controllers and abstracting away my data access.
+I am specifically looking for ways to improve the IsParseableMemberExpression and IsDateTimeExpression methods
+I have been looking for something like this for awhile now and this has helped me out.
+We going to have the ExpressionConverter inherit from the ExpressionVisitor and the first call to Visit make sure it's a Func lambda (Visit gets called a lot from recursion in the ExpressionTree) .
+But now you don't have to create the constants or operators.
+Then override VisitParameter and swap out the parameters
+IsParseableMemberExpression uses Regex to see if the expression is representing a variable in the full expression.
+Using Entity Framework we have a number of entities, which we want to hide from the rest of the calling code to remove the direct dependency on the database.
+We can get to the PropertyInfo objects on the mapped properties.
+We're doing so by using DTOs, which for the most part are identical to the entities.
+Therefore hiding the entities from the calling code.
+You could use the ExpressionVisitor class to give yourself some more flexibility and not have to handle all the conditions yourself.
+The implementation of the PropertyMappingProvider simply injects the IMapper instance that is registered with the application.
+With the IPropertyMapping the exact same thing as the Mapping you have implemented.
+The base provider would then convert the Expression<Func<TDto, bool>> into the equivalent entity expression, and load the data as before, therefore removing the need to write tedious methods and give us more control in the calling code.
+The general loading method of the base abstract provider uses the following signature:
+Last thing we need to do is create a new Expression<Func<TFrom, bool>>
+I did have to change the GetMappingFromMemberName to return the correct PropertyInfo instead of the mapping to make it work easier.
+So any provider that extends the abstract can look like this:
+Taking what @CharlesNRice provided using the ExpressionVisitor - I added yet another little change to the MappedConverter implemented.
+I didn't do CallMethod but if you need that you can just override Expression VisitMethodCall(MethodCallExpression node) using the same techniques as above.
+If you don't like the Visit call you can always make it an private class inside another class to give it a different method signature.
+Just update the parameter and properties that are getting used.
+The end result has been the following ExpressionConverter
+We can then use the IMapper to get the property mapping configuration.
+Can I say first off - this is excellent - both the post and the provided answer.
+If so we save the parameter expression we are converting from and making a new one for the one we are converting to.

@@ -1,0 +1,15 @@
+It's a VPS with a few Magento installations on it used for development, so I'm the only one using them. When I do 4 request all 2 seconds after each other I'm finished in 10 seconds. Slow, but still within the limits of my patience.
+So you disabling cache means magento has to read those xml files on every request coming in. So each process is now competing for cpu and disk IO. On a vps disk IO is where your bottle neck will be 90% of the time. So 4 concurrent processes all asking to read a lot of xml files causing a lot of CPU wait on the apache processes. 
+Have you done a baseline optimization of Apache and PHP, i.e. removing unnecessary / unneeded modules? Are you using Apache prefork with mod_php or Apache worker with php-fpm?
+It used to go a lot faster before, and I've also tried APC, but it kept causing problems (PHP errors, something with memory pools) so I've disabled it.
+I haven't touched magento in over 2 years but it was a nightmare to run a site with traffic so my company at the time ended up building their own software. 
+When I do 4 "concurrent" requests, however (opening 4 tabs in a row, very quickly) all four cores go to 100% and stay there for like a minute.
+My first suggestion is to run the MySQL tuning-primer.sh script to ensure your MySQL configuration has a proper baseline configuration.
+If you need more info, please tell me how to get it, because I probably don't know how. I do know how to use the command line in linux and the usage of quite a few commands, but my experience with managing a server is limited.
+Magento is horribly slow when you disable caching.. more so on a vps since it has to parse a ton of XML files. The way it renders a page makes it very easy to add new things all over the page but it also calls for some massive sql queries and also loading xml files. 
+if you do a strace on one of the apache processes as it renders a page in magento you will see all the xml it has to render. 
+Figuring out your problem with APC so you can utilize it will also be a good expenditure of your time. Even just a 32MB SHM for APC will make a drastic improvement.
+Generally, it is recommended to follow 2x rule: 1 core = 2Gb RAM, 2 cores = 4Gb RAM, 4 cores = 8 Gb RAM. Yes, you said that swap was not used, but maybe increasing RAM is the option. Tip: To track CPU and Memory load history (not just current) I recommend using Performance Monitoring extension by PotatoCommerce.
+I know that there are a lot of possibilities here, so any tips on how to make an Apache/PHP server go faster are also welcome.
+By the way, the Magento cache is off and compiling is also off. I know this makes Magento slower than usual, but I don't think a 60 second response time is normal for any Magento installation. 
+You should figure out whether you are waiting for Magento, the database or any subsystem in between. To determine this, run strace on your webserver/php processes with the -ttt flag. Each system call will be prefixed with a microsecond timestamp, so you'll be able to see how long your PHP process is waiting for the DB, DNS lookups and possibly other system calls. 

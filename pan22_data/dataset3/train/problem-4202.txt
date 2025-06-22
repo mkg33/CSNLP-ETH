@@ -1,0 +1,18 @@
+Your hash needs to be based on the things being put in, and it needs to be the same every time for an Object that hasn't been modified.
+Even though it's bad it still qualifies as a hasher because it's deterministic and the same input always produces the same output.
+The [Decoder] takes in a Thing of any size and outputs a Hash of constant size.
+In Java, the hashCode() method takes this and returns an int, in my little metaphor above [Decoder] depends on the type.
+You said you're reinventing the wheel, so I can understand not using .hashCode(), but the thing you've made isn't based on the things being put into the list, so it's like you're reinventing the wheel and coming up with fire and calling it a wheel.
+Even then though you're not really making hash codes, you're just putting things in a container in an order dependent on the amount being put in.
+I don't think you understand what hashes are (I don't mean that in a rude way).
+If you want to use Random you need to at least give it a specific seed so it behaves deterministically.
+In myHashFunction randomIndex is acting as the hash because you're calling this a hash table, but it's not based at all on the things being put in.
+If I put in "Abcdefg", "Cooler beans", and "Dude" it'd look something like this
+If I put in "Cool beans" it'd hash to C. If I put this in a hash table it'd look something like this
+Here is a bit of an explanation of hashes and hash lookups to help you out.
+You're not using .hashCode() anywhere, which isn't necessarily an issue, it's just a good way to get a hash of an Object.
+It should be unlikely to have the same hash as something else, but it's impossible to avoid 100%.
+Now let's talk about how the [Decoder] part works, you could make a really bad hasher that hashed Strings and just returned the int value of the first char.
+Now suppose I want to see if something is in it, if this were a list I'd have to iterate over everything, but since it's a hash table I can hash what I am putting in to get a good "starting point" to look.
+In this code you are making a new Random() which will have a random seed.
+There's two things at C. In "the real world" your hash function will be (should be) better than looking at a single character.

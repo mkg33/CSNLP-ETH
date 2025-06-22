@@ -1,0 +1,7 @@
+I'm using the following method to bind the buttons to change tracks in mpg123 (only works when mpg123 is ran from "console", on a headless raspberry pi Zero W with apt-get conspy and screen attached)
+This approach leaves you with some additional responsibilities (implement random shuffle, listen for/respond to track ending signals, etc.), but I think it offers more options for fine grained control over a running mpg123 instance than is afforded by the -C remote option. There's a full list of available commands on the documentation page. 
+Mpg123 has a remote interface (documented here) which is started using the -R --fifo [path-to-fifo] options:
+Keep in mind you'll have to reload the loadkey script after boot to rebind them. Thanks to friendofafriend@irc.freenode for the help!
+There isn't, unfortunately, a pre-made skip forward/back option for this interface, but it's not particularly difficult to bang together something workable. Mpg123 requires you to use a collection index to select which track in the playlist to play. Here I've created a playlist file (/home/pi/tmp/playlist) with 3 entries (1.mp3, 2.mp3, 3.mp3). Using the loadlist <entry> <url> command I'm telling it to load and play the track at the corresponding playlist position:
+The buttons only work to swap tracks however they do not go "previous" it just skips to another random mp3 from the -Z option passed.
+For simulating keypresses, I've personally tried python-uinput. Link should contain everything you need (installation, usage, examples).

@@ -1,0 +1,21 @@
+edit /etc/tor/torrc by adding appropriate HiddenServiceDir and HiddenServicePort directives:
+I have been checking error messages using journalctl -xn, and they are not consistent - however the primary errors seem to be:
+This should work flawlessly for up-to-date Fedora and CentOS systems.
+I have experimented with commenting and removing some of the lines in the default systemd tor.service file, but with no success.
+A few of the fixes that have been posted in answer to this question do work, but with variable rates of success.
+on Debian Jessie, this worked for me (I store tor hidden service information in /opt/tor)
+One fix I have come across which works consistently is to load a few exceptions into SELinux.
+However, for what it's worth, I have also seen this issue on a mostly-stock installation of Fedora Server and on Fedora Workstation.
+Some potentially helpful output from /etc/tor/torrc:
+Currently I am attempting to start tor using systemctl start tor using the default systemd tor.service file shipped with CentOS.
+Create a tor-selinux-workaround.cil file with the following content:
+I have ensured the following about the entire /var/lib/tor path, but with no success:
+Now when I attempt to start the tor service with the hidden service lines in the /etc/tor/torrc file, it fails to start.
+Import that file into SELinux with the following command:
+(allow tor_t self (capability (dac_override dac_read_search)))
+I am attempting to set up a Tor hidden service on CentOS 7 (with systemd), using the tor package from the EPEL repository.
+Not sure what might be causing this issue, but I suspect it's something to do with the precise configuration of systemd.
+create directory and set ownership and permissions:
+Nothing on the system was restarted at this time, though automatic updates are enabled via yum-cron so perhaps something updated.
+Previously this was working fine until a few days ago when it stopped working.
+For a more complete explanation, see my post here: https://alexhaydock.co.uk/tech/fix-tor-onion-services-on-centos-fedora

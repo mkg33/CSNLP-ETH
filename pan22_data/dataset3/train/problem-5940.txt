@@ -1,0 +1,19 @@
+Alternatively, a recent version of MinGW32 should be compatible.
+I found just one instance of libgcc_s_dw2-1.dll on my machine, installed under GNUplot.
+A couple of which had injected themselves into my system path variable.
+A quick scan of my C drive with Everything resulted in no fewer than seven versions of the library scattered among various versions of MinGW that I had install alongside other apps, RStudio, OSGeo4W, CodeBlocks, etc.
+I don't get a splash screen now, but I don't crash on exit either.
+From a command line type set path= to clear the path variable before starting emacs with c:\<pathtoemacsbin>\runemacs.exe, assuming you will not need path access to other files.
+emacs -Q is the place to start: (a) when reporting a problem and (b) when debugging.
+The solution for me was to ensure Emacs found a compatible libgcc_s_dw2-1.dll or none at all by setting the PATH variable before starting Emacs.
+I have experienced the same crashes and I can confirm two things:
+I renamed it arbitrarily, and now emacs works fine.
+If not, bisect your init file recursively until you find the culprit code.
+Checking the Windows event viewer revealed that the version of Emacs libgcc_s_dw2-1.dll was linking to was the culprit.
+http://sourceforge.net/mailarchive/message.php?msg_id=27481215
+If so, you might consider filing a bug report with a reproducible recipe.
+I solved it for my setup by passing the --no-splash option to emacs on start up.
+You don't say whether the crashes happen when you start without an init file (~/.emacs), i.e., using emacs -Q.
+Just make sure it is available on the search path, set path=c:\MinGW32\bin.
+I just had this problem while setting up a new Windows 7 laptop.
+AFAIK,  libgcc_s_dw2-1.dll is statically linked so it is irrelevant the origin of the file.

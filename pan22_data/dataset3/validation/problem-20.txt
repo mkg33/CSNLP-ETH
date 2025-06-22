@@ -1,0 +1,23 @@
+You're doing the best thing you can given your situation.
+I experimented with using extents to make a larger VMFS volume but due to the 2TB limit on VMDKs it still requires using spanning within Windows.
+If it could you could present a single huge LUN to VMware, and present that to the guest as a raw device.
+iSCSI is not an option at this stage so I'm just wondering if there's a better way to achieve this goal or is this the best I can do given what I have to work with?
+So the VM Windows will see a additional hdd unformatted which can be formatted in whatever which can support large volume like NTFS.
+ - Have a very large volume that is used for on-disk backups before they are written to tape
+Windows then formats it as a GPT disk and off you go.
+Add a second HDD to the VM and select RDM then configure it to use the second LUN.
+I wonder if an RDM (Raw Device Mapping) could be over 2 TB?
+You can drop another HBA in the server, and attach that HBA to the guest so that the guest owns the HBA, you can then present storage directly to the guest over FC.
+The downside is that you can't vMotion the guest, or start it on any other server.
+Other than that and the method you are using today, iSCSI would be my only other option.
+It "should" work, but I'm not sure if VMware supports RDMs that large.
+Unless you are ok with the VM not being able to be vMotioned?
+Those four VMDKs are presented to the Windows VM which uses spanning to create a single 8TB volume.
+Obviously iSCSI would be ideal here, and the next best thing is using RDM.
+ - We have four 2TB Vdisks (EVA term) presented to the ESXi hosts as four different 2TB VMFS datastores each of which holds a single 2TB VMDK.
+Basically I would like to know if there is a better way of presenting this storage to the VM.
+ - Windows Server 2K3 R2 64bit Enterprise Edition VMs
+But with RDM you will lost possibilities of vMotion, VHA or Fault tolerence.
+Unfortunately, VMware limits RDM sizes to just under 2 TB (2 TB - 512 B).
+So even using RDM, you're going to end up spanning 4 LUNs to get the disk you need.
+You can create 2 LUN ( 200 gb 9(1) + and the remaining volume (2)) then on the 1st LUN you install the datastore and inside it you can put your virtual machine, the second LUN (around 7TB) you leave it untouch.

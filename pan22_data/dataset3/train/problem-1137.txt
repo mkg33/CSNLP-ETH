@@ -1,0 +1,43 @@
+Do not do this with a huge list of 1000s of objects.
+Only stored procedure names that don't already exist in the table are inserted.
+Given that the DMV's aren't really the intensive, even hourly if you like.
+We have client specific data for clients we no longer have, becasue we are in a regulated industry and are occasionally asked to provide data to auditors and regulators and lawyers.
+Tables with no data are another set of obvious ones at this point.
+Once you've compiled enough data you can make your decisions.
+After n days collect the generated traces and aggregate the usage.
+Using sp_trace_generateevent is fairly benign and does not affect the procedure execution flow/result/outcome.
+One of my clients has this exact same problem, but it's the worst instance of it I've ever seen.
+Now once you have the list of potentials to eliminate, you will probaly see some fairly obvious ones like  usp_my_proc_Old (when you have a USP_My_proc in the db).
+Suppose you recently replaced the functionality for storing survey results with a new design.
+Next create a server side trace and capture event 82 (the first user_event).
+As others have mentioned, going through quarterly/annual business cycles is highly recommended.
+Create a job that runs periodically that uses them to capture the information that you want -- run it twice a day if your data is falling off in 24 hours.
+You can eliminate any proc that will not run especially if one of the tables it references no longer exists.
+Make sure every job on the prod server has an equivalent job on your test server and run them.
+If a table has a datefield, are there any recent dates?
+I know no simple way to identify what isn't being used.
+Be aware of course that a trace will have a performance hit so ensure this hit doesn't cause operational issues.
+However, you can move these tables to another archive db if you want to clean out your actual production database.
+It does not turn a read-only procedure into a data-write one, with all the logging and locking implications.
+Most importantly it has no interaction with the current transaction.
+If there is no trace monitoring event 82 the exec call is basically free (no-op).
+If you can modify the procedures, add a line at the begining of each (this is fairly easy to automate):
+Some rogue developer generated thousands of stored procedures (over 6k), most of which are not used.
+For extra credit you can also inspect the traces periodically and remove exec call from any procedures you find there, since is proven to be called.
+The problem isn't that DMV's are unreliable, it's that they don't capture the information that you want.
+If the last time the data field was populated witha  date was 2008, that is a good candidates for a table we don't need anymore.
+Send out no more than 10-20 at a time and try to group them so they are clearly on related topics.
+Tables/procs that clearly refer to a functionality you know has been eliminated would be the next ones.
+For potentials to eliminate, you can add a logging process to the proc or a logging trigger to the table and set a date when the object will be eliminated if there are no entries by that date.
+Knowing what has been called recently only helps for frequently called things and many objects in a complex database are not called that often but are still needed.
+YoOu can create a list of potentials for eliminating from there.
+You may want to keep the table (You may need the data) but the procs that call that table are probably all out of date and can go.
+They now poll sys.dm_exec_cached_plans every 5 minutes, and insert into a table for tracking.
+Depending on your legal constraints, you may not want to eliminate any table with data.
+(if you have a formal QA, a good set of regression tests would help this).
+Make sure your trace writes into a disk with sufficient space and enough IO bandwith.
+Your list of active tables should include only those  mentioned in one of the procs and tables you know you need like audit tables.
+Once you have a list of several potential objects to delete, then send the list around to all of your developers and ask them if they use the table/proc or know what it was for.
+What I would do is start up Profiler on my dev or qa box and then take every application that hits it and run through the functionality.
+By now your list of potential sps is much smaller.
+Now at least you know what procs the applications call and can eliminate them from the list.

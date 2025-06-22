@@ -1,0 +1,17 @@
+There is no silver bullet solution, and research is ongoing, but common solutions are:
+My question is - Is there another way of handling Entity Initialisation and Destruction without resorting to either the God Object or the God Loop?
+If the ID query returns false, then the system simply removes that entry from it's collection of IDs, and processes the next in line.
+The best advice I can give, is to experiment with the different approaches above, or combinations of them, and pay mind to considerations such as usability, ability to be scripted, performance, and cache friendliness.
+Finally, another option, is to have a single factory with a static collection of entities and components, managing their lifetimes.
+Each approach has drawbacks and benefits, and its highly educational to discover these by yourself, if you aren't on a timescale.
+In order to make this work, the main loop always ends up being a complete mess to make sure particular inits, updates and destroys are done in the correct order.
+At the moment my game evolved into the first solution and I'm having quite a few issues so I'm thinking about trying another approach.
+Personally, I use instantiation of direct command classes, as this is something very easily tied into a scripting language, but this has it's own drawbacks.
+I'll use the Physics as the example, but the same principles apply to most other aspects as well.
+Systems, then, do not actually store pointers to entities, but an ID, which is used to query the factory.
+I've been using the ECS pattern for a while now and, as the complexity of the game increased, I started having issues with the timing of the entity initialisation and destruction code.
+This completely eliminates the possibility of dangling pointers, but at the cost of being potentially non-cache friendly.
+Also, I took a look at various ECS implementations and noticed that some of them have methods to notify systems that entities were added/removed to them and some of them don't - so there's obviously various approaches to this.
+This is one of the common problems with ECS architecture: Intersystem communication.
+Have one place for all the init and destruction code.
+The second one I mentioned seems a bit better, but it does involve a God Object and from my experience that is a bad way of doing things.

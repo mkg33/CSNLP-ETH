@@ -1,0 +1,16 @@
+Of course just using the reference policies is a great starting point.
+Look into SELinux, which allows you to customize what programs (executable files) and-or users can do, though writing policies can be a bit tricky, but there are a lot of examples/references.
+The general best practice is to set up a system, enable training mode for whichever LSM you've chosen, use it for a while, then lock it down, and let in the users.
+To prevent this you need some kind of Rule Based Access Control, they are usually kernel modules.
+Then you fine-tune the restrictions when users encounter some problem.
+You can even give access to SCP and just deny that user a shell in /etc/passwd (look at the deamon users)
+If you don't want people executing programs, don't give them shell access.
+If they can execute chmod then they can make files put into their directory executable.
+Don't forget that in order to get to a shell, many programs are executed after the password is entered, least of which been BASH or similar to give you a console!
+Since the Linux kernel has support for Security Modules most of these can be loaded and unloaded run-time.
+You can prepare chroot jail and place there only that programs that you want your user to have access to (shell at least)
+GrSecurity has a global flag for TPE (trusted path execution), that means only root owned files can be run (and only from root owned directories), plus it also supports RBAC (rule based access control).
+This would be a real pig to do, and frankly goes against the purpose of giving shell access in the first place!
+Give the user permissions to write to a directory which is on a volume mounted with the "noexec" mount option.
+If all they need is to manage files, give them access to FTP/SFTP instead.
+(The best is the noexec mounted directory, which doesn't prevent running perl/python scripts.)

@@ -1,0 +1,14 @@
+Well, after further research, I've found that nfs-user-server will allow you to do this sort of mapping.
+I have a Mac OS X file server that serves via SMB/CIFS and AFP.
+In most NFSv3 implementations, particularly kernel-level servers, this isn't possible apart from some limited mappings like root to nobody.
+The server is a domain client via the golden triangle approach, but this results in a very large UID for the users.
+Obviously I need to do some UID mapping, but I'm not sure how to go about doing this.
+This is fine for my current setup, but I'd like to get NFS working as well.
+I haven't configured it on OSX, but what you're looking for is called idmapd.
+nfs-user-server runs in userspace, so it's not as fast as nfs-kernel-server.
+On an OSX box, the daemon is actually called rpc.idmapd.
+In NFS v4 you have rpc.idmapd which performs the NFSv4 ID <-> UID mapping on the server and allows you to get more flexible.
+will come from /etc/passwd while all the human users come from an external source.
+This will ensure consistent UIDs across the board and eliminate the need for any kind of mapping.
+If you can't use NFSv4, the recommended way to deal with it for NFSv3 is to have your users come from a directory service such as LDAP, or another common database.
+It's kind of a bummer, because the main reason I wanted to use NFS over CIFS was speed.

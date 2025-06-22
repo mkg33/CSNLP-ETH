@@ -1,0 +1,6 @@
+Two things to consider: haproxy, especially since you are using HTTP (and maybe HTTPS) which it is originally designed for. That solves your failover-problem.
+If you're not using them already, you should look into Varnish, NGINX, HAProxy, and possibly Apache Traffic Server (which is not the same as the Apache Web Server).
+'RSF-1' from High-Availability.com fails over the vip associated with the service, and the framework as a whole is pretty flexible 
+You could go with a multi-load balancer solution with a virtual IP (VIP). This would be my suggestion if you're referring to systems at the same location. (you did not specify where you were replicating to)
+This is often solved on-the-cheap by having round-robin DNS entries pointing to all of your Reverse-Proxies (plural).  You can of course solve this with big dollars (BigIP, F5, etc), but you have to decide what your budget looks like.
+The other thing is heartbeatd, which (when installed and configured right) should help you have your one external resource (the incoming IP) accessible through multiple servers (well, one at the time, but if one goes down another can take over, which solves this).

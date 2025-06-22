@@ -1,0 +1,7 @@
+Since you are using SQL Server 20141 you could look at using DBCC CLONEDATABASE to create a statistics-only copy of the warehouse database.
+I'd be careful advising standard backup concepts, after all you know best what your warehouse1 looks like.
+Then I'd invest some time to generate testdata. They don't need to be live data. They'd have to represent usecases.
+Now that the warehouse2 is all set and done for development, you can then run schema compares between warehouse1 and warehouse2. There are tons of tools out there that will help with the schema compare.
+You could wrap this in code that drops the current clone, if one exists, then creates the new clone.  This could be added to a SQL Server Agent Job that executes nightly, or weekly, as required.
+Now about the backups. Bulk log recovery might be the beste choice for you to start with. I assume you have no other choice than to backup in nighttimes. Then again you sure have thought about point in time and disaster recovery scenarios. ;)
+Given the structure and testdata, I'd have everything I need for development. Never mind the tiny datasizes.

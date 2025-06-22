@@ -1,0 +1,17 @@
+When sending through website, the email appears as this in Gmail Inbox: From xyz@gmail.com to abc@gmail.com.
+https://mail.google.com/support/bin/answer.py?hl=en&answer=81126
+In php's mail function I was not specifying envelope-sender address and therefore php was defaulting it to something like this mywebsite @server.isp.com.
+Google's antispam takes into account many more variables than just SPF records.
+Now php mail function will look something like this:
+Then if you are still unsure contact their postmaster.
+So in case someone has the same problem, he can do this:
+Make sure your domain has feedback loops setup with all the major destination mail providers as well, so you'll be notified of issues.
+I specified it like this as an additional parameter : '-f mywebsite@mywebsite.com'
+Start by reading their guidelines for bulk senders:
+When I send it from my development machine it appears as : From xyz.com via mywebsite.com to abc@gmail.com mailed by mywebsite.com and this is exactly how I envisioned it.
+The issue is that emails are being flagged as spam whereas if I do the same from my development machine things are working out fine.
+Whereas Gmail recognizes my domain as mywebsite@ln5.securedhostdns.com when sent through the website.
+You need to check with them to understand why your mail is being blocked.
+From what little I could figure out by looking at the source of emails in Gmail is that when sending from my development machine Gmail correctly recognizes my domain as mywebsite.com for which SPF is enabled and hence it treats it as genuine email.
+I have a website where people can recommend contents to their friends using their email.
+mail($toaddress, $subject, $mailcontent, $fromaddress, '-f mywebsite@mywebsite.com');

@@ -1,0 +1,13 @@
+I think you need to monitor where mysql connections coming from, and how your application handle/close mysql connections.
+I would guess your load issues stem from your excessive use of swap space due to running out of memory.
+I would recommend spending some time examining your disk situation.
+"Too many connections" - means you need increase value of max_connections in mysql config.
+May be that application side does not close connection properly, or you if it's normal load you need increase limits.
+It may be result of many apache processes trying to connect to mysql server and stuck waiting when reach mysql max_connections limit.
+You're experiencing very high IO contention, and you have a lot of processes sitting around in the scheduler queue waiting for disk IO to happen.
+As soon as your applications use up all the available RAM (1GB) they are going to start using the swap space (1.6 of 2GB used) which will increase your IO load (81.0%wa).
+In order to not use swap you have to limit the memory usage of your application:
+You almost never want your LAMP server to have to use swap space as, as you've noticed, it completely cripples the server's performance.
+It's likely that you need to add additional spindles or faster disks.
+The actual culprit was actually cpanellogd - the process that cpanel runs to rotate and create stats out of access logs.
+This was scheduled to run only at nights, but for some reason it was starting in the middle of the day when we are having the most load.

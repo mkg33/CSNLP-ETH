@@ -1,0 +1,7 @@
+I, being very new to Windows Server administration and not familiar with the windows command line, am wondering whether it's safe to run chkdsk against a Software RAID (Intel Rapid Storage Technology). The RST Interface tells me: "Your System is functioning normally"
+In the post mentioned above (which is 2 years old and was no solved solution) someone has suggested to check the disk (not a RAID as our scenario though) with chkdsk. 
+Like what they put on the other answer, its not an issue with the disk/filesystem - it's that something is holding up that file (AV, WSUS, File Services). So you can either find that and stop it during the backup process or just exclude the file from VSS.
+To answer your actual question - yes it should be fine to run chkdsk on a software raid although it is not needed in this scenario.
+Previously the issue was that the exclude tag was not working in VSS but that should be fixed by now, I would confirm patching is up to date and exclude from VSS.
+CHKDSK is likely going to do nothing to fix it.  I'd use Process Explorer to see what process has a file handle open on the file listed.  Then either kill or disable that process.
+We are backing up the System as well as an entire Volume which contains the Server Folders. This Volume is a Software RAID1 controlled by Intel Rapid Storage. Besides the server folders directory there is another folder currently on that Volume which I have excluded from the backup.

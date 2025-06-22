@@ -1,0 +1,20 @@
+Just be sure to get the master_log_position as you do the export so you know where to catch up from.
+http://www.howtoforge.com/mysql_master_master_replication
+If one node goes down, the others must continue working.
+Scalability is not as much of a concern as extremely high availability.
+Data consistency is desirable but not the overriding priority.
+A simpler solution, in my opinion, is a MySQL master-master replication configuration where  both sites push queries to the other and execute them.
+Given that there would be WAN-type latency between datacenters, write speed cannot be dependent on intra-cluster connectivity.
+It's kind of an exotic solution but check out Galera
+I highly recommend building a dev environment to work on so that you can learn how it all works.
+If you have an existing dataset, you can use mysqldump to export the database prior to performing these steps, so that it can be inserted on the slave before the configuration is done.
+I'd like to multi-home a proprietary web-based application for a relatively small user base with modest dataset size.
+The system has extremely basic architecture: PHP running on a single Linux VPS tapping into a standard MySQL server.
+When a node comes back up, it should automatically get back in sync.
+MySQL Cluster generally is not suitable for web applications.
+System simplicity is important--I can't afford to spend the next month figuring out the nuances of the database.
+If MySQL Cluster is not appropriate for this, then what are some other alternatives to consider?
+PHP application code and other files would be rsynced; however, I haven't yet resolved how to sync the databases... is it reasonable to use MySQL Cluster for this?
+I'm thinking to use multiple VPS's in geographically distinct datacenters such that if a user has problems connecting to one server location, they can try another (I have separate ideas on how to semi-automate the failover, and potentially georoute, but that's another issue).
+I remember seeing somewhere that they said WAN replication is possible.
+Galera is synchronous replication, whereas Tungsten is asynchronous.

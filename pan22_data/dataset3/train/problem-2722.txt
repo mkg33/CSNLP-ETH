@@ -1,0 +1,12 @@
+That means table scan by definition, unless you have been smart enough to also add an index on MOD(yourcol,32BIT_MAX).
+So we might do WHERE intA > 0x123 AND intA < 0xabc
+But adding that index in addition to an index on yourcol is likely to make the overall solution SLOWER, precisely the opposite of what you were hoping to achieve.
+You'll pay the price when someone wants to do a WHERE INTB = somevalue, and that moment WILL come.
+Compare two scenarios, in one, we have a table with a composite key of the from (intA, intB).
+If intA and intB are meaningful to the business, then NEVER EVER hide those attributes in columns that are "obfuscated" in the way you suggest.
+Now our queries look like WHERE longAB > 0x12300000000 AND longAB < 0xabc00000000
+Worry about performance only after you've worried about the business.
+Queries filter by range intA, and the intB portion of the key is to enforce uniqueness.
+My question is, would these have substantially different impact on space usage, IO intensity, and why?
+The alternate scenario is where we have key (longAB), where longAB is the byte concatenation of intA and intB, in other words intA << 32 | intB.
+With your design hack, the only way you could answer that question is by filtering the value out of your obfuscated column using some variant of MOD(yourcol,32BIT_MAX).

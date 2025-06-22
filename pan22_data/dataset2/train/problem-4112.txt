@@ -1,0 +1,13 @@
+I think that case class Messages does not make sense. Its only function is to wrap the collection of Message items, which sometimes can make code more complex.
+Language is complex even if you are only counting words. If this potential error matters you may want to look for a library to do the word counting ...
+First of all, it should be underlined that the code in the question is quite neat, clean, readable and adequate to the task to solve.
+It neither makes sense from Circe's parsing point of view, because collections are supported out of the box and a direct usage of Seq[Message] should not cause problems.
+"The Home Owner's Best Friend is a magazine that gives practical advice for the ambitious home owner"
+However I noticed that your byWord function removes all ' characters which might give results you did not intend, e.g. in the sentence
+One should be careful when using temporal values with time zones. In MessageAnalyticService calls like
+your function would count "owner" once although it is in the sentence twice. The other occurrence is counted as "owners". This also raises the question, if plurals are counted separately from their singular forms.
+If the zone id of the host where the code is executed is different from UTC, the converted ZonedDateTime will contain time zone offset and thus the values returned from these private temporal defs will be relative to the zone of the host, but not to the original timestamp zone. This may bring surprising results, especially difficult to debug. So I'd suggest replacing ZoneId.systemDefault() with ZoneId.of("UTC"). 
+This will be a single string representing a concatenation of all the content strings in all the messages. And it will be split by space anyway further in the chaining. I think that this sequence will be more efficient if the replacements were made on each content string, then split into separate words. This could look like:
+And there is an immediate benefit: each function has one line less now, without any decrease in readability!
+def byWord contains weird regular expression args to .replaceAll calls: no need to use groups, | or too many escape chars:
+Supposing (and that should be the case) that the input JSON contains timestamps in UTC in "timestamp" fields.

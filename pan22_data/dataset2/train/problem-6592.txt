@@ -1,0 +1,6 @@
+I think PowerShell scripts run remotely from a Windows share are considered part of the Internet, so you have a few options:
+Computer Configuration\Policies\Administrative Templates\System\Group Policy\Configure Logon Script Delay
+I ran into the same issue. When I attempted to run the script from the \domain.local\netlogon folder, it gives me an error that the execution policy doesn't allow running remote scripts. I ran get-executionpolicy and it's set to "Restricted". I ran set-executionpolicy remotesigned but that didn't help because it's not digitally signed.
+Late reply, but your problem is probably the default of 2012 to delay logon scripts. Try a lower setting at:
+If its a computer policy, authenticated users isn't what you want. You need to give Domain Computers read access. 
+I ran get-help about_signing and it tells me i have to sign the script with a digital certificate from a CA or self-signed cert. A lot of work just to write a Windows 7 powershell logon script. However, it runs without a problem on systems with a higher version of Powershell (Server 2012 R2, Windows 7 with PS5). Now I have to figure out how to install WMF5.0 on each workstation without WSUS or suck it up and sign the stupid script.

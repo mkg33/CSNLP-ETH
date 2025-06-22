@@ -1,0 +1,8 @@
+You need to click to on process and show process from all users and then you will be able to disconnect.
+why don't to create a session policy under Remote desktop session host configuration end disconnected or idle session  after certain interval.
+Create a file in notepad and call it findsession.cmd. Place the command Query Session /server:servername | find /i "%1" and save to a directory.
+From a command prompt go to the dir you saved those files in and type findsession username (login of user you're trying to find). Hit enter and you should see the login and session ID. Type resetsession.cmd ID Servername and it will reset that session. I use this daily and it is super fast for finding users and resetting their sessions. 
+Not exactly the same environment (we have 2012r2) but restarting the Hyper-V Virtual Machine Management service (VMMS) released the connection for me. 
+This worked on Server 2012 Version 6.2 Build 9200, I would expect it to work on all version of windows.
+I'd the same situation: a Windows Server 2008 R2 with Remote Desktop Services, RDP connection set up to log off users after the session is inactive or disconnected 3 hours, and still some sessions remained locked. I tried to log them off with both Remote Desktop Manager and qwinsta/quser, with no success.
+Create another file called resetsession.cmd and put the command Reset Session %1 /server:%2 and save.

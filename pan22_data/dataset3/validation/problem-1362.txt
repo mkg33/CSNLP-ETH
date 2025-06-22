@@ -1,0 +1,11 @@
+In cloudformation is it possible to include policies defined in one role to be included in another role without having to redefine the policy document in the new role?
+I've been able to create instance profile with my new role and test no problem limiting to access to that folder.
+To expand on @markusk's answer re: Managed Policies - yes, that.
+You can either create the customer managed policy in CloudFormation, through a AWS::IAM::ManagedPolicy resource, or attach an existing managed policy.
+No, you cannot embed one role in another role at this time.
+I have tried to find the arn of the existing policy to try and reference it but I'm a bit stuck.
+Any future changes to your managed policy will immediately be applied to all the roles that have the managed policy attached.
+Put the defined policy that you want to share in a customer managed policy, then attach that defined policy to each role where you want to use it.
+The "existing-policy" being the important part here.
+At the moment I have a shared S3 bucket which has specific access to particular key paths (i.e.
+My problem is that there is an existing generic role with defined policies, that I also want to be able to include in my new role for each stack.

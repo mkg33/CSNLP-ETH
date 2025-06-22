@@ -1,0 +1,9 @@
+If the DHCP server is on a different VLAN then you'll need to use an ip helper (DHCP relay agent).  Since DHCP is a layer 2 protocol it cannot span IP subnets.  The ip helper would be configured on the device that is doing your inter-vlan routing.  Typically that occurs at a core switch.
+http://www.cisco.com/en/US/docs/ios/12_4t/ip_addr/configuration/guide/htdhcpre.html
+Additionally, debugging DHCP can help you narrow down the problem.  You'll want to do that on the device running the relay agent.
+You should see something similar to this if the relay agent is working:
+DHCPD: DHCPINFORM received from client 015c.260a.4837.95 (192.168.200.201).
+DHCPD: Looking up binding using address 192.168.200.1
+DHCPD: BOOTREQUEST from 015c.260a.4837.95 forwarded to 192.168.206.227
+First, thanks to @AveryAbbot, @Ron, @YLearn and @DanielYusteAroca for assisting me greatly in working through this.
+At this time I have determined the cause of the issue to lie with the access points from Ubiquity and not an issue with the Cisco switch itself. After researching further and talking with some of the other network personnel who set this up, it turns out that this one switch connected to the MDF via NanoBridge M5's (that I was unaware of). That is, it is not a straight wire run but in fact a wireless AP to Station in bridge mode. In this setup, the mac addresses stop at the AP side and every outgoing packet gets the AP's mac address. To resolve this, you need to setup the AP and Station in Ubiquiti's Wireless WDS transparent bridge mode. After changing this setting on both AP and Station, and a reload of the switch, all devices connected to the problemswitch, are now receiving a proper DHCP lease when requested. 

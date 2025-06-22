@@ -1,0 +1,39 @@
+The PIT uses 1.193182 MHz clock source and is therefore much more precise than simple RTC.
+So we'll have a timer which is updated after every set amount of processor cycles.
+HPET uses a 10 MHz clock and is therefore more precise than PIT.
+While Joel's answer is correct, in reality, it's a bit more complicated.
+Something I have been puzzled about is this: how exactly does a computer regulate and tell time?
+This way the CPU does not have to constantly check if something is done.
+IIRC, there's a small crystal the vibrates at a specific frequency when an electric current is passed through it.
+For example: if I were to write a program that did this:
+http://en.wikipedia.org/wiki/High_Precision_Event_Timer#Comparison_to_predecessors
+When the CPU receives the interrupt, it will stop whatever it is doing and tend to the task which generated the interrupt.
+Next interesting measurement system is time stamp counter.
+Instead it can focus on other jobs and have the PIT tell it when the job is done.
+Each movement is counted and a specific number of them trigger a clock cycle.
+That is a major problem, sicen the CPU clock isn't constant anymore and we can't use it to measure time.
+The problem with them is that they aren't very accurate, as can be seen from Syntech's links.
+Another option which is less common than GPS receiver is to use a special radio receiver which decodes time information from time keeping radio stations such as DCF77 for example.
+It can be more precise than 10 Mhz but never less.
+And that's why we have high precision event timers now.
+It is basically a chip which has a simple clock inside.
+Here we come to the next point: There are internal clocks used for precise time measurements and countdowns.
+What it does is wait a certain amount of time and then send an interrupt to the CPU.
+Thanks for any replies; I'm really interested in computer science, and would love any help you could give me =D.
+The 32.768 kHz crystal is too slow for any timekeeping on  modern systems whose processors are in megahertz and gigahertz range.
+Since radio waves travel at speed of light, the delay is often insignificant.
+At the time processors had very stable clocks and use of TSC was a nice way to make precise time measurements.
+A less expensive option and much more common is to use external time source to calibrate internal time sources of the computer.
+They usually have same type of quartz crystals as standard clocks and usually have a battery for time keeping when the computer is powered down.
+Most popular and easiest to understand is the real-time clock.
+There are other time sources available for computers which I believe need to be mentioned.
+For example GPS receivers can be used to provide high precision time measurements, because GPS satellites have their internal atomic clocks.
+Different processors have different tick rates and measure time at different speeds.
+On the other hand, its clock source does not depend on CPU's clock and it can be used to measure time even if CPU's clock changes.
+PIT has 1.193182 MHz clock, but even the earliest x86 processors had much higher clock.
+First thing which needs to be taken into consideration (and I'm going to focus only on PCs here) is that there are several clocks in a computer and each has its own use.
+Some computers are connected to atomic clocks and can use them to precisely measure time.
+Such time stations have their own high precision time sources and transmit their output over radio.
+The idea behind it is that we can get much more precise measurements of time using processor's clock source that using various system timers.
+Later on, as techniology advanced we got modern processors which can change their frequency.
+Unlike PIT, which works as countdown, HPET measures time since the computer was turned on and compares current time to time when an action is needed.

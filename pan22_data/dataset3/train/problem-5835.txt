@@ -1,0 +1,20 @@
+The service is distributed, with several instances running on each of several machines in each of several sub-domains.
+Most of the documentation I've found assumes that each service runs on a single host in a realm, or at least that clients care deeply which service instance they connect to.
+as your principal name for this service, assuming www.example.com is how this service is addressed by clients.
+I've also seen something like this for services which could exist on multiple ports:
+The SASL API takes a "fully-qualified domain name" parameter in addition to the service name, but I suspect that's because it supports more than just Kerberos, and we could probably pass things other than actual FQDNs.
+This works well if external entities see the same domain name for instance, as it maintains that illusion.
+Finally, what about having just one service principal, which seems simpler but less commonly done?
+If it matters, the Kerberized service (and clients) use Cyrus SASL, GNU GSSAPI, and MIT Kerberos 5.
+Should there be one for each host running the service, as there would be in what seems the most common form?
+Further, each machine has ten instances on well-known ports, say 25001 through 25010.
+Now, how should I name the service principal(s) in Kerberos?
+Two typical forms for Kerberos (v5) principal names seem to be:
+For things that are not unique (that is, replicated services, performing exactly the same duties) I usually share one common server principal.
+They will use that ticket to authenticate to any of the instances without needing to fetch a new one per instance.
+It also means that if a user switches from instance-1 to instance-49 they won't have to perform another Kerberos handshake, as they already have a valid, working ticket.
+So I have fifty instances of the server, all basically the same, which lets me balance load, deploy new versions gradually, and so on.
+I have an in-house application which is now being Kerberized, and would like to understand how the service principal(s) should be named.
+Or is it better practice (and why) to have one service principal per service instance?
+In my case the services are all pretty much the same from the client's perspective, so what would be the best practice here?
+For example, let's say my domain name is zombo.com, and my Kerberized service, "tenaciousd", runs on machines "www1" through "www5".

@@ -1,0 +1,6 @@
+I'm not sure if its the recommended approach or not, in case the user doesn't have web access, and my software requires, lets say: libgcc-4.3.0.0.rpm (for e.g), I would like to bundle this for the specific supported os (e.g: RHEL 5.10) and all of its dependencies in a single .rpm.
+Assuming that you have two systems (build and target) which are the same flavour and release (e.g., making a package list on CentOS 6, for CentOS 6), try something this:
+The above uses repoquery instead of relying on yumdownloader to resolve the dependencies, as yumdownloader does not appear to recursively resolve when the --resolve flag is set.
+It would be tricky to bundle all the dependencies into a single RPM, not least because the system you build on may have a different package composition from your target (e.g., your target has newer, or conflicted packages already installed, which you may unintentionally overwrite).
+I think what you are looking for should be to statically compile the application. This will make it very unlikely that the user will get any dependencies that are not available for them already.
+However, you could instead obtain a list of all prerequisite packages and install them all at the same time.

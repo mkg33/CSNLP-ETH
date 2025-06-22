@@ -1,0 +1,16 @@
+Using ld_preload to force the interface gateway https://github.com/Intika-Linux-Network/App-Route-Jail
+Different servers on IP networks have different IP addresses.
+Creating iptables firewall rules that drop incoming traffic pointed towards its ports on interfaces you don't want it to be visible on is the easiest thing to do.
+Usually if a program has no option for setting listening interface, it's listening on ALL interfaces.
+The kernel should know which interface to use to reach a particular IP address based on the routing table.
+You can make that work, but it's a system-level fix involving putting one server in a separate logical network that's only connected to the machine through software NAT.
+If you're trying to talk to two different servers that have the same IP address, the system will get confused (because, among other things, it only indexes the connections internally by destination address).
+We need to find what gateway the network interface is using then force that gateway to our jailed application and thus force the application to bind to a specific network interface
+Why would you want a program to use an interface other than the one connected to the server to talk to that server?
+I don't think it is possible to force a process to use a certain interface.
+Firejail https://firejail.wordpress.com/ can force an application to use a specific network, but the compatibility is limited.
+Force an application to use a specific network interface
+However, I think you might be able to play with ipchain/iptables and force that a certain port your process is listening at will only get packets coming through a particular interface.
+If they have the same IP address, you need to use NAT so that they appear to have different IP addresses to the system.
+And if the system isn't using the interface connected to a server to talk to that server, it's a system-level (routing table) issue and has nothing to do with which process happens to want to talk to that server.
+So if they have different IP addresses, use routes to select the correct interface.

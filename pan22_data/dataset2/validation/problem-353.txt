@@ -1,0 +1,13 @@
+Here's some details about partitioning database tables in SQL Server, this might give you some guidance as for MySQL. And here's an interesting article about performance partitioning in MySQL.
+I don't know if this is doable in MySQL, but table partitionning can be useful, and even bring up faster performances. Let's consider a geographical application where you store the people's adresses for the 48 contiguous lower states.
+Now, we're facing a 5 000 000 rows data table here. This shouldn't hurt the performance much if INDEXes are suitable for the query needs. You should perhaps look for optimizing the INDEXes first. Afterwards, if some performance issues are still present, consider partitioning your table based on a discriminating value.
+Careful here, I'm absolutely not talking about creating VIEWs, but partitioning data TABLEs, which is very different.
+You would have a few tables like member_1, member_2... and a member table that would be a MERGE engine.
+That said, be very carefull. If not done right, partitions can degrade performances. A good partition could be records archived each year, the key to the partition could be the year of the record.
+I dont know specifically for MySQL, but a number of DB engines (Oracle for example) can partition tables. This looks a bit like what you are refering to. Partitionning can help performances when you know that you will be working most of the time with only a subset of the data.
+Or you would search on the MERGE table when you need to do a search on the whole table or the table seperation was not what was needed. For example, where member's surname is Smith.
+You would then have what we might call a base table which would be partinioned into 48 other tables, one for each state.
+The only time I've ever found it acceptable to duplicate a table it when testing the results of a complex SQL statement on it. Even then, you're usually doing that on a test database rather than a test table on a production database.
+You would query the individual tables when you knew that the data you are looking for would be there: for example, if member_2 has members have registered to the site 6 months or ealier and thats the search you want to perform.
+You have to be careful when using MERGE if you plan to use it for performance, because while it may help some of the time, it might hurt in other cases.
+Depending on your partition definition, this base table, upon SELECT, "knows" what table to query against in order to have the required information data depending on what state is queried. It's like an intelligent interface that you might query, and the query is simply redirected to the right underlying table, without letting the user know about this underlying table.

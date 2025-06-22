@@ -1,0 +1,12 @@
+Both of these aspects are true anyways, no matter how you architect your solution.
+If you wish to have a pod running for every feature branch, then you need to do it that way, period.
+If a service involved in an integrated test has state, then you indeed need to fire up a new pod/volume for each test run.
+Probably this is easiest if you give a branch-based label to each of the components, so you don't need to keep track of which you have applied in the first place.
+Add a post-merge step which does the same in reverse, i.e.
+In these cases, you would probably do well to not start deployments right out of your individual CI pipelines, but do a "big" deployment when you start your integration test (i.e., deploy all individual microservices like described above, but also inject an ID for your current integration test run into all their names, so everything stays unique).
+I'm not altogether sure if there actually is a problem you're trying to solve, or whether you are looking for confirmation that you are on the right track.
+If your integration test depends on external state, then you also need to manage that somehow.
+But you need to do that anyway, in some form or fashion; as far as I can understand, you are trying to make the services (their branches) independent from each other, and I also assume from your question that you have one service per git repository (i.e., one service per branch) so you need to have them running per-branch.
+oc delete ... for every component of the original .yaml.
+It would certainly force you to do some kind of dependency injection (i.e., if you are testing one service A which needs another service B, then you have to tell A which B-feature it should take.
+Add a post-build step in your CI pipeline which does the following:

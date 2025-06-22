@@ -1,0 +1,20 @@
+I'm not exactly sure how to interpret that syslog data.
+Please post your failover configuration ("show run failover").
+I have read How Failover Works on the Cisco Secure Firewall and it seems like this should be wicked straight forward.
+The first command turns off failover; the second command relinquishes active status to the other firewall in the HA pair.
+Primary doesn't seem to even try to become Active.
+When I reload the individual units separately, my connections are retained, so it doesn't seem like I have a real hardware failure.
+None of the suggestions above were able to resolve the issue for me.
+Or try to enable preemption (you will need to specify manually which unit is primary and whis is secondary).
+Instead, use the no failover active command on the secondary (currently active) firewall.
+FWIW, the only way we were able to resolve this issue was by physically powering down both firewalls, then bringing them back up in the correct order.
+We had a power outage at our data center last week and when our dual PIX 515E running IOS 7.0(8) (configured with a failover cable) came back, they were in a failed over state where the Secondary unit is active and the Primary unit is standby  I have tried 'failover reset', 'failover active', and 'failover reload-standby' as well as executing reloads on both units in a variety of orders, and they don't come back Primary/Active Secondary/Standby.
+Essentially, think of failover as a command that tells the units to try to make the secondary be the active unit, and like many configuration commands, no failover removes the action.
+Thanks to everyone for your time and help, though.
+Is there something I can query (IOS or SNMP) to check for hardware issues?
+If you run failover active, please run it on the primary (currently standby) firewall.
+This should also work on PIXes with relatively recent OSes.
+I don't believe the PIX provides a facility to allow automatic preemption when the primary firewall is ready to process traffic again.
+At least with ASA5500 series units, what you want is to run the following on VPN-Primary:
+The only thing in my arsenal that I haven't tried is driving to the data center and performing a hard reboot, which I hate to do.
+Please DO NOT use the no failover command as mentioned by natacado.

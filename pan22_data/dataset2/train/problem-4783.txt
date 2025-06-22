@@ -1,0 +1,6 @@
+The source port will change with new TCP sessions, but not within a session.  What does change within a sessions is the sequence number.  On some operating systems the both of these can be initiated at a predictable number, on others it is random.
+I am guessing the underlying issue is security, particularly session hijacking.  If you really want to protect this level of communication you should investigate the various forms if IPSec and VPN Tunnels.
+Many operating systems simply attempt to increment their last source port until they find an available one, whereas others draw randomly from the available ports.
+This does not happen.  The port should stay consistent for the duration of the session.  Even calls to accept that retrieve new connections will wind up on the same port.  
+Your source port gets assigned by the operating system - unless the software attempted to request a specific source port - and typically operating systems use the top 30k or so ports for source addresses.  So if you make tens of thousands of requests, eventually you have to recycle your source port.
+I am not up to date, but with Linux SELinux would enable the facility to randomize the source port and initial sequence number (This could be standard by now).

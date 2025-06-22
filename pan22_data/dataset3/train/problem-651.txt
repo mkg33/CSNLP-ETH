@@ -1,0 +1,20 @@
+Production code that succeeds doesn't get any attention, and it may be a long time before someone notices that the new column is not being archived, but being silently deleted altogether.
+As with anything w/ programming, there is a time and place.
+If all the columns were listed on the INSERT and the SELECT, then the INSERT would succeed, and so would the following DELETE (which is effectively "DELETE *").
+If you are deleting a field, it doesnt matter if you use * or a CSV, you are introducing a breaking change.
+Any time you can say "I want any changes to the table to be immediately reflected in a change to my result output" is a case for doing it.
+In fact, there are duplicate key columns that should probably be omitted.
+The place where I find SELECT * to be a must - and its evil cousin "INSERT INTO tbl" without a column list - is in an archiving situation, where rows are being moved to another table that must have the same structure.
+I know my consumers write poor code - If you are developing a public API, I suppose its possible you would want to honor OpenClose and make a new api method each time the field set changes.
+Consumer probably doesn't need all the fields from all the tables.
+To me, this seems like a bad approach to said problem...
+If your consumer is written poorly, then you could run into problem.
+Latency mitigation - My consumer is distant and they only need a relatively small subset of fields in the table(s)
+Which sounds bad, but it's actually a really good thing!
+Why set yourself up to touch every single SP because you need to add a field?
+My answer to your question is "Most/Many use cases"
+I generally abhor SELECT * in production code, and I've been in a situation where its use led to massive amounts of rework later.
+For instance, if you are formatting Fields[13] as a date...
+"If the consumer of my stored procedure is agnostic to dynamic result sets, ..."
+If a new column is added to SalesOrder in the future, but not to SalesOrderArchive, the INSERT will fail.
+I'll be bold and say it: There are use cases for SELECT * in production code.

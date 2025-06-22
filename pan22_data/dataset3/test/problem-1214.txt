@@ -1,0 +1,9 @@
+It's not load balancing and not clustering either.
+That way all the app servers would be pointed at a single hostname or IP and that single mysql-proxy server would redirect the requests to whichever MySQL machine contained the database it needed.
+There's also MySQL Proxy based HScale, but it doesn't seem to be very active and I don't know how well it suits you.
+Depending on your needs, a modified version of MySQL Proxy called Spock Proxy can also do what you need, but it has several limitations (all listed on their web page).
+It would be a way to obviate the need to change config files on each app server when moving databases to different servers.
+Each app server has multiple JBoss instances running on it and each JBoss instance has a single database located on a particular MySQL server.
+Basically you just need to use connect_server() piece of MySQL Proxy to alter the database connection settings according to your needs.
+In theory MySQL Proxy can do what you want, but in practise if you are using stored procedures, triggers, or other fancier stuff, then MySQL Proxy might fail in the most marvelous ways you have ever seen, so be careful!
+What if I had three master MySQL servers and wanted to use mysql-proxy to "dispatch" connections from my nineteen app servers to the appropriate MySQL server.

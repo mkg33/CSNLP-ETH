@@ -1,0 +1,21 @@
+Then you should build raid1 device on source server with your source drive:
+At this point you can safely attach exported destination partition to this mirror:
+That is restartable, consistent, and each file is easily individually verifiable.
+You would have to re-run GRUB, but that shouldn't be a challenge.
+You have to create partition table on your destination server, then shrink source partition so it would fit destination.
+After sync is done, just stop the mirror: mdadm --stop /dev/md0 on source server, terminate vblade process on destination server, install GRUB on second server, change your IP addresses, etc.
+I presume here that / is on /dev/sda3 and that /boot is on /dev/sda1.
+Actually, with this trick it is possible to move server between boxes almost live, with downtime just to reboot synced boxes.
+Wait until rebuild is complete, stop your mirror, remove AOE exported device and you're OK.
+At source server you then connect network block device to your degraded mirror so it would start rebuild.
+Note, you also can use something like nbd-server/nbd-client (or even iSCSI, if you want it rough) as an alternative to AOE, but AOE (vblade + aoe-tools) have a very simple interface and a great performance (no TCP/IP overhead),
+For performance reasons, I also suggest you increase your link's MTU (or set up a separate VLAN with jumbo frames enabled, if possible).
+Where you're discarding unused sections of the filesystem (not a forensic copy), I don't see any reason to not use this method.
+On the receiving side you have to export your partition with vblade tool, on source server you can see exported devices after installing aoe-tools (run aoe-discover then look at /dev/ether/ for devices).
+I'd mkfs fresh filesystems on the new server, then rsync them from the old server.
+The thing is, you can create a degraded mirror on source server with your data partition being the only active half of the mirror, then export destination partition from second server via AOE (I suppose both your servers are in the same broadcast domain).
+You can probably find a way to avoid copying the partition's free space, but it'll probably take you longer to research than to just copy it all...
+A bit more details follow (I'll try to keep it brief).
+If you REALLY want to transfer data at a block device level, I can think of one pretty useful trick I was using to migrate servers with minium downtime involved.
+Explaining a raw copy that is file-system aware would take me a while, so unless you comment as to why my rsync solution doesn't work I'll spare myself the typing.
+You can easily install GRUB to your new MBR; syncing just partitions over newly created partition table is a bit less error-prone.

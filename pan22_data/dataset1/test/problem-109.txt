@@ -1,0 +1,47 @@
+Have you tried with removing or commenting "skip-bdb" from /etc/mysql/my.cnf?
+See MySQL bug 50336: http://bugs.mysql.com/bug.php?id=50336
+At the upgrade of mysql-server, I got a error message (unfortunately missing. It was at the, when I where asked for mysql admin password).
+There was just "Retry" or "cancel". After Retry didnt work, I choosed cancel ...
+110502 07:49:48 mysqld_safe Starting mysqld daemon with databases from /var/lib/mysql
+110502  7:49:48 [Note] Plugin 'FEDERATED' is disabled.
+/usr/sbin/mysqld: Table 'mysql.plugin' doesn't exist
+110502  7:49:48 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
+InnoDB: If this error appears when you are creating an InnoDB database,
+InnoDB: the problem may be that during an earlier attempt you managed
+InnoDB: to create the InnoDB data files, but log file creation failed.
+InnoDB: http://dev.mysql.com/doc/refman/5.1/en/error-creating-innodb.html
+110502  7:49:48 [ERROR] Plugin 'InnoDB' init function returned error.
+110502  7:49:48 [ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed.
+110502  7:49:48 [ERROR] /usr/sbin/mysqld: unknown option '--skip-bdb'
+110502  7:49:48 [Note] /usr/sbin/mysqld: Shutdown complete
+110502 07:49:48 mysqld_safe mysqld from pid file /var/run/mysqld/mysqld.pid ended
+Running 'mysqlcheck' with connection arguments: '--port=3306' '--socket=/var/run/mysqld/mysqld.sock' '--socket=/var/run/mysqld/mysqld.sock' 
+mysqlcheck: Got error: 2002: Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2) when trying to connect
+Replaces: libmysqlclient-dev (<= 5.1.41-1), mysql-server (<< 5.1.49-3), mysql-server-5.0
+Provides: mysql-server, mysql-server-5.0, virtual-mysql-server
+Depends: mysql-client-5.1 (>= 5.1.49-3), libdbi-perl, perl (>= 5.6), libc6 (>= 2.7), libgcc1 (>= 1:4.1.1), libmysqlclient16 (>= 5.1.21-1), libstdc++6 (>= 4.1.1), zlib1g (>= 1:1.1.4), debconf (>= 0.5) | debconf-2.0, psmisc, passwd, lsb-base (>= 3.0-10), mysql-server-core-5.1 (= 5.1.49-3)
+Pre-Depends: mysql-common (>= 5.1.49-3), adduser (>= 3.40), debconf
+Conflicts: mysql-server (<< 5.1.49-3), mysql-server-4.1
+ /etc/logrotate.d/mysql-server 64e209fe34f73fbf10c9479bf30947c4
+ /etc/mysql/debian-start 4272e4d740c8ae651ac35bbf4d2ed6dc
+ /etc/mysql/conf.d/mysqld_safe_syslog.cnf 347fa9f3d579ffc06c39bf7e69f4fc6e
+ /etc/logcheck/ignore.d.workstation/mysql-server-5_1 2d34a7ed83fefc165cd1dfea3a72ccc8
+ /etc/logcheck/ignore.d.server/mysql-server-5_1 2d34a7ed83fefc165cd1dfea3a72ccc8
+ /etc/logcheck/ignore.d.paranoid/mysql-server-5_1 6babe46e791059cdd5a26f4f7fec9eca
+ /etc/init.d/mysql ea6d050ac82ed69d01970f9b95ab9b9d
+After "aptitude full-upgrade" it shows me (Language: german):
+Die folgenden teilweise installierten Pakete werden konfiguriert:
+Es werden keine Pakete installiert, aktualisiert oder entfernt.
+0 Pakete aktualisiert, 0 zusätzlich installiert, 0 werden entfernt und 0 nicht aktualisiert.
+Muss 0 B an Archiven herunterladen. Nach dem Entpacken werden 0 B zusätzlich belegt sein.
+Starting MySQL database server: mysqld . . . . . . . . . . . . . . failed!
+invoke-rc.d: initscript mysql, action "start" failed.
+dpkg: Fehler beim Bearbeiten von mysql-server-5.1 (--configure):
+ Unterprozess installiertes post-installation-Skript gab den Fehlerwert 1 zurück
+                                      Fehler traten auf beim Bearbeiten von:
+E: Sub-process /usr/bin/dpkg returned an error code (1)
+Ein Paket konnte nicht installiert werden. Versuche zu lösen:
+Starting MySQL database server: mysqld . . . . . . . . . . . . . . failed!
+invoke-rc.d: initscript mysql, action "start" failed.
+dpkg: Fehler beim Bearbeiten von mysql-server-5.1 (--configure):
+ Unterprozess installiertes post-installation-Skript gab den Fehlerwert 1 zurück

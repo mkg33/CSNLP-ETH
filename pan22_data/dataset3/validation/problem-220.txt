@@ -1,0 +1,20 @@
+in terms of speed it will be same as 'mv' as you first create the links and then you remove the original ones.
+But this approach let you to start from the beginning if this makes sense
+If you leave the / off, it will still copy the files but they will sit in a directory named /destination/directory.
+rsync will maintain file ownership if you run it as root or if the files are owned by you.
+If your filesystem is copy-on-write, then copy (cp or rsync, for instance) should be comparable to a move.
+If you have the free space, archive them into a single .tar file (with no compression is faster) and then move that file over and unarchive it.
+If possible, you should try mv directory_old directory_new rather than mv directory_old/* directory_new/.
+rsync would be a poor choice because it does a lot of client/server background work which accounts for local as well as remote systems.
+So, on your average Linux installation, I'd go for mv.
+This means it will copy the CONTENTS of the directory and not the directory itself.
+When you are done with 'move' and you satisfied with result then you can remove these files from directory_old.
+As both directory_old and directory_new are on the same filesystem you could use cp -l instead of mv as an option.
+EDIT: @Frédéric Hamidi has a good point in the comments: This is only valid if they are both on the same filesystem and disk.
+It will also maintain the mtime of each individual file.
+This way, you move one thing instead of a million things.
+With the /, the files will just be in /destination
+But for most common cases, move (mv) will be the fastest, since it can simply switch around the pieces of data that describe where a file is placed (note: this is overly simplified).
+If they reside on two different filesystems, use rsync:
+cp -l will create a hard links to the original files.
+If the two directories reside on the same filesystem, use mv on the DIRECTORY and not the contents of the directory.

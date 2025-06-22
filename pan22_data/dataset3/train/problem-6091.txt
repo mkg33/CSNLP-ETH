@@ -1,0 +1,23 @@
+Using Wake On Pattern would seem to be the way to go for this.
+UDP is a broadcast packet which can always be received by your NIC, whereas TCP requires the computer to be powered up.
+However, the NIC itself will need to support ARP & ND offload, or at least ARP offload.
+If the NIC doesn't support that, then Magic Packet is the only way to wake up the computer.
+ensure the service is started and that its Startup Type is set to Automatic so that it will run with Windows.
+Your network infrastructure may even have the ability to send Wake On Lan packets for you.
+Remote Desktop does not have any built-in remote wake-up capability.
+You will need to first use Wake-On-Lan to wake up the sleeping computer,
+Right-click and open Properties then go to the Advanced tab and
+Only UDP is needed, but you can if you wish open the TCP port as well.
+Open Device Manager from the Control Panel, expand Network Adapters and find your Ethernet Card.
+Assuming that you're connecting to an IP address and not a hostname, connecting to the IP should attempt to send a TCP Syn request to the computer, as long as the switch has not forgotten which IP address has that MAC address.
+Start Service "Simple TCP/IP Service" (enables ports 7 & 9)
+enable "Wake on Magic Packet" or something similar.
+Many such are available on the Internet, by command line like wolcmd
+As long as Wake On Lan is enabled in the BIOS as well as in Windows.
+Open Programs and Features from the Control Panel, click "Turn Windows features on or off" on the sidebar, scroll down and check "Simple TCPIP services", then click OK to install the feature.
+I haven't done it myself, but I know that WOL can be done on Name Lookups as well as TCP SYN requests.
+Open Services from Administrative Tools in Control Panel, scroll down to the service,
+The latter is what will take care of waking on TCP Syn requests.
+However, if no such option is found in the BIOS, it might be safe to assume that it will work by default.
+In which case, you will need a utility to run before attempting to connect with RDP to the computer.
+By default, Windows 7 should be setup to wake on either MagicPacket and PetternMatch.

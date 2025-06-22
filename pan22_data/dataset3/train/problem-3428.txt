@@ -1,0 +1,13 @@
+One of the dependencies of these Python installations is readline, which is installed by brew.
+But it's no longer available at this path, since brew has updated the symlink to point to version 8.
+Although multiple versions of readline may be present on the system, only one of them is symlinked at /usr/local/opt/readline.
+If brew upgrades to a new version of readline, suddenly Python starts spitting out text like ^[[A when attempting to use cursor keys to line-edit.
+It is looking for /usr/local/opt/readline/lib/libreadline.7.dylib.
+Is there any sensible way to have these co-exist and not spontaneously break again the next time Homebrew installs a new version of readline?
+The problem appears to be that when pyenv install built Python, /usr/local/opt/readline was a symlink to /usr/local/Cellar/readline/7.0.5 which contained lib/libreadline.7.dylib.
+The problem I have found is that brew periodically takes it upon itself to install a new version of readline.
+It's possible to use pyenv to install and switch between multiple Python versions, which is helpful when trying to develop and test software targeted against versions of Python that aren't just the latest.
+I can do brew switch readline 7.0.5 to swap these around again, and pyenv's Python will work again.
+I din't find readline 7 in the /usr/local/opt/readline/lib/ folder, yet I only found libreadline.8.0.dylib.
+If you then attempt to explicitly import readline you'll see an error like this:
+But now Homebrew's Python is broken in much the same way.

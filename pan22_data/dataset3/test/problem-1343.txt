@@ -1,0 +1,51 @@
+Turn on log_temp_files and see what shows up to figure out if you really need to raise work_mem.
+maintenance work mem can be in the gig range, but the big gain is cranking it up over 100M or so.
+Test it with bonnie++ or dd or something to get some idea of how fast it really is.
+Based on what you're saying about your data set, which doesn't sound like it issues large individual queries, you may not even need to worry about that.
+If your database (or at least the frequently accessed part) is small enough to be well cached in RAM, then your IO performance will not matter a lot (except for writes) ; however if your database is huge and you want to churn through it quickly, then sequential IO performance is going to matter.
+This way hashes will still be allowed even for largish datasets which can be a lot faster than sorting.
+If you are gonna crank it up, and I recommend going to at least 16 or 32M on your machine, make sure you ARE limiting postgresql's max_connections parameter to a few dozen connections at most.
+for your kind of work anything past 4 cores total is probably gonna be a waste.
+This is a hint to the planner and should be set to the amount of memory used as disk cache by the os + the shared buffer size.
+That doesn't mean a lot but I suppose this kind of hardware has good sequential IO thgoughput...
+OTOH, some testing will likely show that anything over a hundred or so doesn't really help a lot.
+that said, I'd test various values to see, but a few hundred megs is likely to be as fast as it gets.
+You'll find detailed answers to these three at Tuning Your PostgreSQL Server, along with suggestions about a few other parameters you may want to tweak.
+This ensures that any pathological behaviour where all the connections run lots of sorts don't kill the machine too readily.
+They are often just ok at sequential throughput, unless you've got a very fast interconnect to them, and even then they often just aren't optimized for sequential throughput.
+A good rule of thumb is to keep work_mem*max_connections*2 < 1/4 of memory.
+With OLAP / Analytics you want fewer faster CPUs if you can get them.
+Advice on that will depend on how big the data is.
+On windows the shared memory implementation is sub optimal for large values, and making it bigger seldom helps improve performance.
+By the way, is there any reason you're not running Linux on that box ?
+The danger with cranking up work_mem too high is that it will wind up pushing data cached by the OS out of cache, only to need to be reloaded again.
+You won't be able to use large settings for shared_buffers on Windows, there's a consistent fall-off where it stops helping around 512MB.
+If you find that work_mem of 1G works much better than 100M etc then you can compromise by leaving regular work_mem lower for safety and having the single thread that runs big queries set its own work_mem on connection.
+Where the HW RAID can get 350M/s and the SAN was in the 100M/s range (it's connected on gig e) the native SAS with SW RAID gets around 1G/s reads and about 80% that on writes.
+Your queries seem of the style "churn through a lot of data to return some aggregate results" with low parallelism.
+I agree with the previous poster that windows is suboptimal for pgsql, with an emphasis that it's much worse for OLAP where being able to allocate more shared_memory can be an advantage for pg / linux.
+So if you increase this make sure your system doesn't start to use too much memory.
+For very large datasets you may find that a SAN is not optimal.
+In your case, few users, you can set it pretty high, maybe 128MB.
+SANs excel at lots and lots of small ios really fast.
+When you say 8x 3GHz CPUs do you mean 8x sockets each with 4 or 8 cores?
+The cost of hitting the disks to get that data is usually higher than the gain of really cranking it up.
+If you're getting ~100MB/s sequential then it'll be painfully slow next to a cheaper machine with 4 or 8 7200RPM SATA drives running RAID-10 for analytics.
+When you do a query with a few sorts and hashes (for joins and aggregates) or materialized tuplestores, each one can use up to work_mem.
+shared_buffers: 25% of memory size for a dedicated postgresql server.
+A single connection can use this amount multiple times so be careful with this one if you have lot of queries running concurrently.
+Don't assume your SAN is super fast for what you're doing, it might be, it might not be.
+This one requires a lot of testing to see if it improves performance but doesn't make the system use to much memory.
+So, on a machine with 64G ram and 100 connections, you'd want work_mem*200 < 16G or about 80 Megs max.
+I have tested sequential and random read write performance on my machines with Areca and LSI RAID Cards with battery backed cache, native SAS interface with linux software RAID, and with a SAN on the backend.
+maintenance_work_mem: this one is for certain maintenance operations like vacuum and indexing setting it fairly high is in general save.
+A moderate boost to maintenance_work_mem might be helpful for the background autovacuum work, but unless that becomes a problem for you it's not critical to adjust very high.
+Note that if your query has N sorts it will use N times work_mem.
+Also remember pg can use only one core per query, so disable hyperthreading.
+Just remember not to start 10 index creations concurrently when you restore that backup...
+Creating a btree index is a big sort, so setting maintenance_work_mem to something large like 1-2GB will require less sorting passes (ie, temp files) if you create an index on a huge table.
+Fastest for random access was close to a tie with the SAN and the RAID cards, but for sequential throughput, the linux software RAID stomped them into the ground.
+If you want to do extensive tuning I recommend reading a good book about it like: PostgreSQL 9.0 High Performance.
+You can change it before executing a query if you need, too.
+Several queries scanning the same table in parallel will synchronize to only read data once, though.
+If, somehow, someone launches a bunch of queries at once, you can quickly run out of RAM.

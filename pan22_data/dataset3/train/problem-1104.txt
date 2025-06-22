@@ -1,0 +1,9 @@
+If I understand you correctly, this is what you want.
+I think the routing table tells the story: even though the cable is pulled, the computer still prefers the now-dead route via eth0 to the route via eth1.
+Without NetworkManager or something similar, Linux is not robust about re-routing.
+There are many guides out there to configuring channel bonding on debian; the Debian wiki also has a page on the subject.
+If you need the system to have addresses on several different subnets, you should use VLANning on top of bond0; again, the connivance of the switch will be required.
+If the bonding is configured in the simplest mode, active-backup, no special configuration of the switch is required; one of the two physical interfaces will be used for all traffic unless and until link goes away, at which time the kernel will switch to using the other interface.
+With a more intelligent switch that you have properly configured, you can configure more complex modes to the bonding, which have the effect of using both NICs, and sharing traffic between them according to various algorithms.
+Even though you ping eth1's IP address, the computer does not necessarily use that interface for the return packet; rather it constructs a reply to the source IP of the ping and sends, which will use the routing table to decide how to return.
+What you want to do is to channel-bond the two interfaces into a single virtual interface, bond0, and give all your IP addresses to bond0.

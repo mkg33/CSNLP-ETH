@@ -1,0 +1,8 @@
+It seems add to me that there isn't an easier way to recover elasticsearch other than to delete the offending indices. I've configured elasticsearch to use a single node, no replicas and not to do any network discovery, but every couple of days, it keeps falling over.
+The problem I have is that elasticsearch keeps entering a Red health state due to unassigned shards. I've researched various ways to recover this, but inevitably, I end up deleting the raw index files and restarting the service.
+I use elasticsearch as part of a Logstash stack, in which all of the components of the stack are installed on the same server.
+I've discovered after much suffering that the best way to run elasticsearch on a single server is to change the default setting of:
+The purpose of this is to expose application logs to developers for debug purposes. I don't need to keep the indices created. I have a cron job that removes indices that are older than 7 days.
+If there are 0 replicas, elasticsearch will never try to assign shards to any other "replica" then itself, thereby removing the issue of unassigned shards and corrupted indices.
+Am I wasting my time trying to run elasticsearch on single server? Is it always going to keep falling over due to unassigned shards? Given what I use it for, it would seem like overkill to actually have to deploy a cluster.
+This is a real pain, as its always the time when the developers need access that elasticsearch is borked.

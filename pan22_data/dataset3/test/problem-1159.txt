@@ -1,0 +1,15 @@
+http://www.aperture.ro/index.php/2009/01/windows-time-sync-hyper-v-enabled-domain-controller-dilemma/
+If you run a good monitoring system (eg, Nagios) consider checking clock skew against the global NTP pool, or a reliable *nix based system (that's not a VM itself) running the NTPD package.
+I realise this can create an infinite loop if the hosts are member servers of the domain, but every workaround I've tried (VMware server in my case) doesn't actually solve the problem.
+With VM's you always want the host to sync the guests, it's the only reliable way.
+I have a domain controller running in VM on Hyper-V, the time seems to be steadily getting faster, over the X-mas period it's 5 faster, which seems odd!
+http://technet.microsoft.com/en-us/library/cc784553(WS.10).aspx
+There is also a Technet article on configuring a DC to use NTP:
+You may want to try setting up the DC up as an NTP client.
+I know how to change the time and I belive we setup an NTP server on the DC and ensured time-sync was turned off on Hyper-V.
+In fact you need to set up your Guess parameters under Hyper-V to be sync with your Host CPU clock frequency.
+The guy waffles for a bit, but scroll down and you will get the necessary registry entries.
+If you're having such a problem with drift just sync hourly, or whatever other period you feel might be suitable.
+As for why this happens, VMware has a writeup about timekeeping with VMs (not HyperV, but the concepts still apply).
+Globally we have the same problem under VMWare, it's due to the CPU Time synchronisation.
+Is there a reason you can't sync to an external source, such as one of the Internet time services?

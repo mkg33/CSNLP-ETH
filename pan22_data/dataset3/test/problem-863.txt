@@ -1,0 +1,22 @@
+Ask yourself what you're really trying to accomplish here.
+This is a very non-standard request that basic tooling isn't prepared to handle.
+Bubblewrap is a tool to use mount namespace without root.
+Every fiber of my being is hating itself for what I'm about to suggest.
+See if you can design something simpler to achieve the same end result.
+But I didn't find details on how to implement it in your own processes for different files.
+Assuming you have support for network namespaces, iproute2 and iptables, you can accomplish this.
+Mount namespace and override file(s) for a process.
+You would then want to create a virtual ethernet pair to connect the newly created namespace with the main namespace, and configure the interfaces
+There is a way to do this, systemd does it for the /tmp directory if PrivateTmp is set to yes.
+You can use iptables rules that are specific to a process and then redirect DNS traffic accordingly.
+You could run a separate DNS server on an alternate local port that responds to the domain that you're interested in changing responses for.
+FD is the file descriptor that points to the file containing the content your want to present to the process.
+Is there a way to set a per process resolv.conf or /etc/hosts?
+You can then run any command within the network namespace
+I can do this for, e.g., the shared libs or for envariables -- how can I do this for DNS?
+On Linux, I want that a particular process should resolve host "xyz.com" to IP "10.1.2.3".
+Your basic Linux DNS resolver uses a global configuration (That you already know about in /etc/resolv.conf) and you can't really change that per NIC, or domain, or process, or connection.
+(Or, use --bind or --ro-bind instead of --ro-bind-data)
+You may want to look at the systemd source for ProvateTmp.
+and add your custom host file to the directory /etc/netns/NETNS/ (you would need to create this directory)
+However, I only want to do this for one process; I want all other processes to resolve "xyz.com" to the DNS.

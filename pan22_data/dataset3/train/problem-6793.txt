@@ -1,0 +1,17 @@
+If you do not want to scan the network and the targeted machine is doing network traffic to other subnets you can list all ARP-Entries on it's gateway (arp -a if you are using Linux on the gateway).
+You need nmap for windows: http://nmap.org/book/inst-windows.html
+theres a chance box #1 may try to connect with its preconfigured vpn peer or something....
+for x in seq 1 254; do ping -c1 10.10.10.$x | grep -i from; done
+This is my favorite if I have access to the gateway and if it's manageable - its fast, shows even machines not reacting on ping and doesn't do any traffic / firewallhits etc...
+You dont mention the OS on your laptop so Im assuming windows.
+This way you should get a list for all MAC<->IP Adresses doing network traffic over this gateway.
+You'll be able to see the IP from the source header.
+Write a small script/batch which pings all IP addresses (Assuming 10.10.10.0/24):
+This will tell you what IPs are active on the 1.1.1.0/24 network.
+Connect the laptop and the linux server to an isolated switch (or use a crossover cable like you suggested).
+Go to /mnt/etc/network/interfaces (or the appropiate place for the distro, after /mnt) and look for the configuration.
+or if you are sure its running sshd on tcp/22, do a
+If the server had ANY kind of services configured you should see some packets get squirted out as the box comes up.
+if the box in question is blocking incoming non-established icmp and tcp (ie.
+its a firewall), you may be able to just plug it into box #2, run iptables on box #2, and go to lunch.
+for /L %i IN (1,1,255) DO @(ping -n 1 10.10.10.%i | findstr Answer

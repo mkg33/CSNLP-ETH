@@ -1,0 +1,9 @@
+I don't do much networking code so take my opinion with a grain of salt.
+I think it might be fair to replace [Haskell] with [Concurrent programming]; exceptions and concurrency are inherently at odds, in any language.
+But then it wouldn't feel much like a chat program.
+Exceptions are best avoided in Haskell, but you seem to have been able to reason about them fairly well.
+Haskell's threads are lightweight, so you can write your code using blocking calls and multiple threads, and rest assured that behind the scenes Haskell is using epoll.
+Clearly this is just some simple example code, but you might want to consider allowing the client to send a special message to stop interacting with the server, so that disconnecting is not entirely dependent on exceptions.
+Did you have any specific issues reasoning about your code?
+This is because "send" and "receive" for a chat server behave asynchronously, and block on different events.
+You could modify the chat server so that the client is required to give a special command in order to read new messages, in that case only one thread would be needed, since all messages from you to the client would depend directly on that particular client's input.

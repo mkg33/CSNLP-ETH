@@ -1,0 +1,16 @@
+While katriel has already answered this with the bare minimum needed to create an init script, I think you'd also be well served with looking at /etc/init.d/skeleton and using that as a template on which to base your init script.
+It sounds like Geo's specific problem has already been solved, but I ran into a similar message while trying to set up a Rails app with sidekiq as a managed service.
+Note that most services need only be enabled on runlevels 3 through 5.
+I needed to add a new script for the sidekiq service, so I grabbed the script at https://gist.github.com/CD1212/5326706, modified it to fit my app's parameters, and saved it at /etc/rc.d/init.d/sidekiq (owned by root like all the other scripts there).
+After some extra reading I discovered that the priority numbers defined at the top of each chkconfig script must be unique.
+However when I tried to register this new service, I got the chkconfig error:
+I'm working on a CentOS install, and chkconfig is already set up with several other services like httpd, mysql, and redis.
+This time, sudo chkconfig --add sidekiq gave no complaint.
+Also in my example, it would run before oracle because the scripts are run alphabetically.
+You'll end up with a much more consistent and readable script.
+The script I am trying to add to the autostart at boottime is the following:
+Chkconfig did not have an issue adding the "it" service.
+Then when I ran sudo chkconfig --list sidekiq, the sidekiq service was shown as on for the appropriate runlevels.
+Another script had shutdown priority level 75, so I changed mine to 76 and tried again.
+I'll explain my solution here in case it helps any other newbies like me.
+I am trying to add to the auto start at boottime a linux service through the

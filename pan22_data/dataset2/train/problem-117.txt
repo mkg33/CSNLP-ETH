@@ -1,0 +1,8 @@
+I assume the server in question isn't a domain controller, in which case, have you checked its DNS settings?
+I'm also seeing a lot of EventID 1053 errors which give pretty much the same error and then say Group Policy processing aborted.
+I'm trying to add a user to a local group on one of my servers. I keep getting the following error once I've selected the user I want to add:
+Since you're having the group policy processing as well, it's a safe bet that some kind of connectivity to the domain controller is broken.  Name resolution is the first place I'd look; make sure the domain's netbios name, the first block of the DNS name (which should match the netbios, unless your domain's disjointed), and the FQDN are all resolving to the DC.
+I had this error and it turned out one of my DCs was on the incorrect time after being in saved state.
+Then, since group policy's not working right, make sure you're able to get to the sysvol share via the domain's FQDN (\\\\domain.com\\sysvol).
+The strange thing is that I'm logging in to this server with my domain account, the domain controller is running fine, and I can even get a listing of domain accounts to add to the group. It only fails once I select which user I want to add from the list. Any ideas as to what might be going on here?
+It's worth checking, as in my experience, this type of error usually is down to DNS configuration being wrong somewhere along the line.

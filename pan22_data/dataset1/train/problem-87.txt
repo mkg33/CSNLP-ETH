@@ -1,0 +1,8 @@
+Shrink innodb_buffer_pool_size so as to force flushing to disk sooner.
+Caveat:  The math won't be quite right, so you might under/overshoot.
+As with Plan B, but do a second shutdown and extrapolation after inserting half the number of rows computed from Plan B.  This should give you a much more accurate target.
+From my experience, InnoDB tables are usually 2x to 3x larger than MyISAM tables with the same schema and same data.  Since MyISAM table size is rather easy to compute, will doing that, then multiplying by 2 to 3 be good enough?
+If all columns are TEXT, that is a pretty messy schema.  The storage of data will be compromised.  SELECTs will have to work harder, especially for range tests on numeric values stored in TEXT columns.
+Make use of the variable innodb_max_dirty_pages_pct. This variable establishes a target for flushing activity from the buffer pool to disk.
+set global innodb_max_dirty_pages_pct = 0; - Triggers the buffer pool flushing from memory to disk.
+https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_max_dirty_pages_pct

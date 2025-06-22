@@ -1,0 +1,8 @@
+This sets the channel as an "api" to the camera, and the logic is encapsulated in there.
+A separate goroutine that polls the camera for new frames, listens to a stream and breaks on each frame, or loops on a timer (like you have now), or whatever mechanism best suits managing your camera, would feed Frames in to the channel, and you've thus separated the two concerns.
+You can also now have different mechanisms for sourcing frames, and still feed them in to the same method for delivering them to the websocket.
+You've reviewed your own code, and done a good job, actually:
+Loop/range on a channel (assume s.Frames() returns a channel of Frame instances), and then send each Frame down the websocket.
+Now, the challenge is to set up a source for that frame channel....
+What you want to do is expose a channel that sends Frame instances each time one is available.
+Fundamentally the issue is that you've joined two separate problems in to one function, and the result is a poorly defined operation that's a bit brittle.

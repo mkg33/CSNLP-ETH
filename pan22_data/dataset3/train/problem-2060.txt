@@ -1,0 +1,14 @@
+However, I want the load balancer to request from it now and again in order to keep it warm.
+Perhaps this is a bad idea and I should monitor the Azure machine with an automatic service.
+It is a little confused currently by their Service Management / Resource Management switch over.
+Route53 can provide these features including health checking.
+It it possible to have a load balancer on AWS distribute between an EC2 instance and an Azure virtual machine?
+Your situation can be easily addressed via DNS weighted round robin.
+And in my opinion, load balance will give better result if the instances are in the same private network so even if you build your own load balance that can handle different cloud services, the performance won't be as good as if you use instances from the same cloud service
+Run your infrastructure including a load balancer in both AWS and Azure.
+It might be a powershell only configuration, but it will certainly do what you require.
+You might want to take a look at Azure Traffic Manager which is quite happy to load balance between 'on premises' and Azure - 'on premises' can certainly be an EC2 instance.
+Use weighted DNS round-robin to serve most of your traffic via the AWS load balancer and a small portion via Azure.
+I want to mirror my app between both cloud platforms such that the Azure virtual machine is a weakly spec'd back-up that can be failed over to.
+As Bruno mention in the comment and from their official description, the answer is NO.
+If you have to fail over then increase the Azure weight to 100 (after you've scaled up your capacity in Azure to cope of course).

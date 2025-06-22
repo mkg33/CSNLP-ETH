@@ -1,0 +1,14 @@
+P.S: Transaction isolation level is "Read Committed".
+But the following query returns the results immediately:
+In the meanwhile, I run the following query and see that it waits on the first transaction to complete.
+After I inserted 3000+ rows I can get a index seek and session 66 will not wait for the session 65 anymore.
+So I thought that the second query might need to read rows that have exclusive locks put by the first transaction in order to select rows with Col2 = 'BBB'.
+Creating an index on col2 does not change the behavior in my case because of number of rows.
+Why did your 3rd query ran without waiting: I can answer that once you provide more information.
+Second query still waits on the first transaction.
+I am running the following transaction without committing it (for test purposes).
+That's why then I tried to index Col2 so that a table seek will not be necessary but that did not work either.
+What should be done to prevent SELECT from blocking (except the use of NOLOCK).
+Session 65 is holding an exclusive lock on file id:1, page id:488 and slot id=0, shared lock is requested on the same resource by session 66 and is waiting.
+I might have to modify this answer once you provide more information based on my comment.
+Running the 2nd query and looking at the actual execution plan it is doing a table scan and because of your isolation level reading requires a shared lock to prevent any update or delete on the same row.

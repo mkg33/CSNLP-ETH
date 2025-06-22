@@ -1,0 +1,25 @@
+I have a requirement where there are primarily 5 roles in the system.
+IF I keep all users in one table, then I cant enforce allowing nulls in certain fields for a certain role while disallowing it for other roles.
+For removing fields, you can simply deprecate or remove the table.
+In such a scenario as mentioned above, what are the arguments that favor storing each role's users in a separate user table?
+The admin roles have a different set of fields which need to be mandatory and the general users who are not admin need to have a separate set of fields that need to be mandatory.
+Also due to admin users being far fewer than non admin users, the data access for admin users at login time could be faster for users belonging to admin roles?
+Whereas location is only mandatory for non admin users.
+Use stored procedures to facilitate CRUD actions for users of different roles.
+A non-clustered index on `RoleId will help with the performance of looking up admin users.
+I am seeking opinions if anyone has encountered such a situation before and if anyone recommends splitting up tables by roles for such reasons.
+Each of these roles increase in hierarchy from junior to senior most role.
+Each junior role is a subset of its immediate next senior role in terms of access privileges.
+I would have one USERS table to hold all users with a foreign key (RoleId) to a ROLES table.
+First name, last name are mandatory for all users.
+In a nutshell, its all about separating the admin role users from the non admin role users.
+Each role needs to store additional information about the user that is only specific to that role for eg.
+Wont I need to scan each table and find which table the user is in before I authenticate the user?
+Keep the stored procedures simple if you want maintainability and readability; you don't want complex business rules in stored procedures.
+if I seem to be favoring such a design as mentioned above its only because I'm playing the devil's advocate.
+There is also the possibility of feilds being added or removed changes being made as which fields are mandatory or non mandatory for non admin users.
+For things like grades and location, where it's optional for some roles and mandatory for others, you have two options depending on the business rules:
+J1 needs to store grade and location, whereas J2 will only need to store grade.
+S1 and S2 that manages J1 &J2 needs to store neither.
+Would there be any specific problem if all such users are stored in the same table?
+The roles and their hierarchy in increasing order would be J1-J2-S1-S2-SuperAdmin.

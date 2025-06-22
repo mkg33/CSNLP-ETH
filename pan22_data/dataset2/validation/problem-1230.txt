@@ -1,0 +1,11 @@
+Resolution is converting the name to an IP address.  The client absolutely needs to do this.  The only way to avoid this would be to create URLs with the IP address, like so:  http://127.0.0.2/ but that's generally a bad idea and, in many cases, will not work.
+Obviously, you have to register and set DNS records both for "mydomain.com" and "my-domain-which-has-a-very-long-name.com".
+The only way around it is if your code or something else physically grabs the page itself and then sends it to the client as its own.
+Qualification is expanding http://example/ to http://www.example.com/.  This also technically needs to be done by the client.  However, if all you're trying to avoid is typing the long name, you could use server side includes to expand something shorter into the full URL.  Ugly hack, but doable.
+By putting an entry in my /etc/hosts file, or DNS magic, or something similar. I'm running nginx. Any way I can accomplish that?
+Instead of having the client resolve URLS, I want to let my webserver do that. So ideally, I could turn this:
+Like others said, you cannot alter DNS resolution. It comes way before your webserver got involved at all. If you just want to have shorter URL for the same domain, you can use Apache and mod_rewrite. 
+e.g., i redirect automatically all mY "example.com" to "www.example.com". You can easily accept all requests for "mydomain.com" and expand that into "www.my-domain-which-has-a-very-long-name.com".
+doing this is a good idea anyway, as it makes it easy to move the site to a different domain name.  highly recommended, almost essential, if you want to have a three-stage deployment like "dev.long-domain-name.com" -> "testing.long-domain-name.com" -> "www.long-domain-name.com"
+Probably the most logical workaround, if you absolutely can't stand the thought of typing the long URLs, would be to write a Makefile that runs your source HTML through sed to convert the short versions to long versions.
+if that www.long-domain-name.com URL is in a page being served from www.long-domain-name.com, then you don't even need to specify the domain.  all browsers will fetch an unqualified link from the same site that it came from.

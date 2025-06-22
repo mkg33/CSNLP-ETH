@@ -1,0 +1,14 @@
+The code below is an implementation of the Best First Search algorithm for navigation of the shortest path across a 2D NxN matrix. As a heuristic for the search I use the standard distance formula. The matrix is generated from a text file passed in as a command line argument,where the first line is the size N of and each subsequent line represents a row. For example, 
+The walls are represented as + and both i and g represent the start and goal positions respectively. Navigation can only be done in four directions, up, down, left, and right. I first parse the file and create a matrix of Node objects 
+to represent the + walls, i the initial position, g the goal position, and . the open spots. 
+Once I have the matrix properly parsed, I pass in the Node initial, Node goal, and Node[][] grid to the actual Strategy class to implement the search. 
+The search evaluates the cost of each node by a calculating the Euclidean distance of the current Node to the goal.  Therefore an override was created for the PriorityQueue to properly sort the Node objects added. 
+In order to run the search I pass in the command line argument into the fileParser object and subsequently call Strategy search and print the finalized grid with the path represented by the character o. For example, the output to the initial example listed is 
+I would appreciate feedback regarding the performance and efficiency of the algorithm and areas where I have not provided adequate or proper implementation of it. 
+You wrote Strategy like a high-level, all purpose Dijkstra Pathfinder (works on nodes, which can be arbitrarily far, but your grid only allows 4-connected neighbours), which even uses an external Comparator for increased versatility.
+You wrote Node like generic graph representation (it has a List of neighbours etc. but your grid only allows 4).
+However Strategy uses intimate knowledge of Node: it knows it's in a grid. But Strategy does not need the grid to solve the problem (it uses getNeighbours()), it only needs it for printing the map... Which a Strategy shouldn't know how to do!
+In the other hand you allow arbitrary distance in evaluate() function, but it only ever return 1...
+Since this is Code Review, I can weigh in and say: you will want the latter, and split Strategy further away from Node class. I think you need a Node abstract class for the Strategy, and GridNode class for your grid application.
+Tip: Use Java's package. Put Strategy in its own package like algo.pathfinding. Add an abstract Node class to that package, make it completely unaware of its grid structure. Then gather the grid-related stuff in its own separate package like game.grid. Using this, it'll be much easier to pull off a well-designed API.
+It has nothing to do there. Let Strategy return a List<Node> as path, then pass that path with the grid to a PathPrinter class.

@@ -1,0 +1,13 @@
+It couldn't get simpler...unless your old kernel was somehow compiled without kexec support.
+My bootloader is very limited, where I cannot read the newer kernel from the hard disk.
+I have an embedded device with a SPI connected flash.
+Take a look at UBOOT, this has worked for me in the past.
+If my bootloader were more advanced, I'd go that route - however it's not able to initialize the hardware necessary (the disk controller), nor does it have modern filesystem support
+...an option I've pondered is if it'd be possible to put the second kernel into physical memory, mark a known address as having this second kernel, then reset.
+my goal in this process is to provide a mechanism where the kernel in flash can get old with time, but updated kernels can be supplied via the hard disk.
+You can use this even to read filesystems but, should allow you to switch between multiple images.
+As the device boots, but before the root filesystem is mounted and switch_root is called - I'd like to optionally boot a second, different, kernel
+Basically this means the device boots its bootloader and Linux kernel from a small flash part.
+This way you always overwrite the image you are not currently using and reconfigure uboot to launch the upgrade on reset.
+My goal in this is to have a very minimal bootloader and stock kernel in flash - but then to put a newer/larger kernel on a hard disk.
+The boot loader could then detect the known address and verify the integrity of the second kernel,  choosing it instead of one coming from Flash

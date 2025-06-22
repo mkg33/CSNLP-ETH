@@ -1,0 +1,12 @@
+It may be possible to do all this from within bacula now that it supports migration jobs, but this is working wonderfully as is.  We backup about 40 servers with about 9TB of data.
+First, I ran the nightly backup jobs, which backed up to the server's disk.  Next, I ran a script that  would restore to another location on disk (we have plenty of space) and then tar and feather to tape.
+All machines on our network run a daily cron job to back up their critical directories to the backup server's giant disk.  Since we use rsync for this, we get a "synthetic full" backup each time.  This greatly reduces the burden on the machines as they only have to send the files that have changed, but the backup server always has a full copy of their backed up folders on its disk.
+No, it doesn't scale terribly well, and it takes much longer than a direct backup, but it works for some scenarios.
+The online backups are the true primary, and they go back for six months.  The tapes, which were always limited to the most recent full restore, are mainly for CYA disaster recovery in case the office burned down (they were meant to be taken off site).
+Bacula takes care of putting all the files to tape according to a schedule:  Full tape backup every month, differential backup every week, and incremental every day.
+This is what I did this for a customer with a small office (5 PCs, a server, and 2 servers on the internet).
+I've been doing this for years, but I only use bacula for the 2nd stage.  I use an rsync-based solution for the first stage:
+You could just write another backup job that has the sole purpose of backing up the archive files of your first stage from disk to tape. 
+I'm considering the idea of using Bacula for some backups, however to save tapes and limit manual operations, I'd like to make a two-stage backup : 
+The reason I did this, as opposed to sweimann's good suggestion of simply backing up the backup files to tape, was that I wanted maximum portability of the final tapes.  You can pop a tar'ed tape into any machine (even windows, w/ the right software) and restore the files.
+The advantage of this is that we minimize the burden on our live servers (because we're using rsync to pull only changed files, reducing the backup window), and all of the hard work is performed by our backup server.

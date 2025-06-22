@@ -1,0 +1,17 @@
+Give them fixed IPs (as a DHCP server would identify the machine based on the network cards MAC address, and both would get the same address).
+With 253 addresses available in your (private) net and IPv4, that should be no big deal.
+To do this, set up your ~/.ssh/config file (or the /etc/ssh/ssh_config file if you need this to work on multiple local user accounts) like this:
+Running this after copying the removed line back should list two entries.)
+If anyone knows how to get PuTTY to do the same thing, I'd be very interested to hear about it.
+As @Izzy suggested in an above comment, ssh tells you the offending line, and by removing that line, (saving it elsewhere), accepting the new key, and then copying the removed line back, you wind up with two keys for the same host, and ssh will accept either.
+(It doesn't matter which you choose, just as long as you choose something after "Hostname" that would resolve to the IP address, but I'd use the host name in preference to an IP address, just on general principles.)
+If it's Linux that's up and you type OS X (or vice versa), you'll get the warning (which I believe is the desired affect).
+The easiest way to solve your issue is to give each host an own/distinct IP address.
+, replacing $REALHOSTNAME with the actual hostname or IP address, of course.
+Then ssh myserver.linux and ssh myserver.osx can thus have different host keys, but you still get the checking.
+Since you want to keep the strict host key checking, I would have them use different known_hosts files.
+in my /etc/hosts, then doing an ssh $REALHOSTNAME and accepting the new key,  then taking that entry out.
+I don't run into that problem when connecting to various VPS boxes sharing the same IP because each has a different SSH port (20022,30022, etc) so they are registered as known hosts with different keys.
+I do not see any other solution if you want to keep the security measures (which I wouldn't drop for that little "comfort", either).
+(You can also use ssh-keygen -H -F <hostname> to find lines in your known_hosts file that match that hostname.
+If I had this problem, I'd make sure there was something completely wrong in the main known_hosts file that doesn't match either either one, so that if you type $REALHOSTNAME instead of myserver.osx you get the warning.

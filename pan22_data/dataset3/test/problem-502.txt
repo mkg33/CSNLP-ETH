@@ -1,0 +1,44 @@
+[{ID0 Transform Model PhysicsComp }{ID10 Transform Model PhysicsComp }{ID2 Transform Model PhysicsComp }..] and then start optimizing from there if the performance was not "good enough".
+My line size was 64 bytes, which I believe is common.
+But, when I am to iterate component arrays to do something with them from a system on an actual gameplay implementation, I notice that I almost always am working with two or more component types at once.
+Your problem might be a good example of what might be called pre-mature optimization.
+I found that a loop summing each element of two separate arrays and storing the result in a third performed exactly the same as a version where the source data was interleaved in a single array and the result stored in a third.
+However, there are cases (as I have found) where indeed, you can literally write a for loop for a particular component type and make great use of your CPU cache lines.
+C++ is not responsible for cache misses, as it applies for any programming language.
+In my case, making the effort of implementing the system was well worth it.
+Another thing that I wanted to ask about, is how one should keep references to components or entities, since the very nature of how the components are laid in memory, they can easily switch positions in the array or the array could be reallocated for expanding or shrinking, leaving my component pointers or handles invalid.
+You'll need to decide for yourself whether it is a good idea.
+On the same note, when possible, do try to keep your component size less than or equal to your CPU cache line size.
+It should be noted that no, you won't be able to just always traverse a component pool and do the ideal, clean thing.
+This has to do with how modern CPU architecture works.
+I think I read most articles, reddits and questions about it that I could find, and so far I think I am grasping the idea well enough.
+In my opinion you optimized too early for cache locality without looking at the program memory access patterns.
+If I accessed the data randomly, the performance suffered by a factor between 10 and 20.
+Agner's Fog suggests that you shouldn't optimize before you profile your application and/or know for sure where the bottlenecks are.
+In any case though, you've asked an interesting question and as I have experience with this myself, I'll weigh in.
+The biggest gains in performance I saw at 1000+ entities.
+For those who are unaware or wish to know more, take a look at https://en.wikipedia.org/wiki/Locality_of_reference.
+But the bigger question is did you really need this kind (locality of reference) of optimization?
+There are, as you have said, inescapable links between components, wherein you really need to process things an entity at a time.
+However, it raised some questions about overall C++ behavior, the language I implement the entity system in, as well as some usability issues.
+To demonstrate this, I wrote a small benchmark (the usual benchmark caveats apply).
+The cache controller should, in most cases, be able to deal with reading from more than one contiguous array efficiently.
+The important part is to try where possible to access each array linearly.
+How do you recommend to handle these cases, since I often find myself wanting to operate on transforms and other components every frame and if my handles or pointers are invalid, its quite messy to make lookups every frame.
+Until you get a real world scenario, anything anyone says here is just one way of doing things, which may not be appropriate for you.
+I saw visible performance gains (profiled of course).
+Is it a problem when I iterate, in C++, two different contiguous arrays and use data from both at each cycle?
+I did find however, if I interleaved the result with the source, the performance suffered (by around a factor of 2).
+I'll try to just explain how I ended up doing things and what I found on the way.
+Because of this, I decided to have one array per component type, so all components of the same type are contiguous in memory, which should be the optimal solution for quick iteration.
+For example, the render system uses the Transform and the Model component together to actually make a render call.
+My question is, since I am not iterating linearly one contiguous array at a time in these cases, am I immediately sacrificing the performance gains from allocating components this way?
+*I found that trying to always dereference component handles at runtime in certain sections of high use code with the number of entities I was dealing with was a performance problem.
+So, one approach would be to store an array of components in the entity directly, which I didn't do because it ruins the cache locality when iterating through data.
+Lately I have been researching and implementing an Entity System for my framework.
+First, I wouldn't say that in this case you are optimising too early, depending on your use case.
+Because of that, I now maintain some raw T pointers in performance critical parts of my project, but otherwise I do use the generic component handles, which should be used where possible.
+Personally I will allocate most used components together in a single memory block, so they have "near" addresses.
+I keep them valid as mentioned above, with the callback system.
+You should definitely look at his excellent C++ optimization guide.
+Unfortunately what you did was actually assume that allocating one component type per array will give you better performance, while in reality you might have caused more cache misses or even cache contention.

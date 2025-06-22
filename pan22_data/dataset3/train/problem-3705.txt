@@ -1,0 +1,17 @@
+How can I have a script/program be executed on a drive failure for a BTRFS raid1 array?
+The above link provides more details for configuring a script (sec package on Debian or SEC) designed for general-purpose log monitoring to act on unexpected log messages concerning BTRFS.
+After a reboot, btrfs shows missing drive(s), but that may be too late.
+What remains unclear is how the check behaves if one disk is absent or goes offline.
+It also depends on having a regularly scheduled scrub of the filesystem to check for bit-rot and emit log entries as a preemptive measure.
+As of btrfs-progs v4.11.1 stats has the --check option that will return non-zero if any of the values are not zero, removing the need for the regex.
+I would not rely on the stats command for error notification, because this command returns no error if a drive suddenly goes away.
+I would like to unmount the filesystem at that point (if that's not what BTRFS does anyway) and set an alarm.
+The closest alternative is to monitor the system log for messages from BTRFS and react accordingly.
+I saw some documentation on a daemon that can execute a program/script for various BTRFS events, but I cannot find it anymore.
+You can test it by disconnecting a sata cable or pulling a drive - not recommended with an important file system.
+PS: The plugin is packaged in Debian: monitoring-plugins-btrfs
+There doesn't appear to be a daemon or utility that officially reports BTRFS events for user handling.
+There exists a check which implements the Nagios Plugin API called: check_btrfs.
+As you can see in the source code, it has a function called check_dev_stats which checks for device stats and will go critical if any of the values is non-zero.
+I would like to run a script on any error to act as an early warning for a potentially failing drive, but the actual drive failure is most important.
+http://marc.merlins.org/perso/btrfs/post_2014-03-19_Btrfs-Tips_-Btrfs-Scrub-and-Btrfs-Filesystem-Repair.html

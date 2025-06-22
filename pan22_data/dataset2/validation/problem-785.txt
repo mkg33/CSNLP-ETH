@@ -1,0 +1,7 @@
+To test this premise, before you plug the cable into either pi, try and stop the service on both of them:
+I'm guessing this is because of hijinks caused by ifplugd, which runs as an init service by default on raspbian.  The intent is to configure ethernet automatically when a cable is plugged in, since this is an event that the normal NetworkManager system can't detect.
+I have two rpi's both of which have a wifi dongle. I can vnc into rpi but if I connect the two rpi's via Ethernet cable, vnc fails. Is there a way to hook the two rpi together via ethernet ports and retain access via wifi?
+Make sure it is really stopped with ps -C ifplugd (it shouldn't list anything).  When I noticed this app on my first pi, it seemed very pesky and I had to completely uninstall it to prevent it from coming back.
+Yes, put a static ip address for eth0  in /etc/network/interfaces on both RPis. The network has to be different than that of the WiFi devices. 
+If the wifi goes down and ifplugd isn't running, you probably have to reconfigure or disable NetworkManager.
+Plug in the ethernet cable and see if the wifi goes down.  If so, check ps -C ifplugd again (you'll need a keyboard and screen plugged in to debug this, obviously).  If not, problem solved.

@@ -1,0 +1,13 @@
+Or might be due to some db data threshold level reached in that period.
+It's hosted in cloud (AWS EC2), so it may be related to spectre / meltdown patches by Amazon as that's what changed in last 2 - 3 weeks (unrelated ?!).
+One thing I suspect from this is may be it's related to oracle's cache.
+Once any query hangs up, even if I run the same query in another session, it still hangs up.
+So when I run the following commands before each query execution, I didn't get any query hang up.
+Also we were facing this kind of strange issue only in last 2 - 3 weeks.
+We have a very complex view that finishes execution only on first time, but hungs up when run from the same session second time.
+AFAIK, only thing I can be sure is that something is badly wrong with oracle's buffer_cache and shared_pool in our version.
+I figured that running the exact same query second time is when the problem occurs.
+So If I kill the active sessions that's running the hang up query, then I can run the query successfully only for first time but stuck with same problem from second run.
+If I simply change any select column or where condition, then it runs for first time and hangs up from second time (see the above commands).
+This problem doesn't happen for tables or simple views, only for this complex view (didn't tested other complex views).
+complex view - view with nested views, lots of inner and outer joins, multiple union all etc...

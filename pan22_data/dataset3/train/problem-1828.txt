@@ -1,0 +1,14 @@
+When the process is done these tables are truncated.
+Your server could be queueing up IO requests, you might be growing your trans log file and running into waits there, you might be pushing memory constraints, indexes might be rebuilding, all kinds of things.
+It depends a lot on the server's hardware and configuration, but yes, heavy activity on one single database can create performance problems on the whole server.
+The most plausible scenario is that the heavy activity consumes almost all of the server's memory and pushes everything else out of the system's (or SQL Server's) cache; so, even after it's done, everything has to be re-read from disk again.
+Every action you perform on the instance will consume resources and affect performance to some extent.
+This whole process is running on a DB that was created just for that (no other activity).
+I have a process that uses BULK INSERT to push two CSV files into SQL tables, so I can join their data with another table I have.
+It looks like this activity is taking some resource and not releasing it.
+Is the table you're adding the data to in another database?
+After running this for a while in one minute cycles, the whole server becomes VERY slow.
+You'll have to do some monitoring on your server to see exactly what the cause could be.
+Even though the bulk insert and the join together take just about 5 seconds each time.
+It's hard to say what the underlying problem could be with just the information you've provided.
+The data coming from the CSV files generates tables about 100,000 rows each.

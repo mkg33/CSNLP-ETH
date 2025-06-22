@@ -1,0 +1,11 @@
+Usually, the choice of AMI is not affected by the instance type.
+However, I'm not familiar with your use-case, so it may matter.
+See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-findinmap.html
+The danger of making changes directly to your autoscaling group is that those changes won't be reflected in the stack's template.
+As for your workflow, I would not "make changes to" your Autoscaling group.
+You can use mappings to have a list of AMI images where you select your AMI based on the region.
+It should go the other way: make changes to your CloudFormation templates, which in-turn update your stacks to update your Autoscaling groups.
+If you had to rebuild the stack or make a copy, it'll be missing those changes.
+See http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+CloudFormation includes a pseudo-parameter AWS::Region where it can query the region in which it is running.
+Ideally, resources created from a CloudFormation stack should be treated as read-only and only updatable by making changes to the CFN template.

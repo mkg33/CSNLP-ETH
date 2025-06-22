@@ -1,0 +1,11 @@
+Instead of replicating state in each new node you could just keep state differences between a node and its parent in the tree. By traversing the tree from the root node to a node at depth n you can calculate the new state at n.
+My first try was to determine all allowed actions and generate a new game object for each action the player or computer could do. Then I would repeat the process for all resulting game objects. This would yield a form of tree with all the future possibilities, from which the AI simply could select the optimum.
+It would be useful to know which language you're using, as memory management changes a lot. Some general ideas:
+Any help is appreciated. If this question is more appropriate for somewhere else (for example StackOverflow), please move it there. Thanks!
+But it turns out that this approach is cruelly slow, mostly to me deep copying the game object thousands of times and holding thousands of copies of the game object in the memory.
+If the cost of copying is bogging you down you have a lot of game objects and thus the tree you are describing will grow very fast.  I doubt you are going to get enough depth to the tree to be of much value here.
+While there have been several answers focusing on the question you asked I think you're barking up the wrong tree here.
+I am now searching for a better approach to calculate a good move. Are there technics for this type of problem. I am aware that this probably depends on the kind of choices the player or AI has to make in the game. But I am more interested in general technics used to tackle this kind of problem.
+Mem-copy large blocks of data, rather than calling copy constructors for each one. Much easier to run in parallel and you shouldn't run into any cache misses that way. 
+Exhaustive trees are only an option in games where the choices are simple.  After all, even chess has a tree that is beyond computation.
+Suppose in a turn-based game, I have an object holding the current status of the game (like players, board information, positions of pawns, things like that). Now I want my AI to calculate the best move (or at least a good move).

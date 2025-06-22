@@ -1,0 +1,9 @@
+if you are using web based gui, you should look into APE http://ape-project.org/ or other similar projects. 
+But I'd prefer to refer to an otside source like a counter in Memcached which you will increment every time you change something in the database. 
+I was going do upgrade my servers to Percona server anyway so this bounding is not an issue for me. Managing hundreds of triggers and adding fields to tables is a major pain for this application, because it's very late in development.
+I think I've found the solution. For some time I was looking at Percona Server to replace my MySQL servers, and now i think there is a good reason for this.
+other then that, the ideal solution would be if your client wasn't polling for result's constantly, but instead you where pushing new and changed data when and if it was available. It would be faster and less load would be on the server.
+You get actual row count and a counter. The Official documentation says the following about this field:
+This is the PHP function I've come up with to make sure that tables can be checksummed whatever engine and server is used:
+Percona server introduces many new INFORMATION_SCHEMA tables like INNODB_TABLE_STATS, which isn't available in standard MySQL server.
+So this counter wraps every once in a while, but you can make a checksum of the number of rows and the counter, and then with every modification of the table you get a unique checksum. E.g.:

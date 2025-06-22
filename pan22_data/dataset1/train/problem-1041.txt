@@ -1,0 +1,9 @@
+You may want to reconsider putting a reverse proxy (Lighttpd, Nginx, Varnish et. al.) in front of the Apache to ease the load on it in case of an attack.
+I'm on an Ubuntu server running Apache2. I would like to protect myself against (d)dos and syn flood attacks and therefore try to limit the number of parallel connections per client IP.
+I've heard iptables can do this job, and I've had a look at different commands. I would like to hear your opinion.
+As far as I know, the following commands both block clients for 60 seconds, if they make more than 100 concurrent/parallel connections to port 80. Is that correct, and is there any difference between the two?
+iptables -A INPUT -p tcp -m recent --rcheck --seconds 60 -j REJECT
+iptables -A INPUT -p tcp --dport 80 -m connlimit --connlimit-above 100 -m recent --set -j REJECT
+iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --set
+iptables -A INPUT -p tcp --dport 80 -i eth0 -m state --state NEW -m recent --update --seconds 60 --hitcount 100 -j REJECT
+I'm running multiple Wordpress sites on my server. I think 100 concurrent connections per client should be enough - anybody exceeding this should be blocked. Is this a reasonable limit?

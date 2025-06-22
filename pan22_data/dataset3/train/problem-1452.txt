@@ -1,0 +1,10 @@
+However, the equation for additive blending (using glBlendFunc(GL_SRC_ALPHA, GL_ONE) and glBlendEquation(GL_FUNC_ADD)) without weights is:
+In order to add weights to the transparent surfaces with a normalization step in the end, the equation can then be simplified to:
+I'll use the paper's nomenclature in the following discussion:
+This is not explicitly stated in the paper, but the term $$C_i$$ is the premultiplied-alpha color (i.e.
+I have worked with this specific formula for the OVER operator but not with additive blending.
+If you'd rather keep the same equation as before, you can achieve the same result by changing the shader outputs in listing 3 to:
+$$ C_f = \frac{\sum_{i=1}^{n}C_i \cdot w(z_i, \alpha_i)}{\sum_{i=1}^{n}\alpha_i \cdot w(z_i, \alpha_i)}(1 - \prod_{i=1}^{n}(1 - \alpha_i)) +  C_0\prod_{i=1}^{n}(1 - \alpha_i) $$
+$$ C_f = \frac{\sum_{i=1}^{n}C_i \cdot w(z_i, \alpha_i)}{\sum_{i=1}^{n}w(z_i, \alpha_i)} +  C_0 $$
+If all the transparent surfaces are transparent, the product will be 1 and the background will be fully visible.
+The rest of the equation provides an approximation of the result of sorting the transparent surfaces by distance and using the OVER operator with pre-multiplied alpha colors.

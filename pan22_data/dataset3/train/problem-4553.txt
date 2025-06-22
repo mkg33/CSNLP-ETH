@@ -1,0 +1,17 @@
+Therefore if you turn on smallfiles you will be able to use more space and get closer to the maximum usage on the volume.
+From mongo 3.2 it was changed to WiredTiger as it is more efficient in space usage and allows to add compression - which in your case could be a plus.
+MongoDB is running inside Docker Container with a small volume 8 GB where mongod data files are stored permanent.
+Finally, as mentioned elsewhere you can also try WiredTiger, though I would recommend upgrading to 3.2 first (where it is now the default storage engine).
+You don't have enough space for a new 2GB file, hence you get the errors and failures.
+How can Ops do volume administration with least effort and happy customers?
+WiredTiger has the option to use compression, has Snappy on by default, and has more aggressive options available to you so that you can essentially trade CPU for disk space efficiency (I analysed the impact of the various options here some time ago for reference).
+As soon as you fill up your existing data files and another write comes in (it's a little more complicated than this, but a good way to think about it), MongoDB will try to allocate a new data file - again at 2GB.
+But the database is online, at least with mongo shell.
+As NMAp reserves file storage using power of 2 and padding when storing documents - it is less disk storage effective and reservers lot more than is needed (use --smalfiles option to prevent allocating larger space)
+You mention the smallfiles option (from ObjectRocket docs) but your ls output suggests that you are not actually using it.
+I see this error with GridFS (but there are several GBs storage available, I only upload 1 MB files with loop)
+Customer doesn't see disk size (df -h) and has only rights dbOwner.
+It looks like you are using NMAP as storage engine.
+I tested out howto fill up the volume and have questions.
+If you were, then your maximum file size would be 512MB but you have 2GB files (the default).
+The pre-allocation option can also be tweaked but that is not as important in 3.0 as it would have been in older versions (MMAP pre-alloc was tweaked in later versions).

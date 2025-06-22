@@ -1,0 +1,15 @@
+A simple sed statement and service restart does this.
+You can install heartbeat package to provide the needed functionality.
+So if instance A is writing to its local database, then B is also writing on that database, remotely.
+Heartbeat can be configured to assign an IP address called Virtual IP (VIP) to the currently active machine.
+I think what I am trying to do can be achieved using bash scripts, but I could definitely use some help here !
+After that, when A gets back again, then either I can instruct A to write to B's copy, or ask B to stop writing on its local copy, and instead write to A's copy.
+I have a two-node MySQL cluster with Master-Master replication in place.
+So, your application does not need to be restarted and/or configured to use a different IP.
+When one server fails, the VIP will be moved by heartbeat automatically to the other server.
+So, your application can use this VIP to access the database.
+This IP should be different from the other two IPs assigned to both servers.
+If A goes down, then I have to replace a configuration directive in B's SOGo instance to make it use its local database now.
+Now, the application in question (SOGo) runs on those two nodes.
+At any given point of time, both instances of the application are supposed to read-from/write-to a single replica, to avoid duplicate entries, obviously.
+So, to automate this procedure, what would be my best bet ?

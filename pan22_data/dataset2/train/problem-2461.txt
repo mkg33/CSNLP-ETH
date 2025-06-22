@@ -1,0 +1,9 @@
+For sequential (bulk) reads, EBS is faster on m1.small, but local is faster on m1.large. We didn't directly compare local vs. EBS on other instance types, but we did find that increasing instance size has much more effect on local-store performance than on EBS performance.
+The general vibe from my own research (have been reading about this for a few weeks) is that EBS is the faster option.
+There's also a cost question. By shifting I/O from EBS to the local disk, you'll reduce your AWS fees.
+Amazon has made vague claims that EBS will generally outperform the "local" scratch partition on an EC2 instance.  I know that I've experienced higher throughput on an EBS volume in my own use, but I had not bothered to measure latency.
+I have some data that needs to be persisted so have placed this on an EBS volume. I'm using OpenSolaris, so this volume has been attached as a ZFS pool. However, I have a large chunk of EC2 disk space that's going to go unused, so I'm considering re-purposing this as a ZFS cache volume but I don't want to do this if the disk access is going to be slower than that of the EBS volume as it would potentially have a detrimental effect.
+If you're curious about performance in a particular use, your best bet is probably to set up a test instance.  I know that I would.
+I've run MySQL instances on EBS volumes and have been pleased with their performance. I don't have any hard data on it either, but it performed just fine.
+For random (small) reads, we found "local" (EC2 instance) storage and EBS to have similar performance, but local storage has a better latency tail.
+We ran up roughly $1000 in AWS charges in a systematic exploration of this and related questions, and posted an extensive analysis.

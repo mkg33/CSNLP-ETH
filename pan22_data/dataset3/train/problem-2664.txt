@@ -1,0 +1,11 @@
+must be issued in the script (for the record, CreateKey does create non-existing keys recursively, but of course "HKCU\SOFTWARE" is already there).
+Firstly, in the presence of loopback policy one must be careful with rsop.msc because just using the default (i.e.
+The third parameter of objShell.Run, called bWaitOnReturn, tells the script to wait for the external process to complete before continuing the execution.
+So it's likely that registry hive gets unloaded before the edit gets done.
+I think you can solve the issue using two rows of WScript, like the following example:
+One must at least tick loopback on the second page (and replace or merge) to obtain realistic results.
+Secondly, SetStringValue creates values if they don't exist before, but it does not create non-existing keys.
+I imagine you are using reg.exe for modify registry entries.
+The problem is that reg.exe runs in a separate process, and logoff script only wait for itself to finish.
+ticking "jump to the last page of the wizard without collecting more data" right after selecting user and computer containers) may not reflect the true policy results.
+Being careful here helps diagnozing correctly if the script would be run at logoff.

@@ -1,0 +1,28 @@
+I intend to use Puppet for configuration management either way (the declarative approach seems far better than running scripts), am running a somewhat nonstandard stack (e.g.
+Puppet+RightScale works fine and you may be interested in this support article:
+There are still good reasons to create script based ServerTemplates for the PuppetMaster and PuppetClient (makes them easy to maintain later), however you can use manifestos for the configuration of the rest of your environment.
+You can also reach me at matt [at] rightscale or post further questions here for the group.
+Those who use RightScale, what features do you find important?
+Server Arrays (server definitions that scale horizontally), can be triggered in 3 ways.
+Please try out some of these tools in the Developer Edition if you have not already, you can sign up at my.rightscale.com.
+RightScale's dashboard, API and multi-cloud images are AWS-region and cloud agnostic, allowing you to preserve future choice and flexibility, and everything about your system definitions, the monitoring tools, and the RightLink server agent you put on your machines to enable them are open source.
+MongoDB), and am uncertain about how much value RightScale would add relative to Puppet + Amazon's auto-scaling + another hosted monitoring system.
+http://support.rightscale.com/index.php?title=06-FAQs/FAQ_0181_-_Does_RightScale_support_Puppet%3F
+You are making a good decision to abstract your configuration management from base images--it will preserve your future infrastructure choice.
+I think I can help with some of the differentiation.
+Is its auto-scaling support (including keeping single instances running) more powerful than Amazon's?
+You can also use standard scripts in compliment and it's sometimes easier to do that for operational actions.
+On average we see a 60% time savings getting started, 50% on ongoing maintenance of systems, and over 90% when reusing your existing assets for future projects as well admin:server ratios of up to 1:10,000+.
+In compliment to load you can also schedule scaling if you have predictable patterns.
+However, when you start adding cloud specific tools like CloudWatch+Autoscaling, you are beginning to lock yourself in.
+We have a lot of experience with MongoDB in other customers like GameTree.TV, although there are no prebuilt ServerTemplates in the library for it at this time like there are for other NoSQL solutions like Couchbase.
+Role based security permissioning for your account users, infrastructure security audit reports, managed SSH login rules, cost allocation/quotas and tracking, and multi-credential/enterprise group management are a few.
+I'm currently evaluating whether to use RightScale to manage a production environment in EC2.
+Monitoring, which includes over 60 metrics out of the box plus the ability to create your own (collectD), can trigger alert actions for system remediation including self healing (reboot/relaunch), script execution, or scaling.
+RightScale's autoscaling is fundamentally different from AWS--which can be better defined as autolaunching since it will only trigger the AMI itself to spawn.
+This also means that nodes are not being watched as a cluster either so you can be notified when a single server is having a problem (CloudWatch looks at the aggregate).
+There are also some interesting posts on Quora (http://www.quora.com/RightScale/What-have-startups-experiences-been-with-RightScale).
+When scaling based on monitoring data we use a vote based trigger to prevent a single node in a cluster from provisioning or deprovisioning resources.
+Clustering these server configurations into deployments will help you to better define, operate, clone, and track resources allocated to specific systems.
+Aside for automation and asset management, there are many other reasons to use RightScale that generally are not apparent when considering using cloud infrastructure initially, but can end up being extremely important to an organization.
+Alternatively you can define an array to scale based on a job queue (good for embarrassingly parallel batch processing tasks).

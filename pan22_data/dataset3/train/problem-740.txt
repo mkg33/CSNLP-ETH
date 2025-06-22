@@ -1,0 +1,11 @@
+Create a new one (typically containing a few generic regular expressions which you can find at the top of the original file) and then setting that file immutable so that the policy rewriter doesn't regenerate the file (this happens when a new selinux-policy-targeted rpm is deployed).
+I suspect this was never considered when the library was created and probably needs a rethink from the SELinux end.
+It really depends on what restorecon is actually doing, but normally you don't want to run it at all, since it means that files get labeled with wrong labels and restorecon wants to make it right.
+Redhat and Fedora are very responsive to selinux related problems.
+This feels like a oversight regarding libselinux to me.
+The solution would be to have these files already created with the right label.
+A 'fix' here would be to rename the old /etc/selinux/targeted/contexts/files/file_contexts.homedirs to something else.
+If the sheer size of the user database or users in groups is the real problem, they will almost certainly want to know about it.
+Your problem happens because restorecond opens this file as a reference to scan for files in users directories which must always be protected from invalid file label changes.
+But since your file contains thousands upon thousands of entries the scan uses up large quantities of CPU.
+If it's actually the daemon restorecond that runs in background to do the relabeling then you can tune it so it doesn't do files where it shouldn't.

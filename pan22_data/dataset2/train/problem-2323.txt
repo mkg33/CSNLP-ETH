@@ -1,0 +1,5 @@
+Then, change the command def to run the plugin through sudo. Oh, and be sure to make sure 'requiretty' isn't set (also via visudo), or it will fail.
+I am using the check_postgres.pl plugin for Nagios. I am trying to monitor how long since the last checkpoint has been run using the check_postgres_checkpoint option. When I run  the command from CLI  as root I am getting the output but I am not able to get the output in the Nagios web interface. The error which it shows is,
+It is trying to access the pg_control file in the 'global' directory present beneath the data directory which has only read access to the postgres user. 
+Alternatively, you could make a new group containing nagios + postgres, and make /opt/PostgreSQL/9.1/data owned by postgres:postnag (or whatever), but you'd need to make sure that all new files are also group 'postnag' (via chmod g+s, for example). This is a much more complicated solution, but doesn't involve sudo (some people seem to dislike using sudo like this...?).
+This can be solved by granting sudo right for nagios user to execute this plugin without requiring a password.

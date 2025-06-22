@@ -1,0 +1,19 @@
+What is the best practice for extending area 0 across a WAN?
+The bigger branches also have dual routers to cater for a router failure, here we do provision a area 0 link between the routers, using a vlan.
+I am working on a new network deployment, and have run into an interesting question...  Should the OSPF area 0 be extended across a WAN's point to point links (thereby creating more border routers), or should one's WAN Aggregation router serve as the ABR for each area?
+You can make the whole hub and spoke area totally stubby.
+We are also able to deploy links between branches that are close together, using the area 0 interface on each branch router, this would not be possible if each branch was in a different area.
+If you have a lot of links going up and down, this will affect the amount of flooding over the WAN and therefore the link utilization.
+Dialup / DMVPN etc also causes problems if the branches routers are only in a area >1  as the central router now needs to have the template/mutipoint-gre in more than one area.
+Generally speaking, if you have multiple areas, you want the hub and spokes in the same area, and summarize between the hub and the rest of the LAN network.
+In Scenario 1, R2, assuming area 1 is a totally stubby area receives only a default route, thereby reducing WAN bandwidth...
+The reason is that we need high availability for the branches, with a couple of redundant links from different providers, as well as 3G, and dial-up backup.
+There is no one "best practice," but rather several "good practices" and a few "not-so-good practices."
+But for 50 routes or so, that shouldn't be a problem for a T1.
+Scenario 1 would be better in this case since WAN bandwidth will be reduced by a bit and and R2 would be spared of spending its resources if it would be an ABR (scenario 2).
+The most important factor that would make this design preferable is the relative instability of your WAN and remote LAN links.
+I think the WAN should be in area 0, if the wan is not extremely simple/standard with just one or two links to each site.
+Allowing Area 0 up to the edge of the branch allows for better routing decisions.
+This seems like a trivial question, but I feel it may have a performance impact at scale.
+Another possibility is to break up the spokes into a few (no more than 2-3) areas, with the hub as the ABR.
+I prefer scenario 2, extend area 0 into the branch, and then stub area into branch to l3 switch for vlan routing.

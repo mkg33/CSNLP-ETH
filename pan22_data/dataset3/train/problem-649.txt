@@ -1,0 +1,12 @@
+There's not much that I can change on the server side.
+In case it would help, here are the version details for my OS and openssh version:
+Do you have anything in your shell rcfile (.bashrc, .zshrc, etc) or .login, .profile, etc that is checking to make sure the shell is interactive before it runs?
+Apparently it's possible, but I just can't get it working on my install (see link: https://community.hpe.com/t5/Network-Automation-Practitioners/Is-there-a-way-to-issue-a-command-to-an-NA-proxy-using-SSH-non/m-p/6935003/highlight/false#M2821)
+Usually because the client is asking for a tty, and the server is refusing.
+I'm trying to send an ssh command non-interactively to an HP automation server's proxy, and while I can ssh in and enter it interactively perfectly fine, I always get the message "exec request failed on channel 0" when attempting to send the command over non-interactively.
+If it doesn't, you need some code in the offending rcfile that will check to make sure the shell is interactive before it runs.
+The server is allowing you to open an interactive shell but not the exec system call to execute a command without a pseudo-terminal.
+Alternatively, use expect to script an interaction with the remote endpoint.
+Is there anything that I could change on the client side to allow me to send the command over?
+Use the -t switch as follows to force pseudo-terminal allocation.
+My advice is to temporarily rename things like .profile, .bashrc, .login, and .bash_profile to be .profile.off (and so on) and see if the problem still exists.

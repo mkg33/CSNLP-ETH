@@ -1,0 +1,15 @@
+Request2 -> vm2 -> want to read data that was firstly put on vm1
+For session state, you can easily set up Windows Azure SQL Database (basically sql-as-a-service) and use that as your session state provider.
+Same goes for running WordPress - content would need to be in a common data store.
+Each virtual machine is backed by its own vhd, which resides in a Page Blob in Azure Storage.
+You need to store your session state and any other persisted data in a common place accessible to both Virtual Machines, but do not store content directly on the vhd's main disk, or the temporary disk.
+My question is know what will happen with the data?
+Since WordPress uses MySQL, you can set up MySQL in an independent virtual machin instance, or subscribe to a MySQL database via the Azure Store.
+Or you could run memcached, use Table Storage, or choose something entirely different - I'll leave other ideas to your imagination.
+One other option is to store content in Blob storage, which is completely independent of any virtual machines you create, and very easy to access.
+My current extra small vm reaches the limits, so I decided to create a second extra small instance and add the two into a availability set so my service is everytime available and through the load balancer also the load is balanced.
+Blob storage, along with Table storage, has excellent language SDK support that's built atop the REST API (currently .net, php, java, python, node, and ruby SDKs).
+You can grab the SDK of choice from the Azure download page.
+Or even a lot simplier: If I ran a wordpressblog and add a blog,it must be available on both!
+This is not a good place to store any type of content that needs to be shared across multiple instances (and in-proc session state will also be limited to the running instance of that virtual machine).
+You can also peruse the source code, in the github repo.

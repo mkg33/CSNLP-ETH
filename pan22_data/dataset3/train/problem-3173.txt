@@ -1,0 +1,26 @@
+I think we looked at DbProtect (www.appsecinc.com) and it was major dollars to implement, but we ended up not doing it.
+Speaking in a general RDBMS sense, you might be able to use triggers to get you some of the functionality you're looking for.
+(...and that doesn't even start to deal with someone getting "root" level access to the OS hosting the database... byte-level manipuation of the database files, mounting them up on a database instance that has had security features "hacked" out of it, etc... smile)
+I really don't understand why everyone accepts web logging as familiar, but neglect db logging (I will rant more about it another time).
+The catch is knowing where your database traffic should come from.
+I'm not sure you have an effective control if users can directly access the database and make changes.
+It wasn't too hard and it allowed some pretty granular policies for auditing.
+It sounds like you want an audit trail of some kind.
+Of course, all that trigger nonsense is moot if someone gets "root" level access to the database and just unhooks the triggers before they start monkeying with the data.
+The issue is if you are using SSL or encrypted connections to your db, your NIDS will be blind to the traffic.
+If it's coming from a source other than what's approved, you can block it, obviously, within MySQL.
+And that goes back to setting permissions properly.
+I don't use MySQL, so I can't speak to any specific features of the platform.
+The key question there is what should a connection be allowed to do and what shouldn't it?
+A suggestion was given for auditing, but it hurts your performance.
+If a legitimate user connects from a legitimate IP and needs DELETE permissions and wants to be malicious, there's not a whole lot you can do about it during the actual modification.
+I don't think you're going to get an audit-trail of schema modification unless MySQL represents the schema as tables that can, in turn, have triggers placed on them.
+If you are using a web application, Snort (and other NIDS) will be able to detect SQL injections and other attacks that happen over HTTP.
+All database platforms, not just MySQL, struggle with this.
+We implemented DbProtect on a SQL Server database.
+I also use the open source OSSEC to monitor my MySQL logs and it works great.
+With respect to an attack coming from an authorized IP address, that's a bit of a challenge.
+The only way your db talks back to you is through the logs and many DBAs are not familiar with it.
+You have a trusted user making an authorized change.
+http://www.ossec.net/wiki/index.php/SQL_Logging#MySQL_Logging
+However, you can also set up alerts in your IDS to see this sort of thing.

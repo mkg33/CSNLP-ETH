@@ -1,0 +1,5 @@
+Your ssh is probably using the version of OpenSSL in /usr/lib/x86_64-linux-gnu/. You should use LD_PRELOAD to ensure your version of OpenSSL is being used (assuming binary compatibility, of course).
+These are probably two different versions of OpenSSL. You will probably be OK since 1.0.0 is binary compatible with 1.0.1, 1.0.2, etc (it won't be binary compatible with 1.1.0, however).
+As for no version information, I have no idea. ssh can use either OPENSSL_VERSION_NUMBER at compile time or SSLeay/SSLeay_version at runtime. See OPENSSL_VERSION_NUMBER(3) for details.
+If you don't want to use LD_PRELOAD and friends, then build ssh from sources. Be sure to specify an rpath to ensure the link editor uses your version of OpenSSL, not he system's version. That is, your LDFLAGS should include something like -Wl,-rpath,<path to your openssl>. That's in addition to the customary -lcrypto, -lssl and -L<path to your openssl>.
+If you are on Mac OS X, then be advised that linker options like -Bstatic and -rpath are silently ignored. You will encounter mysterious crashes due to incompatible binaries because OS X provide 0.9.8.

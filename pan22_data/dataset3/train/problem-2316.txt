@@ -1,0 +1,17 @@
+So i tried to improve the query and has come out with below sql
+Looking for any comments or suggestions on how to solve this problem.
+I suppose it would be nice of MySQL to recognize a set of "safe" functions, which are monotonic with the index; but MySQL gives up an index the moment it sees a function.
+Consider: the index uses a BTREE on Price, indexing your millions of rows in ascending order.
+But your request, to order by isnull(Price) requests an altogether different thing: you just want to provide with NULLs or not-NULLs; well, MySQL will not use the index for that.
+my sql below is use for listing stock added from 10 days ago.
+In your first query, both valid values + null values are returned from the database, but because you use the "limit 50", and because NULLs are displayed last, you don't see the rows containing NULL Price.
+The reason for which you first query didn't use the index was because the result of isnull(Price) returned an un-indexed value.
+NULL values are shown, in bottom of your list and index is used = Your three conditions :)
+The new sql works a lot faster and explain shown it uses Price index but the problem is that Price with null values will never selected.
+Explain the sql shown that it is not using the Price index.
+Other databases support Index functions; the MariaDB fork supports virtual columns and indexes on virtual columns -- both solution can help you out with your query.
+Order by isnull(Price) is use so that stock without any price yet will still being listed.
+It just does not predict how the result of the function looks like.
+In your case, the function is isnull(); but it does not matter - any function on your column, e.g.
+COALESCE(Price, ...), Price + 1, etc., would make for the same result.
+You see, once there's a function on a column, MySQL is then unable to use that column.

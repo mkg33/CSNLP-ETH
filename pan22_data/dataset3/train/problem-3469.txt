@@ -1,0 +1,13 @@
+This will try to create a symbolic link at /home/logging/log.conf that points to the (presumably pre-existing) file /home/log.conf
+I am looking to make a generic config file using variables such as:
+Next, I don't think that the symbolic link you create does what you think it does:
+Apart from this though, the program seems reasonable (I have not run it).
+In my experience, it is often better to write these things in perl because people expect perl to do more complicated things.
+There are a number of programs and other systems that may be confused if you change the USER environment variable the way you have.
+First up, the shell variable USER is already defined in bash, and is the log-in name of the current user.... so, if you log in as 'rolfl' then echo $USER will print rolfl.
+In the example below *"$PLACEHOLDER_USER"* in log.conf would be replace by "tom"
+Then after moving the file into the correct position I want to replace every instance of *$PLACEHOLDER_VARIABLE* into the value of $VARIABLE from my settings.sh file.
+I don't know if this is sounding right, but, even though perl may be slower than this solution, it is also something that sys admins are familiar with, and will be happier to maintain than a complex shell script....
+My only comment is that this uses relatively advanced features of the shell.
+This means that whenever anyone processes your settings script, they all modify the same file /home/log.conf and, since the first person will replace the tokens with their name, the other users will have nothing to do....
+Still, if the people maintaining this code are familiar with what you are doing (and the fact that you are asking on CodeReview rather than using your peers is a suggestion that is not the case) then I would say it is fine.

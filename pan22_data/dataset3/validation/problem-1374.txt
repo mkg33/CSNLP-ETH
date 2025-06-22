@@ -1,0 +1,20 @@
+The usage and behaviour of assertions will vary by product.
+These are used within most automated testing suites as well as at runtime.
+Assertions that are operation-fatal (uassert, massert) will abort the current operation and return an error code and message to the client application.
+Operational-fatal assertions also increment counters in db.serverStatus().asserts.
+For the specific case of the MongoDB codebase, there are several types of runtime assertions used.
+As per the definitions you've quoted in your question description, assertions are logical tests that trigger exceptions on failure.
+These assertions require administrative intervention to investigate and resolve the error.
+Note: the counters are reset to 0 when the MongoDB process restarts and can potentially rollover for long-running processes with a lot of assertions (as indicated by the asserts.rollovers value).
+Quoting from the MongoDB Server Exception Architecture documentation these are (as at MongoDB 3.4):
+Common examples are file permission errors on startup (unable to read or write files in the dbPath) or serious data integrity errors where continuing might lead to corruption or loss of data.
+These assertions should be uncommon and typically indicate application or user error.
+operation or process fatal, error or invariant failure) and the assertion leads to a consistent termination of the applicable context (operation or process).
+You can find a list of error codes in the MongoDB source code: src/mongo/base/error_codes.err.
+MongoDB server code always uses one of the listed assertion functions rather than a generic assert() so the intent of the assertion is clear (i.e.
+Assertions that are process-fatal (fassert, invariant) will shut down the MongoDB server process.
+If these counters increase significantly it would be worth reviewing your MongoDB log files for more details.
+One common example is "E1100" (duplicate key error), which indicates that a document cannot be added to a unique index because there already is a different document indexed with the same key.
+The assertion numbers do not have any specific meaning aside from helping identify the code point(s) that throw a specific exception.
+In test suites assertions confirm that the results of a function call or data update are as expected and are often set up as macros indicating the comparison type (eg.
+In the runtime context assertions are safety checks that cause the current operation or process to abort when it is unsafe or impossible to continue.

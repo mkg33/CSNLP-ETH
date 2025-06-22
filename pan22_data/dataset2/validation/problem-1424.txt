@@ -1,0 +1,8 @@
+The SSD instance storage (as well as the magnetic instance storage) is ephemeral, and I don't believe it's guaranteed to persist if you do things like shut the instance down and then start it up again later (if it is migrated between hosts, for instance, the ephemeral volume doesn't stay with it).
+Worth noting for future readers Amazon made 'general purpose' SSDs available across EBS. You can select then via the console, or via the apis as 'gp2'. They're a few cents a month more expensive than standard magnetic drives.
+Similarly ... When I try to launch an m3.medium from scratch using the "Amazon Linux AMI 2013.09.2" it adds an 8GB Root EBS volume by default that cannot be removed using the launch wizard.  
+I have an AMI that was originally created from a t1.micro linux. The "Root Device Type" of this AMI is EBS (8 GB) and my web application software is "baked" into this root volume.
+Regardless of what it has as instance storage, it'll boot off an EBS drive. You can mount the SSD as an additional drive - this can be handy for swap space, temporary files, caches, etc.
+Will my newly launched m3.medium instance take advantage of the SSD storage at all?  Or do I need to create a new AMI with "Instance Store" as the root "Root Device Type"?
+It's really only useful for scratch space (caching, temp, etc.), for which it is very convenient and free, and doesn't consume bandwidth; EBS uses the instance's network bandwidth (except on EBS-optimized instances, where it uses a dedicated SAN interface).
+Now I would like to launch an m3.medium instance from this AMI but it has "Instance Storage" of 4GB SSD.

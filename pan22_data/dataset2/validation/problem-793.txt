@@ -1,0 +1,7 @@
+The way I've broken this up is into manual groups of 40 containers, but even those groups take longer (at least on first run) than 3 hours. Additionally, this solution isn't really scalable. We add customers all the time, I don't want to have to manually maintain the lists.
+Was wondering if others have run into similar problems and if there are other ways I might chop this up.
+I'm looking to ways to break up a workload in a sensible fashion and didn't know if there were best practices or ideas around this. I have several hundred numbered containers, some with thousands of files in them, so the work at the rate it seems to be copying will take something like 15 days. My script is limited to running for 3 hours due to limitations in Azure's Automation environment. 
+Since the containers are numbered, I've considered some sort of modulus division for breaking up the workload, I could do that as 10 different jobs, this is gross, but doable, but probably will break on a not too long timescale once we have enough activity to slow things down.
+Finally, I could just move all of this to a VM and run the workload from there, but I was biasing towards using the available platform functionality.
+I've written a script that iterates over all of the containers and blobs. I need to check if each blob exists in the backup container. If not, copy it. 
+We run on Azure services and I'm backing up their blob storage. There doesn't seem to be anything offered directly on Azure for accomplishing this. Storage accounts offer redundancy, but not backup.

@@ -1,0 +1,11 @@
+You should start debugging the issue by excluding Magento from the possible culprits. Ie. do regular PHP memcache sessions work?
+If this works, then look into the code (app/code/core/Mage/Core/Model/Session/Abstract/Varien.php) to see whether Magento possibly overwrites the save_path. 
+Also, are you absolutely sure your session handler is memcached? Doublecheck with the output from phpinfo() (under: registered session handlers). 
+I have two web servers with a Magento instance on both. Each shares the same httpd.conf, php.ini and my.cnf, along with local.xml and config.xml magento configuration files.
+I have another server that stores both the shared DB and shared Memcache instance. Both Magento web servers are able to successfully hit the DB instance, but only ONE of the Magento instances is working properly with memcache.
+When I make a request to the magento instance that is NOT working w/memcache, I get the following error: 
+I've successfully telneted from the this above machine to the memcache server onto port 11211 and I can connect to the memcache instance fine. I've also made sure each system has the correct extensions installed via php -m and diff'd the output of "php_info" (they are identical).
+I realize the session_start() is having an issue connecting to the memcache instance, but I don't understand why?
+This is Magento enterprise version: 1.5 I believe (checking now) and the local.xml is:
+And these are the values in the file right before it calls "session_start":
+[x] savepath = tcp://REDACTED:11211?persistent=1&weight=2&timeout=10&retry_interval=10 

@@ -1,0 +1,14 @@
+This should happen immediately, unless the host is dropping packets.
+Recommend installing cygwin if you are running on windows or don't have access to a linux machine.
+What's actually happening is that the TCP/IP stack on the host is sending you back a TCP segment with the RST bit set - i.e.
+If you have not firewalls and routers in the way, i.e., if you're on the same segment as the host you're trying to check - most of the solutions above are a little exhaustive imho.
+You can use any tool you like, but we can just use telnet...
+Great for verifying your firewalls are operating as expected too.
+That will see what's available port wise on that machine..
+Just to complete this, if there is no host on the IP that you try - it will hang for a little while, and the timeout - the same thing that would happen if the receiving host had a firewall with a drop filter.
+Rather than telnet however, I'd probably use something like scapy, write up something that looks for the RST flag and let's you know.
+Plus I believe it was referenced in a Matrix movie which makes it doubly awesome.
+It doesn't matter what port you connect to, and in fact, if you connect to a port that's unlikely to have a service running, you can get the job done without being detected.
+If firewalls are involved, then as others have suggested, make use of tools such as nmap and whatever else.
+for i in seq 1 65535 ; do tcpconnect -v remotehost $i ; done
+The fact that you received a RST packet means that there is indeed a host up at the other end, and as a bonus - you've done so undetected (The TCP/IP had no upper-layer application to talk to about this connection).

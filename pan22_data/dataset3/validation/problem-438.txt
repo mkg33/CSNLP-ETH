@@ -1,0 +1,28 @@
+I have the WebVPN (clientless SSL VPN) working and even traversing the site-to-site links.
+After a coffee, I think that what you're trying to do has an inherent problem.
+The Cisco ASA will support many AAA Server Groups protocols including LDAP and NTLM v1 (NT Domain).
+I'm trying to get away from legacy username/password auth especially if it's internal to the Cisco (just another password set to manage and for users to forget).
+I don't think that you will be able to use OpenID but in most case ASA will interact with a Radius or Tacacs+ server (Cisco ACS for example) and this server will interact with your authenticator (Active Directory, RSA server, ...).
+At the moment I'm leaving a legacy OpenVPN AS in place for thick client VPN.
+Most resources a remote user would come looking for exist inside.
+There is some documentation on cisco.com about using PKI for VPN authentication, however I've not seen anything for RSA keypair based auth.
+I know I can map against an existing LDAP server but we have LDAP accounts created for only about 10% of the user base (mostly developers for Linux shell access).
+Nothing I've seen in the Cisco suggests it can do this natively.
+Alternatively a signature-based solution using RSA public keypairs (ssh-keygen type) would be useful to identify user@hardware.
+I've implemented the usual deal - basic inside networks with outbound NAT, one primary outside interface with some secondary public IPs in the PAT pool for public-facing services, a couple site-to-site IPSec links to other branches, etc.
+But RSA public keys would be a runner-up, and much much better than standalone or even LDAP auth.
+I'd like to be able to do the same thing for thin and thick VPN.
+It takes a username/password from the user and submits it to an arbitrary website, then looks for an appropriate cookie in the response.
+In the ASDM, the Connection Profiles should be listed under both the Clientless and Client.
+Link for Configuration Guide if anyone is interested.
+One interesting authentication method on the ASA is "HTTP Forms".
+OpenID-LDAP would appear to be the reverse of what you're trying to do.
+The Radius/Tacacs+ server then act like an authentication proxy.
+The ASA is designed to do authentication (confirming who you are) as well as authorisation (confirming what you have access to), but with OpenID the authentication has already been done and you are just doing authorisation.
+What I would like to do is standardize on an authentication method for all VPN then switch to the Cisco's IPSec thick VPN server.
+My organization has a Cisco ASA 5510 which I have made act as a firewall/gateway for one of our offices.
+My organization uses Google Apps and we already use dotnetopenauth to authenticate users for a couple internal services.
+This could fit quite well with an OpenID site, though I've never tried it.
+I'm trying to figure out what's really possible for authentication for these VPN users (thick client and clientless).
+But, since you already have the Clientless VPN running, you should be able to use the same AAA Server Group for the Client VPN connections.
+I guess what I'm looking for is a piece of middleware which appears to the Cisco as an LDAP server but will interface with the user's existing OpenID identity.

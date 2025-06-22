@@ -1,0 +1,6 @@
+- On your client, get Siege: http://www.joedog.org/siege-home/ and load it up with some of the URLs you've seen 503 (hint: urls.txt, use -i -b -c500 -r10 and it should be enough to trigger the 503s)
+( and a few more, but can't post the links. Some Googling for "varnish keepalive backend timeout" should surface what you want)
+I was running into this with Apache, and the solution was a combination of the following (note that I'm using Apache/2.4.7 (Ubuntu) + varnish 3.0.5-2 on Ubuntu 14.04 LTS in AWS EC2):
+What I think is going on here is that the KeepAlives, as implemented in the back-end web server software, are sending explicit connection resets, which Varnish doesn't work well with. There is probably more to this story, and I encourage you to dig into this and post your findings here for future generations to learn from.
+Please keep in mind that this was made for an M3.Medium instance on Amazon EC2 (1x Intel Xeon E5-2670 core + 3.75GB RAM). Adjust as necessary for your hardware!
+- start varnishlog -r temp -c -m 'TxStatus:503' > err-parsed.txt. This will grab all the Varnish log entries where Varnish returned a 503. FWIW, here's the full text of one of my errors. TL;DR the error Varnish was reporting was FetchError   c http first read error: -1 0 (Success) :

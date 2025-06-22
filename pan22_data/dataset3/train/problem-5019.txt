@@ -1,0 +1,88 @@
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+And here is the final result when i try to cast the shadow in my fragment shader:
+ glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
+const GLuint Shadow::GetShadowHeight() const { return m_shadowHeight; };
+vec3 ApplyLight(Light light, vec3 diffuseColor, vec3 normal, vec3 fragPosition, vec3 surfaceToCamera, vec4 specularColor, float shininess){
+   pointAttenuation = clamp(pointAttenuation, 0, 1);
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].ambientCoefficient", m_lights[i]->GetAmbientCoefficient());
+ float shadow = ShadowCalculation(FragPosLightSpace);
+ glBindTexture(GL_TEXTURE_2D, *m_shadow->GetDepthMap());
+Here is the depth map when drawn on a quad (Which looks good to me):
+ float brightness = max(0,dot(normal, surfaceToLight));
+ glBindTexture(GL_TEXTURE_2D, *m_shadow->GetDepthMap());
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+ gl_Position = projection * view * model * position;
+ m_shadow->RenderToDepthMap(); //Set the scene for rendering from light position
+   specularCoefficient = pow(cosAngle, shininess);
+ m_Shaders[e_texture]->SetUniform("cameraPosition", m_camera->position());
+  diffuseColor *= texture(aoTexture, fragTexcord) * 1.2;
+ cosAngle = dot(surfaceToCamera, reflect(-surfaceToLight, normal));
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].coneDirection", m_lights[i]->GetConeDirection());
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].position", m_lights[i]->GetPosition());
+   pointAttenuation = (1 + 15) / lightToSurfaceAngle; //Smooth color from center
+ glViewport(0, 0, glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
+ glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowWidth, m_shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+ float shadow = ShadowCalculation(FragPosLightSpace);
+        attenuation = 1.0 / (1.0 + light.attenuation * pow(distanceToLight, 2));
+        if(lightToSurfaceAngle > light.coneAngle){
+ //--------------- Normal rendering with shadow  ------------------
+  specularColor = texture(specularTexture,fragTexcord); //Color on the specular texture
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].intensities", m_lights[i]->GetIntensities());
+  finalColor += ApplyLight(lights[i], diffuseColor.rgb, normal, fragPosition, surfaceToCamera,specularColor,shininess);
+ vec3 fragPosition = vec3((model * vec4(fragVert,1)).xyz);
+Shadow::Shadow(GLuint shadowWidth, GLuint shadowHeight) {
+    // Get depth of current fragment from light's perspective
+ glUniformMatrix4fv(lightMatrixLocation, 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   m->RenderForShadow(m_Shaders[e_normal]->GetProgram(), &lightSpaceMatrix);
+ glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
+ return ambient + ((1.0 - shadow) * (diffuse + specular));
+ glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
+   if(lightToSurfaceAngle - light.coneAngle < 2.5f){ //Smooth around the spotlight by 2.5 degree
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].coneAngle", m_lights[i]->GetConeAngle());
+ vec3 ambient = diffuseColor.rgb * light.ambientCoefficient * light.intensities * pointAttenuation;
+        attenuation = 1.0; //no attenuation for directional lights
+        float lightToSurfaceAngle = degrees(acos(dot(-surfaceToLight, normalize(light.coneDirection))));
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthMap, 0);
+        surfaceToLight = normalize((light.position.xyz - fragPosition));
+As you can see, there is no shadow being cast where it should be but instead, there is a lot of weird shadow looking spots all over the ground plane.
+ //Gamma calculation : color = vec4(pow(linearColor,gamma),diffuseColor.a);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+ //Add the shadow map to the shader and the light matrix
+ glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthMap, 0);
+    pointAttenuation = clamp(pointAttenuation, 0, 1);
+ diffuseColor = texture(diffuseTexture,fragTexcord); //Color on the diffuse texture
+const GLuint Shadow::GetShadowWidth() const { return m_shadowWidth; };
+        float distanceToLight = length(light.position.xyz - fragPosition);
+ glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+ vec3 diffuse = brightness * light.intensities * diffuseColor.rgb;
+ glGenFramebuffers(1, &m_depthMapFBO); //Create frame buffer
+ //Generate the texture with gl_depth_component settings
+const GLuint* Shadow::GetDepthMapFBO() const { return &m_depthMapFBO; } ;
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+ GLuint lightMatrixLocation = glGetUniformLocation(*m_Shaders[e_texture]->GetProgram(), "lightSpaceMatrix");
+    // Check whether current frag pos is in shadow
+ glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+  m_Shaders[e_texture]->SetUniform("lights[" + std::to_string(i) + "].attenuation", m_lights[i]->GetAttenuation());
+ vec3 surfaceToCamera = normalize(cameraPosition - fragPosition);
+ vec3 specular = specularCoefficient * materialSpecularColor * light.intensities * specularColor.rgb;
+ glGenFramebuffers(1, &m_depthMapFBO); //Create frame buffer
+    // Get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ m_Shaders[e_texture]->SetUniform("numLights", (int)m_lights.size()); //Set the ammount of lights
+  shininess =  texture(glossTexture, fragTexcord).r;
+ glm::vec3 lightPos = glm::vec3(m_lights[0]->GetPosition().x, m_lights[0]->GetPosition().y, m_lights[0]->GetPosition().z);
+ glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowWidth, m_shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+const GLuint* Shadow::GetDepthMap() const  { return &m_depthMap; } ;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+ //return ambient + attenuation * (diffuse + specular);
+ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Set black as clear color - Set him the depth
+ m_shadowWidth = shadowWidth; //Set shadow map size
+ float distanceToLight = length(vec3(light.position.xyz) - fragPosition);
+ glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+ vec3 normal = normalize(normalMatrix * fragNormal);
+ //Generate the texture with gl_depth_component settings
+ mat3 normalMatrix = transpose(inverse(mat3(model)));

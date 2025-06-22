@@ -1,0 +1,10 @@
+Using a statically linked kernel instead of modprobing drivers can also dramatically increase performance.
+The optimal solution is probably to build a distribution that does only exactly what you want it to on boot, this way you're guaranteed minimal times (using a minimalist init system like sinit).
+Note: I haven't tried to optimize userspace time because I don't need it: my app starts early anyway, so I don't mind if the networking DHCP / IP attribution takes 8 seconds after my app has been launched.
+Alternatively, you might consider using the suspend to disk (hibernation) feature of the Linux kernel.
+You can easily get your RaspberryPi app running less than 8 seconds after you plugged the power cord, or less than 3 seconds after the Linux boot has started.
+Once booted, the suspend and resume operations later on are pretty quick, and the system is entirely off in the meantime.
+I get normal booting time of 5s (kernel) + 5s (to userspace) and it doesn't require much effort, because it is using systemd for init.
+There are other optimizations to be made by carefully configuring and recompiling a kernel.
+An example here, my service is called samplerbox.service:
+It's made for fast loading and to survive power failures.

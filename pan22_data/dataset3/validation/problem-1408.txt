@@ -1,0 +1,18 @@
+I don't know if I should use an RDBMS that indexes the table by match ID, and if that would be fast enough.
+I want it to be viable for 1,000 simultaneous matches, but as I'm expecting around 100 db entries per match (I need to log players' past states), that would be a 100k row table.
+Although you are not entirely clear on the details, you can have the best of both worlds.
+Now this rally depends on what you intend to do, but databases are good at efficiently persisting data and work through huge volume of data efficiently.
+I'm creating a real time client/server game, where each match is a 1v1.
+First you have your objects fully formed in memory.
+You can to it yourself, but if you are juggling a few GB of data, you are effectively re-implementing a database, just use an existing one.
+Although @Philipp makes a good point, I don't fully agree with his assertions.
+The key feature is that the write will be quick to memory and the database backend will later persist it when time allows.
+In memory databases can make life a bit easier when the amount of data you handle surpasses your ability to organize efficiently.
+If anyone has any suggestions on how I can implement this, I'd really appreciate it.
+Databases generally are good at keeping the relevant bits in memory and hot; but yes if you get a cache miss, it will hurt bigtime.
+Disk backed databases should be used when your data surpasses the RAM capacity or need long term storage.
+But if you use your database mostly for write only storage, they can be quite efficient.
+Why not keep your current game state in objects and each move / tick you write the game state changes to the database before updating to the next.
+This generally quick access, but if you need to look through large swaths of objects to find something you need to implement the appropriate access algorithms (e.g.
+There are three levels of data access you need to consider.
+I'm also contemplating using plain files with my own extension for each match, but that would be 1,000 of them on my machine, and I don't know if that would be too slow.

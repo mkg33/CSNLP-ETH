@@ -1,0 +1,16 @@
+I mean, do you really want to rebuild the servers if someone wants to change their password?
+Just to add to the existing answers a bit, for "system" users, or users that applications run as, packer would be a fine option, as would using a Terraform provision, or Ansible directly.
+Ultimately it depends on how your workflow is set up.
+For this kind of configuration, does it make more sense to add these user accounts to the base image in the Packer script, or to add them when the VM is created via Terraform?
+Do you want to make those changes on the VM image or during the deployment?
+For example, a service or system account that is needed across all of my deployments.
+The VMs created from these images will need to have a set of users created; in this particular case I'm concerning myself with user accounts for employees that may need to ssh into these VMs.
+That way you can change them when deploying the VMs via Terraform without having to create a new Packer image.
+I avoid "baking" user accounts into my OS image with Packer unless there is an OS specific need for it.
+I'm in the process of building some custom Linux images using HashiCorp's Packer, which will later be deployed to Azure using HashiCorp's Terraform.
+It seems to me that handling it in Packer makes more sense, but are there reasons not to do it there?
+FreeIPA does all the heavy lifting in regards to setting up LDAP, Kerberos, sudo rules, general access rights, all with a shiny web interface.
+I wouldn't introduce another infrastructure tool/CM (like Ansible) just for this purpose, instead of that, I would consider these two options:
+This also allows you to reuse the same Packer image for different purposes that may have different user accounts.
+My suggestion is to use a Terraform provisioner to create the user accounts.
+For human users, I'd highly suggest using something like FreeIPA.

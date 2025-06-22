@@ -1,0 +1,8 @@
+This time, there's a payload attached (a 151 byte html page in UTF-8; here we can infer it's a "Sorry, the resource you requested cannot be found" type thing).
+I was looking for a HTTP header (preferably written in C) for my WiFi application to control a device. I am using a miniature USB WiFi module to connected to Raspberry Pi model B running Raspbian wheezy.
+HTTP is a plain text protocol.  There are two fundamental sorts of headers, requests (client -> server) and responses (server -> client).  A typical request header might be:
+You could use C to produce either of those, but there's no such thing as a header in C.  They're plain text.
+So that can be in any language you like.  There are other ways to produce web pages dynamically.  Apache (aka. httpd) has a C API, although this might be overkill in this context.  Other web servers available on the pi which may also have a C interface are nginx, lighthttpd, and yaws. 
+You would have to use sockets in order to do that, or you could try using libcurl instead of sockets:
+Perhaps what you are looking for is an HTTP server with a C interface.  Most general purpose servers have a CGI interface, which is based on executing a sub-process with the HTTP request processed into environment variables (and any payload fed via stdin); the response, including a partial header, is written to stdout.
+HTTP is the serialization protocol used with the world wide web.  An HTTP header is used to communicate between client and server and to wrap content payloads sent from one to the other.

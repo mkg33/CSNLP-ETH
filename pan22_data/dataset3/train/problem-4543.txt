@@ -1,0 +1,12 @@
+The machine has a route to 192.1.1.2 via a gateway reachable from eth0:
+I'd like to take any traffic coming in on 192.168.2.4 and NAT it to an external ip address.
+If they're not being incremented then I'd start sniffing the traffic on the eth1 interface to see if the traffic is making it there.
+It's likely that your FORWARD chain is set to a default drop policy and doesn't have a rule to forward this traffic.
+I'd do an iptables -t nat -L -v -n to see the counts on the DNAT rule in the PREROUTING chain.
+As best I can tell I've done everything needed to make it work, but it doesn't so I'm missing something.
+You can watch them increase with each new connection processed by the rule.
+iptables -t nat -A PREROUTING -d 192.168.2.4 -j DNAT --to-destination 192.1.1.2
+It has 2 ip addresses (eth0: 192.168.2.3, eth0:1 192.168.2.4).
+192.1.1.2   192.168.2.248   255.255.255.0   UG    0      0        0 eth0
+my iptables are all set to default ACCEPT, here is my DNAT rule:
+The DNAT rule doesn't seem to actually be doing any sort of NAT/redirection.

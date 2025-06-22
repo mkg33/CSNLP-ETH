@@ -1,0 +1,24 @@
+Would be nice for SAN maintenance to be able to shuffle VMs to the local disks as required.
+However, each host in the two-node cluster has an identical amount of SAS 15K drives (4), currently configured as a RAID 10 array.
+For clustered virtual machines, you need shared storage, and internal drives don't qualify.
+You will still be able to use the non-clustered version of live migration to move them between hosts during normal operation - but it will mean moving the disk files too, so will take longer.
+If you are using SCVMM, uncheck "Make this virtual machine highly available".
+Basically we just want to make use of the disks on the host and the Failover Cluster Manager doesn't seem to want to play ball with the local disks as far as a target for moving a virtual machine.
+Keep in mind, you won't be able to shuffle the VMs back to local storage if it's already provisioned as storage pool for either HP VSA or StarWind.
+I don't believe there is any built in fault tolerant method of using the local drives.
+Looking at the following Clustered Shared Spaces TechNet article, and it looks like this only applies to hosts sharing a JBOD enclosure by way of external SAS backplane.
+I'm wondering if there's a Hyper-V equivalent to VMWare's Virtual SAN technology whereas local disks can be exposed as shared storage nodes on the cluster.
+Then use Hyper-V manager to move it to the local storage.
+Both products provide great value and do exactly what you're trying to accomplish.
+However, StarWind's storage is always available in loopback mode so you have access to your VMs even during maintenance.
+What you can do, particularly if this is temporary while you are doing SAN maintenance or upgrades, is lose the fault tolerance.
+When you are done, move their disks back to shared storage and make them highly available again.
+When you do this, you lose the fault tolerance - if a physical host dies, any VMs on that host go with it.
+Not sure about HP VSA, there is a 3rd voting entity required for the cluster so the maintenance process can get more complicated.
+Without it, if a machine dies, the data on them is inaccessible and there's no way to failover without the data.
+I wouldn't rely on it for primary storage purposes, but it might do OK in a pinch when you need to do disruptive SAN maintance and need to keep a handful of VMs running.
+If you are using the failover cluster manager, remove the virtual machine from the cluster manager (it will still exist on the physical host).
+I would think your only way to accomplish this would be to setup your own, home-grown version, of vSAN with a locally hosted "controllers".
+If you have space reserve to shuffle the VMs - you can use Storage Live Migration functionality with any of the storage solutions available on the market.
+Something like this, or a set of clustered FreeNAS/OpenFiler instances running DRBD should do the trick.
+Not much to add here since StarWind and HP VSA are already mentioned!

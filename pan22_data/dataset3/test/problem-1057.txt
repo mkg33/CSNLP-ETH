@@ -1,0 +1,18 @@
+I've got most of my servers on a raid 5 or 6 setup so I don't notice the extra writes.
+I've got a similar situation (more data less uses - around 60) and the benefits of having shadow copies available to undo mistakes is invaluable.
+Shadow-copy generally doesn't do anything to your read-performance instead what happens is that whenever you write to a file that is considered to be part of a snapshot a copy will be made and your write will be made to the copy.
+I believe the performance hit depends a lot on how much data is being changed between snapshots, and when/how often your snapshots are scheduled to run.
+Until they did did something stupid with a file that is.
+With mostly reads you probably wont notice anything.
+I have about 100 users and around 600gb of data that is most doc, pdfs, xls and so on.
+On one system I was responsible for I enabled shadow copy on our server, given your description I may have a roughly equivalent situation to yours and it didn't really seem cause much of a performance hit at all.
+(akin to zfs if you've heard their marketing) Which means for each write to an existing file it has to write a new block and make a note about the old block being old.
+A lot of different backup utilities (ghost, true image, and possibly Microsoft backup) leverage this.
+That being said your question was about performance.
+Microsoft doesn't say much about it because it's quite subjective.
+There are so many other variables to network share performance (network, cpu, application) snapshots weren't noticed by any of our staff.
+I wish I could offer you something more concrete, but since it is so dependent on your specific usage patterns, you may have to warn your users and simply try it.
+It will be important to get some performance data on the server before you make any changes so you will have some data see what impact the change had.
+You probably would want to start with a conservative one snapshot a day schedule, and then increase the frequency as needed/desired.
+I also use the snapshots for backup purposes, I don't need to worry about open files etc.
+It is possible to turn snapshotting on and then turn it off again later if there's a problem.

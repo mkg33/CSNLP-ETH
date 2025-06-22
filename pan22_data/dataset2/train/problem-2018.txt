@@ -1,0 +1,10 @@
+If the density of particles is low you have a good chance that a (semi-random) position is free. And something like this would be viable. (pseudo code of course)
+Note that since we know which places we have checked the algorithm can in the end even give up telling us there are no free places. So it has a guaranteed runtime of O(maxNumberOfParticles * numberOfCells) before it has placed a new particle or has given up.
+I am developing a little Game with something like particles, where every particle is represented by a box2d Body.
+As you can see we will always find a place to put the new particle that is as close as possible to the intended space.
+You divide the world in cells (this is called spatial partitioning). You select a cell where you want to place the new particle. In the image below the cell where we, at first, want to place the new particle is colored blue:
+Now you have to make a decision on the size of the cell. Too large and you might miss free spaces, too small and finding a solution will take a long time. Another decision you have to make is if you want to cache a list of occupied cells to use in further frames (you will have to update part of it whenever a particle moves) or that just doing this when you spawn a new particle is good enough (in that case you won't even need a list, it's implied that a cell is occupied by the algorithm continuing).
+As you can see the cell marked blue is occupied by an existing particle (the red circle). So we can't place a new particle here. We mark the cell as occupied and continue to spiral out:
+To insert new particles I need to find a place in the b2World where no bodies reside. How can I obtain this?
+We continue to spiral out (no randomness here, we just rotate clockwise around the already checked cells) until we find the solution:
+But be wary, there are a few problems with this algorithm. There is a chance that it will take a long time (or maybe even forever) before a free position is found, and the chances of it taking a very long time increase with the density of particles.

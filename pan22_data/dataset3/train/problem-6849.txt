@@ -1,0 +1,13 @@
+Once you have your replication working, you can write a script to stop the slave (this way you will make sure you have a consistent copy of the master data), copy the position that your slave is reading from master (in case you need to restore your database, you can replay the master log from this position) and take the backup, in bash it will look like this:
+This tells mysqldump to perform all the work within a single transaction, causing InnoDB to give it a consistent point-in-time snapshot of the data, without blocking other data access (including writes).
+http://www.mysqlperformanceblog.com/2012/03/23/best-kept-mysqldump-secret/
+What is the best way to achieve this without locking databases and get a consistent dump off all databases from a remote server.
+If you want to have a full backup without lock the live database, I will suggest  that you start to replicate all information from master server into a slave, and take a full backup right from slave, this way you will hava a consistent backup from master without have to lock or put load on the master database at any moment.
+However, MySQL DDL operations are apparently not transactional, and altering table structures during a backup can cause them to be missing from the backup with this option.
+These databases can't be locked because the application can change these database at every moment.
+Other way rather than save the slave position is to add --master-data=1 to mysqldump command.
+I want to write a script that makes a dump of the database an store it somewhere on a backupdisk.
+Easiest option, if you aren't relying on features specific to MyISAM or other storage engines: change your tables to the InnoDB storage engine, and use the --single-transaction option with mysqldump.
+Some of these are critical and we want to take a back-up of all databases.
+On the mysql_slave_status you will need to look into 2 variables named Relay_Master_Log_File and Exec_Master_Log_Pos it will tell you the binary log file and position that you need to start to replay the binary log in case you need to restore this dump.
+You can look into MySQL Documentation for Replication, I also wrote a post a while ago about how to set up replication, you can have a look here.

@@ -1,0 +1,7 @@
+You can assume the values in a and b occupy usually multiple kilobytes, up to several hundred kilobytes.
+Would Postgres store the values of column a and b of one row in one row of the TOAST table or in two or does it depend? And then on what? 
+The contents of "a" will not be written again.  The TOAST pointer for "a" will get copied from the old row into the new row of the main table, but the contents of the toast table for "a" do not get changed or copied.
+Assuming all other columns could be stored in the non-toasted table, would an update to column b require writing column a again? Would Postgres store the values of column a and b of one row in one row of the TOAST table or in two or does it depend? And then on what? 
+I have a table in Postgresql 12 which has --- among other columns --- two columns a and b of type bytea which are most of the time TOASTed. STORAGE is set to EXTENDED for both of them.
+Each row in the TOAST table holds one chunk of one field only. In this row-based segmentation, it would be pointless to rewrite the rows related to a field whose value hasn't changed. This is different from the heap storage where consecutive non-TOASTed columns are stored consecutively on disk, so when one column changes, the new version of the row must be written as a whole.
+Assuming all other columns could be stored in the non-toasted table, would an update to column b require writing column a again?

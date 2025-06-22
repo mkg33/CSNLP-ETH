@@ -1,0 +1,15 @@
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\WMI\Autologger\EventLog-System \ {9580d7dd-0379-4658-9870-d5be7d52d6de}]
+We have a legacy application running on a Windows Server 2008 VM from Azure that is spamming our windows event log every minute or so.
+You can't stop logging for a specific event ID with the means of Windows, however you can change event viewer filter settings so that some items are not displayed if you want to, i.e.
+Obviously, I don't want to block the whole event source from logging as it does log helpful stuff when it goes wrong, it's just this one particular message is clogging up our server log and getting quite annoying!
+Under (Performance)->Data Collector Sets->Event Trace Sessions, select EventLog-Application and press [ENTER].
+on the right where the registry entries are, look for "Enabled" which will be set to one, change that to 0.  reboot two times for the entry to take effect.
+this should work for windows vista, 7 and 8 and their respective windows server counterparts.
+Here you will find a Level property, which enables you to define (filter) the level of logging as you would expect.
+first, double click on the error/warning in event viewer and click on the details tab and write down the guid  ({9580D7DD-0379-4658-9870-D5BE7D52D6DE})
+Under Trace Providers tab (default), look at the Properties list.
+So my question is... Is there anyway for me to block the event source for certain messages?
+this has worked for me for three errors/warnings that can be ignored
+I cannot rewrite it either as it's a massive piece of software, as much as I'd like to.
+I do not have access to the source for the bit of code that is writing to the event log, only the dll file.
+yes you can...i'm gonna use the WLAN-AutoConfig event id 4001 warning

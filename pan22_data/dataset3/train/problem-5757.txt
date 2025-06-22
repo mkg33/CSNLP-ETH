@@ -1,0 +1,21 @@
+We then apply all patches contained in the package.
+They have one configuration ini in /etc/php5/apache2/php.ini which contains settings for apache+php and another configuration ini in /etc/php5/cli/php.ini for php cli.
+of course make && make install or whatever you need to do at the end.
+that is the best way to confirm what you are currently working with is actually what you will compile with.
+let's say you get the source package for PHP in Debian 7
+when you compile php, you will need to compile it twice.
+if you want to apply it just for the php.ini location, in for example PHP 5.3 source, you can try to delete in debian/patches/ all of the files except 0004-006-debian_quirks.patch and then move it in the PHP 5.3 folder.
+All further steps assume you are in this directory.
+./configure <more-configs-here> --prefix=/some/prefix/dir --with-apxs2=/path/to/your/apache --disable-cli --disable-cgi --with-config-file-path=/etc/php5/apache2
+We will create a patch that fits in this hierarchy using the tool called
+<?php print phpinfo();?> will give you your config command for mod_php.
+Be sure to look over the scripts, there may be more configuration related to this, that I am not seeing with a quick grep.
+On a Debian/Ubuntu system do an apt-get source php5, to get the source package, which will include all the build scripts, and patches that are used.
+./configure <more-configs-here> --prefix=/some/prefix/dir --with-config-file-path=/etc/php5/cli
+In this directory, you can find the "debian" subdirectory, which contains a "debian/patches" directory which contains the patches that
+a simple php -i for your cli version will give you your cli config command.
+I'm looking at the ubuntu sets up php for both apache (mod_php) and php cli.
+it is importantly to not configure apxs2 while you are configuring your cli.
+On Debian/Ubuntu packages these paths appear to be modified via the patches/006-debian_quirks.patch patch that is applied as part of the packaging process.
+so what you can do is first check out your php info for the mod_php and than your cli.
+The quilt patch system manages a stack of patches to the original source.

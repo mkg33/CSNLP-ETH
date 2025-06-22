@@ -1,0 +1,17 @@
+As for finding history for specifically this user, it cannot be done from what I can see when all remote users are using the same local SSH user.
+Assuming that you are using bash, history will only show you YOUR command line history.
+By default, it reads ~/.bash_history for the history.
+pstree -p shows that the watch command is inherited from sshd with PID 15243. greping for this PID in /var/auth/auth.log shows that it was IP 12.34.56.78 that started this session.
+I now want to find out from which IP the client came that ran the command watch date.
+You would have to configure it to log custom environmental variable (SSH_CLIENT) by specifying IP=%{env:SSH_CLIENT} in the definition of log message format (./configure flag or configurable in snoopy.ini since 2.x version).
+You could use pstree to print which commands are inherited from which sshd session, and then cross check this PID in /var/log/auth.log.
+Also, it can easily be spoofed/inactivated/etc., so it's not really reliable.
+Assuming that you are root on the box, you could scan through all of the user's directories and read their histories to see who is running that command.
+Note that this can be changed (though highly unlikely) by doing something like HISTFILE=/home/userFoo/.my_alt_history.
+Additionally you can add the line below to your syslog configuration ( /etc/syslog.conf ) to redirect the local3 messages to a specific file.
+If it is saved to the history file, then you could just look for the cp command and look backwards in the file, but if it is not there, then there is not much to do.
+Therefore this is also the user that started watch.
+This will use syslog to record every executed command along with the user who did and it's IP address in a format like this:
+You can add this two lines to /etc/profile or /etc/bashrc in order to log all commands executed by bash:
+Example (anonymized): I logged in to a remote server with 3 simultaneous sessions, with the same remote user.
+Each new user connecting spawns a new sshd session with a specific PID.

@@ -1,0 +1,20 @@
+ 19         CURR_LINE=sed -n $LAST_LINE_NBR,${LAST_LINE_NBR}p "$LOGFILE"
+Here is one way you can do what you are looking for.
+So what i want to do is to whenever there is a Exception thrown in my program - i want to restart it (do systemctl restart myjavaservice).
+Am i right that this will pipe last 200 lines of log into awk and awk will check if there is any occurence of word Exception in passed text and if it is it will run systemctl restart myjavaservice and exit right after it will find first occurence?
+ 28 #-- Pick line after the previously checked line
+ 34 echo "$NEW_LAST_LINE_NBR: $NEW_LAST_LINE" > "$FLAG"
+Im assuming i can put a script in a cron job (that will run every 5 minutes or so), that script will check logs of my service and if it encounter word "Exception" (or any other word) i want to restart service (but also do not clear the logfile).
+: Currently im thinking of tail -n 200 /home/myuser/myservice/output.log | awk '{if (/Exception/) {system("systemctl restart myjavaservice"); exit;}}'
+I have a Java program that runs as a service on Ubuntu 16.04.
+  8 #-- Create flag file in the same locations as the log file
+ 21         if [ "$LAST_LINE" != "$CURR_LINE" ] ; then
+ 22                 #-- Logfile is no longer the same as previously checked, start over
+But this makes the service restart to many times and basically service fails to restart properly.
+What i already tried to do is to write logs in file with tea -a(-a because i want to keep really old logs) and  use tail with awk like this:
+ 33 NEW_LAST_LINE=sed -n $NEW_LAST_LINE_NBR,${NEW_LAST_LINE_NBR}p  "$LOGFILE"
+Probably the only output i get from it - it is a logs(errors, usual prints, etc.).
+  3 export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin
+tail -F /home/myuser/myservice/output.log | awk '/Exception/ {system("systemctl restart myjavaservice")}'
+  9 FLAG=dirname "$LOGFILE"/basename "$LOGFILE".flag
+You will need mechanism to make sure you do not re-read the same lines.

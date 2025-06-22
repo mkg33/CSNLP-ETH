@@ -1,0 +1,11 @@
+[Slightly offtopic: I had an idea that I might import the images manually (its a tilesheet and a background image) to the Library. And then copypixel from the tilesheet. But I have never done this so I wouldnt know how to copypixel from something in the library]
+So now the question is: How do you simulate the behavior of [Embed] using the flash library? Using the Flex SDK you would embed an image like this:
+But since you're embedding a sprite-sheet which you blit to some other BitmapData object, you probably don't even want that. Therefore something like this will do:
+Now we're basically set. The only difference is in instantiating the asset in code, as the types are different. As you can see in the screenshot, the Flash IDE automatically filled the Base class in for us, which is of type BitmapData. BitmapData is not a DisplayObject, so you cannot add it directly to your scene. So this won't work:
+I suggest you to use Flash Develop. It's open source and has a template that matches your needs: AS3 project with preloader
+Using the Flash IDE, you would simply import the image to your library and then export it for ActionScript, as shown in the following screenshot:
+Creating a new instance of MyAsset would return a BitmapAsset instance, which is a subclass of Bitmap. 
+If you have Export classes in frame: 2 in your publish settings and use Export in Frame 2 on your shared assets, then you really don't need the [Embed] meta-directive, as it's a Flex SDK thing. Also having everything in your library is going to be clearer.
+But my Main Document class calls on other external classes that have Embeded images. Which are then exported in the First frame, which causes my game file to be huge in the First frame. And that essentially shows a white screen for a loong time before the preloader eventually shows up, but 60% loaded.
+And I am trying to make a preloader on Frame 1 so that it displays and loads progress before anything else is exported/loaded. So all my assets from the Library are on Frame 2 and all Actionscript Code is Exported in Frame 2.
+I switched from Flash IDE to Flash Develop about two years ago and I'm very satisfied. I converted almost all of my older projects to Flash Develop and it's very easy and quick to do that. I still have some issues with the debugger but it's nothing deadly.

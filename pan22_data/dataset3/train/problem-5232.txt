@@ -1,0 +1,13 @@
+If you can prevent malicious users from uploading files, you can prevent this exploit from ever occurring.
+If so, I'd really suggest you switch to something that supports unix sockets, mod_fastcgi would be one option.
+Thus, anyone who has access to the server could send requests to PHP-FPM.
+I already played around with the chdir directive, but it does not suitable for my needs.
+Do other people actually have access to run code on your machine?
+Unfortunately, using a chroot is not an option for me because I am running in a linux-vserver enviroment, where mknod has been disabled by the administrator for security reasons.
+I’m having trouble with PHP-FPM and Apache 2.4.1 mod_proxy_fcgi.
+I wasn’t able to restrict PHP-FPM to my document root, so someone could just create a malicous PHP file, make sure my PHP process has access to it and send a special crafted request to the port on which PHP-FPM listens.
+How do I make PHP-FPM prepent the document root /srv/vhosts/example.org/vhostdata/public/ on  every request it receives?
+The other option (if your app is compatible) is switching to nginx, which supports unix sockets for PHP.
+If this is just worrying about security, I'd suggest you just tighten the permissions that PHP/Apache run as.
+As mod_proxy_fcgi cannot handle Unix Sockets, PHP-FPM has to listen on localhost.
+Running within a chroot is really your only option if you want to do this.

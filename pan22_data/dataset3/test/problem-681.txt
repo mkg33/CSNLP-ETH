@@ -1,0 +1,11 @@
+http://fibrevillage.com/storage/171-zfs-on-linux-performance-tuning
+You'd need to mess around with setting an insanely high zfs_dirty_data_max limit and set zfs_delay_min_dirty_percent to 100 for the entire pool; throw a tonne of RAM at it; heavily tune the I/O queues for all write operations and the amount of writes you allow it to do at a particular time.
+You'd need to create a completely separate Zpool to handle this, and it would probably break completely very quickly after you implemented it.
+This is basically totally counter to the way that ZFS wants to work.
+In addition you'd probably get your performance totally clobbered whenever you reached those limits and ZFS tried to commit 100GB of buffered data to disk at once, rather than having it make many smaller 100MB writes.
+All of that basically would break ZFS' desire to make sure that your data stays safe no matter what happens.
+If you really want to try to make it work, take a look at the tunable parameters on ZoL (which I'm assuming you're using rather than Oracle/Solaris ZFS):
+ZFS will do everything it can to keep your data safe, and then after that it will make your data fast.
+If you really want to do this on ZFS it would be really risky and I have no idea if it would actually work.
+You're better off using a RAMdisk, maintaining it will take a bit of extra effort, but fighting ZFS as much as you'd need to to get it to do this will probably take more.
+You'd basically need to configure ZFS to hold on to massive amounts of dirty data (sitting only in cache) and you'd be fighting ZFS' desire to keep that data reliable.

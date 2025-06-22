@@ -1,0 +1,24 @@
+Enabling Portfast on the ports between the DHCP client and server resolved the problem for me.
+However, when I boot the machine into the installed operating system (in this case, Windows Server 2012), and configure that network interface for DHCP, it gets an IP address from the DHCP server.
+I'm not saying the portfast option won't work but sometimes it's a tough sell to the "that's the way we do things" networking types.
+Check that the process dhcpd shows up in your list of processes.
+I get the "No DHCP or proxyDHCP offers were received" error from the Intel Boot Agent.
+I've seen Portfast (or the lack thereof) cause this.
+Then in Management you can add DHCP and DNS and the DHCP particulars.
+Wait a minute or so to let the switch settle and then leave the bios to continue booting.
+What could cause DHCP to fail during the PXE boot process while succeeding when booted into the operating system?
+Pressing the Pause/ScrollLock button on the keyboard early in the boot (before PXE starts it's boot atempt) can achieve the same thing.
+UEFI systems also seem to slow up the boot process.
+At least, the MAC address that is reported during PXE boot is the same as the MAC address that gets the IP via DHCP when Windows is up.
+I usually bypass the portfast requirement by making hosts do the extended memory check in the bios (not sure about Cisco but HP and IBM allow this setting) by the time the host boots to PXE everything is able to forward.
+Usually it is one of 2 things (or both simultaneously).
+1) Spanningtree protocol on the edge port to which the server connects, Like Ryan Ries already mentioned above.
+As far as I can tell, PXE is using the same network interface that Windows is.
+A tcpdump on the DHCP server shows no DHCP-related packets were received on the DHCP server machine:
+If you have no control over the switch the best option is usually to boot the server to Bios.
+2) Auto-negotiate between the PC and the switch which takes longer than the time that the PXE bootloader is willing to wait for an address.
+Both scenarios of course imply that you can attach a keyboard and monitor to the device.
+Using MAAS 1.7.6 you have to click on Clusers, then on the cluster name, then edit the interface.
+This has worked everytime and everywhere I've tried it, without network intervention.
+http://www.dummies.com/how-to/content/spanning-tree-protocol-stp-and-portfast.html
+I'm trying to PXE-boot a Cisco UCS C240 server to install a new OS over the network, but it isn't picking up an IP address via DHCP during boot.

@@ -1,0 +1,15 @@
+If vSphere client is installed to Windows XP or 2003 then it could be a known problem with ciphers.
+It is quite simple actually, just "Restart the Management agents".
+It should give you a web page and a link to download the client and a link to login to the Web UI.
+Test the network by pointing your web browser at the address of the server.
+As mentioned by VMWare knowledge base all you have to do is run:
+If the page displays correctly then login to the web ui to test your logon/pw
+I tried updating to the most recent versions of ESXi but that did not resolve the issue.
+This error troubled me for quite a while, and since this thread is still the first google result, here is my solution.
+This helped me to access _VMware ESXi 6.0.0 from vSphere Client 6.0.0 on Windows XP.
+I disabled this check (relying instead on pings) and this problem hasn't returned for almost a year now.
+I'm guessing there is a security setting somewhere under the hood of ESXi 4.x that tells the system to stop responding after a specified number of requests, but I wasn't able to locate that.
+I had a check setup for the system to check the https page for the host every 5 minutes which for some reason would eventually cause the system to respond to everything, to the point where vSphere clients couldn't even connect anymore.
+It turned out the problem was my monitoring solution of all things.
+I realize I'm coming back to this question much later than when it was posted, but I had forgotten that I posted this question and when I saw it, I wanted to share the solution with others.
+When the issue would start occurring, the VMs would stay up, however you couldn't connect to anything at the hypervisor level until completely rebooting the system (even restarting the management services would not fix it).

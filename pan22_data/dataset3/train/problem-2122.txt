@@ -1,0 +1,12 @@
+So basically weekrand {some command} {parameters} will randomly execute {some command} with {parameters} between 0 and 10080 minutes, i.e.
+Your crontabbed script will contain something similar to:
+In /usr/local/bin/scriptfile have the commands you want to run.
+lacqui is correct, but his explanation is a bit short.
+I'd like to write a cron command so that a job would execute once at some random time during the week - is this possible without having the crontab modify itself?
+cron runs once a week, scheduling an 'at' job which randomly occurs during the week.
+There's a corner-case here to watch for... it might be possible for the job to occur at the end of the week and the beginning of the week, which might cause two simultaneous executions.
+and delays itself for a random time (not longer than the week) before doing the real job,  for example by using the following command (works for bash and zsh)
+I put together a small script called weekrand (looked online somewhere for advice, forgot where it was) that does just that:
+If it is important, subtract a few minutes from the modulo to be sure.
+I've considered writing a function that, based on a random number generator, may or may not execute the task - but I'd like the command to definitely execute and there to be no second in the week that was more likely than any other second...
+One quick solution is to write a cron script that is called once a week

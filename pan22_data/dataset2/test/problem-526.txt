@@ -1,0 +1,11 @@
+No, it's not possible. But most NICs allow you to administartively set the MAC, and you could set both NICs to the same MAC.
+Your aim: to have constant-hostname-of-laptop always point to the (active IP address/interface of the) laptop? I would have thought that the combined DNS-and-DHCP service of dnsmasq would do that, i.e. when a client does a DHCPDISCOVER/DHCPREQUEST it reports its hostname, and dnsmasq associates the hostname with whichever IP address is assigned. That has been my experience, however I must admit I've not tried connecting with one network i/f, then disconnecting (without doing an explicit release) and connecting again with another.
+First thing I learned is that it is possible to assign DHCP leases based on criteria other than a MAC address.
+On most *nix boxen you can usually do this, then setup a failover LAGG interface to both (with preference for the wired) to allow your to hotplug the wired connection without disconnecting TCP sessions.
+I opted for the multi-mac solution (because I didn't try to find out how I could specify the client id on the client side, which is something that has to be done for each separate client, and the multi-mac alternative is one solution for all the portables in the house.)
+Then, although it is apparently not supported by the luci web interface on openWRT, dnsmasq itself supports client_id, and multiple MAC addresses (with the some cautioning).
+Enjoy the seamless transition this setup provides, all existing session stay alive if you don't take too long with the switch.
+(random semi-opinionated comment: it's rare to see this highish count of unconstructive and plain inaccurate answers and comments to a question)
+In contrast to others here, I claim that your request is actually quite elementary and has been supported in dnsmasq since version 2.46, IIRC. This was the sole reason I switched from dd-wrt. After about a year of running OpenWRT, I now know there are actually plenty more reasons to switch, but that's beside the point.
+Assuming a hostname of "laptop", what happens when you query the OpenWRT device for "laptop", after having switched from one interface to another?
+You can manually configure a static IP address on both interfaces, and then use the one you prefer (while leaving the other one disconnected, of course).

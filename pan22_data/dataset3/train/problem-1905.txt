@@ -1,0 +1,28 @@
+Make sure to uncheck this checkbox for both IPv4 and IPv6.
+At the same time, I need to be constantly surfing for info and also need youtube for my background music... Now you definitely don't want to stream youtube off a VPN since that makes it sound like a Robot Singing!!!
+I successfully used @TRS-80's technique to achieve this.
+from russian forum: http://forum.ixbt.com/topic.cgi?id=14:43549
+Usually I simply disable IPv6 protocol completely for VPN connection.
+route -p add a.b.c.d/<CIDR> w.x.y.z or route -p add a.b.c.d mask e.f.g.h w.x.y.z
+This ID can be found by executing netstat -rn, or, for more compact output, netstat -rn | grep -A10 'Interface List'.
+A 'short' guide for noobs like me, who don't know much about networks.
+where a.b.c.d is the target address/network and interface number is identifier of your VPN connection.
+where 'VPN gateway' = 'your IP on VPN network' = w.x.y.z and target address/network = a.b.c.d.
+And, finally, run a few tracert commands against both IP addresses which are supposed to be accessed via VPN and against those which should work without VPN.
+if you have both IPV4 and IPV6 you have to uncheck the "Use default gateway on remote network" in both places, even if you only use IPV4
+Cons: there is no Get-VpnConnectionRoutes cmdlet so it can be hard to manage these rules.
+Cons: need to re-create routes with new ID if you delete your VPN connection.
+Pros: necessary routes are added each time VPN connection is established and deleted each time it is disconnected.
+Pros: no need to change anything if your VPN address (w.x.y.z) will change.
+If you added persistent routes, you can check them by executing netstat -rn | grep -A10 'Persistent Routes'.
+route -p add a.b.c.d/<CIDR> 0.0.0.0 IF <interface number>
+I work from home and have to VPN onto the corporate network for my email (I hate webmail!!
+I don't know exactly where and how these rules are configured, but such scenario exists - probably it is some magic done by VPN network administrators.
+Not much new here, but a summary of all good options described in previous answers and in other related threads.
+Add-VpnConnectionRoute -ConnectionName '<VPN connection name>' -DestinationPrefix a.b.c.d/<CIDR>
+2.2) Add permanent route via VPN network interface:
+For this you must uncheck Use default gateway on remote network checkbox in VPN settings.
+It is (sometimes) possible that unchecking that checkbox will be enough for normal work - in my experience, necessary routes (which will direct necessary traffic via VPN) can be added automatically after VPN connection is established.
+Cons: you will have to re-create routes if your VPN IP will change.
+You can find w.x.y.z by executing ipconfig and looking for your VPN connection name or, if you use PowerShell, you can get compact output by executing ipconfig | grep -A5 PPP (which will output 5 lines after finding each PPP connection).
+save as file (ex: vpn_route.vbs) and after vpn connected execute command

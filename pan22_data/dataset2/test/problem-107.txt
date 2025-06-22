@@ -1,0 +1,10 @@
+The track tables can also be used with route-maps set ip next-hop verify-availability 1.1.1.1 250 track 4
+You want to look into HSRP.  Basically, router 5 and router 6 would share 192.168.1.1, but their real addresses would be .200 and .201 (For example).
+HSRP is probably your best option, but since it looks like you are running a routing protocol, you could look at passing the default route. Just make sure you have a backup default route with a high metric like 254 as a backup or to help get the network cold started.
+But of course, a switch can't have 2 default gateways (right?) and I can't give the routers ip addresses within the same range. How would I best solve this problem? So that the switch can ping any of these routers and in the future, ping any device in the other LAN.
+The router on the left is a router on a stick to route traffic within the LAN that has different VLANS.
+HSRP is so that non-routing (static) hosts can have the benefit of high availability.  This is the gist of the idea, I will add more config later.
+I'm guessing these probably work with L3 3560 or 2960 or later, but can't say for sure. I'd still vote for passing a default route via OSPF :)
+The left switch is the root switch for our LAN and works as the VTP server. This is also connected to Router 6.
+Another option that appears to be supported on a L3 3550 is to use ip sla and track tables. I haven't used it on a switch, but have used it with success on branch routers to switch default routes when a route becomes not pingable.
+I want to connect this LAN to a future other LAN (that will be connected in a similar way with Router4 and 5) using these four routers because the link has to be high-available.

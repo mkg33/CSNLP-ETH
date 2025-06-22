@@ -1,0 +1,14 @@
+I can see two possibilities, NTLM is not supported with URL rewrite + ARR.
+Set an SPN for each domain you will need to authenticate to and for each server the applications are hosted on (if you have a web farm).
+For Windows integrated authentication you may have to configure Kerberos to get it working properly.
+From a deep dive in the article, you have to create Service Principal Names for the web applications and delegate control to the web application identity.
+I'll do some testing, but you may have to make another page for errors that uses the referral URI's PathAndQuery to send it to the right place.
+Set up the custom errors on the default site to use this page.
+Open up the computer object for one of the web servers.
+Change the radio button to "Trust this user for delegation to specified services only", make sure the next radio button is "Use any authentication protocol".
+To create the SPN, use a command like this: (HTTP applies for both HTTP and HTTPS)
+Alternatively, it may be easier to just make a default page on the root that will redirect traffic to the proper location, something like this:
+click ok.  On add services, select all of them that this application pool identity is in charge of and click okay.
+search for the application pool identities (if it's Network Service, you don't have to worry about this part).
+Here's a page describing the general steps for sharepoint, but it's applicable elsewhere: http://blogs.msdn.com/b/echarran/archive/2010/02/11/howto-configure-sharepoint-2010-for-kerberos.aspx
+Next, open up active directory and set the view to advanced mode.

@@ -1,0 +1,9 @@
+I've discovered several ways to set a default/catch-all vhost and some conflicting opinions.
+Would having a <VirtualHost _default_:*> block in my httpd.conf before I Include vhosts.d/*.conf be the best way for a catch-all?
+Each vhost has their own config file in /etc/httpd/vhosts.d and these vhost config files are included from the main httpd conf with...
+I've got multiple named vhosts on an Apache web server (CentOS 5, Apache 2.2.3).
+Anyone accessing the server directly by IP address, I'd like them to just get an 403 or a 404.
+What about specifying a default vhost in httpd.conf with _default_ http://httpd.apache.org/docs/2.2/vhosts/examples.html#default
+You want to be consistent with your config, so don't put one <VirtualHost> block in the httpd.conf and the rest in separate files.
+Name the config file for the default vhost !default.conf, and then just make sure there are no other conf files in vhosts.d with names that start with punctuation.
+Now I when anyone tries to access the server directly by using the public IP address, they get the first vhost specified in the aggregated config (so in my case it's alphabetical order from the vhosts.d directory).

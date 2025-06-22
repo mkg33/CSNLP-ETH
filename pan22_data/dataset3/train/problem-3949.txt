@@ -1,0 +1,13 @@
+You can check your bindings with tmux list-keys -t emacs-copy | grep -i page.
+It does default to emacs, but tmux will set it to vi (along with status-keys) if you have the VISUAL environment variable set and its value has vi in it†, or if you do not have VISUAL set but do have EDITOR set and its value has vi in it.
+This means that a value like /opt/vital/bin/emacs will not count as vi (despite the vi in vital).
+But since these are the default, you will need to track down where they are being changed/removed before you will know where to put the above commands to make them effective (they will need to come after whatever else is modifying the bindings).
+By default, the emacs-copy key binding table has all of C-v, Page Down (NPage), and Space bound to page-down as well as both M-v and Page Up (PPage) bound to page-up.
+If these bindings are missing you can reestablish them by hand (e.g.
+You can check your global mode-keys value with tmux show-options -g -w | grep mode-keys.
+I'd like to be able to map emacs keys (like C-v/M-v) for scrolling in tmux instead of default PgUp/PgDown, is that possible?
+If you want to override the “auto-detection” and always use the emacs binding tables, then you can put these lines in your ~/.tmux.conf:
+† The “has vi in it” test is actually more like “vi occurs after the last / (or anywhere if there / does not occur in the value)”.
+You may also have a per-window mode-keys value (omit the -g to check its value; you may use -t to target another window if you can not run the command in the window itself).
+Can't see that from the manual at the moment (apologies if its there, seems like a such a natural thing considering the rest of the emacs-like navigation key bindings tmux uses)
+Are you sure your mode-keys option is set to emacs?

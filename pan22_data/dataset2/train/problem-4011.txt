@@ -1,0 +1,6 @@
+But the way an application uses and validates a certificate is not necessarily the same as how Windows would use and validate a certificate.
+I've introduced delta CRLs which have made troubleshooting must quicker and all seems fine now so false alarm ultimately.
+I'm using a simple test app on the client that is configured to use the one certificate so if revoked would simply stop working. 
+If you want to validate that Windows CRL checking is working, you can use the following command on the client:  
+Turns out that Windows was revoking the certificates but there was some local caching of the CRL taking place as is intended by design. It seems that even when the certificate is showing as revoked, a cached copy is still used regardless until a specific period has passed, however, from my understanding the two commands I ran in my initial post should have expired this and requested an up-to-date one from the server but doesn't appear to be the case. 
+You need to verify the client is checking the CRL with a packet capture to your CRL on tcp/80. That would take five minutes.  

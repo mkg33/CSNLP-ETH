@@ -1,0 +1,13 @@
+You can either get a secondary IP address and use that in your second VirtualHost (and then get a new IP for every new VirtualHost you need), or you can uncomment the NameVirtualHost directive.
+There a number of ways in which the ePages Apache configuration differs from a more "normal" site.
+So in your example above, if my.ip.add.res happens to be the default IP of the server then your VirtualHost block will be ignored in favour of the one that came before it.
+It rewrites most of the config files every time the ePages service restarts.
+Meaning that if you define your own VirtualHost, and your server doesn't define a PROXY environment variable, your VirtualHost will be the only one and will therefore be in effect for all requests.
+If PROXY is defined, your epages VirtualHost will be ignored, otherwise it will be a necessary filter.
+Note also that ePages relies on mod_rewrite, so this "safety net" VirtualHost will need to enable it.
+This might vary from version to version, but in my case (6.14.3) the one and only VirtualHost block sits inside an <IfDefine PROXY> block (conf.d/zzz-epages-httpd.conf).
+If you look in conf/httpd.conf you'll see the NameVirtualHost directive is commented out.
+It defines a VirtualHost inside an IfDefine block.
+To be safe, define two VirtualHosts: one that will work for epages and one for your other site.
+Anything with a "zzz" prefix (which is most of the files in conf.d) will be rewritten, so don't bother editing those files.
+This means your VirtualHost directives will be activated by IP address, not hostname.

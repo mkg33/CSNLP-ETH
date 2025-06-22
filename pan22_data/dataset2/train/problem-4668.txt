@@ -1,0 +1,7 @@
+You need to contact your network admin about the network settings (IP address,, gateway, dns), and set it up. Since router advertisment is enabled by default on most machines, there is probably no router sending them out, or you would have had an autoconfigured and IPv6 address. 
+Another strange thing is, pinging my own IPv6 address only works if I tell ping6 to specifically use the eth0 interface with -I eth0 otherwise that'll return unknown host.
+One thing I've read is that I need to specify my router in the routing table somehow, but I don't even know the router's address and I have no idea about how to find it out either (because I'm nothing like a networking expert and IPv6 seems even more confusing than IPv4 to me).
+You don't have a public IPv6 address set up on your host (public addresses start with 2xxx or 3xxx). You only have a link-local (fe80::) address set up, so you can only ping other hosts in your lan.
+So, my problem is that I just can't get IPv6 to work. Ping6 just tells me connect: Network is unreachable when I try to ping ipv6.google.com for example.
+To connect to the rest of the internet you need a Global address (thus out of 2000::/3 at least for the next several years) and of course you need at least a default (::/0) or defaultish (2000::/3) route to a router that will actually forward your packets.
+You have to set "-I eth0" when pinging, because you're pinging a link-local address (fe80::/64), which is set up on all your interfaces, and ping doesn't know which interface to use. 

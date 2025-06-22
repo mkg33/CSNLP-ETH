@@ -1,0 +1,13 @@
+However, if the server that you are connecting to uses DFS, then you will get the following error instead: mount error(38): Function not implemented.  This is because DFS support on SMB3 was only added to the kernel in version 4.11.
+The workaround, as described by many other answers here, is to specify a different version of the protocol.  The following command works for me:
+I have an antivirus with a firewall and even though I set it explicitly to allow "windows file and print sharing" -- a predefined rule, it was still blocking connections. I had that proven by disabling the firewall temporarily.
+You can check your kernel version with uname -a.  In my case, it was 3.10 on CentOS7.  I followed these instructions to upgrade and now it works.
+Additionally I had to use the option "noperm" because all files wrongly showed as not readable and writable by the owner.
+The SMB1 version of the protocol has been deprecated, however this is the default version used in older versions of mount.cifs, e.g.  I have this problem with version 6.2.
+Hope this helps someone, host is down might not mean it's not responding to pings, but could mean it's not responding to authentication attempts.
+sudo mount -t cifs //server.name.or.ip/shares/Public /target/directory -o username=someuser,domain=somedomain,vers=3.0
+What I saw there: In the DiskStation, you can choose which protocols to support. By adding he relevant protocols (up to SBM3) in the advanced options for file services in control panel, you can also solve the problem.
+Eventually, it turned out I had previously restricted SMB server access to only a limited number of IP addresses by configuring /etc/samba/smb.conf:
+I received the same error without further ado from a new Samba client, when trying to mount a CIFS SMB network share:
+Sorry if this is a late response (I realise it's an old thread), however I have just discovered there is another possible reason why mount.cifs would say the host is down.
+I also just ran into the problem mentioned after an upgrad to Xubuntu 17.10. I use a Synology DiskStation.

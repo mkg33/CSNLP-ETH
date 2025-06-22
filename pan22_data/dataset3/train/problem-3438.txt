@@ -1,0 +1,10 @@
+If both Processes updated Table A and Table B in the same order, then the deadlock could be completely avoided.
+Being Transactional, neither will give up their control of these locks until commit [or rollback] is issued.
+The DBMS detects this situation and kills one of the processes, usually at random, allowing the other to complete.
+The two processes enter a "deadly embrace" from which neither can ever escape; each will wait forever for the other to release its lock, which will never happen.
+Each now wants to lock the row that the other already has locked - Process 1 wants to lock row 2 in Table B and Process 2 wants to lock row 1 in Table A.
+If the locks were on different rows, the deadlock would not happen.
+In the database world, these resources are usually locks on records.
+There does not need to be any logical relationship between the two tables involved, only that they exist and that rows within them are locked "out of sequence" by the two processes.
+This is why careful Application design is essential, making sure that updates are [generally] applied in "the same order", to avoid exactly this situation.
+Two process each have exclusive control of one resource and want exclusive control of another one, held by the other process.

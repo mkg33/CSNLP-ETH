@@ -1,0 +1,29 @@
+So one of the first things it does is to ARP for the MAC address.
+I would say, the question is kind of confusing, but looks like here is what you need
+So here is how you would do it on a cisco switch (I have taken vlan 2 as example)
+The workstation saves that MAC associated with the GW's IP.
+Sometime later the workstation attempts to access an off net IP.
+Because 192.168.1.1 can only be used by one segment (it will be "outside" all but one segment) this won't work as stated.
+Having said the above, you can say you need them to be on the same VLAN and also on the same subnet.
+Remember that protected ports cannot talk to another protected ports
+When the workstation starts all it knows is the IP of the GW.
+In that Case i would have a Default VLAN_0 where your Default Router lives.
+http://www.cisco.com/en/US/products/hw/switches/ps700/products_tech_note09186a008013565f.shtml
+In cisco world you can deploy a full fledged PVLAN or use a switchport protected (which is also a rudimentary form of PVLAN)
+If you want to deploy a full fleged PVLAN configuration or more info on how to do stuff
+The router correctly responds with its MAC since the IP is not on the local net.
+Knowing it is off net it substitutes the routers MAC in the destination MAC and voila.
+You can easily subnet into 8 blocks of 32 address using a mask of /27 (255.255.255.224), however they won't all have the same gateway address as they'll be in different subnets of course.
+I haven't tried this in a very long time (back in Repeater days).
+Use firewalls to physically separate the traffic between segments, allow traffic back and forth between the rest of the world while banning traffic to and from the other segments.
+Similarly do it for all the 8 ports, IP them normally as if in the same subnet.
+Remember, that in this case, no traffic will pass between them.
+Like I said, it was long, long, ago, in a network, far, far, away...
+If you're trying to use a netmask as security, don't.
+Now there are various ways to achieve it, but the simplest is by using a concept of Private VLAN's (PVLAN's) for short.
+A group of us tested using any valid IP not on our network as the gateway(GW) and it worked properly.
+As for this supernet thing, it'll get complex because one side will be able to send to the other but not the reverse - bad idea, just route it properly.
+So, though they will be in the same VLAN having same gateway, they will be isolated from each other.
+in that way all would access the gateway and non can access each other's segment.
+Each segment will need its own gateway IP (ie 192.168.1.32/27 will need 192.168.1.33 as a gateway).
+Which leaves us with the second part of the problem, they should not be able to talk to each other.

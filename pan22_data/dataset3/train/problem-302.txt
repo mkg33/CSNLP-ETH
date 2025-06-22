@@ -1,0 +1,10 @@
+For both the options please take the other SQLs accessing PacketTransmissions table into consideration and how the performance of those SQLs might get affected.
+If, as in your example, the datetime variables are selective, ie.
+Though this is a negligible count, if these records (130k in total) are scattered (ClusteringFactor) across all or most of the pages in the CI, the optimizer will favour FTS or CI Scan against CI Seek.
+They will allow selecting the rows you need without table access - which in the end will still be necessary, after all, you require "*" from both tables.
+Another option is, if it is available in Azure, use Hash Table Partitioning on (SessionID, DateProcessed).
+You should check if your current indexes are needed for other selections, if not, remove them.
+From the execution plan I infer that for each session record, the SQL fetches more than 130 records from PacketTransmissions on an average.
+Please note that Clustering Factor is just one of the possible reasons.
+One option is to rebuild the CI on PacketTransmissions using (SessionID, DateProcessed) as the CI Key, provided they are unique.
+not too far apart, the following indexes should improve the performance.

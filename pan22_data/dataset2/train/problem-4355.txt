@@ -1,0 +1,10 @@
+If you use 500M, your absolute worst case memory consumption for MySQL would become 958M (256M + 481M + 200M).
+At that point, MySQL is complaining that the data dictionary entry for the table wp_wfNet404s in the thecityo_production_wp database is still inside the system tablespace.
+If you use RIBPS, your absolute worst case memory consumption for MySQL would become 939M (256M + 481M + 200M).
+Please look into removing the pidgeon hole in the data dictionary. Also, look for other memory consuming components in the DB Server.
+With given settings, your absolute worst case memory consumption for MySQL is 584M (256M + 128M + 200M).
+It looks like you were doing some kind of SELECT ... JOIN query. My guess would be you were accessing the corrupt table in the SELECT ... JOIN because of this line 
+default-storage-engine=MyISAM -- Unless you already have some InnoDB tables, this means that innodb_buffer_pool_size may as well be 0 -- you aren't using it.  
+It is complaining about not allocating 252K. That's just a side affect of the error because it could allocate needed memory for an operation that cannot read from a table.
+When you use mysqltuner.pl, it calculates the total usage in the worst case scenario. It does it by adding 3 figures together
+You did not mention if the Server is a dedicated DB Server or if you are running a full stack. If you are running a full stack, please lower any memory-sensitive settings in the other parts of the stack (Varnish (more like Vanish), PHP, Munin, Nagios, Tomcat, Hibernate, etc).

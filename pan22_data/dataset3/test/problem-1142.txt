@@ -1,0 +1,20 @@
+It doesn't take advantage of repetition between files, only within a file.
+Now, normally a zip file is incompressible but when it contains a lot of identical files the compressor can find this redundancy and compress it.
+For example, say each XML file has a certain header.
+In methods 2 and 3 zip couldn't compress for this but in method 4 it could.
+When compressing a single monolithic block the system can just continue to stream data to its algorithm, ignoring the ‘boundaries’ (for lack of better word) of the individual files.
+Also ASCII is known to have a high compression factor.
+If your files are even a bit similar (as text always is), re-use of the 'dictionary' becomes very efficient, and the result is a much smaller total zip.
+Lastly, if memory serves right, zip uses something like dictionary encoding , which is especially effective on ascii files and even more so on XML due to their repetitivity
+That header only occurs once in each file but is repeated almost identically in many other files.
+plus xml is often very repetitive making the metadata a large chunk of the data that can’t be so easily compressed as the xml content.
+ZIP compression is based on repetitive patterns in the data to be compressed, and the compression gets better the longer the file is, as more and longer patterns can be found and used.
+Note that I have also seen a small gain when dealing with large numbers of files without redundancy.
+Simplified, if you compress one file, the dictionary that maps (short) codes to (longer) patterns is necessarily contained in each resulting zip file; if you zip one long file, the dictionary is 'reused' and grows even more effective across all content.
+Data Compression Explained : http://mattmahoney.net/dc/dce.html
+Concatenating the file allows zip to take advantage of repetitions across all of the files, resulting in drastically more compression.
+The zip compression format stores and compresses each file separately.
+Next to the metadata Mike Scott mentioned there is also overhead in the compression algorithm.
+If you really care about size it's worth trying if you have an awful lot of files in your zip.
+When compressing a bunch of individual small files you’ll have to be very lucky to be able to compress them that it just happens to fill one compression block.
+In addition to the 7-Zip answer there's another approach that's not as good but would be worth testing if for some reason you don't want to use 7-Zip:

@@ -1,0 +1,6 @@
+We are having an ETL process which inserts lots of data into tables. This database is set to Simple Recovery Model and the transaction log is growing a lot. I was thinking that would it help to set this database into Bulk-Logged Recovery Model? We are taking full backups on daily basis. So is there some operations which are not logged in Bulk-Logged Recovery Model compared to Simple Recovery Model? 
+Bulk Logged will not help you in this situation.  Your transaction log is growing because you are performing large transactions.  In simple mode, the log is truncated after a checkpoint.  
+Depending on how you are loading your data, you may need to break it up into smaller chunks.  Make sure you are not loading all the data in one large transaction.
+If at all, your log size will grow when changing from simple recovery to bulk logged. You may be having log running transactions, or uncommitted/runaway transactions that are keeping a hold of your log file, causing it to grow.
+If you log grows on ETL in simple mode it means your inserts are not minimally logged. The requirements for minimal logging are described in Operations That Can Be Minimally Logged and Prerequisites for Minimal Logging in Bulk Import:
+The Data Loading Performance Guide also mentions the TF 610 effects and how it affects minimal logging. 

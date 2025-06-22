@@ -1,0 +1,8 @@
+The limitation is that you cannot alter partitions on a disk that has partitions in use.
+Although it requires shutdown, you could probably get away with only a couple of minutes of downtime, especially if you avoid the --nonsparse image option and dd the gparted disk to an iso file and mount in your KVM guest in advance.
+AFAIK, this is not possible -- you can add new disk images, and as you point out you could also add new images to an LVM volume, but in order to resize an active, bootable disk image you need to be able to shut it down and edit the partitions.
+To do this your root filesystem must be on an LVM, this often means that you have to have a separate boot filesystem (this is not, however, essential, it just makes things easier)
+But if it's on it's own it's easy to unmount it unplug it, plug in a new one and rebuild the boot disk without stopping the system.
+It is possible to move a Linux system between disks while it's running.
+After plugging in the new disk, you add it to the LVM with vgextend, use pvmove to move the rootfs to the new disk, use lvextend and resize2fs to expand the logical volume and filesystem respectively then use vgreduce to remove the old disk from the volume group.
+For the simple case you have a tiny disk for the boot filesystem that you never have to touch.

@@ -1,0 +1,50 @@
+While the quality of compilers varies a bit, and just-in-time things have their usual advantages and disadvantages, it seemed that a major difference was related to the safety nets.
+Indeed, a high constant factor is mainly caused by an inefficient interpretation of the programmer's intent by the language parser.
+for example interpreted code runs concurrently with a garbage collector.
+If the JVM is bad at recognising and acting on demand for locality¹, i.e.
+Imagine you want to store a (huge) matrix of objects, say pairs of numbers.
+Obviously when programs implement different algorithms that difference may itself be enough to explain any difference in program performance.
+When the facts are about the performance of programs, the particular way each program does a task matters a lot.
+in a sense the higher level language is compiled into the lower level language.
+Now, in Java, pairs would be objects which would end up somewhere on the heap, the matrix containing only pointers.
+Modern CPUs also help tremendously, as these are branches that can be predicted well.
+This is fine for many purposes, but consider the following.
+When the facts are about a wide range of different programming languages even more flexibility has to be allowed in the way programs implement the same algorithm - after all, the point of using a different language is for the different approach that language provides.
+So there has to be some flexibility allowed in the way programs implement the same algorithm, and the tasks are kept simple enough for you to check the program source code.
+They are neither really interpreted nor compiled but in-between: you can write high-level code that the "interpreter" will have to guess how to run the most efficiently possible (and correctly of course), or you can almost compile your code by annotation or by using other specialized constructs such as dispatching or semi-automatic unrolling/vectorization of loops, so that your annotations avoid the need to make the language parser to guess what you were meaning to do at lower levels of abstraction: in short, annotations give you the ability to give precisions on your high-level abstraction.
+See for example: Computational Complexity via Programming Languages: Constant Factors Do Matter (A. M. Ben-Amram and Neil D. Jones)
+The main theorem, for deterministic time, states that for time-constructible functions $T(n)$, there is a constant $b$ such that more decision problems can be solved in time $bT(n)$ than in time $T(n)$ ...
+Interpretation vs. compilation issues aside, memory IO is indeed a big issue (maybe the issue) in my experience, in particular caches.
+& yes as you guess, another simple answer is that modern interpreted languages use a garbage collector which simplifies the programming experience and maintenance of the code at the expense of some runtime overhead.
+however the question seems to suggest an unfamiliarity with the basic theory of NP completeness which is the theoretical construct used to judge runtime complexity and in which there is indeed no substantial difference between compilers and interpreted code because it all runs within P-time factors of each other.
+the object are scattered over the heap, this means cache becomes useless if you iterate.
+This is not because of a lack of investment of the language authors, but rather that, like with any level of abstraction, you choose a balance between the conciseness of your words and their preciseness.
+Less obviously, even when the same program is measured with different implementations of the same programming language, the particular way that program does the task may work better with one of the language implementations than the other - but slight changes to the program might reverse that performance difference.
+We will see in the future if this concept works out.
+Just an update on the issue: I think that the problem of efficiency of the constant factor is mainly qualitative, rather than quantitative.
+a useful way of picturing language implementation complexity is to visualize layers of different systems or subsystems that run concurrently or "on top" of each other.
+In this sense, we can say that it's more a problem of semantic linguistics rather than just technical implementation: with a low level language such as C, the language parser don't have to make any guess, since you have direct control of the most basic instructions, and thus are responsible for the whole program flow.
+[1] I do not know what it actually does in this regard, but my experience indicates it is not too clever about it.
+A word like "humans" is very abstract and describe a whole specie, but it doesn't account for the particularities and all the culture of each individual in this group.
+The problem tends to explode if you have parallel algorithms, by the way.
+For example, if you look at the The Computer Language Benchmarks Game, you can see that a gap often occurs between a compiled and an interpreted language, but it is not always true: in the regex-dna test, javascript performs better ... but only because it has a powerful and "native" support for regular-expressions.
+With a high level language, you get a more abstract control of the program flow, which makes it easier and faster to design complex program, but at the expense that you delegate some of the program flow design to the language parser: it now has to make some guesses about what you meant, and it can be very costly if it's some kind of program flow that the language parser wasn't primarily made for (such as linear algebra in Python).
+Iterating over the matrix is about as fast as if the matrix contained single numbers.
+The introductory paragraph of the "The Computer Language Benchmarks Game" page is clarifying:
+there is a simple answer in the case you mention, Python/C, not mentioned in answers so far.
+I think that the gap between the performance of two programming languages highly depends on the type of the problem/algorithm and how you measure such "performance".
+The theory says that different programming languages lead to execution times that differ only by a constant factor ... and the speedup theorem for Turing Machines says that constant factors are meaningless; but some efforts have been done to study computability and complexity from a programming-language point of view and the results are a little bit different.
+Just like scientific jargon, high-level language parsers are designed to concisely and efficiently describe operations of the targetted paradigm, but they cannot describe as concisely every other paradigms.
+; the "higher level" language is written in terms of the "lower level" language.
+One aspect that has not been covered in the other answers is the fact that "higher-level" languages typically provide additional safety nets, which may involve some run-time overhead.
+However, now it seems that a new class of languages are emerging: annotated languages, such as Julia or Cython or Numba.
+Using the programming language described in this paper we prove a series of hierarchy theorems ...
+interpreted code is built "on top" of C interpreting code.
+the Python interpreter is written in C but not vice versa.
+I think now we are at a point where we can approach the question from a TCS perspective, especially from the perspective of the theory of programming languages: Would it be possible to, e.g., re-design Java so that none of these run-time checks are necessary, without losing any of the safety nets, and without putting any significant additional burden on the programmer?
+When writing a program in C or maybe even C++, you (can) control what ends up where in memory.
+Nevertheless, a number of these checks are there and they take a non-trivial amount of time.
+Of course some of these checks can be optimised away, and some of them can be moved outside the inner loops.
+It is also clear that the gap between Java and C++ has greatly reduced thanks to its JIT compilation.
+In Java, array references such as x[i] involve two sanity checks: pointer x is not null, and array index i is valid.
+As a concrete example, I have occasionally compared the performance of C code and equivalent Java code (truly equivalent – forget about classes and objects, your high-level data structure is int[]), and I have also had a look at the machine code that is generated by modern compilers in each case.

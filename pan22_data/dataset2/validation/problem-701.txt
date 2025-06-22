@@ -1,0 +1,10 @@
+Can you not use per-account resource limiting to limit the number of connection the client can make, and therefore limit the system resources used. In MySQL 5.0, you can limit the following server resources for individual accounts:
+If customer runs this script from the command line, "nicing" it in addition to the above is of course a good idea.
+For example, if a "nice" php script generates a massive INSERT statement in low-priority then sends it to the mysql server, the mysql server will execute that insert in its typical high-priority mode regardless of the "niceness" of the PHP script. This is because the Mysql server is a separate process with its own niceness and PRI.
+If you're picky about RAM usage you can ask customer to "unset" unneeded variables just before the sleep statement.
+But here's the thing: if you "nice" anything except the mysql server itself all inserts will be done at Mysql's priority, which is rather high.
+If the resource in question is processor then try cpulimit. cpulimit is a simple program that attempts to limit the cpu usage of a process.
+It seems to me the best solution is to ask this customer to set up his PHP script to do inserts in small bits (over a loop) and tell him to put sleep() statements inside the loop. Inserts will be full priority, but they will be manageable in size, and then the sleep statement should let other process run and give the database a chance to catch up.
+Here is your solution: http://docs.redhat.com/docs/en-US/Red_Hat_Enterprise_Linux/6/html/Resource_Management_Guide/ch01.html
+If you use something like OpenVZ or VServer, you can essentially put a cap on the amount of CPU time consumed by each virtual server. You could create a virtual server that merely runs MySQL and then cap that. Does not change much otherwise.
+On then other hand, if you "nice" the mysql server itself everybody's DB ops will go slower. Not good, as stated in other answers.

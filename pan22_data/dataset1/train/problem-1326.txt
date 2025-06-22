@@ -1,0 +1,10 @@
+The reason /dev/md2 is smaller than /dev/sda2 is because there is a RAID superblock at the beginning of the partition /dev/sdb2. The superblock contains a unique identifier and also information on the other disks/partitions that make up the array, so the Linux kernel can automatically assemble the array upon boot, even if you change the order of the disks or copy the contents to a comletely new disk. It's a small overhead you pay in exchange for a lot of flexibility.
+Of course, it prevents you from just mirroring /dev/sda2 to /dev/sdb2 since the size is different. If you continue reading the article you linked to, you have to create a filesystem in your (degraded) RAID array, copy the files over, change the boot loader to boot from  /dev/md1 and mount /dev/md2, and then you can finally attach /dev/sda* as the second disk in your RAID configuration. It is possible, but not for the faint of heart... It's probably quicker, safer and easier to make a backup and re-install with RAID from the start.
+I'm trying to create RAID1 mirrored disks on already deployed system (CentOS 6.4). I have two disks: source /dev/sda with the OS and /dev/sdb which will be the mirror. The disks are connected from VMware ESXi as virtual disks, they have the same size and thick/thin provisioning.
+I'm following this tutorial: http://www.howtoforge.com/how-to-set-up-software-raid1-on-a-running-lvm-system-incl-grub-configuration-centos-5.3
+/dev/sdb was completely empty, so after copying partition table by:
+and changing the partitions /dev/sdb1 and /dev/sdb2 to Linux Raid Autodetect,
+To ensure there are no remains of previous arrays or whatever I zeroed superblock:
+So when it comes to creating arrays I use the following commands:
+The problem is that the /dev/md2 array has a size of 94100352 blocks, but /dev/sda has slighlty larger size (about 50MB?) - so when I create physical volume with "pvcreate /dev/md2" the sizes of the volumes are different and I can't use "pvmove" hence I can't complete mirroring the LVM volumes.
+I'm no expert as it comes to disk blocks etc. Does anyone know what could be the cause of this?

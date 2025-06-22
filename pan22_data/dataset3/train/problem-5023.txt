@@ -1,0 +1,9 @@
+Using the quaternion, with its parts called q0 q1 q2 q3.
+Regardless of how you have the object's orientation, the key is to find the 'transformed' version of whichever axis (presumably Y or Z) corresponds to your upwards direction and to determine whether it points in the opposite direction from the original axis; the condition for the latter is just that the dot product between the two is less than zero.
+So, for instance, assuming that your vertical axis is Z, if the device's current rotational transformation is stored in a quaternion q then the pseudocode might look something like:
+Calculate the direction of gravity, gx gy gz using this:
+Since the axis is generally a basis vector, you don't even need to look at a full dot product; just the appropriate component.
+As Byte56 noted in a comment, you should just be able to read the object's current orientation (i.e., its rotation matrix) off of the gyroscope, and the problem is much easier to solve that way.
+If you have your transformation encoded as a matrix, then this simplifies even further (since then the rotation is simply a column extraction), and the code ends up looking something like:
+gz will then be positive if in the upright position, and negative if facing upside down.
+I resolved it I think - I will however accept Steven Stadnicki's answer but here's how I did it for posterity:

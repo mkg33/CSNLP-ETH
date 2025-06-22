@@ -1,0 +1,17 @@
+Now let $\hat s = \arg\max_i p_S(i)$ and $\hat e = \arg\max_i p_E(i)$ be the most probable start and end positions (according to the model).
+But I am having trouble figuring out how the did the labeling and final loss calculations, which is described in this paragraph
+It says the log-likelihood is only applied to the correct classes.
+Then “The training objective is the loglikelihood of the correct start and end positions” means that if the correct start and end positions are $s^*$ and $e^*$, they try to maximize the predicted probability of $s^*$ and $e^*$.
+If this interpretation is correct, then the loss will be
+From your description it sounds like for every position $i$ in the input text the model predicts $$p_S(i) = \mathbb P(\text{correct start position is } i)$$ and $$p_E(i) = \mathbb P(\text{correct end position is } i).$$
+So the we are only calculating the softmax for the correct positions only, Not any of the in correct positions.
+Furthermore, how does that play into "The training objective is the loglikelihood of the correct start and end positions"?
+Then by "maximum scoring span is used as the prediction" they just mean that they output $(\hat e, \hat s)$ when predicting.
+So from my understanding, there are two extra parameters trained, they are two vectors with the same dimension as the hidden size, so the same dimensions as the contextualized embeddings in BERT.
+What do they mean by "maximum scoring span is used as the prediction"?
+For each, a softmax is taken with S and each of the final contextualized embeddings to get a score for the correct Start position.
+"and the maximum scoring span is used as the prediction.
+And the same thing is done for E and the correct end position.
+https://ljvmiranda921.github.io/notebook/2017/08/13/softmax-and-the-negative-log-likelihood/
+The training objective is the loglikelihood of the correct start and end positions."
+If the start and end positions are independent then this is equal to $p_S(s^*) p_E(e^*)$ and taking the negative log the loss becomes

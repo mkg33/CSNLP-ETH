@@ -1,0 +1,9 @@
+from: this post on technet forums: http://social.technet.microsoft.com/Forums/en-US/winserverMigration/thread/98a97aee-c62b-4683-94ab-3777899cf7de/
+http://download.cnet.com/Bat-To-Exe-Converter/3001-2069_4-10555897.html?spi=eae5ab48292cc101b5f0ec370cf99ad0
+Try it. Download downloader first and it will download the Bat_To_Exe_Converter automatically then. It really helped me to create service which runs my .bat file through .exe.
+Using RegEdit : create a "Parameters " key for your service (e.g. HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MyService\Paramaters\ )
+Using RegEdit : within the newly created "Parameters " key , create a string value called "Application " and enter the full path to the application you are wanting to run as a service.  (No quotes required.)
+At the time of this posting, there is no Windows Server 2008 Resource Kit Tools, so get the "srvany.exe " from the "Windows Server 2003 Resource Kit Tools " and copy it to a suitable location on your Win2008 server (e.g. C:\Windows\System32\ ).
+We use Task Scheduler to run task whenever the computer starts (regardless a user is logged in or not)
+Use "sc " to create a new service that launches "srvany " (e.g. sc create MyService binPath= C:\Windows\System32\srvany.exe DisplayName= "My Custom Service" )
+Note : some applications store their settings in a user hive, not under HKEY_LOCAL_MACHINE, so you will need to run the application to configure it, and then configure the service to run as that user.

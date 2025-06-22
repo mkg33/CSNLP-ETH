@@ -1,0 +1,9 @@
+If there were several such queries running at the same time competing for disk access, it could explain all of the execution time.
+But, it might not be necessary to use this high bloat to explain the slowness, because the lack of visibility map setting might be sufficient to explain it.
+Either the table isn't being vacuumed enough, or the effects of hot_standby_feedback are rendering the vacuuming largely ineffective.
+(For this reason, tables with partial indexes often need to be vacuumed much more aggressively than the default settings).
+If 15% of the table rows are dead, and those dead rows are concentrated in the rows which meet the partial index conditions, then that could be up to 1500% bloat in the index itself.
+Looking at your slowest plan, if all 239413 buffer misses had to be read from disk and you have 7200 rpm disks, that alone would explain half your execution time.
+While it is technically using an index only scan, you are getting basically zero benefit from this because of the visibility map issue.
+17MiB of index can reference gigabytes of table, and since it has to check that table for visibility, that means it can be thrashing through gigabytes of table data in random order being driven off of 17MiB of index.
+(Or possibly the table has such a high churn rate that trying to keep the visibility map topped up is a hopeless task, and you need to give up on index-only-scans being a useful tool for you on that partition)

@@ -1,0 +1,11 @@
+I'd highly recommend the dbachecks PS module which makes this (and pretty much every other important check) quite easy to run.
+But if the user is still in AD (but disabled), then you will have to either use Powershell or just send a list of users to your systems team to confirm.
+You can then schedule that job to run as often as you'd like to refresh the data.
+We check this database daily via a SQL Agent job whether an AD login has been disabled, and if so, we are sent a list of the login(s), which we then go and manually remove.
+We don't do it automatically because the alerts are infrequent, and we confirm whether the login is supposed to be disabled before removing them.
+If the user has actually been deleted then you can use xp_logininfo to see if they are really gone or not.
+All our SQL servers access this database via a linked server with a read-only login that is restricted to the service account in almost all cases.
+An additional benefit of this approach is when you're writing reports, we can query this database, check which groups a login is a member of, and restrict the data returned to only that which is applicable to a given team/department/division/company.
+https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-logininfo-transact-sql?view=sql-server-2017
+The method in use where I currently work is to have a small database that contains a list of AD logins (not their passwords, just to clarify), their status, as well as group memberships, refreshed every 12 hours using a Powershell script that queries AD for the data.
+Edit: Here's an example on StackOverflow of querying AD, and you can change the output to be a database.

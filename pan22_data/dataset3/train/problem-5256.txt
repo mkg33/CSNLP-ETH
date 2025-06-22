@@ -1,0 +1,18 @@
+The problem I'm experiencing is that the firewall will only forward inbound traffic at a very low rate: approximately < 2 Mbps.
+We recently updated the Intel ixgbe driver from version 2.1.4 to 3.7.14  due to stability concerns with the 2.1.4 driver (lock-ups) and this seems to be when the throughput problems began.
+One thing you can do is to disable iptables by flushing all rules and set default FORWARD policy to ACCEPT.
+There's some tuning to be done clearly, but they demonstrate Gbps speeds.
+Iptables is really an efficient firewall for Linux systems.
+On reverting to the 2.1.4 driver (re-compiled for an updated kernel, with IXGBE_NO_LRO and IXGBE_NO_NAPI) I was able to get ~Gbps throughput (well ~900 Mbps with iperf over TCP with 3 threads).
+This was for a load balancer (IPVS) and not a NAT firewall.
+I have not yet seen any breakdown on time spent per kernel networking function such as switching vs routing vs firewall vs whatever.
+As an advice, be careful and not disable iptables on a publicly accessible machine unless you know what you are doing.
+This way you can eliminate any concern about your iptables implementation.
+We have a Linux firewall with two outward facing 10Gbe adapters (Intel 82599EB) and one inward facing 10Gbe adapter (Intel 82598EB).
+I also tried the 3.7.17 release, but this gave similar performance to 3.7.14.
+Several months ago I put a bunch of effort into optimizing Linux for wirespeed Gigabit routing with lots of small packets.
+This solves the immediate problem, but I would prefer to be able to use the current version of the driver as I'd like to keep up with bug-fixes etc.
+However, a direct connection from the firewall to an "inside" machine gets ~6 Gbps, while a direct connection to the firewall from an outside machine gets ~1 Gbps.
+After that, you can look at the network driver and try to debug the problem if it persists.
+It can handle a huge amount of traffic without begin the bottleneck given that you have written a good ruleset.
+Specifically, how can I find out where the kernel / iptables / network driver, etc.

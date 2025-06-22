@@ -1,0 +1,11 @@
+Since I did just reference the exact same dacpac file and just added another variable (servername) in front of it, why is this failing to correctly read the dacpac's schema? How should this "feature" be used correctly?
+I just tried this locally and it resolves fine and also complains about the one column that doesn't exist.
+Since we are allowed to add references to other databases or DACPAC files to correctly reference database objects, I would like to add the MyBusinessDB.dacpac as a reference to my project.
+I want to create a SSDT database project that is supposed to be deployed on a Sql Server that has several linked servers to other servers. The database ("MyBusinessDB") on those remote servers is in another SSDT solution, so I have this as "MyBusinessDB.dacpac". 
+There it's also possible to define that the referenced database resides on "Other/Different Server". 
+If you need more flexibility around which server the database resides, you could play with synonyms.
+I tried different syntax, also the suggested syntax by the reference creation dialog itself (sample/suggestion is visible on bottom of this window):
+But since I want to use this database on remote servers, I need to add a linked server name in advance. The Linked Server name should be variable because there are several instances. Unfortunately as soon as I configure the database reference to be on another/different server, visual studio fails to validate the schema objects of the referenced MyBusinessDB.dacpac file.
+My naive expectation is that it's understood as: "I know what you mean, you are referencing the MyBusinessDB.dacpac by the variable "MyBusinessDB" and telling me that you want to use this on "OtherServer" you are going to fill with a value lateron..."
+You have to change the database  reference to "Different database, different server".  Your setup is configured for same server so it is expecting only 3, not 4 parts to the objet reference. 
+I referenced the MyBusinessDB.dacpac file and configured it to be on "same server". It's possible to use it's schema objects and reference them in Sql code.

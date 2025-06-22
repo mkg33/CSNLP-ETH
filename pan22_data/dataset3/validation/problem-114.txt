@@ -1,0 +1,13 @@
+Depends if you are talking about CPU or GPU ray tracer.
+All that matters is that you can store information per pixel.
+If you are with a very strict with memory budget, you may allocate LDR target (e.g.
+In most cases this means allocating a x*y array of ints (for 3 byte-sized channels of RGB) to store the pixel values and then feed it into your image compression library of choice to save it out to disk.
+for RGB & alpha) and for GPU you allocate a texture (e.g.
+For CPU you generally simply allocate an array of width * height float4's (i.e.
+I have begun learning how to create a Ray Tracer and 1 thing I am confused about is how the pixel color from a Ray Tracer is stored into an image.
+You generally want this target to be a float format (16-bit or 32-bit) to be able to handle high dynamic range (HDR) of luminance in the scene (think of a scene illuminated by Sun = ~100,000 Lux vs Moon = ~1 Lux), that gets then exposed using camera settings, tone mapped and converted to sRGB space to be viewable on regular 8bpc devices.
+you would need the camera exposure value prior to rendering, which can be a challenge for camera auto-exposure, so it's generally adviced to use HDR target instead.
+It depends on your case if you really need the alpha though.
+Most tutorials don't really explain this well online, so if anyone can explain what the most common method for this is that would be great.
+R8G8B8A8_UNORM) and perform camera exposure, tone mapping & sRGB conversion before writing the result to the render target.
+The target on CPU is then simply accessed by image[(x+y*width)*4] (image=float array), and on GPU image[uint2(x, y)] (image=UAV).

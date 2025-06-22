@@ -1,0 +1,8 @@
+The hacker also appears to be checking whether comment syntax can be injected: /**/ and --. This is useful because it can potentially be used to modify your queries by commenting out and replacing portions of them. 
+Now I know that sql injection works and I also know that either col_1 or col_2 of your query returned text data. Soon I'll have mapped out the points where sql injection is possible, the number of columns returned, and the datatypes of each column.
+I'd guess the unusual capitalization makes it easier for the hacker to automate the process of finding vulnerabilities by searching for that unique string in the website's response. There's more going on here, and I don't understand all of it, but I hope that gives the general idea of how your site's being probed.
+Our site search uses parameterized queries, and I've tried pasting a few of them in so I don't think they are getting anything, but I'm really curious what they are trying to get.
+Submitting union all clauses simultaneously probes the vulnerability to injection and the structure of your queries. Using postgres (because that's what I have at hand):
+If your website forwards this error message, I'll have learned 1) the sql injection worked, and 2) the unknown website query selects more than one column. So now I try with two columns, three columns, and so on until I get a different error message, for example:
+Next, I might try UNION'ing from common table names such as user that might store valuable information:
+I brought up the search term table today and noticed some weird searches, where it's pretty clear that someone is trying to mess around with our database.

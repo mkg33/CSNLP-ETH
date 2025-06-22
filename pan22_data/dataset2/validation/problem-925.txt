@@ -1,0 +1,13 @@
+See http://www.faqs.org/rfcs/rfc1178.html for best practices on naming your host.  /etc/hostname is used to populate then name in in the kernel during starup.  Put the unqualified name in /etc/hostname and run 'sudo /etc/init.d/hostname start'.  Also add an entry for your hostname in /etc/hosts using the interface address in /etc/hosts.
+I believe the only thing that is supposed to directly accesses /etc/hostname is the startup script /etc/init.d/hostname.sh.
+Depending on the configuring in your /etc/nssswitch.conf file you can use it for domainname resolution before calling out to a different system, normally DNS.
+I believe it should be pretty safe to change the file.  Change the file, run /etc/init.d/hostname.sh and then restart any services you are running like apache.  If there are issues the fix should just be a minor edit of a couple configuration files.
+So, normally, the system will route all hostname queries through /etc/hosts first, before querying DNS.
+The problem you are encountering is likley in /etc/hosts.  This is where addresses are looked up.  There should be an entry there for your servers IP address.  Fallback is to use the loopback address, localhost@localdomain.
+So for what purposes does that hostname string get used, and how can I be sure that it won't affect any functioning systems?
+The mail server should use /etc/mailname to determine its name. This should be a fully qualifed address suchas myhost.example.com.
+While the hostname is defined in /etc/hostname, many processes will use DNS and/or the hosts files to figure out the hostname. So you might try looking at /etc/hosts and also check the nameservers listed in /etc/resolv.conf to see what is defined. 
+Your apache configuration may depend on the hostname being a certain thing.  When you setup apache did you use IP addresses in your configuration or the name that was in /etc/hostname.
+If you have a mail server setup it could also be using the name from /etc/hostname.  Though localhost.localdomain is what is in /etc/hostname, then I suspect your email system is partly broken already.
+If you are really paranoid you could copy the production system into a VM, make the change in the VM and then see what breaks.  If you don't already have a test environment now might be a good time to set one up.
+When I ssh in, it gives me a tab name of username@localhost.localdomain, which is counterintuitive, making it seem like those tabs are on my localhost.

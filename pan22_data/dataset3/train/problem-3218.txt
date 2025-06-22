@@ -1,0 +1,21 @@
+Note that if you want a secure remote clock source rather than plain ntp, you'll need to know a rough idea of the current time (accurate within month scale) in order to validate certificates; this is probably the main modern purpose of an RTC on internet-connected devices.
+The -g gets you back to real time if the clock is way out, such as after loss of power.
+Now if you are using other languages on the RPI you may not be able to obtain those speeds.
+that have an RTC in order to correct for the drift computer clocks may have.
+We get accuracy of better than a second on several units using a public NTP server the other side of a complex and busy network.
+It's purely a matter of being able to keep (a poor approximation of) current time while the device is powered down so that the system time is correct before you bring up the network device and ntpd.
+When run over the public internet, dynamic and potentially asymmetric routing of packets contributes to a poorer estimate of network delays.
+RTC is used to maintain system time when power is removed, and it not necessarily even accurate, after your raspberry PI has booted up and received the time from NTP it will continue to count time without an RTC even if network is disconnected.
+Presence or absence of RTC has nothing to do with timekeeping precision.
+If you need better synchronization, without better accuracy, you may consider running a local NTP server to synchronize multiple raspberry pi relative to each other with better than 1ms synchronization (good for aligning sensor data) .
+When run with a local network time server, NTP can achieve accuracy of <1ms.
+When using NTP you are not continuously synchronizing to the network, the system time is maintained with a timer based on the cpu clock.
+Check out the ntpd man page, but after configuring a server, making sure that ntpd -g runs on boot should be all you need.
+Because the NTP protocol attempts to measure and compensate for network latency and other delays, it is very accurate even when using public time servers.
+If you need both accuracy and synchronization, you can run a Stratum 1 NTP server using GPS as the time source.
+However, you can expect accuracy of well under 1s  with most documentation claiming an accuracy of 100ms over the public internet.
+According to wikipedia, the Network Time Protocol used by default on Raspbian and millions of other networked devices and computers:
+Meaning, if you added an RTC, it would be kept accurate by using the exact same network mechanisms that are used to set the OS "software" clock already (which, realistically, is tied to the processor frequency, i.e., there's crystal in there somewhere that effectively keeps the time while the system is on).
+Having done experiments with C++ on my RPI3 (Stretch) using the sys/time.h function gettimeofday(**) and the wiringPi API then measuring against a scope, streamlined applications can obtain sub-millisecond resolution and accuracy on timing.
+In fact, NTP is used on systems (servers, PCs, etc.)
+We also only need accuracy of the order of 1s (which the system clock can maintain for days while powered up).

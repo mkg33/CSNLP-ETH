@@ -1,0 +1,8 @@
+I run Debian Wheezy alone on my PC and I recently copied the root partition to another with rsync as I found that worked well (I also know about dd and ddrescue but they leave unusable space on the new partition). I generated a new random UUID for the new partition with sudo tune2fs -U random /dev/hda9 and also updated fstab / and /home entries.
+Then as I know so little about GRUB I used a gui (GRUB Customizer) to probe for the new OS and add an entry to GRUB and the MBR -it makes an /etc/grub.d entry then updates GRUB. 
+On startup, the GRUB list contains the new OS (on sda9) but it boots the first OS (which I copied from -sda5).
+/boot/grub/grub.cfg contains the new debian OS but it looks like this  
+the 1st uuid is of sda9, but the 2nd uuid there is of sda5.  I can change the 2nd uuid at startup (with E) and it boots sda9.
+So how can I get grub.cfg corrected so that the sda9 GRUB list entry boots from sda9 permanently?
+When you run update-grub from sda5 it reads the /boot/grub/grub.cfg from sda9 which was copied from sda5. First boot into sda5 which is your primary OS. Then use these commands to fix:
+I based this answer on a Ubuntu 16.04 LTS clone to new partition script.

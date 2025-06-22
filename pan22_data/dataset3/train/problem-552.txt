@@ -1,0 +1,19 @@
+If you don't want them all synchronized to each other, however, this is not the best way to go.
+When I was doing this kind of thing, I learned that it's a lot more engaging/time-efficient to actually just go through the files yourself in your free time, over the course of a couple weeks.
+As I mentioned above, though, it'll take a long time, say, about a day for 5GB of files.
+Create an md5sum of each file, duplicates md5sums suggest (but doesn't guarantee) duplicate files.
+You can tell the difference between things way better than your computer can.
+And on another note, Crashplan does what you were doing before, but in a much more organized, non-versioning-problem way.
+If headers (EXIF, ID3, …) or metadata (owner) differ, they will not be linked.
+Hard links only perform deduplication if the entire file is identical.
+When you have a chance of using a file system with block deduplication support (ZFS, btrfs, …) use that instead.
+Well, if you have the ability, you can set up a deduplicating filesystem and put your backups on that.
+I am very fond of the offline (aka batch) dedup support of btrfs, which supports extent-level deduplication and does not constantly consume huge amounts of memory (as ZFS online dedup).
+Another possibility, presuming the machines you're backing-up will support it, is to use something like rsync.
+If you don't agree, then I suggest EasyDuplicateFinder.
+Deduplicating filesystems include lessfs, ZFS, and SDFS.
+Deduplication also has the advantage that files can be modified by the user without the other copy noticing (which might not be applicable in your case, but in others).
+For example, if you have the same JPEG in several places, but with different EXIF tags on each version, a deduplicating filesystem would only store the image data once.
+If you rsync from A to B, then from C to B, then from D to B, etc, exact duplicates (ie, by filename) will be eliminated (and synchronized between the machines you're backing up).
+See https://btrfs.wiki.kernel.org/index.php/Deduplication for an excellent discussion.
+This will not only deduplicate whole files, but also similar pieces of files.

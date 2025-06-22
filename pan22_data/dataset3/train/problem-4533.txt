@@ -1,0 +1,30 @@
+It came back to normal after I restarted the server.
+Automation means it can all be done without your direct input.
+Elasticity means if your server slows down or fails you can easily start another server, or another 50 servers.
+You can also reduce memory usage by removing Apache modules and PHP extensions.
+You could put these servers in different AZs to give yourself a more reliable system, ideally with a multi-AZ RDS database.
+At some point, you will have to either choose an instance type with more RAM or spread the load out over multiple instances.
+I checked the server logs and I saw the following message:
+I did one really small test with only 50 virtual users accessing at the same time, and I noticed that after a while all the requests were returning a 502 status code.
+I also noticed the server CPU usage peaked during the same time.
+Even after the test was done the I couldn't access the website anymore, also getting a 502 error.
+I did the test two more times after I the server restart and it worked flawlessly, no memory error nor 502 response.
+Two of the great things about Cloud Computing are elasticity and automation.
+I assume this is because the server runned out of memory, but I'm not sure.
+If you need 1 server to service your load you probably need to keep 2 servers running in order to have a reliable system.
+You need to enable load balancing and auto scaling and configure a health check.
+I was planning on testing the server capacity because I am working on a deal with a bigger company that will generate a lot more access on the website, but now I am worried that this happens again, since I am not sure the cause of this.
+Have a look in top or ps aux output for how much memory each apache process is using.
+What you do in the PHP code also affects memory usage and you can use the memory functions within PHP to profile this.
+Using the worker or event Apache MPMs with PHP as a separate CGI process pool instead of the prefork MPM with mod_php can help make more efficient use of memory.
+I was using a website called loadimpact to test how my php application would perform under a big amount of access.
+My app is built using Laravel and I use AWS Elastic Beanstalk as my aws server and an RDS instance as my database.
+Multiply this by 50 to figure out roughly how much memory you will need to serve 50 simultaneous users.
+A t2.micro is pretty cramped for a Apache/PHP installation under load.
+The only custom configuration I have is a crontab running a scheduled task on the background.
+Do anyone have any idea what might have caused this error?
+This doesn't solve your problem as such, but it will help you work around it.
+That is definitely an out of memory error on your server.
+This way if your server starts returning error codes it will be able to route traffic to healthy servers, stop the failing server, and create a new server in its place.
+I do basically 3 things when the page I tested is accessed: I log the access on the database, I setup a cookie for user tracking and I load some stuff from the db.
+I've also seen certain kinds of application errors cause PHP to go into an infinite-recursion error such that no amount of memory will satisfy it; however much you have will be slightly less than the amount it asks for.

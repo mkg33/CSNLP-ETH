@@ -1,0 +1,8 @@
+I have a trap being sent by a device showing up as UNKNOWN in Icinga 1.13 because the MIB expects an integer but the trap sends: 
+I can't modify the MIB on the device so I'm left thinking I should make Icinga treat any trap as critical, whether it conforms to the MIB or not. How can I do this?
+TL;DR: Update your script to set $return_code to 2.
+Thank you for your clarification. You mentioned you're using combination of ncsa and send_ncsa.
+Icinga 1 and Nagios can use ncsa on Icinga server side for (passive) accepting results of checks. It means, that NCSA just listens on some TCP socket, receives results over the socket and pushes received data to Icinga (Nagios).
+send_ncsa script on your machine then accepts parameters which would be fed into Nagios/Icinga (AFAIK the parameters are host_name, service_name, service_result, service_message).
+The part you want to change in your script is setting of $return_code - it follows standard Icinga/Nagios behaviour - where 0 is for OK, 1 for WARNING, 2 for CRITICAL and 3 means UNKNOWN.   
+So in order to send CRITICAL as check result to Icinga, update your script to set $return_code to 2.

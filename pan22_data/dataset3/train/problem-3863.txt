@@ -1,0 +1,13 @@
+If the client is willing to accept any certificate, then it will accept that server's temporary self-signed one, is just as good as any.
+If an attacker can fool the client to connect to him instead of the server (eg.
+If the data is so important, then perhaps shelling out the moneys for a VeriSign, Thawte or GlobalSign (these being the 3 roots trusted by every Windows client) certificate for your server (~$500/year) is not so outlandish.
+by having control of the DNS records, more exactly the DNS server IP the client will use, which is a trivial DHCP setting to control) then the attacker can present any certificate and the client will accept it, it can then do the full authentication round-trip with the client, thus obtaining the SQL username and password used, then it can connect to the true server and forward back and forth all the communication, with a free look at all the content.
+Once this is done though, the certificate used by the server has to be trusted by the client, and this is when all the complications arise.
+If you are OK with a weaker setting on which you have an encrypted traffic but you understand that you may be subject to a man-in-the-middle attack and you are OK with it, then use the much simpler TrustServerCertificate=True setting.
+This means that the client requests encryption and is willing to accept any certificate the server may use.
+However, the channel is open to a malicious man-in-the middle attack.
+The server always has a self-signed certificate generated at server startup time to use, if nothing else is available.
+If I understand the MSDN spec correctly, all you need is to specify in the connection string Encrypt=True;TrustServerCertificate=True.
+What such a setup provides is an encrypted communication channel between your application and your server, a channel that cannot be ear dropped with ease.
+If not, then unfortunately you must really understand what you're doing and is not trivial.
+To prevent the situation above, the client must remove the TrustServerCertificate=True from the connection string.

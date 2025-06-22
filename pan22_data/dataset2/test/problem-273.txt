@@ -1,0 +1,7 @@
+If you do that properly, you break the host/client time loop and all machines should get the proper time.
+From an elevated command prompt on the domain members run w32tm /query /source and make sure that the source is your PDCe. Then run w32tm /query /configuration and make sure the type is NT5DS.
+The standard setup is to disable the time service on the domain controller and set it up to get an external time.
+Describes the steps. This is pretty imperative as otherwise you alck any decent time source (no, computers have lousy clocks).
+The Time synchronization Integration Service should be disabled on all domain members that are virtual machines running under Hyper-V, not just the DC. Your PDCe should be configured to sync time with a reliable external time source.
+From an elevated command prompt on the PDCe run w32tm /query /source and make sure that the source is a reliable external time source. Then run w32tm /query /configuration and make sure the type is NTP.
+On boot up, the virtual machines will get their time from the Hyper-V host (because they have no RTC of their own) and from that point forward they should be syncing their time from the domain hierarchy.

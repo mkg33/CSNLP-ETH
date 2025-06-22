@@ -1,0 +1,22 @@
+So you may have two branches sharing the same branch predictor state, even across process boundaries.
+Even a branch predictor flush instruction won't fix this rogue JavaScript problem, unless the browser actively flushes the branch predictor before running untrusted code.
+Now this is an extreme example, nobody sane would branch on every single bit of your password in a manner that can be triggered from JavaScript, but this demonstrates the problem.
+Spectre will be with us for a very, very long time, as branch predictor using 14 bits as index isn't tagged with the remaining 18 bits of a 32-bit address space, because it would then require 20 bits (2 bits saturating counter, 18 bits tag) instead of just 2 bits.
+I'm expecting the CPU manufacturers to add a branch predictor flush instruction that works even in user space without special privileges and the kernel to use it when context switching and the user space to use it when running untrusted JITed code.
+Spectre and Meltdown both require out-of-order execution.
+A rogue JavaScript code running in your browser can due to Spectre measure which ways other branches in the process have gone.
+So far, only two variants have been demonstrated but I'm pretty sure there are more variants.
+The fault in the CPU is that branch predictor state is not flushed when doing a context switch, and that branch predictor state is indexed by the low-order bits of the branch instruction address, and not tagged at all.
+The Cortex-A7 used in the early Pi 2 and the Cortex A53 used in the later Pi 2 and the Pi 3 is a strictly in-order architecture.
+I'm very confident that the CPU in all Raspberry Pi models is similar to practically all other CPUs out there in that the branch predictor is just a large array of 2-bit saturating counters (strongly taken, weakly taken, weakly not taken, strongly not taken).
+ARM confirms this: only a very limited subset of ARM processors have hardware that makes them vulnerable to Spectre, an even more limited subset are vulnerable to Meltdown, and it's believed that all of them permit mitigation of the threat.
+This would multiply the branch predictor size by ten!
+Now, if two branches share the same predictor state, you can measure which way a particular branch has taken in the very recent past.
+See this question: https://security.stackexchange.com/questions/176678/is-branch-predictor-flush-instruction-a-complete-spectre-fix and understand the implications of its answer.
+If you can reliably trigger the browser to execute some code branching on your password from JavaScript, and measure which ways the branches have gone, you could indeed extract the password.
+This would fix most Spectre problems in practice, but in theory, not all of them.
+The index to this array is the low-order bits of the branch instruction address, and there is no tag, and this predictor state is never flushed.
+The ARM11 used in the Pi 1 is partially out-of-order, but not in a way that permits Spectre or Meltdown to work.
+What ARM means is probably that the exploits Google have developed don't work on these ARM CPUs.
+It does not mean that they would be invulnerable to Spectre.
+About Meltdown, it's a very specific vulnerability in some processors, so if ARM says the CPU in Raspberry Pi is not vulnerable, then it can probably be trusted.

@@ -1,0 +1,8 @@
+I just had to solve the same problem with Jenkins running behind nginx. What did it for me was to include the server port into the Host header that's being sent to Jenkins:
+In our case, the Node server is running on 8080, and our nginx proxy is running on 8000.  This means that every fully qualified URL in a location header needs to be re-written.   Hope this helps someone !!
+As an example, the dev box is running nginx on port 8080, and so the url's to the root of the node app looks like:
+$http_host holds the value as specified in HTTP HOST header, which includes the port. Redirects should pick up the custom port without further customization to OP's setup.
+So I'm setting up a virtual path when pointing at a node.js app in my nginx conf.  the relevant section looks like so:
+The problem is that the Node.js application is not issuing the redirect correctly. You may be able to use proxy_redirect to correct this in nginx:
+I tried the above solutions, but they all failed whenever the node application issued a fully qualified URL in the location header, such as "http://nodeapp.com:8080/new/location"
+Per the conversation on this question, the proper resolution is to adjust the proxy's Host header directive. 

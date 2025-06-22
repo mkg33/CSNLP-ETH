@@ -1,0 +1,19 @@
+tcpdump isn't capable of decrypting WEP (or WPA or WPA2), so you'd have to use Wireshark (or Wireshark's "tshark" if you really like command-line tools) to do that.
+note, if you can isolate a single protocol you wish to monitor, you may be able to set up a proxy for it on your linux box, configure the android device to use it, and then capture the traffic as its being passed on, since it now passes through your linux box.
+The packets send to my android should reach the linux nic too, tcpdump just ignore them I think.
+all packets use the network and data-link layer, and TCPdump can log l2 protocols like ARP, and non-IP protocols at l3 (ICMP), so yes and no, i guess?
+You may need to limit your AP to older 802.11 modulation schemes that are easier to receive reliably (for example, by disabling 802.11n so it just does 802.11g), and/or place your laptop so that it's "between" the AP and the Android device.
+Disabling encryption solves that, as does switching to good ol' broken WEP because everyone on a given WEP network uses the exact same key all the time.
+Is there a way I can use tcpdump on my linux to get the packets sent to my android?
+And yes, tcpdump will see these packets because it runs in promiscuous mode by default, unless you add the -p argument to disable it.
+unfortunately (at least for what you want) you will not be able to log all packets without changes in your hardware and network architecture.
+if you wish to persue this option, look into these instructions for preparing your network for SNORT http://www.symantec.com/connect/articles/complete-snort-based-ids-architecture-part-one
+I have a home used wireless router, one linux laptop and android connected to it.
+the exceptions to this rule are broadcast traffic at the MAC and IP layers, often used by device and service discovery protocols.
+Lets say the linux has ip 10.5.5.1, mac AA:AA:AA:AA:AA:AA and android has 10.5.5.2, mac AA:AA:AA:AA:AA:AB.
+unlike older networks that functioned on a shared bus or used multiport repeaters (hubs) modern switched networks do not generally send traffic out any switch port that does not connect to the destination MAC address requested.
+Does tcpdump just capture the packets that get through link and network layer?
+most of the time, the best way to do this is to purchase a switch that supports port mirroring, and set it to send all traffic to a second nic on your linux box.
+to achieve your end, you would need to put the switch to operate in promiscuous mode on the port connecting to your linux box, so that all traffic on the switch is visible to your tcpdump process.
+It's technically possible to snoop on the Android device's Wi-Fi traffic even if you're using WPA-PSK or WPA2-PSK encryption, but it's trickier because you have to capture the first few packets whenever the Android device joins or rejoins the network.
+If you are connecting (or can connect) both your laptop and your Android device wirelessly to the Wi-Fi AP, and if you only use WEP or no security on your Wi-Fi AP, then your laptop will probably be able to see and decode all the traffic to/from your Android device.

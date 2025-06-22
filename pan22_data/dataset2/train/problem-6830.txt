@@ -1,0 +1,10 @@
+We do it all the time at AWS - check out the Chef CloudInit config directives here: http://cloudinit.readthedocs.io/en/latest/topics/examples.html#install-and-run-chef-recipes
+When the chef-client is installed using an unattended bootstrap, it is typically built into an image that starts the chef-client on boot. The type of image used depends on the platform on which the unattended bootstrap will take place.
+There is not much information provided in the documentation. Also, I don't want chef-solo but chef-client on the node.
+Has anyone tried performing an unattended chef client install - installing chef client from the node itself?
+Use settings in the client.rb file—chef_server_url, http_proxy, and so on—to ensure that configuration details are built into the unattended bootstrap process.
+Knife bootstrap will install the chef-client on a node in a chef server environment.  Bootstrap uses the omnibus installer and then copies the required client configuration from the server.
+The chef-client can be installed using an unattended bootstrap. This allows the chef-client to be installed from itself, without using SSH. For example, machines are often created using environments like AWS Auto Scaling, AWS CloudFormation, Rackspace Auto Scale, and PXE. In this scenario, using tooling for attended, single-machine installs like knife bootstrap or knife CLOUD_PLUGIN create is not practical because the machines are created automatically and someone cannot always be on-hand to initiate the bootstrap process.
+It isn't clear from your question which OS you are doing this on and if you are doing it in a stand-alone or chef server environment.
+Chef removed their PPA awhile ago, so you have to use the omnibus or gem methods - package no longer works. 
+A node’s initial run-list is specified using a JSON file on the host system. When running the chef-client as an executable, use the -j option to tell the chef-client which JSON file to use. For example:

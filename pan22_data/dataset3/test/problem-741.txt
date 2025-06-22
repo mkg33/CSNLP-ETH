@@ -1,0 +1,9 @@
+The downside from this from what I can see is if you use this parser in alot of places then you will need to handle the exceptions accordingly.
+To me, whatever needs to Parse sounds like a crying need for a TryParse method/pattern.
+Building on @dreza's answer, I would put the custom exceptions as an InnerException, within the outer ParseException.
+A good example of this pattern can be found in the BCL, with int.Parse(string):int and int.TryParse(string, out int result):bool.
+An alternative as MrSmith42 suggested could be to use exceptions.
+However the upside is that if you wish to do different things based on the reason why something failed then you can catch individual exceptions as required.
+Offered as an alternative for consideration in any event.
+You can use an Exceptional Monad to cleanup the code:
+Your Parse method should just throw a ParseException if it fails, and the TryParse method would return a Boolean indicating success or failure, along with an out parameter that returns your successfully parsed value, if any.

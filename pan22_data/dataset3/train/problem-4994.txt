@@ -1,0 +1,24 @@
+In fact, you will have a difficult time doing it unless you are EXTREMELY familiar with AD structure and low-level programming.
+There is a very ugly way you could do this, but WHY would you want to?
+I believe that it can be done if you write your own access methods in using MFC and override a number of the built-in safeguards.
+They would have different SIDs and would be considered different users by the AD, although you can make them LOOK the same by giving the accounts the exact same Display Name.
+Active Directory doesn't support what you're describing for a single security-identifier (SID).
+You could "copy" a user via the "Users and Computers" MMC console, which would ensure that both users accounts have the same group memberships, and generic data, but then you would STILL have two distinct user objects with different passwords.
+These could potentially have different values, but you would still only have a SINGLE password.
+Each user object has several attributes assigned to it that can be used to logon with: samaccountname, User principal name, etc.
+The Microsoft migration tools will NOT let you insert a duplicate SID into SID history, as this is supposed to be a unique attribute value.
+for the domain contoso.com you could have the logins:
+In other words, keep your existing database while you are transitioning to Active Directory.
+Any damage you do to make AD accept multiple usernames/passwords will be something you deal with for a long time.
+So long as you aren't using any software that can't handle a group's SID being used instead of either of the SIDs from Jon's user accounts you'll be just fine.
+(You should be using groups for almost every permission anyway.)
+What you want to do is alter your clients to check authentication against two sources.
+You can copy a user or give a user the exact same permissions, and even access to the same mailbox and resources etc, but I don't see a way to have multiple usernames for one account.
+You can do this functionally, to a point, by creating a group object in which "jon1" and "jon2" are both members, and using that group in all permissions (filesystem, Exchange mailbox, etc) relating to "Jon Smith".
+Each SID can have exactly one username/password combination.
+Active Directory user IDs are really just a shorthand way of identifying an account by its REAL name, the Security Identifier or SID.
+Just run parallel authentication sources until you're all transitioned.
+If you REALLY, REALLY want to break your AD, you can try to use the SID-History attribute to insert a duplicate SID into the Directory.
+Have the clients check the AD account and if that doesn't auth, have them check the legacy auth source.
+I can't really see why you would have a need to do this, but I agree with Sam in that there is no real way to do this.
+You can not have more than one password, but you can have multiple usernames using multiple UPN extensions.

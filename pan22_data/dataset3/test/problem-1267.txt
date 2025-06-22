@@ -1,0 +1,17 @@
+Use 2 2g links dictated by the switch or use 4 paths and let the plugin do it's job ?
+I am assuming that you are connecting your storage via iSCSI.
+http://en.community.dell.com/dell-groups/dtcmedia/m/mediagallery/19852516/download.aspx
+I have a new ex4200 switch stack, my 3 esxi hyper-visors connect to the SAN via vlan 200 which is EST.
+I would always use as many LACP trunk members as practical, not only for resilience but for potential performance benefits too, so I'd let the plugin do its job.
+Here is the EqualLogic configuration guide with more information on this topic [Section 4.5]:
+This is expected behavior however what is better ?
+When I have the 4 cables per server dedicated plugged in to the switch the hyper-visor see's 4 paths like it should.
+If so, definitely let the MPIO do its thing, instead of aggregation.
+When I lag 2 ports and 2 ports together I only get two paths.
+You can (and should) use LAGs or LACP trunks between the switches though.
+I have loaded the Equallogic multipathing plugins.
+Critically, far too often people forget that their single switch is a SPOF, and they do nothing about it.
+I am personally a firm believer in cross-stack aggregation, which eliminates the switch as a SPOF.
+However, if you decide to use NFS, you have to keep in mind that with one datastore there will only be one TCP session and loss of that session means a loss of your datastore, so you are going to need something to give you added layer of redundancy.
+With your SAN, let MPIO do its job and do not use LAGs with the server or SAN connections.
+Datastore diversity is important with NFS, as this way you can distribute and reduce impact of failure.

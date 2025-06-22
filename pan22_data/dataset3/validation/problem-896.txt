@@ -1,0 +1,18 @@
+The head item is not preceded by a separator while all tail items are preceded by a separator.
+If you are just doing a single-shot printing of a container, just print the first element and then print delim-value pairs.
+There is also a stateful approach that reduces the operation strength from branching on whether to print the delimiter to a pointer assignment.
+In real code you could start the tail processing loop with for (int i = 1, ... since i = 0 is the head item.
+After, if it really matters, you have to look at the machine code and benchmark.
+See infix_iterator where this stateful approach is used.
+Without optimizations, some versions generate more instructions than others, but once in -O3, except one or two instructions, it's almost the same.
+https://en.cppreference.com/w/cpp/experimental/ostream_joiner
+I/O operations will have a much greater impact on performance than the lay-out of your loop, so you shouldn't worry too much about speed either.
+I would treat the work to do as [head] followed by [tail].
+We are getting closer to the off-topic "opinion-based" border
+If you talk about performance, I think all versions are worth.
+I'm not sure that elegance should be your first concern here, because the algorithm should be very simple and the code short however you write them.
+Or if you ahve the latest version of the compiler:
+Honestly, i find the @papafaga version less fluent.
+This reduces the iterator requirements to being equality comparable, dereferenceable, and incrementable.
+You also have the possibility to do the opposite of your second version, to put the particular case before the loop, I do it sometimes when the case is trivial.
+That's why I see vec.cend() - 1 as the main short-coming of your proposal, because it restricts your algorithm to at least bidirectional iterators, when your goal can be easily achieved for any kind of iterator.

@@ -1,0 +1,9 @@
+As one example, if I have a 16-bit field to work with, I can encode x into the low 5 bits, y into the middle 5, and z into the top 6 bits.
+If you need to scatter each texel randomly in 3D space, then you'll need to encode all three degrees of freedom into the texel value.
+For instance, if your points are clumped it may work well to express them in polar coordinates.
+If you don't have 3 channels to spare, you can quantize your positions and pack them into a smaller number of channels (as low as one channel encoding all three axes).
+Texture values encoded this way will not interpolate correctly with bi/trilinear or anisotropic filtering, so ensure you're using point sampling and doing any interpolation you need manually in the shader.
+If one axis has greater range/variability than others, you may want to devote more bits to it...
+The optimal way to do this will depend heavily on your application.
+This only gives 32 unique positions along the x/y axes, and 64 on the z.
+Depth maps get away with using only a single coordinate because the other two are implicit in the location of the texel within the map (UV).

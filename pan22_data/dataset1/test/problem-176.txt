@@ -1,0 +1,8 @@
+I've got an older vendor-supplied package that I'm trying to install on CentOS 7. It installs things into /usr/lib, but there's a conflict with the /usr/lib directory itself.
+The /usr/lib directory as specified in the package:
+I could use --replacefiles with rpm to get it to go on, but that's not actually the RIGHT thing to do here. Instead, I'd like rpm to just skip installing the /usr/lib directory (it's already there, after all), and just install the contents.
+The --excludepath option doesn't actually seem to do anything (I still get the error), and (according to -vv output) would exclude most of the package anyway.
+For the moment, in a test environment, I can do --replacefiles, but I feel there must be some 'more correct' way to deal with this situation.
+NOTE: Getting an updated vendor package IS on my TODO list, but isn't going to happen for some time, so I need a better near-term solution.
+I'd suggest installing it into another directory with rpm --prefix and pull out the stuff you need. Alternatively, you could extract it directly with rpm2pcio package.rpm | cpio -idmv.
+Using --prefix does at least have the benefit of executing any post-install scripts, etc... in the RPM.

@@ -1,0 +1,24 @@
+...copy the datafiles, temp, undo, redo logs, control files AND instance related files (initINST.ora, spfileINST.ora, orapwINST, etc) in $ORACLE_HOME/dbs
+...copy the datafiles, undo, redo logs AND instance related files (initINST.ora, spfileINST.ora, orapwINST, etc) in $ORACLE_HOME/dbs
+...setup the instance in the oratab file (or, if it is Windows, use ORADIM to create the instance related windows service)
+You'll also need the redo log files, and you'll also need to create a new controlfile on the target system.
+I have a large Oracle database (~300 GB) and I need to move a copy of the database to a new environment in a short period of time.
+Copying the datafiles (while the database is down) from one server to the other is part, but not all, of what would be required.
+You'll naturally need to have the same version of Oracle installed on the target machine with the same patches in place.
+...copy the datafiles, undo, redo logs AND instance related files (initINST.ora, spfileINST.ora, orapwINST, etc) in $ORACLE_HOME/dbs
+IF both are at the same version, and Oracle is patched in the same manor then the answer becomes a factor of:
+I was looking at http://docs.oracle.com/cd/B28359_01/server.111/b31107/asmcon.htm but not sure if this is what I need.
+If it is 11g, duplicate can use the "from active database" clause, so long as the instances can reach each other on the network.
+If you're moving to another windows machine, there are some other issues at work as well.
+IF the file structure will change AND the instance name will as well THEN
+...recreate the controlfiles using the "create controlfile reuse ~ noresetlogs" command
+If you're using RMAN with a recovery catalog to take backups of your database, it might be easiest to use the DUPLICATE TARGET DATABASE command.
+Normally, I am a fan of the RMAN DUPLICATE, but if this is a one time thing, I probably wouldn't worry about it.
+I was wondering if there is a way to just pick up the raw files Oracle manages and move them to the new box and bypass doing a dump and then another import?
+IF all of the database related files will reside in the same place THEN
+...setup the instance in the oratab file (or, if it is Windows, use ORADIM to create the instance related windows service)
+IF the file structure will change, but the instance name will not THEN
+...setup the instance in the oratab file (or, if it is Windows, use ORADIM to create the instance related windows service)
+...recreate the controlfiles using the "create controlfile set ~ resetlogs" command
+This is largely dependent on the differences is Oracle version, and OS version.
+If this isn't 11g, you would be taking a separate backup, transporting that for use by rman.

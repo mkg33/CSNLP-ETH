@@ -1,0 +1,12 @@
+I am building an application and storing user passwords in a table in MySQL.
+There are several scenarios where password database might be compromised without gaining access to the application configuration.
+No, a bcrypt hashed password with a reasonable work factor should be plenty secure on its own.
+Should I just store $hash as a varchar(60) or instead call MySQL AES_ENCRYPT('crypto_key', $hash) and store in a blob column?
+The point that does not make sense: Why symmetric encryption, when you simply could append the secret key to the password before running BCrypt?
+And there will be lots of weak passwords in any password database.
+Even when using bcrypt's user-specific salt, weak passwords are still relatively easy to crack.
+I am already using bcrypt but wondering, does it make any senses to AES_ENCRYT() the hashed password before storing into the database?
+Read more: http://blog.mozilla.org/webappsec/2011/05/10/sha-512-w-per-user-salts-is-not-enough/
+Have to disagree with the previous answer: It actually does make sense, but not completely.
+(SQL injections, database on a different server, access to database backups, etc.)
+AES encryption here would add an additional layer to password security, that is based on information not stored in the database (I assume you would not put the AES key to the same database with passwords).

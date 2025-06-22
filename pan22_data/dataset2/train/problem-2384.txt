@@ -1,0 +1,10 @@
+I'm asking because I am trying to get the key authentication working in this scenario, without success.  I'm not sure if its due to the username mismatch, or a configuration issue with the SSH server on the remote system.
+The permissions on the .ssh directories on both machines much be correct. Generally, that means 700 on the .ssh directory and at most 755 on the home directory. In addition to 600 on all the files in the .ssh directories.
+If you're always using the same username for a remote server, you may also find it useful to add a host into your ssh config:
+That way you don't need to remember to specify user name when logging in, and you rule that out when having issues with keys in future.
+I know that on my local system, I can generate an SSH key pair as local user "foouser", put the public key in the "/home/foouser/.ssh/authorized_keys" file on "remotesystem".  When I SSH as "foouser" from my local system to "remotesystem", SSH uses the key pair to authenticate me.
+But what if my local username is not the same as the username on the remote system?  That is, what if I want to SSH as local user "baruser" to "remotesystem"?  Obviously, I will need to generate a key pair for "baruser" and add the public key to "/home/foouser/.ssh/authorized_keys".  Then, I should be able to "ssh foouser@remotesystem" while logged in as "baruser" locally, and SSH will use the key pair to authenticate, right?
+You should find the debug output in /var/log/auth.log (or where ever ssh is configured to log to). Once you've found the problem, remember to set it back to how you found it.
+If this fails to give you any insights as to what is wrong, you need to change the log level on the server and restart the daemon.
+Your local username doesn't really matter (aside from the private key having to reside inside your local user's home directory). Just copy the key to the remote user's authorized_keys section and it will work.
+If the user on the remote system is root, make sure that root can ssh. (PermitRootLogin in sshd_config) and that public key (PubkeyAuthentication) and if necessary RSA (RSAAuthentication) are enabled.

@@ -1,0 +1,14 @@
+My colleague suggested creating a vim symbolic link in the path that points to sudoedit.
+Be warned that both Alex's :w !sudo tee % solution and sudo.vim suffer from shell escaping issues.
+(You may want to :set noro too, to avoid warnings when you try to edit/write the file that Vim thought was read-only when first opened.)
+Failing that, write a shell script, something like this.
+Note that it'll break if you want to pass arguments into vim (you could extend it to work though, it's more of a PoC)
+You could also easily set it up to create two copies of the file, and before doing the move, warn you if they're not still identical (meaning someone has since changed the original)
+Our sysadmins login to boxes using unprivileged accounts with sudo rights.
+If you've already opened a file without sudo:, you can do :f sudo:% to switch to using sudo to read/write.
+Side note: We generally have easily accessible backups of these files so that is not a concern.
+I do not want to get into the habit of using sudoedit.
+I often, out of habit, open files in vim instead of sudoedit.
+I normally just :w /tmp/service.conf and then mv -i /tmp/service.conf /etc/
+This seems clunky but I am almost inclined to say that I trust this process more than getting into the habit of using sudoedit or sudo vim.
+Do not use unless you know that the filenames are safe.

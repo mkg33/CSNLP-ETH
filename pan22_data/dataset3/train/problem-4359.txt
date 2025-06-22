@@ -1,0 +1,15 @@
+Due to the simple static web page you could probably get away with a small/medium workstation, even perhaps a laptop...  You could probably even get away with a Virtual Machine that sits offline until you need it...
+Why not just provision a single workstation/server with IIS displaying a single static maintenance page?
+You could set up a DNS failover solution (DNS Made Easy provides this option), but depending on your TTL settings, people won't likely get the updates except for longer outages.
+Basically, if you need to take an entire ASP.NET site offline, you can place some nice message in that file.
+ASP.NET essentially shuts down the site, unloads it from the server, and stops processing any requests to that site.
+That is, until you delete the app_offline.htm file - then things will continue as normal and your ASP.NET site will load up and start serving requests again.
+Your best bet for instantaneous failover is to purchase a small hosted server somewhere, with a static web page on it, and then use a tool (like heartbeat in linux) to monitor when the main server is unavailable, and have the secondary server take over its IP address.
+Well, I don't know if this the optimal solution, because it is adding complexity to your solution: you could place some reverse proxies (squid, MS ISA, ...) in front of your web servers (outside your network) and run the requests through these servers.
+Seems like everything else is more work than necessary...
+Then, any new requests to a URL, any URL, in that website will redirect to that file allowing you to do maintenance to the site, upgrades, or whatever.
+When you need to bring the web servers down you just bring up the maintenance workstation and make sure it responds to the incoming web requests...
+So, when you're planning for down-time, you simply have to change some rules to show the static "sorry, we're offline" message.
+Of course, you would also need an external server to host the maintenance page.
+An offsite reverse proxy that points to your live site could display a default page when the backend site is not available.
+If you have an ASP.NET web application site, and you place a text file named "app_offline.htm" in the root of the site, all requests to that website will redirect to that app_offline.htm file.

@@ -1,0 +1,7 @@
+I am sure that Daniel's suggestion about transaction isolation level is relevant and my attempt at retrying the index lookup was getting stuck (although it is not clear why this only happens some of the time and only under high load).
+Thanks to comments from @Akina and the answer from @Daniel I refactored my solution to avoid the infinite loop.
+        WHEN Pslug IS NULL THEN RAISE null_value_not_allowed USING MESSAGE = 'Pslug parameter is required.'; -- 22004
+        WHEN Puserid IS NULL THEN RAISE null_value_not_allowed USING MESSAGE = 'Puserid parameter is required.'; -- 22004
+I could not think how to implement this using ON CONFLICT as it does not seem to have the concept of retrying the same INSERT with a different value for the conflicting column. It seems to support UPDATE on the conflicting row, not creation of a new record with adjusted values.
+I choose to try the insert and catch the exception rather than checking to see if the proposed slug already exists for a record and append the index if it does. That is because doing a select and then insert would put me back in the same position of race condition that I was trying to solve.
+I took on Daniel's point about having a global index over a unique index for each conflict (this was based off how it was done in the legacy system) and after a quick check with the PO I used that to eliminate the race condition.

@@ -1,0 +1,14 @@
+None of the ports work: I still get a Connection timed out error.
+TeamViewer is able to get through by using techniques such as NAT Traversal and UDP hole punching to establish a connection through the router to the PC.
+Amusingly, I can still access the computer using the remote-desktop software TeamViewer.
+If you want to connect via SSH to a computer behind the firewall, then you will need to add a port forward (DNAT) rule to the firewall mapping port 22 (or whatever port you decide to use) to the SSH port on the internal server.
+While TeamViewer connections are peer-to-peer (client connects directly to host) the initial connection is established with the help of TeamViewer's servers which tells the host that a client is trying to connect and then helps facilitate the NAT traversal by having the server and client try to open connections which will then put the firewall in a state where it will allow the TeamViewer connection to pass through to the host.
+So you will end up with ssh to your machine on port 2222 on the internet_server.
+and then tried to connect to each of them in turn using (e.g.)
+How can I SSH into (or out of) the remote computer?
+The main difference is that "tricks" are used to open the appropriate ports on the client firewall/router and allow the connection through from the remote TeamViewer client.
+I assumed that TeamViewer is allowed in because it uses a different port than SSH's default port 22, so I added the following ports to /etc/ssh/sshd_config:
+Another way of doing this is by using reverse port forwarding in ssh:
+I would like to SSH into a computer behind a firewall that blocks SSH connections (incoming and outgoing).
+Traffic for the TeamViewer connection to the host computer passes through the router much like the traffic from visiting a webpage would when the browser on the PC goes through the firewall to request a webpage and then have the response delivered back to it.
+Why can TeamViewer connect to the remote computer while SSH can't?

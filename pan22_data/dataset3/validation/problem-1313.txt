@@ -1,0 +1,14 @@
+In the shader you then receive the geometry data (the mesh vertex in its local space) and the instance data (the world space matrix) and can use both to render the instance.
+Q: How are my transforms ( in InstanceBuffer ) being passed to the shader?
+A: By biding the effect to the device, setting up shared parameters before the draw call and passing per-instance effect parameters in the instance data stream.
+Well, you have to issue at least one shader constant switch and a draw call per model and minimizing these numbers usually helps improving performance.
+Q: How does the graphics device know that I want to draw using a specific effect when trying to draw instanced geometry?
+It allows you to issue a single draw call that will repeat the rendered primitives a given number of times while advancing and addional vertex stream only every Nth primitive (once  after each mesh).
+What if you'd like the models to use different textures?
+Q: Exactly what should I be removing from my 'VertexElements' variable - what happens to each element?
+This means we can now render 100 identical meshes at different world positions in one go.
+If you wanted to draw 100 instances of the same mesh at different world transforms, you would thus have to repeat steps 4 and 5 for each instance.
+Let's have a look how you would go about rendering the same mesh twice without instancing:
+We can do that as well by filling our additional (per-instance) vertex buffer with structs where the world space matrix is just one field and some other field might indicate which texture to use.
+Now, wouldn't it be nice if we could just fill some buffer with the 100 world space matrices we'd like our meshes to be rendered to and just pass that buffer to a single draw call?
+In the sample you refered to that's called InstanceInfo.

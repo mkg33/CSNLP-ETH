@@ -1,0 +1,23 @@
+Whenever one of my objects resizes, it calls a scaleTo(width, height) event.
+What this ultimately means is that I had to also change my scale methods to take a "recursive" boolean as a parameter, where if true, the scale factor would be applied to all children objects recursively.
+I figured, if you want to stay consistent throughout your code, either you pass through all of it, or you pass through nothing.
+If anybody has any feedback or advice for me on this topic, please share, but for now what I've learned is
+Simply add an 'isChanged' flag to your transformations, which is set to true whenever the object is moved/scaled/rotated, and makes sure the matrix recalculation is delayed up until the moment you actually need it.
+However, seeing how you came to the same conclusion is kind of reassuring, so I suppose I'm sticking with it.
+One thing that might be worth noting: for every one of your objects, you're creating both a full transformation matrix and a scaleless matrix in the event of children.
+Now at some point I needed relative scale anyways, but this was easily fixed.
+I changed my design so that when a transformation matrix was to be recomputed, a scaleless transformation was computed and passed down to the children, but then the real transformation including scale was also computed to be used for rendering.
+In my own project I suddenly came to the same conclusion - the parent scale shouldn't be passed down to the children's transformation matrix.
+I came to this conclusion while trying to roll my own GUI implementation.
+I like having that functionality - the ability to scale an entire complex object, or just a piece of it - however I'm not sure if this is how it "should" be done, or if this is the most efficient way.
+So I had to find a way to keep my images the same size (or rescaled in powers of 2 to keep the pixel art consistent).
+Basically, I found that objects really shouldn't be inheriting their parents' scales to begin with, just for safety.
+Dropping the parent scale from the hierarchy and keeping the scale of my objects absolute instead of relative seemed to be the obvious solution.
+I had pixel art images of my GUI elements, and when I changed my monitor's resolution, the images rescaled automatically and quite frankly looked butt ugly.
+To keep my code consistent, I've made it a habit to always put my move and scale code inside this event.
+I'd love to hear thoughts of anyone else who has worked on a similar problem.
+Now I can easily override this event and adjust the scale (and position) appropriately, i.e.
+So firstly, I'd like to apologize if my question was poorly worded or if it was just confusing in general.
+For performance sake, it may be a good idea to cache the result of these calculations, and not recalculate them every time you need them.
+Also, Elephly, since this was posted several months ago, if by any chance you've further improved on the system since then, I'd love to hear that too.
+It took a while because I had passed it off earlier after trying it and not immediately seeing desired results (I needed to basically remake my wooden manikin object from scratch).

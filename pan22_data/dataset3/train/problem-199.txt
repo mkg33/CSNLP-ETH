@@ -1,0 +1,15 @@
+To execute a simple task across a wide range of servers without using any tool designed for this purpose, regardless they require previous infrastructure or not, you can use a simple shell script called mussh, distributed as a package in many distributions.
+(Yes, Puppet and Chef and all the rest can be run without central servers, but you need to install packages on the hosts to manage, which ansible doesn't need)
+You can also add the -n or -f options to ssh to redirect the stdin from /dev/null or put the session in the background.
+Here is how to use xargs to parallelize these ssh sessions:
+It does need python installed in addition to sshd, but in practice I've never had to separately install that, it's always been available.
+It is another dependency to manage, but totally worth it if you have large fleet of boxen to manage - with the added bonus of being able to choose how many machines to work on in tandem/parallel, or even doing one at a time, as you're used to with bash.
+You can call it with a list of hosts, a list of commands, store both things in files, and quite a few more options, like ssh-agent integration, proxy support, ...
+If you have to type a password for each host, then this doesn't help you much, but if you are using ssh keys then this works very nicely.
+clusterssh, parallel ssh and dancer shell are small simple improvements over a shell for loop.
+But there's also ansible, which let's you do that, but also write reusable "playbooks" with several steps.
+Please do yourself a favor and use something designed for this.
+My quick and dirty... where servers.txt has a series of hosts or IPs, one-per-line.
+I generally fall back to using that if/when our mco or puppet setup is broken.
+You already know about mcollective, but you and I both know that it needs some infrastructure to work.
+Ansible is the only configuration management system I've tried that also works well as a deployment and orchestration tool (puppet needs mcollective and maybe capistrano/fabric for that, ...)

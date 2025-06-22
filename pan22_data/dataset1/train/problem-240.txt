@@ -1,0 +1,10 @@
+I've encrypted my external HDD with a Bitlocker and after rebooting computer I tried to open that drive and got this message:
+Say, if I pick to "Automatically unlock on this computer from now on", does this mean that Windows will store my password somewhere in the registry? 
+PS. Or, are they smart enough at Microsoft to store only the hash -- preferably salted?
+I see you've also posted the same query here and here, and have already received some sort of standard response. Anyway, it's an interesting question and here's what I found. As the BitLocker Drive Encryption in Windows 7: Frequently Asked Questions page states,
+Of course, this does not apply to you as you are using BitLocker To Go to encrypt removable data drives. For you, the following is relevant:
+So now we know how automatic unlocking can be configured for removable data drives, and how such drives can be unlocked on other PCs as well. But what are the keys BitLocker uses, and where are they stored? As the BitLocker Keys section of the Keys to Protecting Data with BitLocker Drive Encryption article states:
+So the VMK is again encrypted by one or more key protectors. These can be the TPM, a password, a key file, a data recovery agent certificate, a smart card etc. Now when you choose to enable automatic unlocking for a removable data drive, the following auto-unlock registry key is created:
+Next yet another key protector of type "External Key" is created and stored at that registry location as:
+The key and metadata to be stored in the registry are encrypted using the CryptProtectData() DPAPI function using the current user's login credentials and Triple DES (OTOH the actual data on the encrypted volume is protected with either 128-bit or 256-bit AES and optionally diffused using an algorithm called Elephant).
+The external key can only be used with the current user account and machine. If you switch to another user account or machine, the FveAutoUnlock GUID values are different.

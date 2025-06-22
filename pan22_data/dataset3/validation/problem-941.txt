@@ -1,0 +1,29 @@
+Do this for all of the dns servers listed in the whois changing the @dnsserver.
+If the dns servers are still your former dns servers then the transfer failed.
+"dig a www.serverfault.com @ns22.domaincontrol.com +norec"
+First check the GTLD servers (authoritive for .com):
+This information shows the information that the builders of the .com zone file (internic) hold.
+There are web front ends available for them but I am more familiar with command line variants so that is how I will describe them below.
+48 hours is already a long time to be 'off the internet' so i would not hesitate to contact your new hoster/registrar.
+Where A.B.C.D will be the IP address of the server where you're hosting your site.
+If this shows your new registrar but not the correct dns information the transfer has been done wrong and you should contact your new registrar.
+If the details are correct but the site isn't working then either the .com top level zone has not yet been updated and you need to wait, or the new name servers are not set up correctly.
+Finally you can try with other dns servers like opendns to check if your domain is updated in the world:
+If this output does not show your new Registrar and name servers the transfer is not yet complete and you should contact your old registrar.
+You can also check for your new record directly, say we changed www.serverfault.com recently:
+If that is incorrect you need to check your domain records.
+the +norec option disables the "recursion desired" bit in the question which is on by default.
+Start with hosting company's server, then try the ones at your work, from your ISP, your friend's work, etc.
+If this is showing the correct information then you likely have a caching problem and will need to wait for old entries held on caching name servers to expire.
+There are a couple of tools you can use to help you see if things are configured correctly.
+Check with whois where the domain is currently hosted
+First you need to check the dns servers for your domain:
+The first Number after dns.jomax.net is the Zones Serial Number, quite commonly a date with an added serial for the number of changes that day, it's usually a bad sign if these are out of sync.
+You can  use a tool like nslookup or dig to point directly at a specific DNS server.
+To get the information for this site you would use the command "whois serverfault.com"
+If this information is correct you can continue to do the same query against your new providers DNS:
+If everything is ok, the next step is check the dns records in your new dns servers:
+Authoritative Nameservers that are also caching might set you off with answers from their cache if you forget to specify +norec, this can be quite misleading at times.
+It also shows that further information is available from the Godaddy whois server.
+What happens when you transfer domains between registrars is up to regulations for the TLD or Registry, it might just be that your new registrar is not in possession of the old DNS records anymore and in that case you might want to seed them with new ones.
+I think the problem is in step two, maybe you forgot to add the records in your new dns servers.

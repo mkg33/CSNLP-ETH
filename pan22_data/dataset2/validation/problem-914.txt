@@ -1,0 +1,5 @@
+The planner can't get a good estimate of how selective your join is going to be, and so can't make good decisions about it.
+I'm curious to see what it reports with this query (I do not know if results will be the same as original query): (it just separates the LIKE join from all the others)
+Based off this, I can see that the query looks normal except for the horrendous JOIN on a LIKE.  To me, it looks like the query planner is either getting confused on the number of matches it EXPECTS to get from that JOIN (and thus plans a sequential scan), or reporting accurately and your query is potentially doing some sort of cartesian product.
+The plan I see when I reconstruct your example is that it does a nested loop around a sequential scan on tmp_psm_seqs and a bitmap scan, using the index you created, on protein_seq.  That seems like a pretty good plan to me.
+Another option would be to make the LIKE operator look much more expensive, which should drive it away from using it as a filter in a cartesian join.  As superuser, you could do something like:

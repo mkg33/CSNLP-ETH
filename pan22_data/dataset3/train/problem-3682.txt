@@ -1,0 +1,24 @@
+Well, check the default gateway of the problem server, compare it with that of other servers in the same vlans.
+Routing and firewall seems a little too high level for this issue.
+Perhaps a firewall rules on the router or server itself needs to be added?
+Your ping won't work, if the default gateway of the problem server is different.
+Or maybe it has a custon firewall which drops incoming packets?
+Doesn't matter if they are connected to the same switch or not.
+In such a case, the problem server can talk to other machines in the same VLAN, but can't talk to machines in other VLANs.
+You probably have a router between the VLANs, right?
+So in the case of the server and lab computer, they are in different VLANs.
+You say servers connected on the same switch will ping, but ones connected to other switches do not.
+If the router can ping the server and the lab machine, there's (possibly) a routing issue on the server.
+If you can ping other servers, I would guess routing is fine if they are all in the same network.
+I would say you need to trunk your VLANs on the switches.
+The OP states that a ping from the lab computer to the server on the same switch works fine, so routing should not be an issue.
+Check all your trunks and make sure that the necessary VLANs are added.
+If you have access on the server, check the firewall and also test the connection the other way around (from the server to the client) and see if there's connectivity.
+So if one tries to ping the other, that ping has to go up to a layer 3 address first (the gateway) before the ping will respond.
+Maybe the routing table on this machine is messed up?
+The reason I do not think its a routing issue is because if two devices exist in different networks they always have to talk to a gateway before they can talk to each other.
+I'd start from the router and establish that you can ping from there both ways.
+If you run VTP, make sure you added the new lab VLAN to VTP using the VTP server.
+If you can ping the lab machine, but not the server from the router, it could be netmask (maybe), it could be a faulty cable, so probably worth swapping the cable out for a known-good cable.
+You say you've checked the default gateway, but is there a more specific route?
+It might even be a MAC address collition (unlikely, but I have seen it, use the CAM in the server switch to see if you're seeing any MAC on more than one port).

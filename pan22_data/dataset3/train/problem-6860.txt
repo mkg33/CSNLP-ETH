@@ -1,0 +1,12 @@
+Something like the following (untested) nginx configuration could do that:
+According to the CORS spec multiple origins should be separated by spaces, not commas as you've used, so try sending this header:
+Based on my reading, this should be sufficient for what I'm trying to do.
+But the jQuery request still fails, with chrome also highlighting that the pre-flight OPTIONS failed (even though it returned 200 OK).
+The Mozilla documentation doesn't mention multiple origins though, so if that still doesn't work try only sending:
+If I set the Access-Control-Allow-Origin to * then I see:
+Using an if in a location block in an nginx configuration like this:
+My nginx configuration so far for api.example.com, which is a Rack app being served by unicorn, looks like this:
+But when I try the following in the Chrome console:
+If that works you'll need to configure nginx or your application server to return an Access-Control-Allow-Origin header containing the value of the Origin header sent by the client if it matches the allowed list.
+Specifically, proxy_pass and try_files don't work as expected.
+I would like to allow both example.com and developers.example.com to make AJAX requests to api.example.com.

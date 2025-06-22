@@ -1,0 +1,29 @@
+You must add a firewall exeption for Fillzilla (or any client you use).
+Or, since it's open source, see if you or someone else can make the change and compile it yourself.
+I did this in my port forward section (Virtual Server is it called in ASUS routers):
+The problem was the passive ports my NAS wanted to use also.
+According to the FileZilla admins, your router is probably the issue (even though you probably can't do anything about it), and they're not going to fix it to fall back to LIST if MLSD times out.
+I fixed the problem by using a ssh tunnel through one of my personal server.
+I imagine if you try to submit the change to be added to the official build, they'll reject it, but perhaps we could be pleasantly surprised.
+The problem could be something else, but this fixed my timeout and now it all works.
+My FTP is forwarded correctly on port 21 to my NAS IP, just standart stuff.
+Now try connecting (with passive mode), and it should work without a problem.
+It's unlikely you'll be able to convince the stubborn FileZilla folks to add a (stupidly simple) workaround option- "fall back to LIST if MLSD times out".
+With the MLSD timeout the problem can also be in the router.
+In my asus router I set the port forward (virtual server) correctly now and it works again.
+IPTABLES_MODULES="ipt_MASQUERADE iptable_nat nf_nat nf_conntrack_ftp"
+and reload or restart iptables: service iptables reload (or restart).
+Local IP: The local IP of the device (something like 192.168.0.xxx)
+(If it doesn't work, it may be something about the firewall or port forward of your router.)
+Port Range: The passive ports your device will use (standart 55536:56559 for Qnap)
+See: http://forum.filezilla-project.org/viewtopic.php?f=2&t=11405&start=15
+If you are connecting to a unix server, and it is running iptables (firewall), then check your iptables config, in /etc/sysconfig/iptable-config, for this line:
+This fixed our problem, in the office, in desktops with Windows 7/8.1, behind a NAT, and connecting with WinSCP 5.5.3 to a production server running CentOS 6.6 x86_64, Plesk 12 and ProFTPd.
+I have a qnap NAS and I connect on port 21 on ftp and port xxxxx:xxxxx in passive mode.
+I am absolutely stumped as to why this would work.
+PS: You will need SSH access for this, and root permissions.
+I got a new Asus router and I forwarded the ports for passive mode wrong.
+PS: Changing the mode of your connection to active can be a trick, but it's not the "best practice solution".
+I'm currently in Japan, and my server in Canada, so perhaps there is an issue with IPv6 address (even though the server says it shouldn't)...?
+Just want to let people know how I got this working.
+You should not need to make any crazy setting in your ftp client.

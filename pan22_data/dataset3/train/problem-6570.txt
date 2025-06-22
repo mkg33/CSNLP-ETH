@@ -1,0 +1,43 @@
+I know that if I fail a memory allocation I want to crash and burn horribly and do so as close to the point of failure as possible, so that I can break into the debugger, figure what's going on, and fix it properly.
+If you're writing air traffic control software that absolutely cannot ever fail, use exceptions.
+Now, a hacker can't exploit an actual crash, as soon as the crash happens the process is useless and harmless.
+With that being said, my engine I'm building doesn't use exceptions.
+If you don't know whether or not you need to use exceptions, you don't need to use exceptions.
+The only time I really need to look for failures is in initializing and loading resources and in those cases returning a boolean indicating success works fine.
+If you're going to use exceptions (which isn't to say you should, there are pros and cons to that approach that are outside the specific scope of this question), you should write properly exception safe code.
+This is because of the before mentioned potential performance cost and the fact that for all my purposes error return codes work fine.
+Exceptions are there to be your absolute last line of defence in always-on mission-critical applications.
+If you're writing control code for a nuclear power plant, use exceptions.
+This isn't to say that if you use exceptions, all code must provide the strong exception guarantee -- just that each piece of code should provide a guarantee of some sort (none, basic, strong) so that in the consumption of that code you know which guarantees you the consumer can provide.
+The big thing about missing runtime checks and crashes is the potential for a hacker to use a crash to take over the process and perhaps subsequently the machine.
+Otherwise you risk undoing the safety measure carefully put into your library.
+Also, if even one function in your program (or library) uses SEH, your entire program must use SEH.
+If you simply read from a null pointer it is a clean crash, you make a mistake and the process die instantly.
+If you have the latter case, you have a whole class of bugs and failures that can occur when an exception happens that you probably cannot recover from at all, rendering one of the benefits of exceptions entirely null and void.
+My general rule of thumb:  If you need to use exceptions, use exceptions.
+Your program wouldn't by chance be able to do that?
+Quoting Jason Gregory from his book Game Engine Architecture.
+Use asserts, pass references, always initialize local variables on declaration, memset-zero all allocations, NULL after free, etc, and an awful lot of theoretical exception cases just go away.
+A hell of a lot of time, a large percentage of what people use exceptions for can be avoided by proper checks during the development/debug build/testing cycle.
+Even if its a relatively rare class of failure, it's still possible.
+If you don't need to use exceptions, don't use exceptions.
+Generally the lower-level the component in question, the stronger the guarantee should be.
+Focus on the errors that do not necessarily throw exceptions, like writing beyond the end of an array.
+Worse - it may actually hide the fact that the bigger problem is even there.
+Exceptions only happen because someone wrote a library that specifically throws an exception given certain circumstances.
+The danger comes when you execute a command that is not technically illegal, but wasn't what you intended to do, then a hacker might be able to direct that action using carefully crafted data that should otherwise be safe.
+Not sure if quoting someone else is appropriate on SE but I feel none of the other answers really touched upon this.
+Code that does not use exceptions and is explicitly not exception safe is better than code that uses them but is half-assing its exception safety.
+When developing a game, on the other hand, you're much better off following the mantra:  Crash early, crash loudly.
+If you're never going to provide a strong guarantee or never going to really embrace the exception handling paradigms and all the extra work and disadvantages that implies, you also won't really be getting all the advantages it implies and you might have an easier time just forgoing exceptions altogether.
+Also, the stack unwind is usually very slow-- on the order of two to three times more expensive than simply returning from the function.
+Every stack frame must be augmented to contain additional information required by the stack unwinding process.
+The compiler can't know which functions might be above you on the call stack when you throw an exception."
+You need to look at your exceptions and need to look at the conditions that can trigger them.
+If there's a problem, you really want to know about it as soon as possible;  you don't ever want errors to be invisibly 'handled', because this will often conceal the actual cause of later misbehaviours and make debugging much more difficult than it needs to be.
+If you fail a memory allocation in a game (to take your original example) you generally have a bigger problem on your hands than how you handle the failure case, and handling the failure case by means of an exception won't make that bigger problem go away.
+"Structured exception handling (SEH) adds a lot of overhead to program.
+Consider: if something fails and may be a candidate for throwing an exception - what is the impact?
+Actually, the dangerous move is to catch exceptions rather than letting them slip, that is not to say that you should never do so, but be sure that you only catch those you know you can handle and let the rest slip.
+Typically to avoid going into an unexpected situation, which might be an opening for a hacker.
+An uncaught exception isn't actually a real crash, it is just a way to terminate the program.

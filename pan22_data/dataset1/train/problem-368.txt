@@ -1,0 +1,14 @@
+I've made a little real time physics simulation that solves some bodies. CirclevCircle && CirclevOrientedRect I would like someone to tell me if I'm doing something drastically wrong. I know of ways to optimize this solution that require more programming. But so far is there anything I'm doing that could ruin my performance.
+So here is were it checks collisions and puts them all into a list. I keep two lists of collision data. Current and previous touch. That way in the user code you can check if a collision has begun by using if(currentTouch && !previousTouch)
+Then I have my collision resolution or HandleCollision function which goes throuhg all of the collisions in list and resolves them with one iteration (I know its common to do multiple iterations to avoid jitter when multiple objects are colliding.)
+I left quite a lot out for the sake of simplicity. But one other important thing I should note.
+E is elasticity, m is mass, v is velocity. There might be some inconsistencies in variables names or such since I changed a little bit from the original code I had.
+I found myself that to speed up my nbody. Instead of iterating through all of i & j. With i=0, i++, j=0, j++ and setting the force of object i to fG. I can use i=0, i++, j=i+1, j++ and set the force of object i to fG and object j to -fG.
+this should also clear previous touch since List is a reference type.
+The second thing is that there is no space partitioning so your collision check currently runs in O(n^2) as best case runtime.
+The third thing is that it's weird that you calculate the atan2 of the vector between the two objects to get theta and then you only use theta to get the vector back.
+Fourth there is also something to be said about the effectiveness of lists, especially in a garbage collected environment, but that varies a lot depending on implementation details.
+Fifth You can handle your collision phase differently if you don't care if objects intersect for a few frames, by just letting them gardually push each other out by applying force.
+It looks like you are trying to guarantee zero intersect, which you are currently not doing. (An object can be moved out of the first collision and then back into it when resolving the second collision)
+As a last sidenote I think that simulating n-body attraction is just always going to be a performance nightmare, so in some way you don't really need to worry about this rest, since that's what will most definitely ruin your performance. (Although space partitioning can also aleviate that a bit since you can only check with objects that are close enough to matter)
+I probably didn't notice everything but I think that's the jist of it.

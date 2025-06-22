@@ -1,0 +1,25 @@
+ZFS has a benefit over RAID-5 in that it can detect and repair errors in the data stored on the individual discs, even if the drives do not report a read error while reading the data.
+if you are copying the file locally (as is implied by your reference to cp instead of scp etc), then just cmp the source and destination files...but realistically, if cp isn't emitting some sort of error (either on the command line or in the execution return value), there isn't any reason to believe it isn't working.
+It will detect, via checksums, that one of the discs returned corrupted information and will use the redundancy data to repair that disc.
+The only downside being that it only exists as a GUI (no command line access)
+Because of the way the checksumming in ZFS is designed, I felt that I could rely on it to store infrequently used data for long periods of time.
+My thinking was that my personal photos, scanned documents, and other similar files were things that I may access only occasionally, so it may be a very long time, say a year or more, before I notice that a file has been corrupted due to a drive error or the like.
+ZFS-FUSE has performed quite well for me over the last few years.
+Every week I run a "zpool scrub" which goes through and re-reads all the data and verifies checksums.
+I've been using the cp command, but--given the personal value--have started to wonder if there's a more reliable way.
+However, as far as I can tell, rsync only uses hashes to see if a file needs to be updated.
+With that we could quickly detect a corrupted file and restore from backups.
+Most of my googling for copy and (verify|valid|check|hash|confirm) turns up rsync.
+I found this utility (Linux and Windows) that does just what you want (hashed copy+hashed verification with log): http://sourceforge.net/projects/quickhash/
+It extends Linux cp & mv with checksum verification
+We were basically implementing the same sorts of checks that ZFS does internally.
+By that time, all of the backup copies I have may be this bit-rotted version of the file(s).
+I'm no stranger to Linux, Bash, Perl, etc., so I could write something to copy and compare md5 hashes, but I was wondering if something already exists (reinvention, wheels and what-not).
+I then had another script that would run periodically and check the file against the checksum stored in the database.
+if you indeed want legitimately redundant backup, consider a remote solution like dropbox.
+In the distant past, for a client, I implemented a database system that stored checksum information on all files stored under a particular directory.
+The solution I chose was to use ZFS via the ZFS-FUSE driver on my storage server.
+Any recommendations for utilities or guidance for DIY solutions would be greatly appreciated.
+For this use, specifically, the files are binary and typically 8-10MB.
+Several years ago I had the same demands as you do.
+I back up all my digital photos to a couple of places.

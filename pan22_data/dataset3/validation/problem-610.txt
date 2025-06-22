@@ -1,0 +1,13 @@
+If you use LDAP as a backend for postfix or to store information about users, mail accounts, mail aliases, and mailing lists, you can create a mailing list/alias using something like a  "dynamic group" in LDAP (Google for LDAP dynamic group) and have the abovementioned distribution list automatically generate by your LDAP server.
+If you are configuring Postfix manually, you can create a new list in /etc/aliases, for example:
+You can achieve the same result with a Mailman mailing list using the command-line mailman tools, but you still need to maintain the list of users yourself.
+If you are using a GUI administration tool, such as webmin or cpanel, etc., they all have a "send mail to all users" feature.
+Unfortunately, in the general case of a manually-configured Postfix on a system with potentially many local users, Postfix doesn't necessarily have an enumeration of users ahead of time.
+For example if all valid users are in /etc/passwd, you could parse that, or if they all have home directories in /home/, you could list those.
+More on those here: http://www.gnu.org/software/mailman/site.html
+You need to create a distribution list or alias that points to all users.
+For example, it may have to look the username up in getpwent, LDAP, etc.
+on-demand as mail arrives, depending on your configuration.
+EDIT:  By the way, if you use the /etc/aliases method, be sure to create a special filter rule for that address in your spam filter to prevent mail coming from the outside from going to it.
+Don't forget to use newaliases when you've saved your new /etc/aliases file (should be force of habit by now).
+You should create scripts to automatically maintain such a distribution list that know how to enumerate all the users on your system.

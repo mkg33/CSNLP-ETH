@@ -1,0 +1,16 @@
+Of course this wont work, why are you trying to defy logic?
+If it's an Amazon instance, adding a disk is always an option.
+Check the "no reboot" box if you can't tolerate a few minutes of downtime while a snapshot is taken.
+Right-click on the instance in the console, "create AMI".
+But then I realized that there would be a problem with recursion.
+Yes, I could rsync individual files, but for the purposes of this question, let's say that's not an option.
+The server has a single disk (xvda1, and yes the actual disk is xvda1, not xvda like it should be).
+I thought I would use dd, piped to gzip, to make the image of the disk.
+Then dd your local disk to the ramdisk and do what you need to with the image to get it off of the server.
+Let's also say asking Amazon to add a second disk to the instance is not an option, nor are remote filesystems like NFS/SSHFS/etc, nor is LVM.
+You want to create a block level backup to the very disk you are backing up...
+With no network storage, and no additional local storage.
+Because dd was reading from the disk that the gzip was being written to, the image would include a corrupted copy of the gzip file, meaning that the image itself was taking up more space than it needed to because of the partial copy of the gzip file, and thusly there would be more transfer time between the machines required.
+I have a RHEL5 Amazon cloud instance that I need to image to another instance in order to setup a test environment for some upcoming patching I'm doing.
+The answer is to order additional memory for the cloud instance, and then make a ramdisk.
+Getting to the point, what options are there for backing up the entirety of the disk as a single block dump, the same way dd does, but that would not include the gzip file that is being written to on the same disk being read from?

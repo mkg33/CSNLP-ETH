@@ -1,0 +1,21 @@
+Which of these approaches works best for your game is up to you.
+The first approach, as you've already tried, is to load it all at once.
+There are two other ways of handling this that I know of: you can chunk the world, and load them off screen as the player moves closer to them(stream loading); and you can have loading zones.
+The Final Fantasy series is probably the most recognizable for this type of approach.
+There are a number of factors to approaching this problem, although you are on the right track.
+Loading zones allow you to find a maximum chunk size that performs favorably, and subdivide your world into pieces no larger than that.
+This puts all your load time and file I/O up front.
+This can also break continuity of gameplay, which may or may not be favorable for the style of your game.
+Chunks are loaded to and removed from memory as the player proximity changes.
+For 3D games, a method called doglegging is often employed which blocks the player's view of the area that is being loaded.
+When the player walks into a transit region (door, cave, map edge), some sort of transition graphic or animation takes place to distract the player.
+However, this is the most file I/O heavy approach, as zones may be loaded and dropped from memory many times during a play session.
+The new zone is loaded from the file system, while the old is saved and unloaded.
+This also creates an upper bound on your maximum world size based on the minimum required memory of the target platform.
+What I would consider the most recognizable example of stream loading is Minecraft.
+It also removes the interruptions of the loading effort from the user experience.
+Care must also be taken to load a zone at a closer proximity than they are removed from memory, in order to prevent a player repeatedly walking across a chunk boundary from burying the game in I/O operations.
+This usually takes the form of a hallway with a turn in it, but can be any obstruction that blocks the player's line of sight.
+While it allows you to have worlds much larger than the memory capacity of the target device and puts all your I/O effort before the player is given control, this increases I/O operations over your initial approach.
+As with zone loading, stream loading removes the upper bound on world size as well.
+As you've already noticed, as a map size grows, your initial load time can become annoying to the user.

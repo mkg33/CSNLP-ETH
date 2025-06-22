@@ -1,0 +1,38 @@
+As you have not provided any profiling data I can only speculate in what I see in the code you have provided.
+Which is a big difference, let me show you with some pseudo code:
+First you check if you're inside the node, then you repeat the same check for each of the children, this is a lot of branching.
+I would reasonably expect to be able to build the tree (ignoring the delay to read from disk) in a few, maybe tens of seconds.
+But this is not the case, doing the extra work of the sorting actually makes the entire code 5x faster.
+Or if you need the points only rarely, store an index to each point and do a more expensive look-up to find the point specifics when needed.
+On just the code I quoted, you do at most 6 branches.
+Assume for a second that the root contains the point (check this only once for each point) then one of the children must contain the point.
+You say 2GB file then for 10 million points, that's around 200 bytes per point sounds reasonable.
+As long as this branch prediction goes well (and it does so quite frequently) you gain a lot of performance, but if the CPU on the other hand miss-predicted the branch, it has to back out of the work it already did and then go back and execute the correct branch.
+All in all to read the entire thing into memory and build a quadtree, I would expect around a minute.
+For the resulting quadtree, do you really need to store the point values (multiple times, at that)?
+The 5x speedup factor uncannily matches my guesstimate above (1min vs 5min) and your code appears to be branching on random data (as the points are not sorted geometrically, whatever that means).
+In that question the OP has an array of random characters and sums all values larger than 128 (i.e.
+Then the op does additional work and sorts the array first, and then runs the exactly same code.
+If quadtree construction is a bottleneck, it might help to use multiple passes.
+I realise I did not implement the node splitting part and allocation of the buckets but I did also not take that into account when I counted branches on your code.
+Lets assume a typical HDD with read speed somewhere around 80MB/s, then reading 2GB of data should take 2000/80 = 25 seconds or so.
+This is called, "branch prediction failure" and is very well illustrated in this SO question.
+Lets assume a modern 3GHz CPU with average instructions per cycle (IPC) of 5 (which is a bit pessimistic).
+This code does at most 3 branches per node, and the branching conditions are trivial which makes a miss-predicted branch cost less (as the delay until you compute the branching condition is shorter).
+Intuitively you would expect it to be slower because you have done an additional sort before hand.
+Maybe just the summary info is enough (min/max z, min/max intensity).
+At any rate, this is just qualified speculation on my part.
+That means that you can do around 3000*5/10 = 1500 instructions per point, per second per core.
+A first pass might only store the x/y values which are all that is needed to determine the structure of the quadtree.
+First of lets consider some numbers, you say millions of points so I'm going to assume 10 million points.
+I recommend you try the above and see if it makes any difference.
+When the CPU encounters a branch (if-else) it will take an educated guess using sophisticated algorithms to try to predict which branch will be taken and start executing that branch before it has actually computed the branching condition.
+I see no major blunders that would be an obvious culprit but I do see a LOT of branching on data.
+You say 5 minutes which is a bit slower than what should be possible.
+Lastly, if your coordinates are used at display resolution, you can store them with floats instead of doubles.
+One reason CPUs can have such high IPC is that they do something called "Speculative Execution".
+For a second pass, the buckets can be pre-allocated to the correct size (most less than capacity_) and each point goes directly to the right bucket.
+Note that this code breaks boundary hits towards the right and the top.
+I believe that you can gain some significant performance by rethinking how you branch in your insert method.
+This 5x speedup is entirely due to avoiding branch miss-predictions as the data is now sorted and the branch predictor in the CPU can correctly predict almost all branches while the random array is impossible to predict.
+Remember, the only way to know if it made a difference is to measure before and after!

@@ -1,0 +1,43 @@
+ThreadsPerChild 25 How many threads per process (one thread can server one request at the time)
+StartServers 2 How many processes to start when you start up apache
+First, figure out how much free memory you have when apache is not running.
+MinSpareThreads 25 Apache will try to keep at least this many threads idle
+At some point, you can choose to go even a step further, and change the Apache worker model to threading (since PHP is left out now), or switch to a lightweight server such as nginx.
+The only downside is that it's if your sites grow past Litespeed's limit (150 concurrent connections), you will have to pay for Enterprise Edition or switch to other webservers.
+Truely fixing it requires fixing the application code.
+This is the maximum number of processes that apache will spawn
+I guess you have in a site a instruction which bifurcates the process and spawn multiple instances.
+If you are using Apache MPM prefork (http://httpd.apache.org/docs/2.0/mod/prefork.html) you can control it with the following settings:
+That will give you an idea of what processes in particular are causing problems here.
+ServerLimit 16 How many processes thats allowed at one time (this has to be greater or equal to MaxClients/ThreadsPerChild)
+MaxClients 150 How many request you can simultaneously serve
+How many request the process will handle before it gets terminated.
+To address the first issue, you have to set the memory_limit size in php.ini, or a .htaccess file that may overwrite the defaults.
+Therefore, I'd would recommend to avoid running mod_php and run PHP as FastCGI process instead.
+So if you do not have enough memory to run all those processes try to lower MaxClients and ServerLimit.
+Apache will auto adjust to keep less then this many idle processes
+The settings are dependent on what type of MPM (Multi-Processing Module) you are using.
+So if you have 150Mb free when apache is not running, you should limit apache to only spawn 150/15 = 10 processes.
+The Apache conf files need to have the following contents:
+In some distributions, php-fastcgi is a separate package from php-cgi.
+Apache will spawn multiple processes, that is normal.
+When the amount of requests increases, more stale processes start loading PHP.
+The second problem is with mod_php is more complex, and requires changing your Apache setup.
+Apache is a memory hog, I think it's normal to see apache taking that much ram with a traffic usage like yours.
+If you are using Apache MPM worker (http://httpd.apache.org/docs/2.0/mod/worker.html) you can control it with the following settings:
+Apache will auto adjust to keep atleast this many idle processes running
+Or if you want to get the best bang for the buck, ditch Apache and use nginx/lighttpd with php-fpm.
+My entire development server runs within 250MB, hosting websites, databases, email and redmine.
+At some point, you're unnecessarily consuming lots of memory.
+At first, you have pristine Apache processes that serve files, and a few that served PHP.
+Once one processes has run that particular script the process will stay at that memory usage until it dies.
+This way, you have control over the amount of processes that serve PHP, and all apache processes remain clean with low memory usage.
+With this option you can set how often you want the processes to restart.
+How many processes to spawn when you start up apache
+And if you are running MPM prefork this might work better:
+MaxSpareThreads 75 Apache will try to keep less then this many threads idle
+I personally use Litespeed Webserver Standard edition on my VPS and it rocks.
+The error message you see, could easily be caused by a memory limit setting of PHP, not a VPS limit.
+MaxRequestsPerChild needs some more explanation, say you have alot of diffrent PHP-scripts running and one or two of these uses alot more memory then the rest.
+Secondly, figure out how much memory each httpd process requiers on avarage.
+The mod_php extension it adds memory usage to every Apache process that starts serving PHP.

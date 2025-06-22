@@ -1,0 +1,9 @@
+Should you want to try mounting it and assuming you didn't break it with fsck or newfs, you first need to find SPARC hardware, at least if you use Solaris. Linux might be able to read a sun label and mount its big endian ufs although I'm skeptical about it.
+42 is more commonly used for "Windows 2000 dynamic extended partition marker" than for Secure Filesystem (SFS). So it can be a dummy partition that really contains Windows "dynamic" disk, with proprietary LDM (or DDM) structure. It may contain Windows volumes, or parts of volumes. I would simply try it on Windows (XP is compatible with these, not sure about Vista/7).
+I'm thinking that the drive was part of Solaris Volume Manager or Hardware Raid. Any tips on how to verify this and mount the harddrive under solaris?
+You tried... what? newfs? I would expect it to overwrite your disk, and you don't seem to want that.
+Your disk is more likely ufs or vxfs. There is no fdisk partition table on SPARC disks, as they aren't using BIOS. The ID 42 partition is probably just an artifact.
+The Sun-Blade-1500 is a SPARC machine. A Solaris 11 VM (assuming on x86) won't mount a SPARC disk, unless perhaps if it is an EFI disk with ZFS.
+I've tried mounting it as UFS/ZFS/newfs, doesn't work. Tried to run fsck to find the correct magic number, still doesn't work.
+The problem you are facing is that SPARC is Big Endian, while x86 is Little Endian. Back in the days that meant, that Little- and BiG Endian systems save stuff in opposite byte order to disk. With modern filesystems like ZFS that doesn't matter anymore, but what you got is probably UFS (just out of my head). So basically you need another SPARC machine to read that.
+I have received a HDD. It has single partition with id 42 SFS covering the whole partition. But I am reliably told that it came from Sun Fire XXXX (where XXXX is 15 hundred or thousand or something like that).

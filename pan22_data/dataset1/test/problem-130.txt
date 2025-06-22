@@ -1,0 +1,8 @@
+If you don't provide any int for random_int for train_test_split it doesn't mean there isn't going to be anything. It defaults to None, check the documentation of train_test_split it says, 
+Now let's look at RandomState instance from the documentation of np.random. Take a look at these points:
+what these mean is, you can achieve the results, the very same several times. But no guarantee it will work for others. There is nothing called random, everything uses pseudo-random. Somehow a "random_state" is generated.
+My best guess would be to try: train:valid:test::80:10:10, or 60:20:20 after doing all this GridSearchCV compare your validation accuracy then try the best estimator on the test set. But this assumes you need to have more data.
+Hope this helps. If anyone finds any mistakes, I'd be happy to get corrected.
+The main problem with oversampling before the split is that the reported score is optimistically biased (in your experiment, quite heavily!).  The resulting model isn't necessarily bad for future purposes, just probably not nearly as good as you think.
+(N.B. the scores used to pick best hyperparameters are no longer unbiased estimators of performance either.)
+Now with hyperparameter tuning in the mix, which is looking at those scores, you might end up with a set of hyperparameters that helps the model overfit on the duplicated rows, so your resulting model might suffer in future performance for this reason.  However, in your experiment you only look for number of trees in a random forest, which has little effect on the final performance (just reducing the variance due to the random row/column sampling).  So similar test set performances are not unexpected here.

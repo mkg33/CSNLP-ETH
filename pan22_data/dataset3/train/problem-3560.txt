@@ -1,0 +1,13 @@
+Note how interfaces created by SoftEther always have a tap_ prefix in the host environment.
+The default SoftEther security policy permits VPN clients to use a static IP address outside of the DHCP range, so UFW can do port forwarding (with IP forwarding disabled) like this:
+SoftEther can do what you want without dnsmasq or ufw.
+The super-neat thing about doing it this way is that SoftEther will bridge broadcast traffic such that things like mDNS and uPNP work properly and the server will appear as MyServer.local in the Explorer panel of client computers that are connecting with a compatible VPN client.
+Remember that SoftEther does not use Linux kernel facilities for NAT and that the host must not attach the SoftEther gateway address to any of its interfaces.
+Step 5 and step 6 enable features in SoftEther that do the same thing as dnsmasq except that SoftEther does not implement a DNS forwarder.
+After a reboot, the tap_snat interface will come online when SoftEther is started.
+Creating an L2 Bridge with SoftEther into a TAP interface like this is essentially a SecureNAT configuration.
+Revert the current configuration and try this instead:
+The non-obvious thing about SoftEther is that the 192.168.7.1 gateway address is not bound to the server and is not accessible from the server.
+Now put this stanza in the /etc/network/interfaces file:
+If you want the server to communicate with VPN clients, then do this too:
+Ignore all warnings about virtual machine environments.

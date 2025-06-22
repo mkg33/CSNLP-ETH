@@ -1,0 +1,13 @@
+On Windows 8 or higher and Windows Server 2012 or higher, you can use Get-SmbShare from the SmbShare module.
+The whole thing is not perfect when net view throws an error but I wrote it based on the comments here and it works pretty well and is helpful for what I need so I thought I'd share.
+If you want to find the shares of the local machine you can just do Get-SmbShare:
+If you need the output saved you can always pipe it to Export-CSV by throwing the following on after the last bracket:
+You now have an array, and starting at $sharedFolders[7] you have your shares.
+You could process these by using a ForEach and some conditional logic.
+There's only one way of enumerating shares remotely from the command line that I know of, and thats with net view:
+You could then split on something like a double space - unlikely to appear in a share name itself, and should work unless your share name is very long, only leaving a single space between the share name and the type field:
+If you want to see if they have (at least) read access, you can run:
+This is not particularly parsable on its own, but, you can throw it into an array to process the data line by line:
+For brevity, to just output the filenames to the console:
+It wouldn't be perfect, but it should work for most use cases.
+Here's a PowerShell one liner that uses net view to enumerate all remote shares a user can see - doesn't mean they have access.

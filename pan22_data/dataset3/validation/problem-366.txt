@@ -1,0 +1,18 @@
+My fix was to decouple the partition SWITCH and MERGE ops into different stored procedures, and ensure that the log reader had time to execute correctly in between execution of each.
+The replication source I am working with performs some dynamic partition management by creating partitions on the Partition Function/Partition Scheme during the load into the table.
+The stored procedure exists on both the publisher and subscriber (manually put there).
+We were loading data using SSIS and there were mechanics that were built in to create new partitions on the publisher, so we implemented the same logic to do the work on the subscriber too.
+When running a test last night, we saw that partitions were dynamically created on the publisher and subscriber, but there was a new error on the Log Reader Agent.
+However, since the partition function merge operation, that partition_id no longer existed.
+I suppose one solution would be to query the subscription details and dynamically perform the same ALTER PARTITION statement to any subscriber database.
+Of course, this can be difficult if you get into having multiple subscribers.
+At this point, I don't even know where to begin to start tracking this down.
+Basically, we had to manage the partition creation for both the publisher and subscriber databases/tables when we made a change.
+I have recently seen this behaviour, in SQL 2008R2 and SQL2014.
+I am working with SQL Server 2014 Transactional Replication with tables that have partitions.
+When sp_replcmds was executed, it was attempting to retrieve metadata about a given partition_id (the switched partition).
+We've worked through most of the problems with the loading and switching of partitions and we are now dynamically creating the new partitions, as they come in, on both the replication source (publisher) and replication target (subscriber) through the use of a stored procedure as part of the load to the publisher.
+The source tables are partition switched when they are loaded and so far I have been able to replicate this successfully.
+I started looking up the error and it looked like it was a bug back in 2005, but we are on SQL Server 2014 Enterprise on an Azure VM.
+This is not natively supported by Transactional Replication per the documentation found here:
+In my case, the error was caused by partition functions being MERGEd immediately after individual partitions on a published table had been SWITCHed out.

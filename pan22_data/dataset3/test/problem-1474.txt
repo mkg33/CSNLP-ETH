@@ -1,0 +1,24 @@
+Hours of debugging later, I found out what it was.
+Not sure if this is your problem, but I suppose it's worth looking into.
+The mysql database server was indeed returning the results of the query within just a few seconds, but the query hadn't completely finished being processed (through end-of-life, including cleanup) until after the results had returned.
+It will show you the queries you're making on each page load (along with the explain output for each query).
+A great addon for Django is the Django Debug Toolbar (github.com/robhudson/django-debug-toolbar).
+Three or 4 seconds after starting the expensive query, it would begin to show "removing tmp table" as the status.
+But when I issue the exact same queries at an sql prompt they are fast.
+When you open a SQL Prompt you are already connected to the database server while Django has to make the connection?
+There was an admin page that was taking a very long time to load (15 seconds), but the slowest query was only a few seconds long.
+The network problem I faced myself because of all the firewall/routing stuff in our company.
+It takes about a second for a query to return, but when I check connection.queries it reports the time as under 10 ms.
+For all outstanding queries, it shows the time spent on the query (so far), the status, and the actual query text.
+Not too big a site, about 1-2 requests per second (that hit Django; static files are just served from nginx.)
+Interestingly, the "clean up" time didn't show up in the query times of either the offending query nor the follow-up query whose starting was actually delayed.
+I'm using Apache+mod_wsgi in daemon mode, but this happens with just the django shell as well, so I figure it is not apache-related.
+I figured this out by running "show full processlist;" in a mysql command prompt.
+The thing that confuses me is, I can replicate the slowness in the Django shell using debug mode.
+The other "wild guess": Is the database on the same machine?
+So apparently MySQL was taking much longer to clean up the query than it was to actually return results.
+Here is a step-by-step explanation of what was going on:
+How can I figure out where this extra time is being spent?
+Do you use custom SQL queries with Django or have you fetched the query and ran it on the SQL shell.
+My database queries from Django are starting to take 1-2 seconds and I'm having trouble figuring out why.
+It would show this for as long as 7 seconds after the query had already returned results to Django.

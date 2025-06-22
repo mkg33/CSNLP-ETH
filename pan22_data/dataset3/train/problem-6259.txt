@@ -1,0 +1,20 @@
+I'd like to have two ethernet switches for redundancy, so that if one switch dies, storage will still work, identical to the dual-switch fibre channel multipath I/O I have now.
+It looks like you may be able to do what you want using a "single-mode interface group" on your netapps.
+My firm just expanded our Cisco 4507 chassis switch by adding and another supervisor engine and 6-port 10GbE line cards to accommodate the storage network (VMWare and NexentaStor/ZFS).
+You have your filers and ESX hosts each with one connection to each switch.
+Each ESXi server has two 10Gb ethernet ports and each controller on my NetApp has two 10Gb ethernet ports.
+But how do you do the same thing for NFS over ethernet?
+I know it's not the multiple-switch arrangement, but was a good way to get the number of ports we needed.
+[That syntax is for Data ONTAP 7.1 or so (documented here); it may have changed in later versions.]
+So, can you recommend a pair of Cisco switches to use for this purpose and which Cisco IOS features I'd use to enable this kind of multipath NFS I/O?
+Right now I have 3 VMware ESXi hosts using 4Gb fibre channel to our NetApp for storage.
+I know these switches will be mega-expensive, that's fine.
+This document is specific to the Linux bonding driver, but it has some good information about configuring reliable network topologies such as you've requested.
+Elsewhere in the industry, it seems as though Cisco Nexus and 4900M are popular for the solution you're requesting.
+Only one of the 10GB interfaces would be in use at any given time, and if it failed, the filer would start using the second interface.
+I know how to handle the ESXi side and the NetApp side of the equation, it's just with the switching side I don't quite know what to do.
+The only piece left that I need to get is the ethernet switches.
+If you haven't already you may want to take this up with Netapp support.
+I'm not 100% convinced that this will Do The Right Thing in a multi-switch topology, but it seems sane.
+I'd like the switch to have at least 12 10Gb ports each.
+I know how to do a LACP trunk/etherchannel bonding, but that doesn't work between physically separate switches.

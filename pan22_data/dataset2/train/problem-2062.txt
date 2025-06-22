@@ -1,0 +1,7 @@
+I have a performance related question, in MySQL, are multiple single column indexes faster than one multi-column index?
+It is also very important to note that the indexes are evaluated from left to right in the query, that is, if you have an index on age-name-sex, it will not be used as name is checked before age in the query.
+When a query plan is constructed, MySQL finally decides to use only one of the indexes on the table which means that multiple single column indexes will never be used in a single query. However, if you have multi-column single index which covers all the required fields (coverage index), the database will never have to read from the disc which will make the query very fast
+in this query, if you have 3 seperate indexes on name, age and sex only the most useful one(calculated by the optimizer) will be used whereas if you have a single index on name-age-sex, it will be much fast.
+There are exceptions where this simplified cookbook fails, but I think it covers a large percentage of cases.  Two notable exceptions are "covering indexes" and OR clauses.  And it does not admonish you not to add redundant indexes.
+There is no clear answer to your question, as it really depends on the query. BUT: If you like to filter e.g. for two colums a combined index will have a better effect.
+Here's a quick cookbook for building an INDEX that will often be optimal.  Given a WHERE with a bunch of expressions connected by AND:

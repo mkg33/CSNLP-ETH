@@ -1,0 +1,27 @@
+Instead of making a backup of the filesystem, take a snapshot with the volume manager and back up the snapshot expressed as a diff from the previous snapshot.
+This will get you a list of all files that have been modified.
+The idea is to have the volume manager keep track of operations between backups.
+Unfortunately, this list will include the directories that the files moved into, since the directory gets updated when a file is added/removed.
+If a file was simply moved, it will not appear in the list.
+Another worthwhile optimization would be to recognize copy operations, and even better, edits (i.e., creating a file that is mostly but not completely identical to another file).
+Given your workflow, I wonder if working at the file level (like what others have proposed so far) is the best solution.
+With that list of files, you can use rsync to only sync those files.
+Unison option does not work in most cases as people report, not for me either.
+I want the feature to keep backup of my movie collection on second hard disk in sync when rearraring folders.
+Now i found this simple C script http://sourceforge.net/projects/movesync/
+A filesystem journal naturally expresses moves and deletions in a few bytes.
+Instead of making a backup of the filesystem, back up the filesystem journal (and optionally replay the changes on the backup machine, if you want a ready-to-use backup).
+For your workflow, I don't think it would matter much anyway.
+This should work well if all you do is create files, rename them and remove them.
+For example, if a file has been overwritten 10 times, only keep its last update in the journal.
+Found it strange that there is no tool which does that simple thing.
+If I move the file into another directory and re-run the find command, it only displays the directory I moved the file into, and not the file itself.
+It would be a lot harder to detect things like copies and edits, or to optimize away the creation of a file followed by its deletion.
+Fuse makes it relatively easy to design a filesystem with specific requirements that sits on top of a “real filesystem”.
+The idea is to have the filesystem keep track of operations between backups.
+You can use a combination of find and rsync commands to only list the files you want, it can probably achieve your goal.
+Also thought of using filesystem capabilities ie ZFS.
+I'm not sure if there's an existing tool that does this for you, but you could write a simple script that just runs a find on the base directory where mtime is newer than the last backup.
+From this, it shows that when initially creating the file, it gets listed by find.
+With this solution, it would be worthwhile to have some form of journal compression.
+Please note that I waited approximately 1 minute between running each find command.

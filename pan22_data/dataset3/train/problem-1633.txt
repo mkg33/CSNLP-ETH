@@ -1,0 +1,52 @@
+I simply use a small set of indicators common to each file set.
+Remember the inputs and the verified output so that next-time when the same input comes, directly put them in the same verified group.
+Unless a direct match towards a group, rules should direct towards a group but with a staging state where a manual verification can be done.
+If there is a direct match, directly apply step 4.
+In my case, the server that aggregates and sends the data files to me appends its name to the filename (zs2101, or something like that).
+If you want to try clustering, you will need to do appropriate feature extraction.
+These are deterministic in the sense that if you receive a strange file header or malformed filename, you know where it will end up (in my case, there is an 'Undetermined' folder that accepts everything that doesn't match a server or date regex).
+When I read files into my archive, I find the date field in every file and convert it to a standard format, and then change the filename to reflect that standard format.
+In your situation, it seems like the client name in the file headers is something you could search for an use for the base of your organization
+File 3 splits on "" into groups of lengths 11 and 13 respectively.
+Now I build a directory tree for each server name, organized by date (a folder for each year, and a sub-folder for each month, in my case).
+Instead of trying to frame this as a clustering problem, look at it either from a sequential pattern view point, or even better: look at the few questions on how to learn regexps from a set of strings.
+My recommendation is that you use regular expressions to organize your data.
+If you don't know the patterns in advance, then it is going to be quite difficult to do the automated grouping.
+ After manual verification, change their state to verified.
+If you want to just get really quick and dirty with it, something you could try would be to parse each filename into n-grams (e.g.
+Your data is obviously going to have implicit clusters in it already based on documents that are contained in the same folders, and going further those folders exist in a hierarchy which also implies certain groupings.
+File 5 splits on "_" into groups of lengths 4, 3, 10, 5, 3 and 12 respectively.
+I'd recommend constructing a tree visualization of the folder hierarchies you're going to be dealing with, taking a sample of 5-10 filenames from within each folder so you can better understand what your dealing with.
+Once you've figured out a couple of different approaches you want to try, you should start thinking about how to evaluate your results.
+There are probably lots of files with dates at the beginning or end, maybe commonly occurring client names, words that are suggestive of document classifications like "report", "newsletter", "resume" etc.
+Define basic rules (data-driven) based on which grouping can be done (like starts-with JPM_, ends-with a number in a specific range, file-size, source, etc)
+For those interested in a solution for similar problems, I found a solution with these steps:
+The more of these you can capture and deal with directly, the better.
+Basically, your manual verification will be your machine-learning and there are two advantages
+Hopefully, I gave you a few ideas to work with here.
+You should make sure that your clustering and/or similarity scoring incorporates these topological features in addition to any text similarity you do.
+Also, different filetypes might have different naming conventions.
+The primary thing I use to organize is functional groupings.
+File 0 splits on "" into groups of lengths 3, 10 and 23 respectively.
+Also, as great as text-based metrics are, you have much more information here that can be leveraged.
+So then I search file names for this limited set of regular expressions (I am currently using 20).
+Edit distance and jaro winkler distance will cover a lot of ground for you, but you should still anticipate needing to do a fair amount of pre-processing and customization here.
+Files 0, 1 and 2 belong to the same cluster and have identical naming convention.
+all sequential 3-letter sequences that occur in a filename) and then score pairwise filename similarity based on the jaccard distance of the n-grams that appear in each filename.
+From here, start trying to understand what kinds of naming conventions are in place that you can take advantage of.
+Next, you may start seeing some patterns that suggest ways you can further tokenize filenames.
+Ultimately, your going to have to custom tailor the solution to what you see in your clients filenames.
+Your first step is going to be understanding your data more.
+For example, *.png files are probably more likely to have all numeric names starting with dates (i.e.
+Then, I divide files by date of generation of the data.
+spaces, hyphens, and underscores are probably good places to start (after dealing with dates/timestamps, obviously), and CamelCasing would be worth looking out for as well.
+One thing you could try would be to use the naming conventions learned by a particular method to try to predict whether or not randomly sampled filenames appear in the same folder or not, and score your methods based on how well the resulting classifiers perform.
+But I guess once you have good features, the problem will already be solved.
+Your problem here isn't in choosing an appropriate clustering algorithm, its defining an appropriate similarity metric.
+Files 3, 4, 6, 7, 8 and 9 belong to the same cluster and have identical naming convention.
+File 5 belongs to another cluster and has yet another naming convention.
+The problem with k-means is that if you get something you didn't plan for, it can be pretty hard to tell where the clustering algorithm will put it, leading to lost data.
+Obviously you're going to start out evaluating things qualitatively, but that doesn't really help you compare the strengths/weaknesses of different approaches.
+I work a project where we get thousands of data files per day from on the order of 10 different systems.
+This is not at all a typical clustering problem, so I doubt any of these algorithms will help.
+The filenames are all a jumble, and have a tendency to change over time.

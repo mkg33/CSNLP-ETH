@@ -1,0 +1,19 @@
+On each of these servers I have an account, but whenever a new one is created, I have to go through the hassle of transferring over my .bashrc.
+LocalCommand executes the command on the server you are connecting to when it gets there, right before your actual session.
+I don't want to change anything on the servers, but I was wondering if there was a way to have a "per-connection" .bashrc, so whenever I would SSH to a server my settings would be used for that session.
+I don't think that is possible, given that ssh has nothing to do with your .bashrc.
+Note that if you refer to a host by different identifiers (IP address, hostname, FQDN), these each are treated as separate instances.
+It's possible however that in about a months time that server won't be around anymore.
+You could write a wrapper for ssh that transfers your user environment to that host on the first login:
+If this is possible, it would be nice if I could do the same thing with other configuration files, like gitconfig files.
+Another solution would be to write a small script that transfers all your favourite configs to your new home folder.
+ssh-keygen -F $1 | grep -q "^# host $1 found:"; then rsync ~/.bashrc ~/.bash_profile ~/.bash_logout $1:.
+Maybe just make folder with all your configs with paths and just transfer them with scp
+I think what you want is (in your .ssh/config on the machine you connect from):
+I've found that with the new company I'm working with I often have to access linux servers with relatively short lifetimes.
+I would also make sure sshds on the servers are configured with the PermitLocalCommand yes
+There are a lot of ways you can tweak that LocalCommand to make it work in your specific environment -- you could curl from an internal web server, or pull from an nfs mount for example.
+If you've never hit the server before, there will be no entry in ~/.ssh/known_hosts for it.
+You can search for a given known host with "ssh-keygen -F ", but you'll have to test that output (grep) as ssh-keygen doesn't return false for a miss.
+I also have to access many other servers for short periods of times (minutes) where it's just not worth it to transfer over my .bashrc but since I'm working on a lot of servers, this adds up to a lot of wasted time.
+If you want to make this more robust, you could check for the existence of a known environment file, hash, or other marker on the remote host.

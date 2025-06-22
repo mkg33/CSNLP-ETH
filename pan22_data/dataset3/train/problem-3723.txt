@@ -1,0 +1,15 @@
+This is a temporary staging table so I don't have to deal with other users reading or writing to the table.
+The other costs are 8% table scan on the fact table and 2% on hash matching for the inner joins.
+The fact table has 32 million rows and 30 columns.
+The execution speed of this query is too slow to be useful.
+However after some inserts and truncates our queries started running slow and one simple insert started taking up to 9mins while previously it was running for around 3mins.
+The fields on which are joined are both integers and nvarchars.
+So try these two strategies and see how this works out for you.
+Because the query takes too long to process, I tried out following solutions:
+I select 10 columns from the base table and 20 columns from the respective dimensions.
+Testing the transformation we were doing a lot of inserts, fixing things along the way then delete in order to test the insert again.
+In a datawarehouse, I am joining a fact table to 20 dimensions.
+The dimension tables are small (between 3 and 15.000 rows).
+We were trying to transfer some data from one database to another also doing some transformations in the way.
+Below is my experience and might help anyone else out there.
+These findings led me to including the actual execution plan which shows that 89% of the cost lies in the table insert.

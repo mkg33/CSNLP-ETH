@@ -1,0 +1,16 @@
+I wrote a small rack app a long time ago exactly for this purpose.
+Every hour or so, cron can fire off a script that will examine that table, see if there are new entries from the last time it ran, and then generate a new nginx config based on what it finds in that table.
+Depending on how much load you are getting on the relative URLs, you could just have your application code fire off the redirects.
+You can check it out at http://github.com/minhajuddin/redirector
+For example, if you're using PHP, check the incoming URL to see if it is your redirect table, if it is, send back an HTTP redirect to the canonical URL.
+To configure the application all you have to do is edit the config.yaml file, the following is a sample configuration file:
+One idea is to have a database (MySQL or what have you) table that you can populate with your redirects.
+This list consists of several hundreds of entries and is changed a few times per day.
+I'm not sure what the best option is in your case.
+A simple rack application which makes redirection of multiple domains a breeze.
+Afterwards, it can issue a reload against nginx to avoid service outages.
+I'd suggest using something like Ruby + ERB to get this done.
+I have a dynamic list of redirects from a relative url on my site to some other absolute url:
+(Actual list is in the DB, but it can be in a text file or in whatever form comfortable.)
+I'm looking for a robust solution to deploy redirect list changes to an nginx server without interrupting the service.
+I suppose that you could create a cron job that generates part of your nginx config and then reloads, but that seems like a dangerous hack to me.

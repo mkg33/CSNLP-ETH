@@ -1,0 +1,7 @@
+(I have been putting "primary DC" in quotes because I don't want to perpetuate the misunderstanding that AD still has the old NT4-style PDC/BDC distinction.)
+It takes more than /registerdns for a domain controller to update all the underscored records in DNS; you must stop and restart the NETLOGON service. /registerdns just does a computer's A and PTR records. Perhaps do that, then check the zone to see if it looks ok on DNS on DC2.
+In the short run you may get some relief by running ipconfig /flushdns followed by ipconfig /registerdns on each DC or problem client.
+What are the DNS settings in the NIC on the "primary DC"? If it is pointing to itself (as best practices say it should), then it is currently registering its various important DNS records with a currently nonfunctional DNS server. 
+Your best bet would be to get DNS working properly on that "primary DC," then make sure it's properly replicating to thoe other DC. I'd also suggest running DCDIAG on both DCs, and working to make sure all tests pass. 
+You shuld have had the DNS service ruuning on both Dc's however to recreate follow teh following article. http://support.microsoft.com/default.aspx?scid=kb;en-us;Q294328&sd=RMVP
+You're most likely right - DNS, the glue that binds AD, is broken. Without quite a bit more diagnostic information, it's tough to tell.

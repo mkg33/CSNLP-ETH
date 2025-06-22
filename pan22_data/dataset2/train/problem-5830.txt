@@ -1,0 +1,9 @@
+If it is a VM, and you can change some parameters, try to set up another type of network adapter, as that looks network related.
+I've had these problems as well and the solution for me was to upgrade the ESXi from 6.5.0-standard (build 4887370) to, in my case, a Dell customized image of version 6.5.0U1 (build 7388607).
+At first, I thought it could be a RAM problem. I used memtest86+ on the host and no problem was found. I also tried the debian package "memtester" which runs very well in the VM and doesn't make the OS freeze whatsoever.
+I fixed it by changing the network adapter type for this host from the default "VMXNET 3" to "E1000e".
+I can reproduce the problem very easily: I just have to execute wget a couple of times and the OS will hang.
+I had this exact scenario going on. Created a Debian 9 VM under ESXi 6.5 and it would freeze when running a few commands. Also, when I closed an SSH session, it would completely freeze and my only option was to reboot.
+Sometimes when I execute a command, the server will freeze and nothing can be done besides resetting the VM (the SSH server becomes unresponsive, all terminals are freezed, it doesn't show a KP or anything else)
+Also, check also the dmesg output from time to time, even if it is working ok, as it may show other problems.
+I had this problem and checked the settings. I discovered that VMWare 15 Player defaulted to only giving the VM 512MB of RAM and 1 processor. I increased it to 4GB and 2 processors, and the VM now works with no freezing.

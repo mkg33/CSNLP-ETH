@@ -1,0 +1,22 @@
+On top of this you will need some sort of opcode caching.
+I'm going to back this up with the latest stats from some servers.
+Your primary fastest server optimized for memory and CPU use needs to be your Web/PHP server.
+Having had to bounce the php memory_limit up to 512MB for certain processes to run, I've watched each Apache process loaded essentially bug out memory wise.
+I have taken the load average from a small Magento website (4,000 unique visitors per day).
+Your secondary server optimized for fast disk I/O is where you run MySQL services.
+There is much easier and effective to scale-out application itself.
+I believe it's usually better to put database to bigger and more powerful server.
+The reason is that it's much easier to move application to anther server with no downtime.
+It's common with two server systems to run a quad core system with 12GB+ memory for the web server and a two core system with 8GB+ and a fast disk subsystem for the db server.
+BUT in order for an accurate reply, you should really post:
+You will learn to drop mod_php5 really quickly as turning your Apache web services into php interpreters IS NOT THE BEST USE OF RESOURCES.
+I am going to provide this recommendation on the basis your site has around 10,000 daily unique visitors.
+Two application servers properly load-balanced gives you almost 2x increase, while with database you'll never get such values and would be forced to play with replication and/or sharding, which is much harder that configuring http load balancer.
+You could also load balance between web traffic between the two servers, but the configuration for this is way beyond the scope of this reply.
+So, if you application would grow, use best database server as you could afford now - that would give you more time before you'll have to move/scale-out database, which is harder that moving/scaling out application/http servers.
+In fact, the only thing it does require is a lot of RAM.
+Under FastCGI you get to run Apache WorkerMPM returning it to serving html which it does best while FastCGI runs the PHP interpreter as a separate process.
+Unless you are in a clustered configuration with multiple web servers, we never advocate using a separate database server for Magento.
+MySQL is absolutely not the bottleneck for any Magento installation.
+You can see for yourself that the separate DB server uses very little CPU and resources in general.
+It is sadly a very, very common misconception with Magento that you should even use a separate DB server, and worse, that you should use your most powerful server as the DB server.

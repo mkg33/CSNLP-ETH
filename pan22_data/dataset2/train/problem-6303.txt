@@ -1,0 +1,13 @@
+I assume that is the way to repair in VMware Player, since there is not the same option as in Workstation.
+I have a VMware Workstation 10.0 installation with several virtual networks including the default host-only and NAT networks.
+After upgrading to Windows 8.1, the NAT network was not working. I booted an Ubuntu VM with the default network setup that was previously working, and it sat for a long time during startup saying it was waiting for the network. After it finally started up, an ifconfig showed no IP address for eth0.
+I found if you set up port forwarding in VMware NAT that includes a host port already in use* on the host, the VMware NAT service fails to restart.
+I found another thing that can cause these symptoms. I had installed VMware Workstation 10.0.1 after the Windows 8.1 upgrade and did not have exactly the same issue. But DHCP quit working for the virtual machine behind NAT so it had no IP. Then I found the VMware NAT Service was not running and could not be started.
+I first tried Restore Default" (as recommended by Marcel Krommenhoek) and the VMware NAT service began to run again. HOORAY! 
+NOTE 1: This was only in the "Desktop" Skype which I had added to this Windows 8.1 system. Apparently the "Modern" (Metro) Skype does not do this.
+After that I could set up forwarding for port 80 and the VMware NAT services runs fine (and correctly forwards the port into the VM).
+NOTE 2: It sure would help if the VMware Virtual Network Editor would warn you that you are trying to use a port already in use!
+If you have a complex virtual networking setup, it may be a good idea to take a screenshot or make some notes before upgrading to Windows 8.1.
+I had a similar problem. But I use VMware Player 7 instead Workstation and Windows 8.1 like local PC and Ubuntu 10.04 like guest SO.
+Run the VMware 10.0 installer again, and select Repair on the first screen. After it finishes the repair process, run the Virtual Network Editor and check your network settings. If you had customized any of the IP addresses on your virtual networks, you may need to redo those settings. If you had any additional custom networks, you may need to re-enter them from scratch.
+I am just dropping this here as I've spend half a day to solve this issue. I used the NAT option as well, but VMWare v12.1.0 contains a bug. This has been resolved in v12.1.1. See the topic on vmware.com

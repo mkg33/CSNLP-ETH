@@ -1,0 +1,10 @@
+You probably want to count existing matches in the left join - so COUNT(m.MATCH_ID) will only count rows where match_id is not null.
+However, in some cases user may want include players that weren't in any matches, yet.
+I am working on application for managing football league as my homework.
+For example user can enter count > 0 and count < 5.
+Edit: One more thing I noticed - you have lot of conditions in WHERE which touch left-joined tables - this will actually cancell the effect of left join, because ie "m.LEAGUE_YEAR = 1" is false when no matchng row exists and so league_year is null - you want to move those conditions to ON as "join-cond AND additionalCont1 AND ..." for each table (m and sqm in your case) - then it will get the chance to actually give you some of those players without a match.
+So I have created manual condition which is detecting if user wants include count = 0 in his filtered list and then I add this to beginning of the query:
+... but I don't like this workaround solution and I suppose neither my teacher will.
+I want filter list of players by number of matches they have played in league.
+Having clause can only exclude rows which exist in data - in your case only possibility to get count(*)=0 means having no matching rows - so nothing to return in the first place.
+I wrote query which works fine when count is bigger than zero.

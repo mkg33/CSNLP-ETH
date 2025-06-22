@@ -1,0 +1,18 @@
+Some load balancers do URL filtering, so if the proxy is just routing traffic (not caching), then you may not need a proxy at all.
+Have 2 varnish servers out front with a shared IP via keepalive in case one dies.
+They are willing to risk 5-10 minute outage rather than have a more complicated infrastructure with dual HA-Proxy servers.
+What we found is about 70% of all requests can be served from the Varnish cache.
+It calls a reverse proxy server, which in turn gathers data from multiple servers and afulfills the request
+Varnish also supports load balancing to backends but you don't get the nice stats or control as you do with haproxy.
+What is the role of the reverse proxy in this situation?
+First LB server, then proxy: - When client hits a URL, it is basically a load balancer, which has multiple reverse proxy servers sitting behind it.
+In the end.. it really depends on how you want to lay it out.
+Each usage case varies and only through testing can you find the best solution that fits the budget.
+We considered putting Varnish out front but a single Varnish server cannot handle the load.
+Is the goal performance, high availability or both?
+Behind it (or on the same server) sit haproxy doing the load balancing.
+Is there a possibility of First proxy server then LB server?
+Lately, I've been using this stack with good results for a PHP based application:
+This creates a single point of failure at the LB level, but our client is fine with it as we can spin up a new instance in about 5 minutes.
+If you go with a hardware load balancer.. chances are that would be up front first since that might also be your firewall.
+While creating a load balanced and reverse proxy based architecture, how would the two be placed?

@@ -1,0 +1,14 @@
+We have a ASA 5510 with four networks: inside, outside, dmz, WLAN.
+All addresses inside have nat to outside and dmz and WLAN.
+There exists one static policy from inside to outside for our imap-server.
+From WLAN we cannot reach this server. From dmz neither. This is our problem.
+I tried to solve this by establishing a second static policy from inside to WLAN,
+this works, but there is a DNS-problem. This has to have another name, because the
+IP is a different one as that of the global outside. And I don't want to use split-horizon or other techniques.
+I think I miss a directive or misunderstand something here. 
+Regardless of whether or not you are NAT-ing an internal host to a less-secure interface, you still need to allow access from the less secure interface to the internal one.
+Given the way PIXOS works, if you have no ACLs, by default all access from the more secure interface to the less secure interface is allowed.
+This does not apply to traffic from the less secure interface to any more secure interface, however.
+Other than that, there is no issue (split-horizon or otherwise) with assinging the same NAT-ed IP on separate interfaces; the assumption being that traffic on these different interfaces will never be exposed to each other anyway (if not, you're bridging your firewall...)
+In the DMZ example, you need an ACL to allow access from the DMZ to the NAT-ed IMAP server's IP:
+NOTE that access lists always need to match the NATed address, as they are applied before NAT.

@@ -1,0 +1,17 @@
+Look into event viewer on each machine for some clues.
+To be sure, i suggest you reboot all the machines & try again.
+Switching the router from WPA-2 to WPA+WPA2 allowed my windows 7 machines to ping each other and the home network to function again.
+Either your wireless AP or your clients have a bug in how they're handling the WPA2-PSK group (multicast/broadcast) keys.
+Execute tracert on the command prompt to the ip addresses & see what you get.
+This is why the Wi-Fi Alliance exists, to make sure that 802.11-based products follow the specs correctly and interoperate properly.
+Because of this, ARP broadcasts aren't getting through from one client to another.
+Hopefully you don't have any TKIP-only clients that this excludes.
+It broke when I received a new modem/router from my ISP so I imagine the issue is with the router, rather than the windows machines.
+Assuming they're on the same subnet (192.168.0.xxx with a mask of 255.255.255.0), then I'd check your router settings.
+Without ARP, they can't learn each others' wireless MAC addresses, so they can't address the 802.11-layer headers of the ping frames.
+"Unreachable" usually means that it can't figure out where to send the ping, rather than saying something didn't respond.
+Mixed mode is a little tricker than pure WPA[1] or pure WPA2, because it requires a TKIP group key but AES-CCMP pairwise (per-client unicast) keys.
+Enter static ARP mappings between two machines and see if they can ping each other -- I'll bet they can.
+Make sure your AP's firmware and your client machines' OS, wireless software, and wireless drivers are full up to date, in case your vendors have fixed their bugs.
+If you enabled WPA2 "mixed mode", where both WPA[1]-style TKIP and WPA2-style AES-CCMP are both enabled, see if your problem goes away when you switch to pure WPA2 (AES-CCMP only).
+Also, turn off any firewall so you can better isolate the issue.

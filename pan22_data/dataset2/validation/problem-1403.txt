@@ -1,0 +1,9 @@
+3). What is the interaction between the /etc/modprobe.conf module/NIC definitions, the /etc/sysconfig/network-scripts/ifcfg-ethX and the /etc/modprobe.d/blacklist functions in this context? 
+You could use kssendmac option to get the NIC's MAC address sent to the Kickstart script.  Parse it out with PHP and configure accordingly.
+2). What is the most consistent way to maintain that ordering through repeated reboots, kernel changes (e.g. going from a RHEL mainline kernel to a RHEL MRG realtime kernel), etc.
+This snippet will get and print all the headers.  You'll have to come up with something that parses out the information you need.  Your network configuration lines will be conditional based on what you get out of this.  
+That way the known variable is the MAC of the onboard NIC and the unknown is the kernel assigned eth device.
+Inserting more than 1 NIC into a server can sometimes causes the new NIC(s) to boot up in their own order, not in the eth0(existing nic) , eth1 (new nic) , eth2 (new nic) order you'd expect
+I have an HP ProLiant DL360 G6 containing two onboard NICs as well as an HP NC375T (NetXen NX3031 chipset) 4-port PCIe card. The system was running with eth0 and eth1 belonging to the onboard NICs and eth2-eth5 on the NetXen card. I recently rebuilt the server and from the kickstart process onward, the NICs were reordered such that the onboard NICs became eth4 and eth5, while the NetXen card took over eth0-eth3.
+I've had some experiences in the past where I tied NICs to specific interfaces via changes in the ifcfg-ethX config files, but this is the first time I've ever seen an add-in card take over eth0 from the motherboard's interfaces. This impacted my kickstart scripts, so:
+In Red Hat, for example, if the driver is called "tg3" (the Tigon driver) you simply specify the network name order you want by specifying the eth(x) order by editing 

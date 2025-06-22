@@ -1,0 +1,13 @@
+That way mysqld_safe never runs as root, and you avoid this error. I find this distasteful, but your entire setup is already something i'd never ever do so I think it would be in good company! :)
+Is there a specific reason why you are compiling MySQL server from source? I found this MySQL "buildout" script, which may be related to what you're doing: It seems to download MySQL server and a package to give MySQL support to Python, then compile and install these in non standard locations.
+In any case, MySQL specifically recommend against compiling from source, as they provide their own optimised binary packages for various different platforms.
+Secondly, your problem appears to be the paths.  Not permissions.  Unless you've substituted the actual path with /.../ everywhere in this post, that's your problem.  If you did, please update the question with the full path.
+If you are still getting the error try the above and if their are any matches they are what is to blame.
+Is your home directory mounted across NFS, mounted with config which is squashing root privileges down to "nobody"?  If so, start as another user, or don't store the data in NFS, or export the NFS share without root_squash.
+First off?  Don't use 777 for this.  Don't.  Daemons don't run as root for a reason (monstrous security problem if any of them have a buffer overflow -- if anybody manages to get into your website via SQL injection or other, they've just rooted your box).  Use a wrapper script to drop the privileges after you open the port.  Nginx doesn't need to be run as root either.
+If you want to cheat, create a wrapper script using buildout_script (http://pypi.python.org/pypi/buildout_script/0.2a1)
+I believe Gentoo and a system-level config tool like puppet, chef-solo, or kokki would suit you better though.
+Silly question first. Are you sure there isn't another mysql running? Read-only errors despite sane permissions (and despite 777) are almost always a sign that files are locked by another process. You can use lsof to find out if something else is messing with your files:
+Failing that, do a fresh build and never ever start as a non-root user. Does that make any difference?
+If you are deploying to a nice package managed system, then your "buildout" script need only invoke the package manager of the target system. This will give you a vendor recommended and approved installation (no chmod -R 777 necessary!) in a couple of commands. For a RHEL/CentOS system, the procedure is roughly:
+See how easy, repeatable that is :). Unless you have a very good reason, using your system's built in package management is  definitely preferable, compared to non-standard install locations and chmod -R 777 games.

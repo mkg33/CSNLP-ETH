@@ -1,0 +1,20 @@
+Thereafter, you should be able to safely read and write the ESP.
+I've never tried using CHKDSK on an ESP in Windows.
+Unfortunately, the undesirable consequence is that it becomes unsafe to share partitions between OSes, since they'll be in an inconsistent state when the non-Windows OS boots; and then when Windows boots, it won't know how to handle any changes made by the non-Windows OS.
+As background, these features turn a shutdown operation into a suspend-to-disk operation.
+If the partition still shows damage after disabling these features, there is a native Linux tool for repairing FAT filesystems, dosfsck.
+You might need to reboot back into Windows for the change to take effect.
+This can affect the EFI System Partition (ESP), where both Windows and Ubuntu boot loaders are stored.
+(This assumes that all the files are successfully read and backed up, of course!)
+That said, if you're seeing filesystem damage, you might want to back up the partition first.
+See here and here for information on how to disable these features in Windows.
+In your case, I'm speculating that these features were active (as they are by default), which resulted in what looks to Ubuntu like filesystem damage.
+You can use that instead of CHKDSK in Windows, but you need to either pass it the -a option, as in sudo dosfsck /dev/sda1 to check /dev/sda1; or use more advanced options to approve individual changes.
+Using a file-level backup tool (cp, tar, or zip, for instance) should be sufficient.
+The root cause of this is most likely the Windows Fast Startup and Hibernate features.
+A backup will provide you with a fallback position should a filesystem repair operation make matters worse.
+This has the desired effect of reducing subsequent startup times.
+The solution, if I'm right, is to disable those features.
+In that case, you can create a fresh filesystem and restore all the files.
+As I said, I've not tried this, so I can't promise it would work.
+If I'm right about the cause of your problem, this procedure alone will be useless, even if there's filesystem damage; you'll still need to disable Fast Startup and Hibernate to make the system safe for use in a multi-boot environment.

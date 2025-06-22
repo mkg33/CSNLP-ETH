@@ -1,0 +1,7 @@
+Alternatively, if your index.php expects to use its query string directly rather than decoding it from within the url parameter, you would use
+This way, you're not having to rewrite the rule for /media--this checks to see if it doesn't begin with /media and rewrites it.  If it does, it just passes it along.
+Use the $0 backreference rather than %{PATH_INFO} to refer to the input path.  In the RewriteRule, add the B flag to escape the URL again (as explained in the mod_rewrite docs).  The rest of the rule is there to double-escape the original query string, so that it can be recovered when the url parameter is unescaped by your index.php.
+I have a similar rule for lighttpd but I don't know enough about regex/mod_rewrite to change it for Apache.
+I need a mod_rewrite rule that sends all requests to index.php unless the request is for anything in the /media/ folder.
+Basically, you're going to be doing the same exact things, only calling RewriteRule instead of url.rewrite-once.  Also, one improvement that could be made to both is to use a RewriteCond to match the media part.
+This is actually a more faithful translation of your LighTTPD rewrite rule, but you run the risk of a conflict in case the input query string contains a url parameter itself.

@@ -1,0 +1,31 @@
+I can remote desktop on to the server and through DOS commands I can login rather easily.
+Everything I have researched and read points to Firewall ports and/or Passive/Active mode settings.
+Here is what bothers me...if I use DOS FTP commands, I can login and use the "DIR" command only if I use "localhost" as my address.
+Now ftp to an ftp site and verify dir or ls respond properly.
+However, I would receive the 150 Opening ASCII mode data connection message and nothing ever happened.
+If you're using SSL, the only answer is to open a range of ports (say, 10000-11000) on the firewall and configure your FTP server to force Passive mode and use that port range.
+Enter user name and password when prompted, then commands such as ls and cd will work.
+I believe you can also enter this command and it will do the same thing, but I haven't tested it.
+I am setting up an FTP server on my Windows 2008 server (R2).
+I know the question pertains to Windows; however, given the same error was produced figured this tip was worth posting.
+I have also opened those ports on my AWS (Amazon) firewall.
+Just add Outbound Rule in Windows Firewall with advance security and put port no 20.
+If your server is using NAT you'll also need to set up the proper IP address for the server to advertise to clients, most obey whatever the server provides as the passive mode connection string and if the server thinks it's 10.1.1.1, that's what it's going to tell the clients.
+I was able to successfully log in using ftp ftp.example.com and entering my username and password when prompted.
+I believe my FTP client is using some long range port number(s) that are potentially blocked by one of my two firewalls.
+Select Program, then C:\Windows\System32\ftp.exe, Allow the connection, Check options; Domain, Private, Public (you can restrict later if need be), name the rule and you're done.
+To get real information on why the connection is stuck, you're going to have to use a client that logs all of the protocol commands to see what's really happening.
+You'll probably still want to force passive mode since some people don't know how to configure their FTP client properly and nearly everyone is behind a broadband router/firewall these days.
+I received the same message when trying to use the ls command to list the files stored on a UNIX FTP host server from my Ubuntu command line.
+Then, I simply entered the option -p (changes it to "passive" mode to deal with firewalls) with the command and it worked.
+But if I issue a command like "DIR", it hangs with:
+Ive used Network Monitoring tools to try and see what ports it is calling but I cant figure that out.
+The firewall will read the traffic on port 21 and open whatever port your server wants open.
+If I specify my full FTP URL, I get the hanging error.
+This leads me to believe its a Firewall issue, (or even an IIS7 issue?)
+This can often fix NAT addresses as well (when the firewall is also handling the NAT).
+If you can't get a smarter firewall, then you'll have to stick to the "open a bunch of ports" option (or switch to a protocol that doesn't need to open a bunch of random ports like ssh's sftp).
+If you're not using SSL, the best answer is to see if you can get your firewall to do protocol inspection for FTP.
+if I specify the "localhost" URL, I do not get the error.
+We resolved this issue using the Windows Firewall New Inbound Rule Wizard.
+Everything appears to be installed correctly but I am having trouble using an FTP Client to login to my FTP server.

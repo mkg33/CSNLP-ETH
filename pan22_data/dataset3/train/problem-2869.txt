@@ -1,0 +1,11 @@
+To keep the same partitioning setup across all your servers, your best bet would be to create Kickstart files and to install your servers with it.
+devices are dynamically assigned at boot time by the device mapper, and should never be used as the source of mount points whether it's mounted manually or via /etc/fstab.
+That implies you need to make the kickstart file available online through one of the supported network protocols (http, ftp, nfs, cifs, etc...)
+Of course, you can always manually customize the disk partitions during the interactive install of the server and just do the same thing on all server (so document it somewhere).
+Example: ks=http://myserver.example.com/kickstart/mykickstartfile.cfg
+Here's a good reference for Kickstart from the official Red Hat docs site:
+Here's an example of the LVM partitioning I've used on a small VM of mine:
+You can man those commands for more details if you are not familiar with the options.
+To install with a Kickstart file, you need to edit the kernel parameters at the grub menu and add ks=URL_TO_YOUR_KICKSTART_FILE.
+Instead, use /dev/volume_group/logical_volume or /dev/mapper/volume_group-logical_volume, or the UUID obtained with the blkid command (or the lvdisplay command, which shows it too).
+Unfortunately, the system-config-kickstart GUI application does not allow you to configure logical volume groups, so you'll have to first save it and then manually edit the .cfg file to setup your disks.

@@ -1,0 +1,5 @@
+In your second topology, you appear to have a split subnet. 192.168.8.0/24 spans multiple switches which you state are layer 3. In your output from switch2, you have a static route for this /24 pointing at a single interface:
+This means that traffic hitting switch2 destined for either 192.168.8.254 or 192.168.8.11 will be forwarded to the same next hop. At least one of those destinations 
+In order for this to work as you intend, you have a couple of options:
+Due to not being able to resolve this problem, a different approach is now being utilised which will vastly simplify the configuration. Instead of routing some VLANs by the core switch, and others by a Linux box, I'm now allowing the core switch to perform all routing between VLANs, with ACLs performing the segregation that two routers would have provided.
+I'm going to move the Linux box to being the default gateway to the outside world for the entire network, with the help of iproute2, to perform source IP based routing, so the correct systems use the correct gateways.

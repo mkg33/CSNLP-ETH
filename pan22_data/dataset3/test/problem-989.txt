@@ -1,0 +1,46 @@
+This method will drastically reduce the time complexity from brute forcing it.
+To see how this would work, suppose you were given the rows:
+So remove each \$g_{j\in J_0,i}\$ from \$\alpha_i\$ for all values of \$i\$.
+If after all possible \$I_j\$ have been tried and no hypothesis holds, back track and try a new value for \$I_{j-1}\$ until you reach a hypothesis that holds for all \$j\$.
+http://en.wikipedia.org/wiki/Boolean_satisfiability_problem ) can be easily reduced to a problem of the stated form.
+Also let \$\alpha_i=\left\{0,1,2,3,4,5,6,7,8,9\right\}\$ initially be the set of values that \$a_i\$ can take.
+For example, if a column had a value of 18 (2+16--bits 1 and 4 set) that would indicate that that column should add 1 to the score if that digit was a one or a four.
+The above in essence implements a back tracking search for a solution but it will exit early for branches that have no possible solution.
+pick a set of values of \$i\$, \$I_j\$ with the added condition that \$I_{j}\cap I_{j-1}=\emptyset\$ and \$\forall\left\{i|i\in I_{j,m}\right\} g_{j,i}\in\alpha_i\$.
+Next, for all \$j>0\$, in order, perform the same steps as above and repeat hypothesis.
+The general form of the problem as stated is NP-hard, since any 3SAT problem (i.e.
+I'm not familiar enough with Project Euler to know how hard its problems are designed to be, but would not be surprised if a program which could small problem nearly instantaneously might be unable to solve the larger problem in less than a century.
+Toward that end, I would suggest that the data format for your rows include the ability to specify a range of scores, and for each space within a row identify any combination of possible digits.
+The tricky part is knowing when additional inferences are likely to be useful (and should be added to the list of constraints), and when they become redundant (and should be removed from the list of constraints so the code won't waste time with them anymore).
+This leaves us with 9 and 1 as our two most likely answers.
+I don't know if this will make a huge change but it should help a little, and it simplifies your code a bit.
+if we only look at the digits with the highest chance of being correct we have:
+To solve problems of this size, I think it will be necessary to draw more extended inferences by identifying rows whose numbers are related.
+one would then be able to infer that because at least one of the 4's was correct, at most one of the other numbers could be correct.
+Make an hypothesis that \$g_{0,i}=a_i\quad \forall i \in I_{0}\$.
+Repeat this for every element and you will come to the answer that has the highest probability of being correct.
+Thus 3 has a 60% (.4 + .2 = .6) chance of being correct.
+You're searching for a number \$A=\sum_{i=0}^k a_i\cdot 10^i \$ such that for each guess \$G_j=\sum_{i=0}^k g_{j,i}\cdot 10^i \$ you have a number of correct answers: \$C_j=\sum_{i=0}^k\epsilon\left(a_i,g_{j,i}\right)\$ where \$\epsilon\left(x,y\right) = \left\{\begin{array}{l l} 1 & \quad \text{if $x=b$}\\0 & \quad \text{other wise}\end{array} \right.\$.
+This would allow you to store the list you are iterating over in memory instead.
+Note that development of inferences goes far beyond checking off possibilities as inconsistent with constraints.
+you can shave off some time by not recalculating something you already know.
+Then just test it against all the guesses to see if it matches.
+this recalculates a list for you len(x)+1 times (redundantly):
+Second, instead of first creating an empty list and populating with a loop you can use a single list comprehension:
+Simply use one column per variable, have a line of all "2"'s with a score of zero, and one line for each predicate with a score of 3, using a three ones or zeroes for the variables of interest and twos everywhere else.
+If it doesn't then just move on to your next most statistically viable guess.
+Instead of recalling the range function for every iteration just call the range function once and save it outside of loop.
+Note that \$a_i,g_{j,i} \in \mathbb{Z}\$, \$0 \le a_i,g_{j,i} \le 9 \quad \forall i,j\$ for formality's sake.
+Remove all guesses in \$J_0\$ from consideration and order the remaining guesses so that \$C_{j-1} \le C_j\$.
+one could infer from that that since at most one of the first 8 digits could be correct, and at most one of the last 3 digits could be correct, at least one of the five digits between had to be a four.
+Start off by looking at all guesses with zero correct digits: \$J_0=\left\{j|C_j=0\right\}\$ these tell us right away which numbers each \$a_i\$ can not be.
+This is in essence a Constraint Satisfaction Problem (CSP).
+If this hypothesis holds, continue on with the next \$j\$; If the hypothesis doesn't hold, choose another set of \$i\$ and form a new previously untried \$I_j\$ and try again.
+Allowing code to derive inferences like the above is likely to go a long way toward making these puzzles solvable.
+Here we see that 0 occurs twice, but one of the times it has a 0% chance of being correct so we can drop it as a possibility (which is nice because it had a 40% chance in the first guess).
+I'd suggest probably using for each space a bit-coded integer.
+Since the starting set of potential 16-bit numbers is humongous, building upon constraints is the only way to reduce the problem to manageable size.
+From an algorithm perspective I think the fastest way to solve this problem would be to treat each element as a statistically weighted possibility, add them up and then the ones with the highest chance will be your answer.
+Although many problems of the stated form may be solved in reasonable times using a combination of heuristics and backtracking, such approaches are unlikely to be effective on a problem which was designed to be difficult.
+but if you find it once and save it to memory before running the for loop:
+Start with \$j=0\$ and systematically choose \$C_0\$ values of \$i\$ such that  \$0\le i\le k\$ and \$g_{0,i}\in \alpha_i\$, call this set of values of \$i\$ for \$I_{0}\$.

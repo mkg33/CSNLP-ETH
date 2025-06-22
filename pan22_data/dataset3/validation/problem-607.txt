@@ -1,0 +1,16 @@
+    --stage-name Test  --transition-type Inbound --reason "my-reason"
+This disables the push from github to the codepipeline, so the build will only happen when you manually run it, and you haven't scuttled any of your AWS config.
+My preference is the last option suggested by TimB, which is to disable one of the transitions:
+The advantage of these approaches is that your pipeline will still be ready to go if you ever need to push a change in a hurry.
+If you still need to push changes but you don't want your pipeline to run, then you could create a branch which you don't push to and then update your pipeline to use that branch.
+Assuming you don't push any changes, your pipeline shouldn't run, and you shouldn't incur costs from CodeDeploy or CodeBuild.
+a change or a CloudWatch event rule) then it won't run.
+I set up an AWS Codepipeline, which sources from Github, build by CodeBuild, and then deploy to ec2 instance via CodeDeploy.
+So I'd like to halt the Codepipeline temporarily, for now (CodeBuild and CodeDeploy is not free, even very small price...)  However, I cannot find option for temporarily disabling codepipeline.
+Since my team decided we won't be using this server/code for while, we stopped the ec2 instance.
+Another option is to disable the stage transition out of the source stage (click the arrow beneath your source stage).
+Then scroll down to the checkbox labeled "Active" and uncheck it.
+If you don't trigger CodePipeline with something (eg.
+Better option is to go to the github repo, click settings, click webhooks, find the one to aws (like https://us-east-1.webhooks.aws/trigger) and click the edit .
+aws codepipeline disable-stage-transition --pipeline-name my-pipeline \
+Your pipeline will still run (and therefore you will still incur CodePipeline charges if you push changes), but at least none of the later stages will run.

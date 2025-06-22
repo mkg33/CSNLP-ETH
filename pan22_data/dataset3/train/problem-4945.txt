@@ -1,0 +1,15 @@
+I'm having this problem as well; it's definitely specific to the arrow keys (and probably cygwin)
+It sounds like tmux’s escape-time is set a bit to low for the quality of connection you have between your Cygwin system and the Linux system.
+The default is 500 milliseconds; this should work OK in most situations, but might be too short for marginal connections.
+Many terminals generate the three byte sequence ESC [ B for the down-arrow key.
+I'd love to hear if anyone figures out what is going on.
+I can do this repeatedly, exactly the same way, 75% the time it will switch properly and the other 25% the time it will print the character code instead.
+For the time being I decided to just unbind the arrow keys and move the select-pane commands elsewhere, and the new key bindings work flawlessly.
+You can put this in your ~/.tmux.conf file, run it as a tmux command in a shell inside a tmux session, or type it directly at tmux prompt (opened with C-b :).
+You can query the current value with the command tmux show-options -s | grep escape-time.
+When I try to switch panes in tmux with ctrl+b , tmux sporadically prints the corresponding character code [A, [B, [C, or [D instead of switch panes.
+Note: Changes made in ~/.tmux.conf will not take effect until you re-source the file, or restart your tmux server.
+The escape-time setting tells tmux how long it should wait for a complete sequence after receiving the ESC; if time runs out without receiving a complete sequence, then tmux will treat the individual bytes as individual keystrokes (treating C-b ESC as an unbound tmux key, and passing [B to the active pane’s tty).
+Edit: to make this question more search-friendly, I'll add these keywords:
+So, either you have escape-time set to a very low value (which probably works OK when you access tmux over strictly local connections), or the connection between the two machines sometimes ends up lagging just a bit longer than your escape-time value.
+Tmux is running on Linux mint, and the shell I'm using is bash.

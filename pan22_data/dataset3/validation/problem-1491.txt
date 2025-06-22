@@ -1,0 +1,13 @@
+I've got several tables that reference to Customers.Id, but that'd mean I would have a reference to an old version of a customer (the initial one, without any changes).
+Every changeset in a customer object now results in a new customer object being created (and a new Id assigned due to an identity column).
+In any case, in multiple versions of the same object, what is constant?
+I suppose that the CustomerNumber could be the first Id assigned to this Customer, but I would suggest an independent numbering scheme, perhaps check-digited for a degree of protection from entry errors, should that ever be needed publicly.
+So now I can have multiple customer changes in one changeset (again very much like TFS).
+Even TFS requires something to be the same, so that it can maintain history.
+Columns: CustomerId | ChangeSetId | AllOtherCustomerData
+If the Customers table were that simple I do not see what you are tracking other than a name change.
+But as long as you know this is the same Customer, you should carry a constant value in the new Customer rows.
+We typically need two kinds of FK references, both a more permanent one to Customers (this is the employee's laptop/iPhone etc) and a more volatile one to CustomerVersions (this is the employee's current position, location, etc.)
+That way "Id" is just a row surrogate key, but CustomerNumber would be assigned once and would be a datum included in the versions of the data you are tracking.
+Obviously when you check in a changeset, you know who the customer is (or was) according to what you describe about your process.
+My problem now is, that I don't know how to represent the mapping from and to my customers.

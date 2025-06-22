@@ -1,0 +1,21 @@
+To check Driver and Path options for specific device (eth0 here) you can use udevadm info -q all /sys/class/net/eth0 (add -a to see all ancestors).
+I notice there's a /lib/udev/rules.d/75-persistent-net-generator.rules.distrib; I believe adding that suffix disables that so perhaps this is something Raspbian has done.
+Anyway, as mentioned there traditionally 'udev shipped support for assigning permanent "ethX" names to certain interfaces based on their MAC addresses' which you would think would be consistent on the Pi (the OEM prefix is the always the same as far as I've noticed), except obviously there is some glitch here, probably with it considering the slot as occupied already.
+Universal file for Raspbery Pi 3B (probably on other revisions it will be the same or similar) it can be like this:
+I found that you can edit: /etc/udev/rules.d/70-persistent-net.rules which is where PredictableNetworkInterfaceNames seem to be stored.
+The way this currently seems to be achieved is via a script, /lib/udev/write_net_rules.
+This may be prone to getting replaced by system updates, so the "better solution" would be to write your own rule to override this one and put it in /etc/udev/rules.d -- but I don't know how it should go in this case.
+I can't promise the hacky solution won't cause you some form of grief but it is easy to undo (as long as you don't delete those files) and probably won't, as all this shouldn't matter on a Pi where there are likely only a couple of interfaces and they might as well keep the name the kernel gives them.
+Instead of Driver and Path directives you can use MACAddress value, but it will be unique for all devices.
+As for the hacky solution, just move both files or add a suffix like .disabled.
+You might want to check if both those files are actually there.
+Wireless devices usually has Type=wlan (udev DEVTYPE entry):
+I removed all the eth0/1 and wlan0/1 entries, and it then went back to 'normal' after rebooting.
+For other devices (like wlan0) you can create similar .link file.
+While there's probably a better way (you could research this yourself), a hacky sort of solution would be to just disable the rule that invokes that; this is in /lib/udev/rules.d/75-persistent-net-generator.rules.
+The only difference is the removal of excluding of eth*, wlan* and some other things (go figure).
+It sounds like the next version of Raspbian/Debian may be moving to "predictable network interface names" -- which will throw a lot of people for a loop, but should prevent problems like this.
+Install one of the standard supported Foundation images and DO NOT run rpi-update.
+You can create systemd.link file like /etc/systemd/network/25-eth0.link
+Did you duplicate the sd card from one to the other--after it had been booted and used in the first?
+It had eth0 and an eth1 in there after moving a micro sd card to a new system.

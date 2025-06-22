@@ -1,0 +1,7 @@
+There are two distinct flavours of merge. One is a generic merge of two totally unrelated ranges, which cannot possibly happen inplace, with the signature 
+The second one, actually employed in the merge sort, assumes that the range are adjacent, hence less parameters:
+This one can be done inplace, while maintaining stability. The algorithm is so beautiful, I can't help but spell it out here. It is also very instructive. Notice the recursive nature of the merge phase; that's what makes inplace possible.
+midpoint is very straightforward; lower_bound is a variation on a binary search theme. rotate is the most saddle for you have to understand what does it return, and why. Of course there's huge room for optimization.
+There is a suspicious piece in your merge function:
+You're testing the value at the right iterator before testing if the iterator is valid! Should be:
+Additionally you compare items to be merged with a 'less-than' instead of 'less-or-equal' operator. That causes taking equal items from the right part first, which violates the usual stability of the merge-sort.

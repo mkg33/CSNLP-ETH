@@ -1,0 +1,23 @@
+Should this not be the thing you want, others suggested ANN approaches, which will also work.
+If your dataset is uniform, for example containing only numeric values, you can potentially use a RNN which still needs a labelled dataset but it can detect time series like patterns ( since you mention comparison with pervious day's values for ex)
+There is a type of autoencoder called denoising autoencoder, which is trained with corrupted versions of the original data as input and with the uncorrupted original data as output.
+I think that heavily depends on the nature of your data (categorical/continuous).
+Then use it on new daily data; this way you have the original daily data and an uncorrupted version of those very same data.
+The key here is which definition of significant difference you choose.
+A simple way to do this using Autoencoders (without "denoising autoencoders" that need to be trained with "corrupted data") is to train an autoencoder and then inspect the RMSE of the rows from the input that didn't decode well (the ones that the autoencoder had a hard time reconstructing).
+Another important factor is the kind of corruptions you introduce; they should be as close as possible to reasonable abnormalities.
+From the formulation of the question, I assume that there are no "examples" of anomalies (i.e.
+SVM, t-SNE, Isolation forests, Peer Group Analysis, Break Point Analysis, Time series (where you would look for outliers outside trends).
+You can then compare both to detect significant differences.
+Another option would be to use Generative Adversarial Networks.
+Does your dataset contain a mix of text and numerical features ?
+The idea is that the training has allowed the net to learn representations of the input data distributions in the form of latent variables.
+You may train a denoising autoencoder with the daily data.
+With that assumption, a feasible approach would be to use autoencoders: neural networks that receive as input your data and are trained to output that very same data.
+Those methods have the advantage that they are sort of white-box, so you can tell why someone is an outlier.
+The byproduct of the training is a discriminator network that tells apart normal daily data from abnormal data.
+This delivers a network that can remove noise (i.e.
+You could compute the euclidean distance and assume that if it surpasses certain arbitrary threshold, you have an anomaly.
+By some definition that data would represent an anomaly (certainly this would be the case for things like spikes in traffic).
+If so the complexity of detecting anomalies increases ( I don't know by what factor).
+If none of these are suitable, then there is whole branch of stats/ML models specialized for anomaly detection.

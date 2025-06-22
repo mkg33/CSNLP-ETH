@@ -1,0 +1,20 @@
+ABT or octrees can also alleviate overdraw at a cheap price.
+One thing to consider is what is the worst-case for your game design.
+Precompute as much as possible - a PVS is a fairly standard techique for static geometry, and depending on your environment perhaps portals would work (these fairly easily cope with moving objects too).
+If your pipeline is the bottleneck then it's basically whether your pipeline is too expensive.
+This also includes console hardware, that is often more optimized for throughput and more exotic component capabilities, like some non-volatile ram properties, but in return less energy efficient and slower over all.
+I've had some success with these techniques for reducing polygons:
+Most of them only optimize for static geo though (although you can cull some dynamics away using the knowledge it provides.
+The latter may necessitate changes to your level design or the inclusion of some polygon reduction technology.
+As an aside: if shader cost is the issue, make sure you are drawing back to front.
+In return they scale significantly worse, can perform horrible for higher resolutions.
+If you drawing overhead because you are sending stuff through the pipeline that is occluded, and that overhead is too much, or if you get too much overdraw eating fillrate then you obviously need to investigate other culling methods (or optimizing your render pipeline or shaders).
+I would limit the amount you are doing at runtime.
+culling objects that are occluded from your view is generally worth it, especially on older GPUs with less dedicated memory (including all integrated chips) and less support for parallel processing pipelining.
+If you're going to be able to go to the top of the hill and see all objects unoccluded at the same time, then an occlusion system will in fact be slowing the performance of your game in that scenario.
+BSP and portals seem obvious culling algorithms that are relatively cheap and reduce overdraw, but they're generally for indoor scenes.
+Some culling methods benefit more from being less general, and more optimized towards special hardware limits.
+This older hardware benefits more from all the branches that come with more culling, as culling bounds are basically a bounding volume hierarchy.
+Culling is a good option, nearly essential at some point, for good performance and backwards compatibility and support for older hardware.
+Whether that solves the problem depends on your implementation of the new culler, and the win you gain by not drawing the stuff.If overdraw is an issue, the culler can be a win because you shift performance from the GPU to the CPU.
+Another thing to consider is the consequences of not culling for your target platform and game:

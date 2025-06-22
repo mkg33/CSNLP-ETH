@@ -1,0 +1,12 @@
+The Puppet class contains all of the files, package and service resource definitions for the OS component.
+The agent contacts the master for its catalog (list of resources to configure) and in this process, the host is classified and a list of classes will be included in the catalog.
+At its simplest, you can have a main manifest (doc) containing lists of nodes with their hostnames and include the classes you want to use on them:
+Maintaining lots of node definitions in code isn't very efficient.
+Lastly, the master can be configured with an External Node Classifier (ENC), which is usually a script that's called when the agent checks in.
+The main manifest is compiled automatically when an agent requests its catalog and if a node definition matches the name of an agent, its contents are also evaluated to include those classes.
+It's given the name of the agent and should output a list of classes (and optionally, parameters and the environment).
+Puppet manifests (the usual term, rather than scripts) are normally organised into a module per OS component or service (e.g.
+You can also use Hiera and hiera_include to store the list of classes in external Hiera data files, then a main manifest contains hiera_include('classes').
+apache, ntp, postgresql), with one or more classes that contain everything needed to configure it.
+This looks up the value of classes from Hiera and then includes all of those classes.
+It could use a database or any sort of information you have in your organisation.

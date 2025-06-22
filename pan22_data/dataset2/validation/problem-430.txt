@@ -1,0 +1,6 @@
+(Unless your router is set up in half-bridging mode (which is uncommon and unlikely), the ARP table will only contain addresses of systems ON THE SAME SUBNET that your computer is in, ie if your IP address is 192.168.x.x, the only addresses which should appear in your ARP table will be 192.168.x.x and 127.x.x.x [ 127.x.x.x = loopback ].
+Which works, and Wireshark successfully displays ICMP data. But there is no ARP information right before the ICMP data even after I clear the ARP cache.
+In order to reach Google, your computer has a default route to the router.  Thus in order for it to send packets to Google it only needs to know this address, which it most likely already knew at the time you generated the ICMP traffic, so no lookup was required.
+The only address in your ARP table related to getting to google would be the MAC address of your router (gateway address).  And some inbound packet, say from windows doing maintainence or DNS could have come back, after your ARP clear, and reset that before you fired up wireshark to watch things.
+So far I know that if Wireshark does not display ARP frames before ICMP frames, it's usually because there are ARP requests in the cache.
+Then, I start Wireshark, add a filter: arp or icmp to filter out any traffic except ARP or ICMP data. After that, I try to run a simple ping request:

@@ -1,0 +1,25 @@
+The hot technique at the moment seems to be Voxel Cone Tracing, which doesn't involve any pre-bake step.
+A cheap runtime method is to use baked light-maps, where you run something slow-but-awesome like radiosity or path-tracing offline first, then save the lighting information along with your regular vertex data.
+Robin Green's paper is basically the bible on this technique, but it's pretty heavy going.
+This is the main 'hard' problem remaining in real-time CG, and there is a lot of research ongoing into solving it.
+Michal Iwanicki did a good presentation on how they solved this for 'The Last of Us'.
+PBRT's architecture is not suited to real-time either, the main goal of PBRT is to solve the rendering equation, using unbiased Monte Carlo integration.
+Have a read through this page to get more information: https://github.com/LWJGL/lwjgl3-wiki/wiki/2.6.1.-Ray-tracing-with-OpenGL-Compute-Shaders-(Part-I)
+How do I model the indirect lighting in a physically based render written in OpenGL ES, so using real time computer graphics?
+They're basically a Fourier transform across the surface of a sphere, by discarding high-frequency components you can get visually pleasing, mostly accurate environment lighting in only 9 coefficients per-color.
+Without a lot of optimization and constraints, I doubt you'll be able to reach decent performance on a mobile device.
+So real-time programmers need to use hacky tricks to do stuff like reflections and shadows, and the same applies to global illumination.
+I implemented a physically based path tracer after studying PBRT by M. Pharr and G. Humphreys.
+This is great for static geometry, but becomes problematic as soon as you add moving objects.
+In any case, path tracing can be implemented in OpenGL, I would suggest to look into compute shaders which are very powerful.
+Path tracing is a very computationally expensive algorithm, and not suited to real-time.
+The biggest hurdle is that in raster graphics, each component of the scene is rendered 'in a vacuum' - each triangle is rendered without reference to any other triangles in the scene, and the same goes for pixels, as opposed to ray-tracing approaches where each ray has access to the entire scene in memory.
+I'm not too familiar with it myself, but as I understand it, it involves voxelizing your scene into a low-res Minecraft-style world, placing the voxels into a quickly-traversable spatial structure like an octree, then casting a few wide rays (cones) from each point and checking which voxels they hit to gather bounce lighting.
+NVidia is pushing this pretty hard at the moment, and there are papers on it here and here.
+Now I'm trying to apply physically based rendering to real time graphics using OpenGL ES (in an iPhone application).
+See https://en.wikipedia.org/wiki/Unbiased_rendering for more info.
+to bake 'light probes' at various points in the scene, moving objects can then interpolate between nearby probes to get an approximation of the indirect light at their position.
+Spherical Harmonics are used a lot in game engines to represent indirect light.
+I want to start using Oren-Nayar and Cook-Torrance as diffuse and specular BRDF but I have a problem: how do I model indirect lighting?
+OpenGL ES 3.1 supports compute shaders with some minor limitations, in contrast to Desktop GL.
+In a path tracer (like the one contained in pbrt) the indirect/ambient light is given "automatically" from the path tracing algorithm, as it follows the path of light rays taking into account direct and indirect lighting.

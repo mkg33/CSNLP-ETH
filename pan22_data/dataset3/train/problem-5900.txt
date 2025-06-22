@@ -1,0 +1,21 @@
+So, if you are using embedded mode, which is discouraged, then use daemon mode instead as a start.
+It should be safe, according to the developers, but it still creates a python interpreter per process, and the python interpreter is not exactly thread-friendly.
+Alternatively you can crank MaxClients up to some insane value, but that will probably just upset the rest of your system.
+Monit is a daemon that runs on your server and, as long as the OS is running, makes regular checks that applications you define are running.
+Can you post what you have in error_log (can be found in /var/log/httpd/error_log) when the problem happens?
+My first suspect would be mod_wsgi, especially since you are using it with MPM worker.
+Also, I would like to see parts from /var/log/messages from the same time.
+Then you could try switching from mod_fcgid to mod_fastcgi, and/or try disable other modules you may have enabled.
+If you use daemon mode of mod_wsgi though, such deadlocks should be detected and processes at least forcibly restarted after a period.
+Once you have that set up you can at least know that your site won't go down when this happens, and Monit will email you when it takes action, so you'll have an easy log of when the problem occurs to compare with logs etc.
+Overall, this sort of issue, if you believe it is related to mod_wsgi should be discussed on the mod_wsgi mailing list.
+Well, it appears something is causing your web server to get a metric ass-ton of requests -- If you look in your apache error log you'll probably see that you're hitting your MaxClients limit (which is why your site falls over).
+You can tell it to check that Apache is available and if it's not restart apache.
+You possibly are using a C extension module for Python which doesn't implement full threading properly.
+Your problem could be any number of things, but since it's clear you're not already the first thing you need to do is install Monit or some similar software.
+You don't say anything how you are using mod_wsgi and have it configured.
+You can also tell it to restart apache depending on system variables like high load or full ram.
+I would guess it is one of the modules, or it could be some interaction between the modules.
+Find and eliminate the source of the request storm and your problem will go away (if you're lucky it's all from one source and you can just block them at your firewall).
+I would suggest as a start to read 'http://code.google.com/p/modwsgi/wiki/ApplicationIssues#Python_Simplified_GIL_State_API'.
+Debugging stuff like this on StackOverflow/ServerFault/SuperUser is really hard.

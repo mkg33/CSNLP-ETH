@@ -1,0 +1,23 @@
+Their responses to my inquiries were surprisingly helpful ( i.e.
+I didn't feel as if I was taking to a sales guy trying to push something ).
+On a totally unrelated note, I've got to admit that I'm extremely pleased with the responses I got from loadbalancer.org.
+From that point on, the router could do some mangling to route EXT_IP:443 to INT_IP:INT_PORT which would then allow us to reduce the Load Balancer configuration to 1 or 2 clusters, thus resolving the health check problem.
+Isn't the problem here that you need a highly available system with failover for thousands of IPs and SSL certificates?
+Typically the port is 443 so you do IP-per-site, but with the intermediate layer of router/LB, you can freely move the ports around, you just still need to have several hundred of them.
+So the fine folk at loadbalancer.org recommended that we may be better off offload the 400-800 public IPs, which we require for SSL eCommerce solutions, over to a forward facing router.
+It can even set/enforce certain headers, so maybe your load balancer configuration can stay really simple and you just check for those headers on your backend.
+In my case, the ports were all part of the same Apache instance -- I defined health checks only for the base port.
+If we double, this would be about 800 IPs, possibly 1600 clusters, and about 6 servers per cluster ( for a total of 9600 so called "real servers" using Barracuda's lingo ).
+( No I don't work for them, and sadly nor are they sending me free gear ).
+I've got a somewhat similar setup, where I have most of a /22 block of IPs defined on an F5 BigIP box, with a one-to-one mapping of external ip to a internal port number on each of my backend machines.
+You could use a front-end router as you describe to do this NAT work, but you would still need to define clusters for each intermediate host:port combination -- with the current state of SNI support in clients, when doing SSL you need certificate mapped to a port.
+If Coyote/Loadbalancer.org/etc can't do it you might need to either fork over lots of money for one of the more expensive vendors (assuming they can...) or (better?)
+Secondly, what router would you recommend for such an undertaking ?
+Use keepalived to move the IPs back and forth between a small number of boxes and then have for example nginx work as an SSL proxy forwarding the requests back to your load balancer (on any port appropriate).
+If it wasn't up, none of the others would be either, so it would fail the whole backend node out of the rotation.
+Vyatta and pfSense (etc) will just do the port-forwarding, but you need the SSL "transport" applied, too - no?
+We use both Vyatta (as a BGP router) and pfSense (firewall/NAT/VPN) and starting next week loadbalancer.org appliances (load balancing).
+I've recently been looking at getting some new load balancers for our environment as we are expecting to double our client base in the next 12 months.
+Currently we have 400 public IPS serving 800 clusters ( 2 clusters / IP due to ports ) on Coyote Point Balancers, and distributing connections to 3 web servers serving about 6GBytes outgoing, 2Gbytes in per day.
+Due to the amount of clusters, most solutions I've looked at ( Coyote, Barracuda, Loadbalancer.org ) seem to be unsure whether they'll be able to handle our planned growth, mostly due to health checks performed on the servers ... which makes total sense when you think of it.
+I'd be looking at something that has some form of failover mechanism built in.

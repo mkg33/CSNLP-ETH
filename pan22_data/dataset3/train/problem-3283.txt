@@ -1,0 +1,10 @@
+I have a similar setup, except that instead of two vlans on the same switch, I have two switches connected together using OSPF.
+If 20.20.20.2 is reachable, it won't matter how many hops it is away.
+Basically where you configure the dhcp relay (IP helper) on your VLAN interface, the switch will forward the DHCP request to the IP helper you have provided.
+One at each switch, or just one on the switch without the dhcp server?
+It won't work if the DHCP server can't reach the client that is requesting an IP address from the DHCP server and sometimes people forget that you need a route both directions.
+This will become unicast traffic and get routed to the DHCP server which should be the IP address you have set in set forwarding-options helpers bootp server 20.20.20.2.
+The configuration only needs to be set on the switch/router that is being used as the gateway.
+In my code I am using the same setup, but I'm wondering, how many relays will I need.
+Set DHCP relay configuration for each vlan that does not reside on the same subnet (even across internet) as the DHCP server.
+You do not need to set the configuration on edge switches or any switches that come after your gateway.

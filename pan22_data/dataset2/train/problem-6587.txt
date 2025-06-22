@@ -1,0 +1,7 @@
+Now, it may come a time when you actually want to implement loading the keywords from CSV, in which case, we'd want something like this:
+The code that actually makes use of the protocol would look like one of the following two snippets (based on which protocol you're using):
+It does exactly the logic you've implemented, except that it's far more clear what the intent is.  Moreover, if ever you need to do this in the case that completions isn't a local variable, your approach is not thread safe.
+It potentially make sense for the protocol to simply be the second method and have it return an optional, simply returning nil where the first method would have return false.  But potentially, suggestionForKeyword might be an expensive operation (although I suppose it could be optimized).  So a protocol like this:
+Taking a look at the bigger picture, I don't understand the purpose of loadKeywords neither as part of the protocol nor as a method itself.
+It appears that the only real reason that they exist is because they are used by the suggestion() method.  Since you haven't included the code that is actually using this protocol, I can only guess, but my best guess is that it's completely not needed.  Instead, I would take an approach like this with the protocol:
+First of all, language and keywords should be private.  But also, the loadKeywords method really isn't useful to us at all beyond initializing the keywords, right?  So, let's take this approach...

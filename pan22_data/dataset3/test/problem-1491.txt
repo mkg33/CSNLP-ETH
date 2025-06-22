@@ -1,0 +1,10 @@
+I have tried creating g000001 and ensuring it's assigned to another subnet, but it doesn't help.
+Despite the error only pertaining to Region europe-west2, the Zone in which I needed to recreate the instance (in order to re-apply and re-release the static internal IP) does matter.
+If I try to delete this subnet (as it's no longer required), I get an error:
+Once those settings were committed and the instance was created, I went back in and edited the g000001 instance, released the internal static IP, saved it, deleted the instance... and voila, I was then able to delete the subnet.
+Error: The subnetwork resource 'projects/xxxxx-cloud-network/regions/europe-west2/subnetworks/xxx-general' is already being used by 'projects/xxxxx-cloud-network/regions/europe-west2/addresses/g000001'
+I can only imagine that when I deleted g000001 originally, GCP doesn't delete/release the reserved IPs in the background.
+When I recreated instance g000001 in europe-west2-c, I could change the ephemeral IP to static (at which point I could select the troublesome pre-defined static 10.16.1.x entry from a dropdown).
+I have a subnet in GCP, under the default network, called xxx-general
+I was recreating instance g000001 in europe-west2-a - which wasn't getting me anywhere.
+I have looked around GCP, at the instances and VPC Network configs etc, but I can't see why this network thinks it's attached to anything.

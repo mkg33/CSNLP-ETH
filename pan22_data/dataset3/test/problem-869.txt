@@ -1,0 +1,14 @@
+It's network adapter will have address 192.168.3.1/24, so can distinguish IP addresses on the LAN from other addresses.
+And the box (router or host) with the IP address of 192.168.3.x answers "hello 00:11:22:33:44:55, I have the MAC address 66:77:88:99:AA:BB, and I'm the owner of IP address 192.168.3.x".
+The netmask describes the allowed range of IP addresses on this segment, in this case 192.168.3.0 to 192.168.3.255.
+An arp is not sent to the router, and arp is sent to the entire network.
+If the destination is not on the local network, and a matching route is found, then the computer will arp for the gateway address defined in the route.
+If my assumption is right that when the sender sends a ARP broadcast the router check if the destination host is in the LAN and if so forwards the broadcast message into the LAN hosts and if not (the destination host is outside of the LAN) the router answers with his own MAC not broadcasting the message to the LAN avoiding unnecessary network traffic?
+I know that if a destination host is in the other network the returned MAC address is the MAC of the router instead of the designed host.
+If the IP address is not in the cache, no matter if its the Router IP address or another Host IP address, and sends an Ethernet Broadcast over the LAN with contents "hello, I have MAC address 00:11:22:33:44:55, I'm looking for the MAC address of IP 192.168.3.x".
+(That was how Ethernet originally worked, before everyone moved to point-to-point connections with switches).
+Think of Ethernet LANs as divided into segments, where each host on a segment can talk to each other host on the segment.
+So when it sends a packet so some IP address, it will know which "local" IP address on the LAN to use, either directly one of the local Hosts, or the Router with the gateway address.
+If the destination is on the local network, which is determined by the local ip and mask, then the computer will try to arp directly for the destination address.
+Your computer will look at its local routing table.
+It will also have a catchall routing entry that just says "use 192.168.3.254 as gateway for every other IP".

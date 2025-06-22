@@ -1,0 +1,16 @@
+You can see that all this code does is create a new LwjglApplication and pass it an instance of your class.
+%PACKAGE% and %MAIN_CLASS% are replaced, by the generator, with the names of your package and game class.
+Part of the arguments passed to the project generator is --mainClass MyGame.
+I mean, there is no special code within the render() in the Game interface class as well.
+The libgdx will then look for the methods in that class (either using reflection or by creating it's own class during project generation that refers to that class directly).
+Whenever we declare the render(float deltatime) or update(float deltatime), in any class, it automatically become a method that is repeated 60 times per second.
+After that it's a standard gameloop buried somewhere inside the libgdx code.
+For example, this is the file used for desktop platforms.
+All it is doing is producing a set of stub source files based on your target platform.
+You can follow a similar path of execution for different platforms you may be interested in; there's nothing magic here.
+libGDX happens to generate this code for you using its project generator tool, to avoid making you build that boilerplate.
+Within that loop, it does work related to gathering input and updating state and ultimately calls render() on the listener (your game instance) provided to it.
+Also, even though I do expend a interface like Game, how does the render(float deltatime) work?
+When constructed, LwjglApplication calls initialize(), which in turn starts a thread to call the mainLoop function.
+The project generator is just saving you some typing by instantiating the correct things for you, but ultimately all it is doing is copy-pasting some code on your behalf.
+In some classes, I am not implementing any other interface or expending any abstract class but that still makes the render(float deltatim) and update(float deltatime) work.

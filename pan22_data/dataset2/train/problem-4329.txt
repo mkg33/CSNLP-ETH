@@ -1,0 +1,7 @@
+2) If you have 2 columns indexed seperately, it is possible, but quite rare, that the database uses both indexes for the lookup. You can try creating 1 index having both columns, but I highly doubt this would be of any help, you would need a big, wide table with exceptionally good clustering for x and y columns to benefit from this for 3/100 million rows.
+5) If the content of column z does not fit its original place (HI becomes HELLO WORLD), and your table blocks are full, you may experience row migration, that makes performance worse not only during the UPDATE, but for later queries as well.
+If that is not enough, monitoring the wait events + parameters in v$session, or a raw SQL trace could help even more.
+6) If column z is part of an enabled foreign key constraint, you can not simply update it to any value. The database needs to check the parent values to make sure you are updating to a valid value. Again, disable, run the DML, enable validate, may improve performance.
+1) This does extra work, because it updates column z to HELLO WORLD, even if it was HELLO WORLD already. Rewrite it as:
+Note that this will not force parallel execution even if the syntax suggests that. It's like adding parallel 8 hint to your statements in your session.
+4) If column z is indexed, than the UPDATE statement need to maintain the index(es) as well. Sometimes it is better to make the index(es) unusable, run the DML, then rebuild the index(es).

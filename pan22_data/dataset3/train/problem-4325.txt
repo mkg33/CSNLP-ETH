@@ -1,0 +1,20 @@
+It's https://github.com/OpenELEC/OpenELEC.tv/blob/master/packages/sysutils/busybox/scripts/fs-resize?source=c
+In case anyone has this problem with newest version: syb0rg answer is great but
+Check what process are blocking the partition /storage to be unmounted
+Otherwise you can kill that process with kill -9 $PID.
+Resize the partition (this case partition 2 till the end)
+OpenELEC resizes /storage on first boot after creating the SD.
+In case some PID are returned you can check what process is associated with that PID running ps -ef | grep $PID.
+=> “umount: can’t umount /storage: Device or resource busy”
+If you see something like -sh it is your ssh session that is in the  /storage directory.
+Check if these processes are in the systemd tree and are controlled by systemd.
+The first code line checks for /storage/.please_resize_me file.
+So... to resize storage to fill the SD you need to:
+Now you can safely unmount the /storage directory via
+In most of the case will be /dev/mmcblk0p2 (which is partition 2)
+I tried to kill it, but everytime a new process blocked the mount.
+Check with fuser -m /storage if there are still process blocking that directory.
+I have to kill + umount in the same time with the pipe (in this order) :
+Now you can resize the partition (I will report again since some commands are changed)
+Show partitions (we alredy now which partition we want to resize)
+If you want to resize /flash is a completely different story.

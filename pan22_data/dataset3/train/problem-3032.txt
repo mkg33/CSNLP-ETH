@@ -1,0 +1,11 @@
+You could configure the machine to do a kernel core dump over the network, but you'd still need someone skilled to look into that.
+If you follow the instructions and still can't get a dump created locally then you should then move on to capturing over the network..
+You'll need to install the right kernel-debuginfo rpm for your running kernel and then invoke crash - you should get the general gist from the whitepaper.
+This will capture all kernel output on the remote system.
+Have you checked /var/log/dmesg, /var/log/messages, and /var/log/syslog?
+This runs at a much lower level (the same point in the kernel that writes to /dev/klog), so you may see the very last bit of information that the kernel outputs when it panics even if syslog et.
+If you can get it open the first thing you should look at is the log - scroll down to the bottom and you should get some clues as to what is going on at the time the crash occurs.
+On the remote system, run (this requires that you have netcat installed):
+Of course once you have a core dump, you'll need to do some analysis on it using the crash utility.
+If you have experienced a kernel panic, you can set up a remote kernel console to capture all the data that might be lost on the local console (especially if the crash is from a non-maskable interrupt, which tends to reboot the system).
+Collecting a core over the network is probably overkill, you can dump it locally.

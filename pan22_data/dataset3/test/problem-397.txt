@@ -1,0 +1,42 @@
+If you rely on auto-grow, the process will be held up for the duration of the growth, and it always seems that auto-growing a file by 1 GB takes longer than growing it 1 GB by hand.
+Plus, the latency on a pair of DAS drives will probably be better than going through a SAN switch.
+If the log file starts to get near full, manually grow the log file out.
+I would only run this way temporarily, for the duration of the migration.
+It's hard to know without trying it once, on a test server.
+If you have a multistep migration process ("Run this program first, then run this other program, etc.
+I've been through this sort of thing a dozen times and the actual performance has always been disappointing.
+It will also keep you from having to run frequent transaction log backups, which need to read the log file, moving the disk heads and will slow stuff down.
+(If you have a Lefthand, you are probably not desperate and have a few 72 GB or 143 GB SAS drives hanging around.)
+Do a test with maybe one or two 10 GB files, determine the expected data rate and do the math on how long it will take to move your large files around.
+With respect to log writes, moving the drive heads is a performance-killer.
+This is also a win for those synchronous log writes.
+You can go with RAID0 if you want to risk it for a weekend, again with the caveat of having to restore your databases and re-run your migration from scratch if something goes "bang".
+Moving the log file will move some of the I/O bandwidth requirement off of the Lefthand, but more importantly it will allow log writes to occur serially, with little or movement of the drive heads.
+Robocopy works very well, I've been using it for at least 16 years.
+After you are done with the process, you can shrink the log file back down to whatever it was before the migration and move it back to the Lefthand.
+The DL360 should easily be able to best that data rate with a set of directly-attached 10K SAS drives.
+Usually, the data rate to the log drives is low, maybe 10 MB/s or less, but the latency on the many small writes holds everything up.
+After all, the 15K RPM drives in the SAN aren't faster than the 15K RPM drives that you would stick in your DL360.
+I suggest that you isolate the log file from the data files by moving the log file off of the SAN and putting it on a mirrored pair of SAS drives.
+Also, you will want to grow that log file out manually, ahead of time, or monitor the freespace in the log file very closely.
+Also, make sure that you align your partitions when you create them on the empty drives.
+I can hit 115 MB/s or so on TCP ethernet on 1 Gb/s NICs without any kind of special magic.
+I say use a mirrored pair of SAS drives for the log.
+If so, you may also get improvements by moving the tempdb data files onto their own set of local drives.
+"), you can just take DIFFERENTIAL backups (or even FULL backups) between steps.
+The reason for this is that I/O to the log file is synchronous, while reads from the data file(s) are often cached and writes are, for the most part, asynchronous.
+Whatever you do, don't forget that copying all of the data off of the Lefthand and putting it back will take a significant amount of time.
+Consider switching to SIMPLE recovery for the duration of the migration, doing so will minimize log space requirements.
+I know that SAN vendors will tell you that the SAN has so much write cache in it that it doesn't matter and that all writes to the log will be cached and de-staged later and the redundancy calculations (for RAID5 and similar RAID types) are lightening-quick, but the SANs never seem to perform quite as well as you are led to hope.
+This means that the I/O to the log file is more time-critical than the I/O to the data files.
+With intensive data changes, the bottleneck is usually the log file for the database.
+You could probably get that data rate out of 2 or 4 consumer-level 7200 RPM SATA disks.
+If you are OK with having to restore and re-run your migration in the (unlikely) case of a drive failure, you could go RAID 0 or with only 1 drive if you are desperate.
+If those NICs were load-balancing properly, I would expect something well over 175 MB/s.
+If you do it manually, the migration process will continue on.
+Depending on how your vendor wrote their migration code, you may also want a lot out of tempdb.
+You should also anticipate log file growth if you are running in FULL recovery mode, and automatic log file (and data file) growth is a performance killer.
+You would definitely prefer 15K RPM drives for this task over drives with lower spin rates but perhaps higher average throughput numbers.
+The more gadgets (switches, etc) your data has to pass through between the RAM in the server and the drives, the more latency you will get.
+If you can only feed the Lefthand at 100 MB/s or less and these SQL Server files are the only thing on it, the Lefthand unit seems like $overkill$.
+I often have to push 1 TB or so between servers and through 1 Gb NICS.

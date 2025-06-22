@@ -1,0 +1,16 @@
+The full code is available in the demos, but here is the recursive cte view for the staging table:
+This solution requires that the entire ancestor path be in the staging table (i.e.
+If you can not create views to simplify the code as above, you can use inline recursive ctes like so:
+from the root node up), and that the combination of parentid,description is unique for each table.
+Is it even possible to insert a new root node and it's child nodes in a single operation?
+I have a number of records I need to add/update in a table that represents a hierarchical tree structure.
+If possible, I'd like to insert/update these records in a single operation but since the identity isn't assigned until a record is inserted I'm having trouble figuring out how to capture this so child nodes' ParentId can be populated.
+I've attempted combining MERGE with UPDATE but it's either not possible to reference the columns of INSERTED in the same operation that populates them or else I just don't know how to do it.
+https://docs.microsoft.com/en-us/sql/t-sql/statements/set-identity-insert-transact-sql
+Each option results in tree having the following rows (identity was set to start at 41 for this table to differentiate the id from staging):
+A null value in the ParentId indicates the root node of a tree.
+The first example uses views containing the recursive code, and the second uses inline ctes if views are not an option.
+This uses recursive common table expressions to build the hierarchy path for both a given target table (tree) and a given staging table (staging).
+dbfiddle.uk with recursive view for target table, inline cte for staging
+If you want it to all be in one insert statement you could do it by setting IDENTITY_INSERT ON, manually filling in that field during the insert, and then turning it back off again.
+This is not a single operation, but a loop that will run n number of times where n is the number of levels in your staging hierarchy.

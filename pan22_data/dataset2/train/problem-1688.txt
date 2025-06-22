@@ -1,0 +1,11 @@
+Actually, the order should be preserved as UNION ALL is implemented to just append rows. (Might be revealing to include the offending query in your question.)
+Okay, easy enough: do a SELECT on the post table as well and then do UNION ALL with the SELECT on the post_reply table. The problem with that though is that for my application I need to order this result set by post date, so the author should always be on top, and UNION ALL messes up the order.
+The SELECT DISTINCT may also get slow once a post has many replies as well, since I'd imagine it's O(n).
+For example, one way would be to just do a SELECT DISTINCT user on the post_reply table for a given post_id, but this would be missing the original poster if they hadn't replied to their own thread.
+In my database I have the following tables: user, post, post_participant, and post_reply, largely as inspiration from this answer.
+The problem with that though, is that I'm not really sure if it's possible to do this efficiently. Do I just need to do INSERT INTO post_participant ON CONFLICT DO NOTHING literally every time anyone makes a reply to a post? That seems extremely inefficient. Or is there a way to cheaply determine whether or not it's someone's first reply to a post, to avoid this database call?
+One thing I'm having trouble with figuring out though is how to find all the participants of a post.
+It seems like there are no good solutions to this. Either I have to do an additional write attempt on every reply call, or I have to do a slow and complex DISTINCT UNION every time a post is opened. Is there a better way?
+An alternative is that the original poster and all posters can be added to the post_participant table.
+And if you typically have many rows per user in a chat, use a recursive CTE to get the distinct count of users with best performance using a matching index:
+Okay, fair enough, I can then just use multiple CTEs (union the first, distinct the second, and then finally order by). Except at this point it's become quite complex just to find out all the participants for a post.

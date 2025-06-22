@@ -1,0 +1,22 @@
+When you have a lot of files like you described you are invoking the command each time.
+You could also use a for loop and wrap the 'rm' commands in 'time' to get some additional information.
+Instead I would use the following command from the shell:
+After studying filesystem benchmarks I've choosen JFS as file store for my mythtv video files because file deletes are fast (and mythtv waits for the delete to finish, making the IO sluggish).
+In this case you could be deleting trees in which case the above may not do what you need.
+find ./ -maxdepth 1 -type f -name "some pattern" -ctime +1 -exec rm -f {} \;
+Your best bet is to use the find command like mentioned above only with a less than obvious feature.
+Another possibility, depending on your setup and the application of course, but maybe you could make these cache files on a different partition and just format the drive periodically rather than remove the files?
+This may or may not be related: but I have had occasions where rm could not handle the number of files I provided it on the command line (through the star operator).
+You could also invoke 'rm' through 'find' and 'xargs' instead of rm -rf.
+Also you have to keep in mind on journaled FS you're dealing with buffer hits and metadata which can greatly impact  process times.
+This would delete every file that is older than 24 hours, rather then trying to do them all at once.
+Say in cron you schedule something like this every hour:
+You might have to split up the delete operation into parts, e.g.
+What this does is create the filenames in sets and invokes rm command once per set.
+I think ultimately your best solution is to add additional disks and split up your activities amongst them.
+I think running mkfs would cut the time down considerably, but your application is going to be unavailable while that happens so it won't be ideal.
+RAID could help in some scenarios if you go down that route.
+I also like the idea of cleaning them up more often.
+That's only 250,000 files or so, shouldn't be a problem really - what file system are you using and is this volume used for anything else?
+I agree that it shouldn't take that long, but depending on the underlying storage being used, it may be expected with the intensive reads.
+That's pretty much the same as what 'xargs' does but you don't have to worry about the correct flags if on BSD/Linux.

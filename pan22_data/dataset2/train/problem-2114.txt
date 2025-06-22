@@ -1,0 +1,8 @@
+Also, I think things like pause, which would require the game to be in the same state as when you paused the game, should not be separate states. Child states and nesting, perhaps? The Gameplay has-a pause menu.
+A different approach to this is to use a concept from the functional programming world called a Discriminated Union. Whilst these are typically found in FP languages, you can emulate them using classes. 
+I think that there is a good method called a game-state stack. I haven't seen any papers or articles about it but it's been spreading a little bit by voice. Essentially the topmost game-state on the stack is called first and gets to do whatever it wants to with input/rendering etc. The topmost game-state is the only one allowed to push or pop states. 
+In my engine, game-states are actually just lists of game entities. I then have entities that work as menus. My menu-states either pause the game (by not updating the next item on the stack) but let the other state(s) push their models to the renderer so that my pause-menu (which doesn't cover the entire screen) still has the game rendering in the back. 
+Rename the 'Game' state to something like 'Gameplay'. Then your logic seems better; You stop playing to go to th menu : you exit the Gameplay state to go to the MainMenu state.  
+One advantage of this approach is that you can handle things across states (such as resources) more easily without globals or passing around "service" objects. 
+Basically, a Discriminated Union is a type that is always one of n cases, and the data stored can vary with each case. 
+Here, our GameState type can be either Menu or Playing. If it is Menu, then it will contain a MenuState object. If it is Playing, then it will contain a SimulationState object. 

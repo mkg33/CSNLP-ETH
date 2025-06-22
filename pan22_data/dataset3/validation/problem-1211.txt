@@ -1,0 +1,10 @@
+I want to emulate the behavior of screen -R: first try to attach to a detached session, then start a new session if there were no detached sessions.
+to it such that it creates a new session when there is none when you run tmux attach.
+tmux at will attach to the last session (#1) (even though this session is still attached somewhere else).
+or instead just create the file ~/.tmux.conf if it doesn't exist, and add
+Drew's answer won't work properly in a situation like:
+Another approach would be to manually select a non-attached session:
+tmux ls | grep -vq attached && tmux at  `tmux ls |  grep -vm1 attached | cut -d: -f1`
+It might also be handy to make tmux an alias to tmux attach.
+This ruins the whole idea of running several tmux sessions and attaching only to a detached one (to use mosh + tmux + iterm2 to create a perfect roaming terminal).
+The tmux attach command acts more like a combination of screen -r and screen -x -- first it trys to attach to the most recently detached session, and then if none is available it will attach to a currently attached session.

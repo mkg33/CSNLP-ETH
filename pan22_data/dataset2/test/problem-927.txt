@@ -1,0 +1,11 @@
+The reason for this is if anyone else was able to write to your directory (via group permission or other permission) then it would be quite easy for someone to cram authorized keys in there without your knowledge.  If your home directory allows writes, then someone could recreate the .ssh directory and its contents.
+It's probably a permissions issue on either your ~/.ssh directory or your ~/.ssh/authorized_keys file.
+If you don't get any useful information from the logs, you can turn up the logging. Edit /etc/ssh/sshd_config and change the LogLevel line to:
+This doesn't really offer much information as to why publickey authentication was being refused. The best information is available on the server. Sshd will log to the AUTH syslog facility, so you can find information where ever that is logged to (in the case of Debian /var/log/auth/). 
+If you are having authentication problems with ssh, the first thing to investigate is what the client says with some debugging:
+The permissions are important for the ~/.ssh/authorized_keys file.  The file itself must not have permissions that allow anyone else to write to it chmod go-rwx ~/.ssh/authorized_keys  Also, the .ssh directory must not allow writes to it chmod go-rwx ~/.ssh
+Some distros provide a tool (it's really a shell script) called ssh-copy-id. I find using this gets around a lot of the headaches with copying the .pub portion of a user's key to a remote account's authorized_keys file.
+Your ~/.ssh directory should be chmod'd to 700 and your authorized_keys file should be chmod'd to 644 at the very least. If you check your /var/log/secure log file, it should give you some hint as to the reason it's failing.
+This script also takes care of creating the user's $HOME/.ssh directory on remotehost as well and set's the permissions up correctly.
+It has a basic man page to go along with it. On my Red Hat based distros (Fedora, CentOS, RHEL) it was part of the stock openssh-client package!
+If you need more information, you can use DEBUG2 and DEBUG3 to get further information. Don't forget to change your log level back again (probably to INFO) when you've fixed the problem.

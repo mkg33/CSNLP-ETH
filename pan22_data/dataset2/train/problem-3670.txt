@@ -1,0 +1,6 @@
+Depending on the architecture, you could also see low CPU user-space CPU utilization, but a higher load due to processes sitting on the wait queue blocking within kernel space network IO routines.   If you're running a thread pool system, lots of times you'll have requests denied or queued with low CPU usage, again IO wait counters will be high.
+If you are using Apache the typical symptom is a lot of connections in a 'W' state when looking at server-status page.
+My question is, how did the first person to recognize this problem figure it out?  What *nix tools and troubleshooting techniques would help me to recognize this problem if I hadn't had it explained to me?
+The "spoon-feeding problem", as it was recently explained to me, happens when connections to your application server are tied up feeding data across slow network connections to your clients.  This makes sense to me and now I understand the importance of putting a highly-concurrent proxy in front of my app servers.
+It is not a *nix tool, but I found managed switch port mirroring in combination with Wireshark or Wildpackets to be useful. Using filters one can compare the speed of similar transactions that run quickly or not.
+Sometimes creating additional threads/workers alleviates the issue temporarily until your system reaches another critical mass.

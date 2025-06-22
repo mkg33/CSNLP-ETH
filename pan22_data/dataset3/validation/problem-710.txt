@@ -1,0 +1,20 @@
+where a Contact could have 0,1, more ContactMethods, that is a perfectly normal 1-M relationship that will perform very very well if you have millions of rows provided that you have an index properly defined on ContactID_FK.
+† consider a more abstract Address table with a type discriminator
+A phone number is a phone number table†, and a user has a relationship with a phone number over a period of time.
+http://forums.mysql.com/read.php?125,428546,428769#msg-428769
+In the table, have only columns that you need to search on; put the rest into the extra JSON column.
+On your client side, you have to be careful what you want to show and how large is the data your are communicating with the server.
+http://forums.mysql.com/read.php?125,402095,402218#msg-402218
+To keep unlimited, unsearchable data, have a column with a bunch of key-value stuff.
+ContactMethod: ContactMethodID, Value, ContactID_FK
+If you do this you can never find a Contact given a phone number in a decent way and you will have lots of Nulls to deal with also, you could have duplicate phone numbers (if you are not careful in your coding).
+Contact: ContactID,...,Phone-1, Phone-2,...,Phone-20, ...
+1 -  Don't use dynamic fields unless you really have to because they add complexity to your system.
+The option in (3) is probably the best, it has been working since the 80s very well!
+This is a different issue and I don't think it would affect your case.
+I like to do it in JSON, then compress it (in the app), and store it into a BLOB or MEDIUMBLOB.
+where the columns are limited in number and rarely searched directly).
+It would have userid, phone_num, and (if you like) a phone type, such as ENUM('fax', 'home', ...).
+That makes it easily accessible by the app, reasonable compact, and quite open-ended.
+This is against normalization and is justified only in few cases (e.g.
+This even lets you index randomly added 'columns'.

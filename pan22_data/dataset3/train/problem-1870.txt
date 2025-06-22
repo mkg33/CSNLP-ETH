@@ -1,0 +1,12 @@
+once you configured your ACL as other people said, instead of put all your acl rules in the postrotate configuration, you can swith logrotate to use copytruncate instead of creating a new log file each time
+This prevents splunk accessing the logs in /var/log as they are only accessible by root (or a sudo admin)
+https://help.ubuntu.com/community/FilePermissionsACLs
+Another option is to have syslog divert the messages of interest to another file (which avoids giving the app user access to anything sensitive that may be in /var/log/messages).
+This will not persist as logrotate will not re-apply the ACL setting so for a more permanent solution I added a rule to logrotate to reset the ACL.
+In order to allow read only access for splunk only I've used some ACL's and modified logrotate to persist it.
+http://bencane.com/2012/05/27/acl-using-access-control-lists-on-linux/
+It allows you to set specific additional access rules for specific users and files.
+Just to expand a little on the above answers here is a real world use case.
+I run the enterprise log analysis application Splunk on a Redhat box.
+If you don't feel like being bound by the traditional permissions scheme of User/Group/Other you can also use POSIX ACLs (other, possibly better howtos/info available via Google) to give your app user read-only access to /var/log/messages -- this is a bit more fine-grained and doesn't risk accidentally putting someone else in the application's group and giving them access to things they shouldn't be able to see.
+Your plan is acceptable and in the "traditional" Unix permissions scheme is the best way to go.

@@ -1,0 +1,9 @@
+The filename shouldn't have any URL escaping in your filesystem. URL encoding is only relevant during the HTTP request from the client to server, because in that part you can only use ASCII characters.
+If there is a CMS involved, its implementation has to properly support Unicode filenames. Unfortunately the support for Unicode filenames in CMS' is often bad, and you need to restrict yourself to ASCII filenames for things to work properly.
+How can I make it work so it's properly served with the first address? Or should I save the file on filesystem using utf-8 chars without encoding? What would you suggest?
+Of course there are several ways to encode Unicode characters. However, the filename encoding is done by system libraries / filesystem, and is the same for all applications. Therefore, you need to only check that the filename is the same in the directory as you want to use in browser URL.
+When I check filesystem the file exist with encoded chars: 86/86454cff-556a-4162-aa65-433158c133f4/Informacja+kwartalna++III+kwarta%C5%82+2016+r.
+When Apache or any other web server receives the request, it first decodes the URL encoding, and after that looks up for the filename.
+From the browser I'm trying to access file https://example.com/86/86454cff-556a-4162-aa65-433158c133f4/Informacja+kwartalna++III+kwartał+2016+r. and I'm getting 404 error.
+I believe what you are looking for is .htaccess and symbolic links. I don't recall what the exact directives are. 
+When I've turned the listings on Apache serves this file at https://example.com/86/86454cff-556a-4162-aa65-433158c133f4/Informacja+kwartalna++III+kwarta%25C5%2582+2016+r.

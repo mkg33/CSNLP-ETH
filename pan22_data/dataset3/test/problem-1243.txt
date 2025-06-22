@@ -1,0 +1,29 @@
+In your example the Foo method does all the logging, but if it is importantly to log that you are about to do something (or that you have done something), the its probably best to instead log this in the method which is doing that thing instead of the calling method.
+They likely want statistics based on those logging statements, or something related to the logging statements.
+At the level of logging you're describing a debugger seems to be far more sensible.
+Adding/removing logging then would consist in choice of using dbContext vs loggedDBContext at the constructor (or factory), but not changing anything else.
+This kind of trace logging could conceivably be solved with an Aspect.
+Discuss with Operations why they need those statements and provide them with what they need.
+Next a debugger can be used to go through the code line by line, giving all the more detailed information that you're logging now, without all the explicit log lines describing what is happening (which, if necessary would be in comments, not logs).
+In the case above, you don't want to log every time you get Bar, or that you got Bar with ID X, or that you're doing something on Bar, or that you've successfully done something on bar.
+I don't know enough about C# to recommend a specific aspect-oriented framework to use, or appropriate syntax for you.
+In fact, ideally you only want to be informed when something goes wrong: You get an exception from your code, a database call fails or a critical part of your code returns something unexpected.
+So in answer to the more general question "how do I add logging while keeping code readable?
+Speaking at least for myself and my subfield we would use logging in two ways.
+By refactoring the database calls into separate methods (which should probably be on a different class anyway) and refactoring the logging calls its easy enough to make the Foo method just as readable as it was before.
+", I refactor my methods into smaller methods until each method is as readable as it needs to be.
+Instead, most aspect frameworks allow you to indicate which code you want the boilerplate added to.
+You could, for example, add an aspect than logged a method name and parameters every time a program entered a method, and then logged the method name and return value every time a method returned.
+It may be that for your particular example it may be useful to derive a subclass of dbContext (say, loggedDBContext) that wraps it's methods with code that logs whatever you need and then executes the 'true' method.
+In those cases, you want to log what went wrong, and if possible log the variables you're working with to help reproduce the bug.
+Aspect oriented programming allows you to add boilerplate-style code to your program without actually writing the boilerplate inline.
+If operations says that they really need those logging statements, they're viewing it wrong.
+Of course, you don't necessarily want to log every method.
+As Bill Michell has pointed out aspect oriented programming is a good way of adding boilerplate logging code, however in this case I don't think its really necessary - I'd approach this problem with some good old fashioned refactoring.
+In some languages there are ways to inject such aspects directly in the functions - change their behavior without requiring the calling code to even know that the functions have changed and now also do logging; but I'm not sure if that can be done in C# without explicit subclassing.
+During development, you want to know the finest details of what goes on.
+In production code, you expect that everything will go fine.
+Logging when you're about to do something or when something goes right are good for development code.
+If someCondition is true, you want to log that you added something, but you don't want to log that it succeeded, only if it went wrong.
+They don't want those logging statements, they want THE INFORMATION those logging statements generate.
+You expect those to work properly, so you only want to log when something went wrong there, and then write away the bar variables you use in doSomething() and the ID of Bar.

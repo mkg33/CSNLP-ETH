@@ -1,0 +1,22 @@
+So, let's assume 4 GB is all that is on the database server.
+You can also help things by taking the query load off of the server from the front end as well .. using memcached for example.
+Our understanding was that we had 4GB RAM on the webserver and 8GB RAM on the database server.
+What does top show you for the %wa parameter in the CPU line?
+You can figure this out by monitoring which queries are run the most, logging slow-queries (queries that take over 2 seconds for example), and using copious EXPLAIN statements to see your queries execution plans.
+The site isn't performing optimally and we're trying to understand how to tweak it.
+The site is database intensive with many queries on each page.
+Our database server: Server load 2.8 (8 CPUs) Memory Used 10.76% (893,004 of 8,300,376) Swap Used 0.01% (116 of 2,096,440)
+Our webserver: Server load 0.49 (4 CPUs) Memory Used 59.72% (2,471,180 of 4,137,968) Swap Used 0.01% (120 of 2,096,440)
+You apparently run a 32Bit Bigmem-Kernel that addresses the full 8GB.
+Did you check, if the load on your DB server results from I/O waits?
+If so, is this something we should be addressing in the my.cnf file?
+This does not directly answer your question, but if you are not out of ram (swapping) and your load averages are not bad (they do not appear to be), then your issues are likely at the application level and not hardware related (barring any other hardware issues such as iSCSI, NAS, networking issues)
+Is it better to have 'memory used' be higher, indicating that it is utilizing the resources or is it better to be lower?
+It is currently close to peak traffic and this is what our server loads/memory looks like:
+We have a website running on 2 servers: 1 database server, 1 webserver.
+Looks to me that your system is powerful enough regarding CPUs and RAM, but may suffer from a slow storage subsystem.
+Does it indicate some inefficiencies that our database server is running at a 2.8 load, but memory is only at 10% (even if only 4GB of RAM, this is still only 20%)?
+Side note, we've recently found out the database server is running 32-bit, which we think means the full 8GB of RAM isn't able to be utilized.
+The point is that RAM is not going to help you much if your queries are doing full table scans over large amounts of unordered data instead of just searching an index loaded in ram.
+There are tons of resources on the web for optimizing databases, adding indexes, etc.
+Does the very low 10% indicate efficiency or lack of efficiency?

@@ -1,0 +1,38 @@
+i.e you do not need to define the schema(columns) upfront and the columns can be optional.
+In our experience, folk generally don't want to just look up rows and columns; they want to compute things about them.
+However, you have to do extra processing to decode the matrix columns in your application.
+You will get the column name along with the result.
+Simple counts, similarity metrics and distance functions, etc.
+Your basic data structure (your array) would look something like this:
+I am assuming that you don't want to track all of those zeroes; just the non-zero data cells.
+Looks like you want to access both by row as well as column.
+General purpose DBs are generally either row-oriented storage (mostly) or column-oriented storage which will be their most efficient mode of access.
+I suspect that you're doing something with a very, very big sparse graph.
+I am looking for some db (preferably key-value) that can retrieve whole row or whole column as fast as possible.
+I have some experience with SQL databases but almost none with NoSQL :(
+I have a huge sparse matrix ( 10^9 rows, 10^6 cols, density < 0.03% ), where each row has at least one nonzero column, but some column may contain only zeros.
+You will have to handle the access from you application logic.
+The CRS format, while it is great on its own for space saving, it does not fit so well in a DB schema.
+I'm also curious to understand the parameters of the problem you're going after.
+That's 10^9 rows by 10^6 columns, divided into "chunks" of 60K x 60K (working on your 0.03% sparsity factor) to average about 1,000,000 cells per chunk.
+This will avoid the per-column overhead of the DBs.
+When you query for the row, you will get only the columns which has values in it.
+As you said the density of the matrix is 0.03%, the overhead may not be too much.
+You can store this as a single value in a single column of the database.
+I've come across SciDB which should be fast with multidimensional data, but I am afraid it is too complex for my needs.
+What makes your problem complex for a DB is your access pattern.
+For every row, you can store the matrix column values as a series of (column,column value) pairs.
+If you have a access pattern (row/column) which is way more frequent than the other, you can pick the appropriate DB.
+So my biggest hope is some key-value storage, but I am not sure how to represent the matrix.
+The way SciDB works is that it clusters the array's contents into blocks where co-local cells are kept in the same block.
+That's a problem space we're also very interested in working on.
+"Compute the number of row values in common for the columns J=1000 and J=2000 ..."
+Also, another option is to use SQL db ( probably Postgres ) but that is a bit slow and can't be scaled as easily as most NoSQL ( I expect fast row increase in matrix ).
+I work for Paradigm4, so what's familiar to me might not be so obvious to others).
+I'm puzzled as to why you think SciDB would be too complex?
+So queries like the ones above only touch those blocks that contain the rows or columns you want.
+They will support the access other way round also (for e.g column based access in a row-oriented storage) but it will not be most efficient for obvious reasons.
+If both the access patterns are equally likely, you may consider storing the information in a redundant way.
+For this reason, I think a noSQL DB will be a better fit for this sparse matrix use case.
+In other words, you will not be really using the row-based access mechanism of DB.
+Coming to the DBs, most of the noSQL DBs offer a flex schema.

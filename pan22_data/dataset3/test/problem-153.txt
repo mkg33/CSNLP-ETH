@@ -1,0 +1,40 @@
+The issue seems to be in our network causing the Mac download issues but we can't seem to figure out what it is or where to look to troubleshoot to figure out what might be causing it.
+You should see SACK in the Options header on both sides.
+Our users using Windows don't experience this issue.
+A 1GbE connection spanning the US has around 80ms of one-way latency on it.
+Is there a way that I can post a snip-it of the captures so someone can help me analyze the it to see what might causing it on the network?
+You didn't mention you saw it, but if you look you may see them.
+The resets are interesting, and can be a cause of your perceived slowness on the OS X machines.
+There is another side of this that I want to mention, as I've seen it cause this kind of problem before.
+You begin to see why getting connection-resets can cause performance issues.
+From looking at the captures with the little knowledge i know, I can see some connection resets between the two.I have even also done a packet capture on the Mac off the network to try to see what it might be doing different during the download off the network.
+If the OSX machines aren't issuing it, but Windows does, you have a big clue to your problem.
+We have Mac (there is no difference what the OS version, is, it gives the same results) end users who are experiencing slow Mac download on the LAN.
+To explain why, we have to get into a bit of detail about how speeds are selected.
+When a download is started, the download time for the file keeps going up and takes a really long time before the download is finished.
+The clue for this problem is found in the initial TCP 3-way handshake.
+I have definitely seen cases where lacking SACK support on a connection results in simply terrible throughputs.
+If the window is full, the sending side will stop sending until those ACKs get back to it.
+One of the additions to TCP from the initial specification is Selective Acknowledgements.
+Initially, I thought it might be a host configuration on the Mac (Mountain Lion OS X 10.8.5) causing the issue so I formatted the drive and installed El Capitan but the download time was the same.
+As data is transmitted, both parties issue updates about how big of a window they're willing to tolerate.
+Without SACKs, If that 1Gb, 160ms RTT connection I mentioned before has a packet drop, the receiving party will sit there and drop 20MB of data on the floor before the sending party resends everything from the dropped packet forward.
+This is the third bullet point: how much data the sending party is willing to leave unacked versus the receiving party's buffer sizes to receive data.
+The closest we have to a packet-capture snippeting service is likely CloudShark.
+When a TCP connection is negotiated, one of the parameters both sides handshake on is the size of the TCP window.
+What are some possible things that can cause slow Macs download issue on the LAN?
+This is based in TCP Sliding Windows, with a side order of bandwidth delay product.
+A 1GbE connection can have 20MB of data 'outstanding' in those 160ms (1024Gb x .16 seconds) if it is transmitting at full speed.
+Once we got them enabled on both sides, performance went up to theoretical-max.
+This kind of behavior was fine for the kind of networks we had in 1989, but our current ones are a lot faster and fatter.
+For fast, clean networks, this can get pretty large.
+When a download is done off the network with the Mac, it downloads fine with no issues.
+But, if the connection is reset for some reason, the process starts anew with the original window sizes.
+Since acknowledgments are a factor here, we have to count their return time.
+Even when the Mac is connected to Wifi, the dowload still behaves like when it's connected to Ethernet.
+I don't understand why it's only affecting Mac machines and not Windows machines.
+SACKs allow the receiving party to say, "I've seen up to timestamp 123, and 125-137", which allows the sending party to only retransmit the missing 124 segment and get on with the rest of it.
+This comes into play if there are packet drops, not connection resets.
+Absolute throughput of a given network connection is determined by a few factors:
+I then did a packet capture on the Mac and on the Windows to try to compare what might be causing it but I am not quite familiar with how to analyze packet captures.
+Any help troubleshooting this would be greatly appreciated.

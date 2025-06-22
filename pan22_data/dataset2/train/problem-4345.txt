@@ -1,0 +1,6 @@
+Maybe your ancient grep can't take multiple input files, so -n1 will run grep for each of those files, instead of passing them as arguments at once
+You're just trying to find all log files under /opt and search them for somethnig_I_am_looking_for right?  Why not:
+Oh, and since I can't figure out how to comment on the other answers: be careful with *.log as the shell will interpret that as globbing, and match all files in the current directory that end in .log .  You should use either \*.log or '*.log' 
+Beware of filenames with spaces in them, as it is allowed by Unix; xargs will choke on them. Use find /opt -name '*.log' ... -print0 | xargs -0 grep ..., these options are meant to go together.
+Unless you have subdirectories that are many levels deep, grep *, grep / and grep //* is easy to remember and hard to type wrong...
+Also, grep or your shell might have a limited number of arguments, and the list of files returned by find might exceed that. Use the -n number option of xargs to run grep by chunks of number files.

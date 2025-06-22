@@ -1,0 +1,9 @@
+No, the fsync parameter in postgresql.conf only tells the database that it should write to disk, not how it should do it.  According to the documentation: 
+Which in this case, since you have not changed the wal_sync_method it should choose open_datasync since that is available and the default for Windows platforms.
+But seeing that the table is small, and the updates as well, I would guess that you are actually hitting the write-back cache in the hard-drive, which means that you are not writing directly to the disk and therefore the operations are not slowed down due to the writing.
+You do not mention what kind of hard drive it is, so it is not possible to know if the cache is write-back, but it sounds like a possible scenario.
+and ran a pgbench of the following simple update statement.
+Given that it's serially executing transactions, this tps result seems to be too high for my system:
+I haven't changed the default settings, so fsync and synchronous_commit options should be both on.
+Doesn't this fsync result mean that maximum write tps cannot exceed 45 tps?
+Another question: Shouldn't 7200 rpm disk be able to perform about 120 tps? Why is fsync so slow?

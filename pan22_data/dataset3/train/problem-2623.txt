@@ -1,0 +1,18 @@
+While it may work well enough for downsampling images by a small factor (up to 2x or so), it will fail if you go much further than that.
+For example, let's suppose you downsample an image by exactly 10x on each axis.
+Bicubic interpolation works by fitting a bicubic spline patch to a 4x4 neighborhood of pixels, then evaluating the patch at interpolated points.
+If the downsampling pass is properly designed, it will effectively perform low-pass filtering as part of the downsampling.
+Is it recommended to use a lowpass filter before downsizing though, or does the bicubic sampling handle aliasing problems at all?
+With a box filter (for example's sake), you would set each destination pixel to the average of a 10x10 box of source pixels.
+But that means the filter footprint will be several source pixels wide, so it will effectively low-pass the source.
+That would wipe out any features smaller than 10px, so it's effectively a low-pass filter.
+If used for downsampling, the kernel should be sized appropriately for the destination pixel spacing as discussed earlier, and you would sum over all the pixels in the footprint, not just a 4x4 or other fixed-size neighborhood.
+Apparently bicubic pixel interpolation is good for scaling up or down an image (in real time or not).
+You mention bicubic interpolation; we have to make a distinction between filtering and interpolation here.
+There is no need for a separate low-pass filter operation.
+Interpolation is appropriate for upsampling, not downsampling.
+The Mitchell-Netravali kernel is the classic example of this type.
+On the other hand, bicubic filtering is just standard filtering, using a kernel that's a bicubic function (as opposed to a box, triangle, Gaussian, Lanczos, etc.
+Essentially, when you downsample, you are performing a filter over the source (high-res) image pixels, but only evaluating it at the locations of the destination (low-res) pixels.
+The footprint of this filter needs to be approximately the spacing between destination pixels, to avoid missing information by skipping over in-between source pixels.
+For instance, if downsampling by 10x as in the previous example, you can see that bicubic will miss the majority of the source pixels, and the result may be quite aliased.

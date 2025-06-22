@@ -1,0 +1,18 @@
+When I SSH as "foouser" from my local system to "remotesystem", SSH uses the key pair to authenticate me.
+Then, I should be able to "ssh foouser@remotesystem" while logged in as "baruser" locally, and SSH will use the key pair to authenticate, right?
+Just copy the key to the remote user's authorized_keys section and it will work.
+Suppose I have a remote system named "remotesystem", and a user account "foouser" on that system.
+Once you've found the problem, remember to set it back to how you found it.
+With any ssh related problems, the first thing to do is turn up the client verbosity:
+That is, what if I want to SSH as local user "baruser" to "remotesystem"?
+Sounds like you're doing things correctly, but make sure that the permissions are correct on authorized_keys.
+But what if my local username is not the same as the username on the remote system?
+If you're always using the same username for a remote server, you may also find it useful to add a host into your ssh config:
+You should find the debug output in /var/log/auth.log (or where ever ssh is configured to log to).
+I'm asking because I am trying to get the key authentication working in this scenario, without success.
+I'm not sure if its due to the username mismatch, or a configuration issue with the SSH server on the remote system.
+That way you don't need to remember to specify user name when logging in, and you rule that out when having issues with keys in future.
+Obviously, I will need to generate a key pair for "baruser" and add the public key to "/home/foouser/.ssh/authorized_keys".
+If this fails to give you any insights as to what is wrong, you need to change the log level on the server and restart the daemon.
+Your local username doesn't really matter (aside from the private key having to reside inside your local user's home directory).
+I know that on my local system, I can generate an SSH key pair as local user "foouser", put the public key in the "/home/foouser/.ssh/authorized_keys" file on "remotesystem".

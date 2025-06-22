@@ -1,0 +1,6 @@
+The Asymmetric key created in your EKM device is used to protect the database encryption key which is stored in the boot page of the database. When the DB starts, the DEK is decrypted using the asymmetric key or certificate it was protected with, in your case the EKM's asymmetric key.
+Not according to the documentation. The asymmetric key is stored in your EKM device. There is a 'pointer' record in sys.asymmetric_keys which provides the information for retrieving the key from the EKM, but this requires credentials and permissions to access.
+Once decrypted, SQL Server can use the DEK to decrypt data when reading from disk without having to hit the EKM again. 
+The DEK is used to encrypt/decrypt the data on disk, so the EKM should be contacted only once on startup of the database to decrypt the DEK. 
+This depends on the HSM, the driver they provide which you need to have installed and loaded into the SQL Server process space but generally it will be cached for an undetermined period of time.
+Our auditors are asking questions about where the keys are store.  So obviously the key is stored in the external HSM device. 

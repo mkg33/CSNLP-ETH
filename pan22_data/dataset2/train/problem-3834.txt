@@ -1,0 +1,6 @@
+So from what I could gather what you want to do is to pre-render your level into one surface, so that each frame you can just blit that one surface that you need to.
+As a side-disclaimer, you might want to take a look at SDL2 and it's accelerated hardware rendering support. You might get a performance boost, and moving on to the newer SDL stuff might really be a good idea. The alternative there is to use textures and render targets instead of surfaces.
+The difference between the two calls is that the former version blits directly to the screen, while the latter uses the surface you created previously.
+This is quite straight-forward. You can use SDL_CreateRGBSurface to create a surface of your required size. You can do this in your main() or some other appropriate place that gets only called once.
+Now, in your game loop you are probably calling your function aff_map. Instead of doing that, you can now call aff_map before the game enters the main loop, and in the main loop you can just do SDL_BlitSurface(yourPrecreatedSurface, NULL, exe->screen, NULL);
+Now, you just need to change the call SDL_BlitSurface(exe->sprite, &srcrect, exe->screen, &dstrect) to SDL_BlitSurface(exe->sprite, &srcrect, yourPrecreatedSurface, &dstrect).

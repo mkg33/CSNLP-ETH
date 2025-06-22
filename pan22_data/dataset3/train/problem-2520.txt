@@ -1,0 +1,14 @@
+ASP.NET does not support having multiple built-in authentication modules at once.
+Problem is, when I hit the site as an anonymous user, IIS is issuing a 401 Challenge so the logic to redirect the user to the forms login page is never executed.
+How do I configure both sites to use different authentication modes?
+The web application has been configured for forms authentication and integrated (windows) authentication.
+What I wound up doing was checking the Request.ServerVariables["LOGON_USER"] value as well as Request.Url.Host and then forcing a response code of 401 to present the authentication challenge to the visitor's browser.
+This is prominent in the documentation, <authentication mode="[Windows|Forms|Passport|None]" ...>
+I was advised to setup two sites and have them both point to the same web app; problem here is that the loginUrl property in the web.config is overwritten by changes on either site.
+I have a W2K8 Server with IIS 7.5 hosting two sites which are pointed to a single asp.net web application.
+I realize this is an old question, but I was trying to do this very thing and was unable to; the answer proposed by Simon was not working for me.
+The way I got it to work was to handle it through code.
+In my case, I wanted for one site to allow Anonymous authentication and the other to use NTLM (Windows) authentication.
+The loginUrl is set to a login page that is configured for integrated authentication; if the user cannot be identified using Request.ServerVariables["LOGON_USER"] then the application redirects the user to a login page configured for forms authentication.
+I have both Anonymous and Windows authentication modes enabled in the Web.config file that is shared between the sites.
+These sites were both being hosted by a CMS, and so it's not as simple as setting authorization rules against paths, either.

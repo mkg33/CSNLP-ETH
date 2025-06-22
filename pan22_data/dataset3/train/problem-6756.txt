@@ -1,0 +1,12 @@
+Maintainability is important in its own right, but also particularly relevant to  security because unmaintainable code is more likely to acquire bugs over time.
+If you do use it, does your security model not require it to be correct?
+If the supplied username is such that mysqli_real_escape_string is not a no-op, the check for an existing user and the insertion of the user use different usernames.
+The various checks here would be better refactored into a function which can take advantage of early return.
+I also struggle to see how this can possibly work:
+So shouldn't there be an e-mail validation step in the registration process?
+Given the current mix of database access techniques, you should ditch the one which requires you to escape things yourself (dangerous, because it's easy to forget when you change the code) and use prepared statements for everything.
+is absolutely not something you want to do on a production system unless you're also using set_error_handler to log it to somewhere private and ensure that the end user never sees the error messages.
+It currently appears to be at random, and is completely unreadable.
+Quite how important depends on things you haven't shown us, in particular on the database schema.
+This code leaks far too much information to a malicious caller.
+If registration.php is the registration page then (a) it seems rather lacking in content; and (b) there seems to be a catch-22 with rendering it for the first time in order to submit data.

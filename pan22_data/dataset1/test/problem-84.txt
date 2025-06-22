@@ -1,0 +1,8 @@
+One of the issues you're going to have here is that an Active Directory zone is much more than just a normal zone file like you might expect with bind. I mean, yes, it is a normal zone, but it also has integrated permissions which can't readily be backed up in a plain-text format.
+(I assume you're after something in plain text due to the mention of git, and I'm guessing you want to diff the AD zone at different times)
+But if you're dead set on doing this, the way to export your zone file is using Export-DnsServerZone
+Now, the documentation says you can specify a file path for -FileName, but in my testing I actually wasn't able to do this. So that means this file is going to end up in %WinDir%\System32\dns. You'll want to grab it from there and move it to your git repo and commit it.
+Getting the zone file back in when you want to restore it however, isn't quite the same. There does not seem to be a nice powershell wrapper for this (probably because it's not something Microsoft want you doing with an integrated AD zone):
+dnscmd /ZoneAdd ad.example.com /Primary /File ad.example.com.zone /load
+Note that in doing this restore, you'll lose all permissions in the zone - but you will have your raw data, and you will be able to diff it in git.
+Are you using an Active Directory integrated zone? its not elegant but you could add a secondary DNS server for your zone and then you would have access to a ZONE txt file.

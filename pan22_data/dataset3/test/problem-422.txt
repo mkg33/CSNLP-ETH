@@ -1,0 +1,16 @@
+To solve this, you need to remove the association between the GPO and the Folder Redirection Group Policy Extensions (there are two, one which activates Folder Redirection editing in the GPO Editor, the other activates the actual Folder Redirection policy processing):
+Sounds like that environment is the wild west anyway.
+In order to remove the Folder Redirection settings from a GPO properly, you need to:
+So you move the users into this ou that you created a new gpo for correct?
+your trying to migrate users one at a time correct?
+And during this you don't want to hose up other users correct?
+If these are all true then create another gpo that matches the ddp folder redir settings and place it higher up the ou structure thus impacting all users.
+I also tried deleting fdeploy.ini file and got a message in GPMC that it failed to locate the settings, so clearly they're defined there but some setting elsewhere is enabling those settings and pointing to that file.
+Instead of unticking Enforce on the DDP, expand the Group Policy Objects folder, right-click the DDP, and under the GPO Status submenu tick User Configuration Settings Disabled.
+This will let you leave the DDP enforced without any ill effect since there are no user settings in the DDP.
+While I haven't found a way to completely remove the settings, I did find a better workaround.
+It isn't pretty and I'd still like to know how to get rid of the settings entirely, but it will get the policy to function correctly.
+However, on its own, this will confuse the GPO Editor as it still thinks there's a Folder Redirection policy attached to the GPO.
+please verify this process yourself it can cause one helluv a lot of problems if not done correctly !
+Find the GUID/(Unique name)  of the policy and go to \(your domain)\sysvol\Policies{GUID}\User\Documents & Settings\ and it should be there.
+At that point your new gpo settings will apply to the users within the ou that you created all the other users will get the old folder redir settings.

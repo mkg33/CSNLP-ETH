@@ -1,0 +1,17 @@
+It's bandwidth will always be gigabit on any of the ports but the total throughput it can sustain can be 10 gigabit or more.
+That means it will never be overloaded even if full traffic is present on all ports.
+Also, if a network switch were to drop a frame due to over-congestion, that will cause TCP to halt everything, ask for a fast retransmit of the missing packet (since packets will start to arrive out of order), and then resume processing of the other packets.
+The throughput is the amount of data sent, and that will need to subtract the protocol overhead from the bandwidth, so no, the throughput cannot exceed the bandwidth.
+TCP also implements a receive window that's sent in the ACK for each received packet, so if you try to overload the host on the other end, it'll set the receive window to a smaller value as the TCP receive buffer fills, until finally it's set to 0 to tell the sending party to back off until it has had time process the incoming packets and hand them off to the upper layers of the networking stack.
+The bandwidth is the number of bits that can be sent on a link in one second.
+TCP doesn't care about maximum speed or throughput, it cares about getting every single frame through, in order and without errors.
+Example: a 52-port XGS2210 switch can sustain a throughput of 176 Gpbs, which is more than 48Gbps from ethernet ports + 40Gbps from optical ports.
+The closer the value is to the total combined speed of the ports, the better the switch will be under heavy traffic load.
+ISPs often "oversell" the capacities of their lines, so that the total throughput available to the users is greater than the capacity of their line.
+Throughput on the network device can and in fact it is highly recommended to be so.
+For instance, if they have a line that has 1 GB/s of throughput, they might sell 50 100 MB/s plans to their customers.
+They do this because usually the data the users use is significantly less than what they'd be allowed to use, theoretically - it's rare for all of the users to use their maximum allocated capacity at the same time.
+Let's say we have an industrial switch with 24 gigabit ports.
+A bad implementation example are some home routers that do offer gigabit ports for both LAN and WAN but their throughput is limited to 500Mbps or less.
+It may seem that way if you compress the data, but that is an illusion.
+For what you're describing to even happen, you'd need to use another Layer 4 protocol, preferably something which doesn't care about anything, like UDP.

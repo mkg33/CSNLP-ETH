@@ -1,0 +1,7 @@
+In a RAID5 setup, incorrect data that is read without an error can only be detected, but not corrected (you'd need a RAID6 for that).
+If a sector fails to read correctly, the data is normally recovered from the other disks and then rewritten to the same logical block address; the drive then either manages to write the sector correctly at the original location or remaps; if the remapping fails, the drive is marked as FAILED.
+You will get notifications for disks going into FAILED state and inconsistent data being read during a verification pass; the latter is a really rare condition unless your drive is lying (in which case I'd never buy from that vendor again).
+The standard strategy for bad sector handling in a RAID setup is to have the drive report bad sectors immediately on reads and allow reallocations on writes.
+If the data cannot be restored, the RAID set reports the error to the file system, which then starts flailing around helplessly, so that should not happen.
+If you do not have the free I/O bandwidth for a verify run every month or so, you should add more redundancy.
+In order to detect bad sectors, most RAID systems have a verification mode that reads all harddisks and tests whether the checksums match up. They usually do, as the drives have checksums on sectors individually and either return correct data or a proper error (which is handled as described above).

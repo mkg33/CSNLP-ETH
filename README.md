@@ -1,18 +1,21 @@
 # CSNLP-ETH
 Computational Semantics project
 
-## TODO list :
-#### (In my view, those are just extras, and it won't be tragic if we don't manage to do everything.)
-- other feature extraction mechanisms (just for comparison)
-- another method that beats the baseline (so that we have 3 for the voting classifier)
-- much more data for additional training and evaluation (we could 'split' the tasks and results: one for the official shared task, the other for the extra data)
+* The full code used to train the OT-based models in available in the `model_code` directory.
 
+* The pre-trained OT-based models can be downloaded here: https://polybox.ethz.ch/index.php/s/krYnXS3FJWNS2aM.
+There are 35 models in total (average size 737MB). The model filenames correspond to the conventions used in the paper.
 
-## Poster ideas:
-- it'd be nice to include a QR code with a link to our full paper (that's what I did in another course and it was very well received)
-- also, with the QR code, we avoid the whole bibliography section that will just take up valuable space on the poster
-- we'll simply reuse our diagrmas from the paper, it's extremely important that we visualise our ideas/architecture (you've already done this in the group meeting last week)
-- I'll also provide a very simple visual explanation of Optimal Transport
-  
-#### Code of factorized attention model & its tuning / ablation study: https://colab.research.google.com/drive/10HSKr8ka7Nivxhipu6fg1TovVV8j4hOc?usp=sharing
-#### Link of factorized attention model: https://drive.google.com/file/d/1yMx-brh16xzph3grfJtQ6hI4MjQG_XM1/view?usp=drive_link
+* All evaluation scripts (for OT-based models) are provided in the `evaluation_scripts` directory.
+
+* The primary dataset is available in the `pan25_data` directory. The StackExchange dataset used for further evaluation is available in the `pan22_data` directory. Note that only `dataset3/validation` was used in the study.
+
+* The `requirements.txt` file is taken verbatim from the `venv` used for model training on the student cluster. There is also a sample batch file (`sample_sbatch_run.sbatch`) that served as a template for all training runs.
+
+* All plots are available in `plots`. The full code used to create those plots is available in `plot_code`.
+
+* The files `count_labels_train.py` and `count_labels_validation.py` have been used to count the number of total labels in the `train` and `validation` sets from `pan25_data`, respectively.
+
+* Code of the factorized attention model & its tuning / ablation study: https://colab.research.google.com/drive/10HSKr8ka7Nivxhipu6fg1TovVV8j4hOc?usp=sharing
+
+* Link to the factorized attention model: https://drive.google.com/file/d/1yMx-brh16xzph3grfJtQ6hI4MjQG_XM1/view?usp=drive_link

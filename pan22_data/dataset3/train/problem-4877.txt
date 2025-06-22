@@ -1,0 +1,13 @@
+For returning 0-n rows (a set) you would use RETURNS TABLE(_info text,_arr text[]) in combination with RETURN NEXT or RETURN QUERY or similar.
+(To those who might ask: in reality this is about meta-programming, so the "info" is actually refined type information.)
+Any Postgres array can be cast to text[], so I use that type as common denominator.
+I wish my pl/pgsql function to go fetch and return two informations in my database in a single connection:
+PL/pgSQL SELECT INTO coerces compatible types into the target data typesd automatically.
+Is it possible defining a function with such a flexible signature?
+The term "vector" in your question does not help to clarify which actual data types we are dealing with.
+Here is an illustration of the function architecture:
+Not enough info in your question to narrow this down.
+As dummy instances, I expect this function to return something like retrieve_vector('temperatures') -> ['old thermometer', [0, 1, 5, -3]] or retrieve_vector('words') -> ['small words only', ['at', 'the', 'and', 'or']].
+Else you may need to add an explicit cast like source_array_column::text[].
+Else you might be able to work with a polymorphic array type as well.
+What should I use as a return type / return value / return instruction so both these informations are returned?

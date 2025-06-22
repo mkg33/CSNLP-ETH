@@ -1,0 +1,14 @@
+Note that there are some other situations that can prevent you from reusing (and thus shrinking) logs.
+Think of it kind of like the play head on a cassette tape, and SQL Server won't/can't do anything with tape that's already on the take-up reel.
+But what happens if you try to shrink the log to, say, 20 MB?
+The relevant thing to know about SQL Server transaction log files is that they are written to in a circular fashion.
+Transactional replication, database mirroring, and AlwaysOn availability groups are common culprits.
+Transactions will be written starting from the beginning of the file.
+Imagine you create a database and give it a 100 MB transaction log file.
+Now you're using nearly no space in the transaction log; practically the whole thing is available for (re)use.
+This is why shrinking the transaction log is frequently a two-step process: you do the first backup and shrink (chop off all the empty tape after the play head), then you generate some transaction activity so that SQL Server is forced to wrap back around to the beginning of the log file (rewind the tape), and finally do another backup and shrink (chop off more empty tape to get to your target size).
+This is going to over simplify things, and leave out some details like virtual log files (how it's actually handled internally), but it's a reasonable facsimile of reality.
+Suppose you then have 50 MB of transaction activity.
+You now are using the first 50 MB of the 100 MB transaction log.
+This is because the active portion of the log happens to be sitting around that 50 MB mark, and SQL Server won't shrink the log past where it's currently active.
+Usually you can find out the reason by looking at the log_reuse_wait_desc column in master.sys.databases.

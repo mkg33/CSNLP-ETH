@@ -1,0 +1,37 @@
+For instance, convert all odd numbers to negative numbers, sort in the list in ascending order, and then turn the negative numbers back into positive ones.
+Why not use that value to precisely allocate an ArrayList<> of the proper capacity?
+Since you are storing int values, and the exact number is known ahead of time, the advantages of the flexibility of ArrayList<> are not needed.
+Since Integer objects are not being stored, this takes significantly less memory, and creates only one heap object, instead of size+1 heap objects.
+You've just read in the number of values the ArrayList<> will contain.
+First, although it will grow as required, this regrowth is both time-consuming and memory consuming.
+Or it can be done using appropriate preprocessing and post processing, to achieve the desired ordering.
+You open a Scanner at the start, and manually .close() it at the end.
+Perhaps even better would be to sort the list using a comparator which produced the list in reverse order:
+You can't just store an int, the value has to be first "boxed" into an Integer object, which takes both time and additional memory.
+It is also faster, since access an array doesn't required the overhead of the add() or get() function calls.
+Alternately, it can be done with a custom sort operation, which sorts:
+No joining of the two sorted lists is required, because the lists were never separated.
+And while you are at it: "GFG" is not an acceptable class name: what does that class do?
+If each reallocation doubles the storage space, then during the regrowth at least 50% extra space is allocated; reallocating the storage from 100 to 200 entries temporarily requires 100+200=300 entries of space!
+It is better to use a try-with-resources statement to open Closeable resources, and have the resource closed properly whether or not the block completes normally or raises an exception.
+I have the following questions with regards to the above code:
+Separate the data, process them separately, and combine them at the end.
+Better (as mentioned by @mtj) would be using Collections.reverse(oddList); to reverse oddList in-place without creating another temporary list.
+Then, the sorted even list is appended to the reverse sorted odd list, using .addAll().
+Finally, if only 101 storage locations were actually needed, if not explicitly freed by the application, the extra 99 entries remain allocated.
+You already dug into the standard library a bit (which is good) and discovered the beautiful sort method.
+Thus, instead of splitting the list in even and odd parts, sorting them separately, reversing one part, gluing it all back together, you could simply have created a comparator which encapsulates the logic, passed this into the sort method, and be done.
+If sc.nextInt() raises an exception due to illegal input, this block of code will exit without reaching the .close() statement, and the scanner will be left open.
+Similar comments will, of course, apply to the sortListOrder() method.
+The advantage here is time; no ArrayList<> resizing is required.
+(BTW: even if you take your approach, reversing a list should be done with Collections.reverse())
+This can be done in-place, with no additional storage required.
+So: create a comparator, do it all in a single sort call, and I look forward to see your revamped solution here in a day or so.
+While you don't know the number of elements which will be stored in either oddList or evenList, you do know the maximum: when all the numbers are odd or even.
+Finally, the result is returned using return reversedList;, which is odd because the function is supposed to be sorting a list of numbers, not reversing them, so perhaps a better variable name is in order.
+What you overlooked is, that there is an overloaded second version of sort which accepts a comparator, so that you can perform all kinds of custom sorting with a single call.
+It takes time to allocate the memory, and additional time to copy entries from the original to the new storage area.
+The second inefficiency comes from storing primitive types in generic containers.
+While each list may be larger than needed, we know exactly \$O(2N)\$ memory is required.
+And then you reverse the list the hard way, by allocating yet another ArrayList<> without pre-sizing it (new ArrayList<>(list.size()) since you end up adding the even numbers into it as well), iterating over oddList, and .add()-ing the items one-at-a-time.
+You can add items to it, and it will automatically grow as needed.

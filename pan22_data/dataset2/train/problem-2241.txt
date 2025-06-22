@@ -1,0 +1,11 @@
+I tried to do the same thing on a several occasions in the past 4-5 years and I tried many different ways but I failed miserably on all attempts. Finally, I came to a conclusion that (a) it is not possible (b) even if by some means this can be done it would not worth the effort. Although, I would be pleasantly surprised if someone has figured this out.
+If I leave it as it is, Tomcat is unable to resolve requests that begin with /tomcat, but if I otherwise set alias /; in Nginx, then Tomcat works just fine, but unfortunately it can't resolve the path under which it is being served, so all of the URLs are missing /tomcat.
+I could manually configure server.xml with a <context/> container for every single app, but that'd just make me feel uneasy. Could anyone please tell me what is it that I'm obviously missing?
+So, when you don't have any Cocoon-based webapps running inside Tomcat, adding the 'hashed' prefix to their folder name seems like a possible solution.
+I've went through the configuration reference for Tomcat 7 several times over, but I couldn't find anything that would allow me to configure Tomcat to serve all the applications under the /tomcat path, or otherwise add it as a prefix to the context path for every application.
+It is explained somewhat cryptically in the Tomcat Context Container reference, but see this helpful message on the Tomcat-users mailing list. 
+...would make both accessible via http://localhost:8080/tomcat/app1/ and http://localhost:8080/tomcat/app2/, respectively, without any further configuration.
+Apparently, Tomcat 6 introduced a mechanism to achieve this, by prefixing the webapp folder or .war filename with that prefix, separated by a hash. So, e.g.:
+Untested but your best bet would be to load a Java Bridge into APACHE2/PHP so that it runs java code when it encounters it.
+I have a lot of services attached to a single domain, so I was hoping to serve Tomcat under, say, http://server_name/tomcat, with Nginx as a reverse proxy to Tomcat's HTTP connector.
+Unfortunately, there's a catch: apparently, Cocoon (up to 2.1.11) chokes on webapps whose paths contain a hash (see https://issues.apache.org/jira/browse/COCOON-2270).

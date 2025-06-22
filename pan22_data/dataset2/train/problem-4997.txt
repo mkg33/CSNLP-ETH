@@ -1,0 +1,8 @@
+Might be worth checking if it's there, and if your runlevel init symlink(s) are intact.  (mine's in rcS.d only.). It's not a sensitive config file, so 644 permissions shouldn't be a problem. 
+At what point is sysctl.conf supposed to be read during boot, and why might it not be running?  I have the following settings which are not being applied when I reboot:
+This is on Ubuntu server 10.04.2, kernel 2.6.32-31-server.  I know some daemons check the permissions on their config files and refuse to work if they're too permissive, but sysctl.conf is 644 root:root, which I'm pretty sure is the default.
+The first section is needed for KVM bridging, and the second is to run the NFS lock manager on a known port.  However, after booting, these values have not taken effect.  If I run sysctl -p, then they do.
+This wouldn't be a huge issue, except that I can't figure out how to restart the lock manager without rebooting.  I would really like to know why sysctl.conf isn't working at boot, but I'd settle for just being able to restart the lock manager.
+Have a look at Some sysctl's are ignored on boot.  In short, the settings are applied early, before some kernel modules are loaded.
+If it's anything like Debian, the on-boot sysctl is run by /etc/init.d/procps. For comparison, my default one looks like this.
+On ubuntu, it will be loaded up as part of the upstart daemon running the /etc/init/procps.conf file.

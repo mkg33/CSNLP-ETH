@@ -1,0 +1,6 @@
+The documentation for pg_basebackup does mention that the backup is "taken without affecting other clients to the database", but I need to be certain that "backup mode" won't do anything unexpected to the production server.
+"Not affecting other clients" means that SQL programs can continue all operations without restriction during the backup. Possibly with a loss in performance due to the I/O load caused by the backup itself, but there's no way to avoid that.
+This may be mitigated by the option --checkpoint=fast|spread but it's already spread by default according to pg_basebackup manpage.
+I am in the process of setting up a standby server for a PostgreSQL 9.3 install. I was looking to use pg_basebackup to get the initial starting point for the standby server. However, the documentation for pg_basebackup mentions that it will "[make] sure the system is automatically put in and out of backup mode". I can't seem to find what "backup mode" is, or what effects that will have on the production server.
+In and out of backup mode means that it will execute the pg_start_backup() function at the beginning and pg_stop_backup() at the end.
+The effect of pg_start_backup() on the production server is a possible I/O spike caused by checkpointing (applying the transaction log also named xlog or WAL files to the final data files).

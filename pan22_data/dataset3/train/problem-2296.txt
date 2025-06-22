@@ -1,0 +1,17 @@
+In any case, different subnets require a router for communication.
+192.168.1.1 for 192.168.1.0/24, and 10.0.0.1 for 10.0.0.0/24.
+The primary address is on one subnet; the secondary address is on the other.
+In your case, the router needs to be configured with multiple IP addresses on the single interface, one address for each subnet.
+We hope you will become a contributing member of this community.
+For efficiency, you should attach the router to the switch that is likely to carry more routed traffic.
+The router needs to be attached to each VLAN - since you've only got one, it'll just use a single interface.
+(It'd be very inefficient to receive a packet on switch 1, forward it to switch 2, forward to the router, and all the way back to switch 1.)
+The router addresses need to be set as gateways, e.g.
+There are exceptions, but this is a general good practice.
+Normally, you put nodes from different IP subnets in different VLANs (L2 segments).
+It may also require explicit configuration to route back to the ingress interface (router-on-a-stick).
+In your case, you need to configure a secondary address on your router.
+Be aware that some routers do not operate the same with secondary addresses as they do for primary.
+This is another reason to avoid secondary addresses if possible.
+Generally speaking, having multiple subnets on a single VLAN is not a good idea.
+Usually you have one subnet per VLAN (and vice versa).

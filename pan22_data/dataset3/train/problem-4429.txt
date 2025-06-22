@@ -1,0 +1,11 @@
+If I simply add a ServerAlias directive to the virtual host it doesn't work.
+This is working, but I'd like to add a ServerAlias for each such that requests on host 'apple' are proxied to apple-app and requests on host 'orange' are proxied to the orange-app.
+In order to fix underlined configuration you need to create another VirtualHost for "default" purposes using:
+Interestingly if I do a similar setup but with port 80 then the ServerAlias works...
+This is probably due to the special SNI protocol requirement (SNI - Wikipedia; SNI - Apache Wiki).
+Well, from my testing it appears that the ServerAlias directive is ignored when using name-based virtual hosting on port 443 with Apache 2.2.15.
+http://wiki.apache.org/httpd/NameBasedSSLVHostsWithSNI
+The work around is to create two separate virtual hosts;  from my example one would have ServerName orange.fruitdomain and the other would have ServerName orange.
+comment the listen 443 line because listening start with the ssl automaticaly and if you start it before it will see a conflict.
+I've got a name-based virtual host setup on port 443 such that requests on host 'apple.fruitdomain' are proxied to the apple-app and requests on host 'orange.fruitdomain' are proxied to orange-app.
+- http://httpd.apache.org/docs/2.2/mod/core.html#servername

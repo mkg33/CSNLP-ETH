@@ -1,0 +1,10 @@
+The killBox is a box collider with which I deactivate objects that reach to it in order to maintain a certain ammount of memory dedicated to bullets and hazards
+It used to work previously moving forward to the alpha, now I'm working on 2019.2.0f1, but since working on the alpha this is the behaviour I'm having
+I already tried removing the Math.Clamp, as I though there migth be bug with the function in this version, but even without it, the problem is present.
+So, I been following up the Space shooter tutorial on Unity, I had an issue where the project was acting up with an alpha version, so I was able to get a version that worked on a old release and applied all the new things I developed
+So, making this object bigger, to better envolve my play area, well, solved my issue. I tried make it fit more properly the play area, and given I worked on something else, never though this might had caused an issue here, so once again, I made it bigger and my problem was solved
+Let's step through this, assuming your boundary is at 10, your speed is 50, and your fixed timestep is the default 0.02 s. You're holding the stick to the right:
+As you can see, getting closer to the player boundary, takes the player out of the play area, and I can't determine why this might be happening.
+Your supposed to use: Rigidbody2D, not Rigidbody.  Rigidbody is used for 3D, while Rigidbody2D is used for, well, 2d.
+So, in the end, the culprit was a box collider I use to do memory management, taking out my player when it gets near to it
+So, if you want your physics integration to respect your boundaries, make them visible to the physics engine: add a collider to represent the boundary (you can have it absorb all bounce energy so you don't ricochet off of it, and use layers to ensure it doesn't interact with other scene content), or use a joint constraint to limit the physics motion of the object.

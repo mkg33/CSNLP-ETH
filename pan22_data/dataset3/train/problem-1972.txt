@@ -1,0 +1,24 @@
+The Slave would have the I/O thread show up in the processlist like nothing was wrong.
+My answer may not have fully defined the root cause, but I do have two suggestions:
+which would also do just fine, especially if the SQL thread is busy and you do not want interrupt it.
+Back on Jun 17, 2014, I answered the post I have been tasked with Mysql Master-Master replication?.
+Based on these paragraphs and the default value for slave_net_timeout (60 Seconds), it appears that the I/O thread should heartbeat every 30 seconds.
+You could change the heartbeat period to 10 seconds like this:
+If your monitoring has the same time granularity as the MySQL timeout values, you have nothing to alert you when it does happen.
+Many times in the DBA StackExchange I have affectionately called the MySQL Packet the Silent Killer of DB Connections.
+According to the MySQL 5.5 Documentation for CHANGE MASTER TO
+All of a sudden, 60 seconds later, the I/O thread disappears from the processlist of the Master, but remains visible on the Slave.
+I would make sure max_allowed_packet is always set to 1073741824 (which is 1G).
+The connection between Master and Slave requires that the firewall be open.
+Unfortunately, I have seen occasions where the firewall was open on the Master and a Slave would connect as usual.
+Communication between Master and Slave is implemented as bidirectional.
+You will need to check the connection between the Master and Slave for dropped packets.
+Given this description of the I/O aspect of Replication, what could you look for ??
+All this does is disconnect both the I/O and SQL Threads and then reconnect from scratch.
+Given that scenario (that I eyewitnessed between two Amazon EC2 servers in two different AZs (Availability Zones)), the solution back then was to check the Security Groups and get port 3306 open in the Slave's AZ.
+According to the MySQL Documentation on Replication
+I briefly mentioned the network as an unsung hero in data drift:
+MySQL has settings for timing out network connections
+The I/O thread is just as much as DB Connection as any other.
+You running STOP SLAVE; and START SLAVE does not find the root cause but does indeed solve the problem at hand.
+As an alternative, you could probably create some kind of SNMP setup to monitor MySQL so if SNMP info from does not update in a timely manner you could detect MySQL being down or not responding without ever connecting to MySQL.

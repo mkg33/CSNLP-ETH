@@ -1,0 +1,11 @@
+I think it is a great example for an article. Vector-like classes are probably the second most reimplemented library containers, probably only losing for string classes.
+The Copy/Swap idiom is designed to be great when there is the possibility of failure and if that happens uses RAII to cleanup and destroy any temporary objects created. But if you don't need that cleanup then you can use an optimized version.
+I can see the basics here. But my template meta programming is not something I can do of the top of my head for something like this. So watch this space.
+You could wrap that into a private static helper that just takes a number of T elements and handles the rest in a cleaner way:
+I believe what @Deduplicator is getting at is that the copy/assignment operator can be optimized under certain situations. If the type T has a no-throw copy constructor and no-throw destrcutor then we can optimize the copy of the array.
+Hence, it makes sense to me to move the public section of the class to the top of the class and move the private section of the class to the bottom.
+Even though this is example code for your post, you might consider giving the class a longer name. V confuses itself with a template parameter, so much that you've made a typo in here:
+The destructor (to be like an array) must destroy the members in reverse order (taking the catch and throw out for now as I am still working on that).
+This is where the noexcept keywords comes in. Using template meta-programming we can check if these operations are safe and plant the appropriate code.
+A user of the class is most interested in the public section of the class. They are least interested in the private section of the class. Ideally, we would like to hide the private section of a class.
+Some obvious constructors missed. We are now in the land of C++14 and rapidly approaching the next version is supposed to be out next year in C++17. So we should allow at least std::initializer_list

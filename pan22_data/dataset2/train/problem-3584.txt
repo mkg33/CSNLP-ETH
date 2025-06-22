@@ -1,0 +1,10 @@
+"Aug 12 18:54:22 foremanmaster01 named1016: client 127.0.0.1#58169: update '10.in-addr.arpa/IN' denied"
+Now, In /etc/zones.conf, this is from my example, I am using ".local" as my domain and 172.16.1.0/24 as my network. Adjust accordingly.
+Finally, and this is what messed me up because the install guide uses a different syntax for the DHCP server:
+For whatever reason having both configured with different keys kept causing problems for me. This finally fixed it. Hope that helps. 
+I defenetly did read EVERY Google Page I could find to that Problem and every bug report I could find and I have no idea why it is not working. I'm getting kind of desperate here ...
+Create Reverse DNS record for mydomain.de task failed with the following error: ERF12-2357 [ProxyAPI::ProxyException]: Unable to set DNS entry ([RestClient::BadRequest]: 400 Bad Request) for proxy https://mydomain.de:8443/dns"
+This tells BIND to read the key named "foreman" out of /etc/rndc.key and allow the key named "foreman" to connect to the control port on 953 to do ddns updates.
+If this is still a problem I've found that following along with the Foreman installation guide is very confusing. Both your dns and dhcp keys need to be the same, whereas in the installation guide it shows two different ways to configure keys between dns and dhcp. 
+This is telling BIND that the key foreman is allowed to update/add any of the records in these zones. 
+Oh and as an FYI those files /etc/rndc.key, /etc/dhcp/dhcpd.conf, /var/lib/dhcpd/dhcpd.leases need to be readable by foreman-proxy, I accomplished this by adding foreman-proxy to the dhcp and named groups:

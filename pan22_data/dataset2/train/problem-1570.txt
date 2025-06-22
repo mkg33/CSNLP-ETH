@@ -1,0 +1,10 @@
+So, as a kludgy "get-around", I put in a sleep 3 && mount.glusterfs 192.168.122.120:/testvol /var/local/testvol into each client node's /etc/rc.local.  It seems to be able to get the volume mounted on each node, as far as I can tell.  
+I wonder if adding some logging to your fstab might help give you a bit more info? See the fstab config options in the admin guide: 
+But this is quite ugly, and I would appreciate a hint as to how to resolve this glusterfs-non-boot-time-mounting issue correctly.
+Note that I used the IP address of the first "glusterfs server" although the /etc/hosts of all nodes have been populated with their hostnames. I figured that the use of IP address is more robust.
+If I issue either a manaul mountall or a mount.glusterfs 192.168.122.120:/testvol /var/local/testvol on CLI, a mount shows that the volume is successfully imported. But once a client is rebooted, after it comes back up, the volume is not mounted!
+http://www.gluster.org/wp-content/uploads/2012/05/Gluster_File_System-3.3.0-Administration_Guide-en-US.pdf
+I searched the Internet, and found this article, but since I am not running both client and server on the same node, IMHO it's not strictly applicable.
+The setup was mostly uneventful, until I put in the following into each glusterfs client's /etc/fstab:
+192.168.122.120:/testvol /var/local/testvol glusterfs defaults,_netdev 0 0, where 192.168.122.120 is the IP address of the first "glusterfs server".
+I have just setup 7 KVM guests, all running Ubuntu 12.04 LTS 64bit Minimal server to test out glusterfs 3.2.5 from the Ubuntu official repo. Two of them form a mirrored pair (i.e. replica 2), and five of them are clients. I am still new to this file system and would like to gain some "hands-on" experience.

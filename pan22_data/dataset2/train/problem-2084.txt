@@ -1,0 +1,7 @@
+The change is as simple as removing the call to Task.Run. This will remove the unneeded overhead of scheduling the IO operation on a thread pool thread without any loss of functionality.
+I need to process a bunch of completed orders (thousands). To make it faster, I'm using a SemaphoreSlim to schedule a number of orders to be processed in parallel. Every order goes through multiple web service calls to various APIs (SOAP, REST). Then I need to take the returned data and process it into a PDF. Here is what I am doing currently (note that this is in an ASP.NET app):
+Task.Run allows you to turn synchronous CPU bound work into asynchronous CPU bound work.  However, the work that you have is neither synchronous nor is it CPU bound.
+The fact that the lambda you're passing to Task.Run is async, along with the comment, implies that the work being done is not CPU bound work, but rather is IO bound work.  Given this, there is no need to call Task.Run here.  
+However, I'm new to TPL and I don't know if this is the right way to do something like this. If it's relevant, this app is hosted on Amazon's AWS cloud.
+An unrelated refactor that you could make is to use LINQ to transform your sequence of items into a sequence of tasks representing the completion of some work on those items, rather than creating a list, iterating the items, and adding the appropriate Task to the list.
+SemaphoreSlim implements IDisposable and should be disposed of, preferably using the using statement.

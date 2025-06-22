@@ -1,0 +1,19 @@
+Now I'm trying to make autossh (from Debian / Raspbian package autossh) to work too but I'm not succeeding.
+(I've changed the real IP here in this question to 37.xxx.yyy.zzz to not post the server's actual IP)
+You should continue to specify the reverse tunnel that you want using ssh's -R option.
+I tried to "-vvv" the output of the ssh commands but it just shows that nothing is going on.
+It first ask for the server's password, then for the Pi's password and everything is fine.
+If I try the correct port (20000) but this time with the -t param, same thing: it "works" but I don't get no terminal/prompt.
+Note that I don't think it's a firewalling issue as the "non autossh" method works fine (but then I don't get the automatic "always up" / reconnect feature).
+(just asked this on SO but was adviced to take it here)
+So everything works fine: I enter the password and I get a terminal/prompt.
+This "works" but it's just stuck there, doing nothing.
+It's not asking for password, it's not showing any terminal/prompt.
+I managed to create a reverse SSH tunnel between a Raspberry Pi 2 and a server of mine (server which has a static IP) and it works fine.
+The user account I'm using on the server is called "ksproxy" (it's not really a "proxy" but whatever).
+I'd really like to make autossh work (I know I could find a workaround, like some crontab automatically relaunching my manual SSH tunnel but that'd probably be more brittle than making autossh work).
+In this case, you're not using the ssh -R option to set up a reverse tunnel; you're specifying the autossh -M option instead.
+The autossh -M parameter causes autossh to set up a tunnel on that port which autossh uses for its own purposes (to regularly test that the SSH link is still working).
+When you connect to port 20000 in this scenario, you're being connected to autossh's private connection-testing port.
+If you want to use autossh's echo port feature, you should run that on a different port:
+I can even access the Raspberry Pi from my desktop (by first going through the server), doing:

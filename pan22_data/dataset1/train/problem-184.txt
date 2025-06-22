@@ -1,0 +1,9 @@
+ZFS uses an ARC (adaptive replacement cache) which is not accounted for in the traditional Linux "cache" memory usage. How can I determine the current size as well as size boundaries of the ZFS ARC, and how do these relate to the amount of free or cache memory reported for example by free?
+The ZFS code reports various statistics through procfs. To determine the size of the ARC, look at /proc/spl/kstat/zfs/arcstats (assuming procfs mounted on /proc, as customary), specifically the values for c, c_max and size. (See also this post on the Oracle Community forum. Alternative Internet Archive copy in case the Oracle site becomes unavailable.)
+The maximum size of the ARC can be adjusted either by passing a zfs_arc_max=N parameter to the zfs module (through modprobe), where N is the maximum ARC size in bytes, or on the fly by writing the new maximum size in bytes to /sys/module/zfs/parameters/zfs_arc_max.
+Because of how ZFS on Linux is implemented, the ARC memory behaves like cache memory (for example, it is evicted if the system comes under memory pressure), but is aggregated by the kernel as ordinary memory allocations. This can lead to confusion as the system appears to have far less free memory than would be expected given the current system workload, but is normal.
+To get the ARC size in megabytes, you can use something like awk '/^size/ { print $1 " " $3 / 1048576 }' < /proc/spl/kstat/zfs/arcstats. (1,048,576 is the number of bytes to the megabyte.)
+For example, my system (which uses ZFS almost exclusively) might report
+which means that the actual memory usage by currently resident processes is approximately 8,669 MB (16,808 MB reduced by 8,139 MB).
+To build on Michael Kjörling's answer, you can also use arc_summary.py.
+Here you can see how the ARC is using half of my desktop's memory:

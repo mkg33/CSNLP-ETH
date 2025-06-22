@@ -1,0 +1,26 @@
+When you switch back to "full" mode you must perform a full backup to reestablish the log chain.
+Before considering a change to simple mode, I would look at:
+I was considering setting the database recovery model to simple prior to the rebuild task, to prevent all of the index rebuilding from being logged, and then setting it back to full once the rebuild is complete.
+We're struggling with the same thing here, and so far the plan is to do log backups more frequently and keep them on external storage (i.e.
+If less than x% of space is free or if log growth has occurred, backup the log.
+So, if possible, switch the database recovery model to BULK_LOGGED and leave it as such.
+I have a database that we currently run transaction log backups throughout the day, every 30 minutes to be exact, and we run a full backup each day at 2am.
+And I do not mean to switch to SIMPLE, I mean use the 'other' recovery model: BULK_LOGGED.
+That being said, doing the index rebuild causes our transaction log to grow greatly.
+Under BULK_LOGGED the index rebuild (both offline and online) are going to use minimally logged operations, see Operations That Can Be Minimally Logged:
+In other words, if you have a business requirement for FULL recovery model, then you better not break it.
+Record the log size and free percentage before processing each table, check free percentage and size afterwards.
+Note that while you're in "simple" mode you lose the ability to restore to a point in time from transaction log backups.
+The reason your reindex  operations generate copious log is that they occur under FULL recovery model.
+When you 'revert' to FULL you need to start a new log chain, meaning you have to take a full backup and start taking again new log backups.
+Or any tips about how to handle huge log files while performing db maintenance tasks?
+Every Saturday at 3am, we have a job setup to rebuild the indexes on all tables.
+So at this moment you have to stop and think: what is the business requirement that made you have FULL recovery model to start with?
+Whatever reason it is, is unlikely that it can be 'suspended' every Saturday at 3am, and is just unlikely that it will tolerate your 'epoch' situation in which you can restore back in time from Friday to Thursday, but you cannot from Saturday to Friday because Saturday is a new 'epoch'.
+You won't be able to resume transaction log backups until you've done a full backup.
+One approach I've taken in the past is to incorporate log backups in to the reindex/rebuild scripts.
+Switching to SIMPLE means you break the log chain.
+Or can anyone provide insight/advice as to why this may be a bad idea?
+The switch to simple, no matter how short, in effect creates a new 'epoch' in your backup chain, as any backup from before the switch to simple can no longer be applied to the database after the switch, nor the other way around.
+I'm toying with different ideas to alleviate the extra drive space needed (approximately 25gb post re-index).
+But if you do not have a business requirement for FULL recovery model, then you have room to play.

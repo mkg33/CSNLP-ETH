@@ -1,0 +1,7 @@
+According to these results the best is specify "numactl --cpunodebind=1 --membind=1" and still have Query Cache turned on. I tried kernel with noibrs noibpb nopti flags, speed gain is quite low, only 2%. What surprised me is bad results with numactl --interleave all
+To speed up the queries we need to run MariaDB using numactl. I made some benchmarks, and the best setting was
+So, if you experience strange slow results on new more powerful server, be sure you understand NUMA, it can save a lot of time for debugging.
+Benchmark results (QC is Query Cache), MyISAM tables, concurrency 64 on my database using mysqlslap, simplified output, lower is better:
+Overall the Query Cache is not scaling well on multiple threads, so some DBA suggest to turn it off. 
+Important is NUMA node(s): 2. The server got TWO CPUs, on TWO nodes. Read more about NUMA, read more about NUMA and mysql based databases. 
+I am going to answer my own question. I spent couple of days solving this problem. Problem was NUMA. But let's peek into this more. 

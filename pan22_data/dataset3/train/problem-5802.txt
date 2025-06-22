@@ -1,0 +1,24 @@
+It seems that unless your tempdb is expanding and never stops growing it's probably just taking up the amount of space it needs and should have been configured to be that size initially.
+I'm going ahead on the basis that the size it's grown to is the size it needs to be, monitor this size in future and make sure there's room for growth on whatever drive it's on.
+However, I'd bet that it is already failing and no one is telling you.
+This is most likely caused by an out of control Cross Join query.
+There is a section on estimating the space required for your tempdb as well as tracking down what might be taking up space in tempdb.
+I'll also keep an eye on those io performance counters to see if something needs dealing with.
+The tempdb log file was also actually at less than 50% utilisation which fits with the idea it expanded under load this morning and has retained that space since.
+I'll monitor these for a while and see how things pan out.
+There was one more additional interesting section titled 'Upgrading to SQL Server 2005' which indicates that tempdb is used for more things in 2005 than 2000 (both new features, and existing features which previously didn't use tempdb).
+http://technet.microsoft.com/en-gb/library/cc966545.aspx
+The section titled 'Monitoring I/O' has a few ideas on performance counters to watch, a quick look at my server put these in you've-probably-got-an-io-bottleneck territory.
+I've only recently upgraded to 2005 so this could be part of the reason this has suddenly become an issue.
+Your best bet is to use Profiler to find it and then fix it.
+As suggested by some here I'll look into what is executing as the temp log expands and see if anything can be tweaked in there.
+There's a lot of detail in there and suggestions for trouble shooting issues.
+There is a section titled 'Space required for tempdb logging' which indicates which features use the log, there is another earlier section which details the superset of features which use tempdb.
+If so this can cause tempdb log and database to grow.
+Do any of the reporting queries access linked servers as members of a join?
+When the reports are running in the morning do any of them crash?
+I don't remember seeing this anywhere else with reference to upgrading to 2005 though, which is a bit of a pain.
+I've spent the last few hours reading and making notes on this
+As a result of this the first thing I'm going to do is move tempdb to a larger drive and see what happens from there.
+The other way to find it is to restrict the size of the TempDB log file and then wait to see what query fails.
+If it's already set to Simple then I'd say there's an underlying problem that needs to be addressed and any attempt to shrink the file is merely treating the symptoms of the problem and not the root cause.

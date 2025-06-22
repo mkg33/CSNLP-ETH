@@ -1,0 +1,12 @@
+I designed s3s3mirror to get going immediately, to use 100 concurrent threads (configurable), and to make modest use of CPU and memory.
+Once that's done, you can then rsync from the mount point to your local disk.
+Here's the link: https://github.com/cobbzilla/s3s3mirror
+If you decide to give it a whirl please let me know what you think and if there's anything that can be improved.
+You could try mounting the buckets with fuse using s3fs.
+You can use the "s3cmd" utility with the "sync" option, although I stumbled on your question because I'm trying to figure out if this syncing mechanism is screwing up my duplicity backups.
+I was having the same problem so I whipped up a little program specifically designed to mirror one S3 bucket to another; I call it s3s3mirror.
+This way all of updates to original bucket will be automatically synchronized to S3 bucket in another region: https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html
+For online synchronization of buckets you can use cross-region replication.
+Keep in mind that it requires versioning enabled for the bucket so if you do updates/deletes of objects in buckets much you'll want to enable lifecycle policy to delete old objects.
+I did try the "s3cmd sync" approach first, but I had a bucket with hundreds of thousands of objects in it, and "s3cmd sync" just sat there, not doing anything but consuming more and more memory until my system died.
+I've made this available on github under an Apache License.

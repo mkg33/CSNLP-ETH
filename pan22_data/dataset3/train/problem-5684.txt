@@ -1,0 +1,17 @@
+But don't trust me, I don't have a clue what I'm doing!
+What I would suggest you do though is make your URIs independent of whatever directory scheme you use, using nginx's rewrite module, e.g.
+As mentioned by kquinn, benchmarking will be the real indicator of performance gains/losses.
+I need to serve around 70,000 static files (jpg) using nginx.
+Whether it be the built in web server caching or a third party cache like varnish.
+You'll probably find no significant difference between the two options, meaning that your time is better spent on other problems.
+Depending on what you need to do it may be easier to manage things if there is a directory structure instead of everything in one directory.
+As others have said, directory hashing is very probably going to be most optimal.
+So each of three lookups for the nested structure will be faster than one big lookup, but the total of all three will probably be larger.
+The organization of the files has more to do with file system performance and stability than delivery performance.
+map example.com/123456.jpg to /path/12/34/123456.jpg
+By all means benchmark and use that information to help you make a decision but if it was my system I would also be giving some consideration to long term maintenance.
+Then if your directory structure needs to change for performance reasons you can change that without changing your published URIs.
+As to whichever one is faster, directory lookup time is, I believe, proportional to the logarithm of the number of files in the directory.
+If you do benchmark and find no real difference, go with whichever scheme is easier -- what's easy to code if only programs have to access the files, or what's easy for humans to work with if people need to frequently work with the files.
+Since the filenames are numeric, I considered having a directory structure like:
+Should I dump them all in a single directory, or is there a better (efficient) way ?

@@ -1,0 +1,25 @@
+Without specifics I don't know what issues you might be running into, but as an example lets say you notice a customer which has hundreds of rows, with a value which is changing back and forth between two values.
+On a slight tangent, but worth mentioning: I'm guessing from the fact that you're not sure whether this dimension is behaving correctly that this is something you've perhaps inherited from another developer?
+If you're on a recent enough version, using LAG and LEAD in window functions can be really handy for this kind of task.
+So for instance, you could set up a window function which is partitioned by your business key/surrogate durable key (I'll just use the term durable key from here on out), and ordered by your start date (ascending).
+If you're really worried about the size of this dimension and if you don't know the full reason for its current design, it might be worth checking whether all of the Type II SCD fields really should be Type II SCD.
+An outer query could then only select the rows which need investigation.
+have the same durable key), but where the next row's StartDate isn't equal this row's EndDate + 1.
+), and which might help other people having similar issues.
+If you do have historic data in one or both of those places, you might be able to compare the values with your dimension rows either directly by date (if said historic data includes dates), or perhaps by the order those changes happened in.
+This might not be relevant in your case (the SCD II attributes might be well-thought-out and suitable for your users' requirements), but if it is relevant it might be possible to alleviate your concern about the size of the dimension and also remove the need to do those data quality checks.
+From there, you could write up some queries to look for that problem in the rest of the table - for instance, coming up with a query which would let you look at the number of rows for each customer vs. the number of unique rows for each customer (looking only at the actual attribute columns, so not the dates or any other metadata columns you might have).
+To some extent the checks you can do are going to depend on your particular situation, but I'll try to tackle this from a generic standpoint that might be helpful to you (if you still need help, 7 months later!
+You can't use window functions in the WHERE clause, so perhaps you could create a case statement which flags up those rows which are for the same customer (i.e.
+You don't say which DBMS you're using here, but you're using SSAS so I'm guessing SQL Server.
+From there, having a dig through the data belonging to a handful of suspicious-looking customers might turn up obvious issues which are worth further investigation.
+Aside from the space issues, as the link goes into, the use of SCD II can lead to some unexpected results for the people consuming the data.
+Some data warehouse developers will tend to presume SCD II by default, which can really be problematic.
+So for instance, you could group by the durable key, and get a count of how many rows exist for that durable key.
+If you don't have an understanding of how many changes are reasonable, you could take an average count and then look for customers which are over that average (or over that average by some percentage or set amount).
+One option might be to run some queries which select a few COUNT values on different aspects of the dimension.
+Checking on whether the customer is changing correctly over time will depend on what historic data you have held in your source(s) or staging area.
+You can order the rows by the start date or by an incremental ID if you have one, and then use these to check on values in the next or previous row.
+You could do the same in reverse to flag up the following row as well.
+If you return and give more specific detail, let me know and I'll be happy to have a read through and improve my answer if possible.
+You could then use LEAD to check that the start date on the next row was equal to the end date + 1 on the current row.

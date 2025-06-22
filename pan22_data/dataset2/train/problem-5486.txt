@@ -1,0 +1,10 @@
+Trying to run a simple AWS CLI backup script. It loops through lines in an include file, backs those paths up to S3, and dumps output to a log file. When I run this command directly, it runs without any error. When I run it through CRON I get an "Unable to locate credentials" error in my output log.
+So all I did to fix this was ensure my crontab script also had the aws cli in its path. So below the shebang of my script, I now have PATH=~/.local/bin:$PATH.
+Not the best, but I had to provide the config directly in my shell/bash script before the AWS client commands. like:  
+This is because the AWS cli was installed in the user's home folder and I had added a line to my user's .bash_profile to add the AWS cli path to the $PATH. Oddly, this is in fact the way that the AWS cli install documentation tells you to install it. But the user's .bash_profile doesn't get used when the user's crontab is executed (at least not in my environment anyway).
+The default user in todays EC2 instances is ubuntu, and the root folder is that users home folder. That's where the aws cli exists as well. 
+We all know that environment path variable $PATH has location of binaries. $PATH of Crontab might not have location awscli. 
+Shell script is running as root. I can see the AWS config file at the specified location. And it all looks good to me (like I said, it runs fine outside of CRON).
+I had the same issue, but after removing the stderr redirect from my cron entry (2>@1), I saw aws: command not found in the log. 
+I only added the line to the config file after I started seeing the error, thinking this might fix it (even though I'm pretty sure that's where AWS looks by default). 
+and add the path in $PATH of crontab by adding below line in the beginning of your script(after shebang).

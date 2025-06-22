@@ -1,0 +1,19 @@
+To calculate the world position of an entity, all I have to do is apply its transformations (translation, rotation and scale), and that of its parent, and of its parent's parent, to its local/relative position up until the root entity of the hierarchy.
+I am writing a small 2d html5 game engine in javascript that relies on the concept of a hierarchy.
+When we change an aspect of an object's transformation, we mark its transformation/bounds data "dirty" (and propagate this down to any child objects not already marked dirty).
+To avoid updating all of this transformation/bounds data more often than we need to, we allow it to go out of date, and mark stale data with a flag.
+The way this is typically handled is with a dirty flag.
+Note: along with knowing an entity's world location, I also need to know its world bounding box.
+to check its final position in the world), we check if it's been marked "dirty."
+This approach saves repeated calculations when we mix changes to the transformations and use of those transformations/bounds, walking the hierarchy and re-computing net transforms & bounds just once between a set of changes and the next use of that data.
+a single composed local-to-world matrix and worldspace bounding box).
+Each object stores both its current local transformation/bounds, and a net transformation/bounds according to its whole parent hierarchy (eg.
+Every entity has a relative position and an absolute position.
+If we change it again and it's already dirty, we're done, and don't need to do any extra calculations.
+When we want to use an object's transformation/bounds data (eg.
+The problem I'm having is when to calculate this the most efficient way.
+These children can have other children, recursively.
+By relative, I mean in object space, and by absolute, I mean in world space - based on its own and its parents' transformations.
+The scene is the root node or entity, and its children make up the game objects.
+What about every time the position, scale or rotation properties of the entity or any of its parents are set?
+Should I calculate the world position every time I get its worldX or worldY properties?

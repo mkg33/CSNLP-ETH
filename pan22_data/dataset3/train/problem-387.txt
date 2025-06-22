@@ -1,0 +1,28 @@
+The real answer, however, is you probably don't need all this.
+The beauty of cold offsite backups is that they are as isolated as possible from any conceivable scenario (save a nefarious individual out to destroy all your data at any cost), and while you may lose a few days / weeks of data, it's better than losing it all.
+If you're really concerned, it might be worth looking into a database that will do some level of checksumming of data and/or log files.
+Make sure, no matter which snapshotting mechanism you use, you make sure to FLUSH your tables and read lock them so as to maintain data integrity.
+You want your backup data to be on different spindles and power grids than your primary data if possible.
+Is there anything that is nearly as storage efficient as EBS at the MySQL level?
+The app shards very well, so I can use MySQL and not have scaling issues.
+BUT: the magnolia.com story scares the crap out of me: basically flawless block-level backup of a corrupt DB or filesystem.
+You should probably set up regular logical backups, which for mysql probably means setting up a dedicated slave to do mysqldumps from.
+For these two reasons, you probably want a close to real time live backup, in case you do something boneheaded by mistake, and a less frequent cold offsite backup.
+You can probably get away with doin a mysqldump automatically every once in a while, gziping it, and uploading it so S3, downloading copies every so often to your home computer for backup.
+The de-duplication should help keep it affordable by reducing your bandwidth consumption.
+But without extra copies, I suppose you could keep binary logs.
+Additionally a filesystem that does checksums on data would also be helpful for preventing disk level corruption.
+The binary logs for replication have all of the queries run from a certain position.
+If you're using a read only slave you can probably just issue a stop slave and flush, though the read lock won't hurt.
+As far as backing up bad data, any backup system can silently backup corrupt data, that's what regular tests are for.
+If you can get a better rate on storage than EBS from another host (not hard) you can setup that host as a MySQL slave and create your own LVM disk for MySQL allowing you to perform LVM snapshots regularly.
+Amazon EBS has a nice baseline+snapshot backup capability that uses S3.
+Alternatively, you can just stop your read slave completely, shutting down the SQL server, then use rdiff-backup, which is an incremental backup, only backing up changes, to copy your MySQL files as well.
+Those should be reloaded and tested regularly as well.
+This should have a light footprint (in terms of storage cost).
+Check out a cloud backup provider with dedupe -- Asigra is a leader in this space.
+Perhaps you could make a system which keeps a copy of the actual database as well as the binary logs from the last backup for incremental backups.
+Any backup that's always online and talking to live servers, especially one in the same data center, runs the risk of either being compromised by intruders or failure due to some cause that kills the original (fire, flood, etc).
+This is a consumer app, so I will care about storage costs - I don't want to have 5x copies of data lying about.
+Personally I use mysqlhotcopy for MyISAM tables and keep multiple copies.
+See http://lists.mysql.com/replication/1741 for some more info.

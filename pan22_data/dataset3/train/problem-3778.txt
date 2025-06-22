@@ -1,0 +1,17 @@
+Give the man page a good read, as the options go far beyond this.
+Also note that I explicitly added a --serial option, as we need to make sure that device exists to get a console on.
+# virt-builder centos-7 --arch amd64 -o /var/lib/libvirt/images/centos-7.qcow2 --format qcow2 --size 20G --hostname fubar --ssh-inject root:file:~/.ssh/id_rsa.pub
+This creates virtual machine disk images with fairly generic acceptable defaults in a minimal installation.
+It will also inject my public ssh key into root's home directory, as well as set the hostname to fubar.
+It's a highly customizable tool, just as virt-install is.
+What you're describing is either a boot system that is not configured with serial console settings, or a VM that does not have a serial device added to it.
+There will be one big difference, in that we will specify --import alongside --disk so that we point to an existing image rather than make a new one.
+virt-builder will grab signed virtual machine images from a few dedicated repositories and build a disk image file with those contents (disk image format depending on options chosen).
+This will start the "installer" which in this case is just starting the newly provisioned VM and connecting to its serial console.
+Also be sure that you have included a serial device in your virt-install line, as I do not see one added.
+You could use something altogether better suited to this whole task and use virt-builder.
+# virt-install --name vm1 --network bridge=br0 --ram=1024 --vcpus=1 --disk path=/var/lib/libvirt/images/vm1.qcow2 --import --nographics --serial=pty --os-type=linux --os-variant rhel7
+For example, this following command will create a CentOS 7 disk image in qcow2 format, thinly allocated to 20GiB.
+In most cases, you will have to modify your installer boot options (specifically, kernel arguments) to include something along the lines of console=tty0 console=ttyS0,115200.
+We also won't be specifying "size" within --disk, as --import excludes that option.
+This disk image is ready to connect to a VM, which can be done using virt-install, almost identically to the way you have done it in your question.

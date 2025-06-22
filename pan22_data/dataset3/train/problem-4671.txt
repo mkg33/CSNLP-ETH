@@ -1,0 +1,8 @@
+Then the log scanner communicates with the secondary and the secondary then pulls the transaction from the log scanner on the primary to the secondary and processes the log record.
+Once the secondary is up, it will communicate with the primary to request a log scan, it then processes the transactions and communicates with the primary using progress messages to indicate the hardened LSN,  presumably the primary is then adjusting its MinLSN, which in turn means the records prior to MinLSN will get deleted as checkpoints happen and hence VLFs will get truncated releasing space when you do a log backup.
+If the secondary is up and running, when the log block is flushed to disk (either because it is full or a commit), the record gets pushed to the log writer on the primary and to the log scanner (log reader) process on the primary simultaneously.
+When the secondary is not up, then the log writer cant communicate with the secondary so it marks it as NOT SYNCHRONIZED and stores the records in the tran log on the primary.
+Once it is backup and synched at some time you may need to remove the db from the always on group to shrink the log if it is humungous and you dont want it that big.
+If you look at sys.databases.log_reuse_wait_desc column it should show AVAILABILITY_REPLICA which means the primary is hanging on to all the records.
+The primary log writer doesn't push transactions across, it just communicates with the secondary, it only does that to see if it is up so that it knows it doesn't have to mark the replica as NOT SYNCRONIZED.
+But yes short answer is, if your secondary is down you need as big a log file as you need for as long as it is down.

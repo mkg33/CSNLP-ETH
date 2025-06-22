@@ -1,0 +1,38 @@
+Also managing half of the server's configuration with puppet and the other half manually may not make much sense.
+If they want maintain their config locally, then they don't create a symlink.
+You don't want random computer coming online and being able to claim that they are actually the system with all the secret high security stuff.
+There are a couple different approaches to permitting local changes.
+Your configuration and permissions will almost certainly be tied directly to the CN in the certificate.
+you find out that need to change AllowOverride for all apache virtual hosts) will be really easy.
+Puppet works best for many servers with identical configuration.
+It may be better if you can, to have separate admin-editable files which are not managed by puppet which are included from the files that are managed by puppet.
+Properly configured, there's only a small vector for the puppetmaster to be attacked by the clients.
+The traffic is ssl based, so certificate management is important.
+Autosign permits hosts to automatically request a certificate.
+That said, the effects if it did get compromised are large, so take care to lock it down.
+So I add the first item in the list to point at a local file.
+I use that to generate some config files the first time that an application is deployed to a server, but then any edits to that config file won't be overwritten by Puppet.
+Summary: If you can create uniform and structured configuration for the hosts you're going to manage, Puppet is your best friend, but if you'll have to handle each service (host, virtual host, database) specially Puppet won't add much value.
+I should caveat this by saying I've never used Puppet in production, only had a quick play around on a test lab, so it's possible I'm thinking about this the wrong way!
+The other possibility is to use augeas to make line-level changes instead of changing entire files.
+Also don't trust any 'facts' which the client supplies relating to its identity, as these can be altered by the client.
+Afterwards doing changes on all instances at once (e.g.
+It does take a little while to get that sorted, but for the basics (like you need) not long.
+For config files that are created using Puppets File type this can be achieved by setting:
+This relates to multi-tenant environments such as a small hosting company.
+You want to rely on the client's ssl certificate to provide the authentication of who the server is.
+If someone wants to use the puppet version they symlink to the puppet version of a file.
+The fileserver access is based on the certificates.
+Deciding if you should do so or not is up to you though.
+However this does go against the philosophy of Puppet to be an idempotent deploy script.
+Basically if you pass an list to a source, then the puppet try each item in the list.
+If you are really paranoid you can adjust the puppets fileserver settings to create shares that only some systems can access.
+To be honest if you're using things like hiera properly and avoiding huge hostname based if-blocks in your code (which you really should) you'll be fine.
+You'll also be able to store all the configuration information in a single place and have it under version control.
+you write all the configuration of a shared web server provided by your company, then create N instances of that server.
+If you have solid puppet code, it won't screw your files.
+If you are using puppet, you must not enable autosign then.
+Is Puppet (or similar) a suitable technology for taking care of basic but critical mass changes?
+I use it this to support external clients systems.
+In the perfect case you'll be able to handle a hardware failure by throwing away the broken host, replacing it with a new one, setting the same hostname and signing the needed certificate.
+But if you end up with almost no configuration sharing between two hosts, using puppet may be less productive than doing configuration manually.

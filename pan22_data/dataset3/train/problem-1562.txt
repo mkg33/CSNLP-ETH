@@ -1,0 +1,16 @@
+If the IP does change, there are tons of scripts for programmatically changing member computer DNS server IPs, do a search.
+Group Policies are stored in the FQDN\Sysvol\FQDN\Policies folder - if you can't resolve your FQDN from your DNS solution, GPO processing will fail.
+https://www.pdq.com/blog/using-powershell-to-set-static-and-dhcp-ip-addresses-part-1/
+An Active Directory domain needs DNS, it doesn't have to be AD Integrated DNS (installing the DNS server role on the Domain Controller), but it is easier to administer.
+If you can do a .vbs script, then you can look at the following link to figure out how to update the clients:
+The Domain Controller should have a single static IP, this is listed as a best practice and typically all servers, due to their nature of being online to service requests, use static IPs.
+Short answer to "do you need DNS pointing to Domain Controller for GPO to work" is yes.
+Provided the script works, then the computer is already pointing to a DNS server that points to the domain and Group Policy processing should be fine.
+If you do this you can point all your domain computers to the Domain Controller for DNS and be done.
+If you absolutely must set them on each computer, then you should be learning some Powershell scripting to automate.
+You can add that role to the DC (or other server), and then point your clients to use DHCP to update the network settings, including DNS entries to have them all point to internal DNS.
+One of my favorites "DNS is the answer, the question doesn't matter".
+I'm guessing that if you're new to AD and DNS, you may also be new to DHCP, which will dynamically grant IP addresses and associated settings to clients.
+If you get an error along the lines of the 'the domain is not reachable', then you probably still have a DNS issue.
+The best way to test this is to login with an actual domain account.
+Warning: you may get a "successful" join without actually joining thanks to Microsoft's genius decision to incorporate "offline domain join" to reduce the appearance of errors.

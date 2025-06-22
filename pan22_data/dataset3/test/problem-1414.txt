@@ -1,0 +1,30 @@
+The simple setup below will cause the problem on my network:
+Around the 95second mark there is more than 500 TCP packets for a single NFS Write call.
+Not all new RPC calls were slow, but all slowdowns occurred at the exact start of an RPC call.
+7)Run dd or somesuch on the other machine to write 100MB of data to /tmp or similar
+What I found in every delay instance was the exact start of an RPC call.
+Grasping at straws here, but what NICs are you using in these servers?
+The hosts are Dell R610s, storage is an EMC2 Isilon cluster.
+http://blog.serverfault.com/post/broadcom-die-mutha/
+I'm not sure how window size could effect the beginning of the connection so drastically.
+RADV, DHCP6, DNS, reverse DNS) it may be a problem for some services.
+Try appending timeout:3 to your /etc/resolv.conf and then run your fsync tests again.
+Haven't found anything conclusive, but did find something interesting.
+Also, I noticed that 2.6.18 works while 2.6.38 doesn't.
+More often than not I see both VM's freezing for 4-5 seconds.
+However if I move the VMkernel port off the VLAN so it receives untagged packets I don't see the issue.
+I have what looks like the same issue using ESXi4.1U1 and CentOS VM's.
+Here is another guess... Is your IPv6 enabled on EXS host?
+A large Write Call can break up into 300 individual TCP packets, and only the first is delayed, but the rest all fly through.
+Whatever is in charge of TCP and breaking up the large PDU could be what's blocking.
+6)Run ioping on one machine so it's writing to it's virtual disk
+I know that support was added for the VMXnet3 driver during that timeframe.
+1)Install ESXi 4.1U1 on a server or workstation (both exhibited the issue when I tried)
+Also, from the capture it appears that 192.168.250.10 contains all the delay.
+Be really interested to see if anyone else has seen similar.
+I'd start tweaking the NFS options like NFSSVC_MAXBLKSIZE downward rather than the TCP window.
+From my experience if your entire network is not properly configured for IPv6 (i.e.
+I found using a VLAN on the VMkernel port for storage caused the 4000-5000ms 'hangs' for all storage traffic on the VMHost.
+The Stack Overflow sysadmins have had weird networking issues with Broadcom NICs that went away when they switched to Intel NICs:
+3)Add an NFS Datastore (mine is on the same VLAN, i.e the Isilon receives tagged packets)
+192.168.250.2 responds immediately to all requests.

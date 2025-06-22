@@ -1,0 +1,7 @@
+The issue here seems to be that you don't have root access on this host to change the system startup scripts like /etc/rc.local.  The idea of using a @reboot line in your user crontab is worth exploring.  I haven't tried that as a normal user but it should work.
+The other idea is as you say to run something in your user crontab every few minutes, check if your process is running, and restart if not.  For example:
+I guess I could have a cron job run every minute, or 5 minutes, and have it somehow check if the process was already running (not sure how to do that).
+I am assuming you have no access to sudo. These leaves you with just one option, adding a script in crontab that checks if the process is running, and if it not, then start it up. You also gain a kind of availability enhancement (eg. if your process crashes, it is started up again).
+be very careful with this sort of thing - if you make a mistake you will end up starting an extra copy of your program every 5 minutes which could eventually cause a lot of problems.
+Depending on your distribution (you did not mention it), you have a pretty wide area of choice: chkconfig, rcconf, /etc/(rc.d/)rc.local, symlinking startup scripts in init.d\rc.d - but all these require root privilege.  
+Would that be the best way or is there another like .startup script in my home directory that I could put a script in?

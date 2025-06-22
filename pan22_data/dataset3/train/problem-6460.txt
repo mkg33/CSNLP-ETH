@@ -1,0 +1,10 @@
+Now, do I just have the switch at one end put VLAN headers on traffic from the device (in my case, running dSnake) or do I need to have both switches put VLAN headers on the traffic between the dSnake devices?
+You configure the single Ethernet cable between the switches as a "trunk"; that is, all the traffic sent over it is tagged with VLAN headers so the other switch knows which VLAN it goes to.
+Then the other switch can strip off those VLAN headers when it sends those packets out the other ports, so the receiving equipment doesn't have to know that VLAN magic was going on behind the scenes.
+If that's the case, how do I ensure the VLAN's are the same and get routed to the appropriate ports?
+The switches at both ends have multiple devices connected to them, one of which requires its own VLAN to communicate to a device at the other end, which is running the same protocol (dSnake).
+I haven't worked with dSnake devices, but if you can't (or don't want to bother) configuring them to deal with VLAN headers themselves, then you can plug them into their own ports on the managed switches, and make those ports unnumbered (non-VLAN-tagged) ports, assigned to the special dSnake-dedicated VLAN you're setting up.
+I'd hate for you to have delayed or jittery audio because the non-dSNAKE traffic over the trunk line between switches congested the link and didn't allow enough bandwidth for the dSnake audio to get through cleanly.
+You might want to look into whether it requires AVB for low latency, and whether your managed switches and whatnot require that.
+When the switch receives packets on that port, it makes sure to VLAN-tag them with that port's VLAN ID when it sends them over the trunk port, so that the other switch knows which VLAN to put it on.
+I have a topology where I need to have one managed switch in one place and another in another place with one cable joining them.

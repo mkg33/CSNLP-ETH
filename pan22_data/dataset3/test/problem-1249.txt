@@ -1,0 +1,23 @@
+I would also double check that you're not seeing something using DNS as it seems to be the most abused system for these type of attacks.
+Blocking all ICMP is definitely not a no-no, so I would go for that, at least as a temporary fix if some customers/gamers complain that they cannot ping your servers.
+We use Cisco hardware firewalls but we block everything (including ICMP, literally everything) and then only allow specific IPs and ports.
+Rate limiting connections or blocking the sending addresses should help resolve the issue.
+Once you have your outbound traffic under control if it continues to be a problem you can work with your ISP to try to block the abusing traffic.
+Unfortunately you can't do much about the 70mbit that's hitting your firewall but you can try to minimize how much traffic is leaving your network.
+Try shutting down your DNS server to see if it resolves the output issue.
+**Also quick edit, we are on a 100MBPS port and the current firewall is able to block generic  DDoS attacks excess of 600MB without breaking a sweat.
+We are primarily game servers so obviously blocking all incoming ICMP traffic is a no no.
+I recently have been getting hit by an attack that is very small around 70MBPS but causes TONS of upload...All signs point to ICMP.
+It is also not good to block ICMP if you use ping for server monitoring - but I guess you already know that ;-)
+These are spoofed so that the reply floods their target.
+But I would rate limit ICMP if you're finding that it's being abused.
+You can block these ip addresses and netblocks pretty easily.
+You may need help from your provider if volume is too high for your connection.
+I realized in my firewall I have CSF firewall running on CentOS, that I had no limit on my outgoing ICMP rate...Woops.
+This is obviously more effort to ensure things work properly but it also definitely lets me sleep well an night.
+Also these sort of attacks normally appear to come from a single ip or netblock.
+ICMP shouldn't cause amplification unless you allow and respond to request on broadcast addresses.
+DNS amplification is possible and would likely be a DDOS attack on another site.
+Verify that you don't allow DNS Queries from your WAN to hit your local recursive DNS server.
+Sounds like a reflection/amplification attack if you're seeing a lot of traffic going out.
+If not you will need to determine the type of traffic.

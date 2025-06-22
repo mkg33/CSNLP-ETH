@@ -1,0 +1,12 @@
+The reason in my case was a customly set option AuthorizedKeysFile in file /etc/ssh/sshd_config. It was set to another user's home dir (/home/webmaster/.ssh/authorized_keys), so the user I was trying to log in had no access to that file/directory.
+I found that the only real difference was some security context differences on files and directories between those that worked and those that didn't. Get the security with 
+I had this problem on CentOS 7. I am a regular Debian-based Linux user so I was a fish out of the water. I noticed that in some of the servers it worked and in just one it didn't. The audit.log said nothing useful and the secure.log did not give anything either.
+You should see some ssh_home_t and user_home_t attributes. If you don't, use the chcon command to add the missing attributes.
+When using CentOS 7, and I'm confident applies to other Linux OS's using sshd as well. With root access, you can determine more about why authentication may be failing. To do this:
+Also encountered this problem. setroubleshoot did not seem to work in my environment so there were no such log record in /var/log/messages.
+Using these steps I was able to confirm the problem was permissions on the authorized_keys file. By setting chmod to 644 on the authorized keys file of my user, the problem was fixed.
+After changing it and restarting ssh-server (service ssh restart) everything came back to normal. I can log in by my private key now.
+More info in: https://www.linuxquestions.org/questions/linux-security-4/selinux-preventing-ssh-login-with-~-ssh-authorized_keys-4175469538/
+I had the exact same problem on two servers: a Linux running Debian stretch and on a NAS (Synology DS715)
+on the Linux, it had the write/group bit on (drwxrwxr--x), so I had to remove at least the write on group (chmod g-w ~/) and then it worked
+In my case, my suspicion is that the user was created in a non standard way. His home was a directory in /var/lib.

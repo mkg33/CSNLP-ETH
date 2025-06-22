@@ -1,0 +1,7 @@
+Note that this function is only available if you link against wdmsec.lib, which you'll need to add to the "sources" file.
+You'll need to call WdfDeviceInitAssignSDDLString() from within RamDiskEvtDeviceAdd(), after the call to WdfDeviceInitAssignName() and before the call to WdfDeviceCreate().
+Another issue with the Microsoft ramdisk sample driver is that it won't work above 32MB (indeed, it will only work for up to 31.99 MB) because the code doesn't handle overflow of the 16-bit bootSector->bsSectors; beyond 0x0000FFFF total sectors, it should set bootSector->bsSectors to zero and use the 32-bit bootSector->bsHugeSectors instead.
+And you'll probably want to use one of the ACL definition strings in wdmsec.h, though you could write your own if you care to learn its structure.
+Just don't forget that your ramdisk driver isn't the only thing that uses the nonpaged pool.
+Note that after fixing the bootSector->bsHugeSectors issue, you're setting yourself up to run out of nonpaged kernel memory if you're not careful... though in most cases you're safe up to 96MB since in most (modern) cases your WinXP system has 128MB of nonpaged kernel memory available.
+I can't imagine why Microsoft would release the ramdisk sample without setting its permissions, but they did... so it defaults to Admin-only permissions.

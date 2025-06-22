@@ -1,0 +1,7 @@
+Regardless, even if the sole purpose of the code is to count a URL's lines, the code should be revised to take advantage of Java Best practices.
+As a side note, you have tagged your question with performance. The limiting factor here in terms of performance is your network... I cannot suggest a way to make your code above improve the performance of your network without knowing more about your setup ;-)
+Next try-with-resources is your friend. Resources treated that way will not need the finally block at all.
+Your method is listed as throwing an IOException anyway, so why handle the exception inside the method and throw nothing? The calling code will need to handle the IOException anyway. Just throw the exception and be done.... but also throw the MalFormedURLException.
+First up, it's a cheap shot to treat the new URL(...) constructor the way you do. Yes, it throws a MalformedURLException, and yes, that is a subclass of an IOException, but they really should not be lumped together.
+Finally, Java 8 does have some fantastic InputStream-to-Stream methods, use them. Specifically, the BufferedReader.lines() method:
+Here your concept is to read each line from the URL, count it, and throw it away. Your code does nothing with the data? What's the point?

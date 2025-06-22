@@ -1,0 +1,18 @@
+I'm not sure, but if you mean GDI/GDI+ or Win32 API in general, all drawing is done via software.
+The graphics hardware provide optimized functionality for commonly used operations like vertex transformation, rasterization, etc.
+Differences between the APIs include but are not limited to:
+There is a vast amount of differences between graphics APIs but all of them work by sending commands to a graphics driver that tells your hardware what to do.
+If you are interested in learning more, there is a great tutorial here: http://www.arcsynthesis.org/gltut/
+The code that really is executed by calling OpenGL commands, is done by the manufacturer of your hardware.
+Even if the above is not the case, you're still calling into GDI, which does a lot of work to transform your input into internal formats, copy data around to buffers, et cetera.
+In short: no, you're never issuing the rendering hardware commands yourself and yes, different librairies speak to drivers differently (even different OpenGL implementations on the same computer could implement the spec in divergent ways).
+Eventually that data is translated to something D3D could comprehend.
+In other words, on older versions of Windows, making calls into the GDI API can very well result in completely CPU-side software processing and rendering of the primitives you are drawing.
+This usually means the GDI buffers are blit to textures on the CPU (exactly as they would have been in the old days) which is then given to the GPU to render.
+Using OpenGL, for example, you can reduce CPU time spent in graphics and do other stuff.
+Unless you're writing that driver yourself, there's always going to be an API between you and your hardware.
+If you're not drawing with Direct3D or OpenGL, you're most likely using GDI+.
+In other words, you could do a lot better in terms of efficiency of rendering 2D elements by directly accessing D3D or OpenGL.
+Futhermore, if you want to use 3D, the OS level APIs generally provide no facility for that (since they were originally designed to do 2D composition of GUI elements), so you'll do all that 3D geometry transformation on the CPU side in order to transform it to a form you can submit to GDI.
+You won't be utilizing the GPU hardware effectively at all.
+On a modern OS, where the desktop window compositing system is backed by a hardware-accelerated API like OpenGL or D3D, using the OS's drawing API will ultimately involve some calls being made into that underlying hardware-accelerated API.

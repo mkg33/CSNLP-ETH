@@ -1,0 +1,29 @@
+that you need to transform into bytes (serialize) so you can store them.
+If its a list of items then I will have to add a read pass like I have already implied for the Item objects, a counter in the main header and then the entries.
+The key here is that when I want to save something new, unless its a list of items or the like, all I have ever have to do is add a value to the structure some where.
+First you need to decide what data needs to be saved.
+Again, quite a few ways to do this and this might lead more towards C than C++, but it has gotten the job done!
+Which would mean he was at position (14, 96) with a score of 4200 and 100 coins.
+Your game will compromise data structures (hopefully?)
+For instance, this could be the location of the character, his score, and the number of coins.
+Basically, I would suggest you to have a look at cereal library if you may target C++ 11 compilers.
+For completeness sake I want to mention a c++ serialization library, that I personally use and was not mentioned yet: cereal.
+You also need to write code to load this file (use ifstream).
+First the number_of_enemies is read and then each position is read with a simple loop.
+In C++ it is not so tricky since reflection is very limited.
+There are probably a large number of ways to do this, but the simplest that I always found and have used both personally and professionally is to make a structure that contains all of the values I want saved.
+You may also choose between binary and JSON, so it can quite help debugging here.
+On top of that, if security is a concern, you may want to encrypt/decrypt the data you are storing, especially if you are using human-readable formats like JSON.
+I wrote an article about it: https://rubentorresbonet.wordpress.com/2014/08/25/an-overview-of-data-serialization-techniques-in-c/
+A relatively simple format you can use is as follows:
+It's easy to use and has a nice, clean syntax for serializing.
+It also offers multiple types of formats you can save to (XML, Json, Binary (including a portable version with respects endianess)).
+Next, write code to save this to a file (use ofstream).
+In a future, you may load those bytes back and transform them back into your original structure (deserialization).
+The inventoryCount is the number of Item structures that are saved after the main SaveGameData structure in the file so I know how many of those to read after fetching that data.
+Saving enemies can be done by including their position in the file.
+This does have the downside of making different versions of a save file incompatible with each other with out special handling (even if it is just default values for each entry in the main structure).
+Of course, your game will likely be much more complex, and so you will need to save additional data such as the level number and enemy list.
+No need to create intermediate files like with protobuf, so you will save some time there if you want quick results.
+I then just fwrite/fread the data to and from a file using the basic File IO values.
+But overall this makes the system easy to extend just by adding in a new data value and putting a value into it when needed.

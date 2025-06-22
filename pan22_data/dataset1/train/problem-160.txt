@@ -1,0 +1,16 @@
+I am trying to make a website on my computer accessible on the Internet.
+I installed the Apache server and am able to access the site with http://localhost.
+My PC is connected to the Internet with a router (192.168.2.1) and DLink DSL 2500U modem (192.168.1.1). In my modem's settings I tried to forward requests on Port 80 to the address I get from the router (192.168.2.168) but it doesn't work because of the different subnets the devices use. 
+When I enter 192.168.1.2 or 192.168.1.3 in my browser, I can access the site.
+If I disable the network card those adresses still work, and I can't understand why. I also wonder why there are two local adresses. Could you help me to figure out the reasons?
+I tried to port forward to those adresses as well, but I always got the control panel of the DSL modem when entering the public WAN adress. I tried to connect the modem directly to my PC and it didn't work either. Please, help figure out what causes the issue?
+Let's say that your pc has an IP of 192.168.2.168 (we'll call it PC)
+Let's say the pc is connected to the router with the IP of 192.168.2.1 (R1)
+Let's say that the WAN port of the router (.2.1) is connected to the lan port on the DSL modem, which has an ip address of 192.168.1.1.(DSL1)
+Turn off the DHCP on R1. take the cable coming from DSL1 and connect it to one of the lan ports on R1. This will resolve the issue of having two routers. (Because if you have a 1.1 address on DSL1, then it's most likely serving dhcp)
+- you may want to change the ip of R1 to 192.168.1.2 just to make it easily accessible.
+- If your pc has a static ip, make sure to change it (from 2.168 to 1.168)
+If you really want to use two different ip sets, then check and see what ip DSL1 assigns R1. it will be a 192.168.1.* number. Forward port 80 of DSL1 to this .1.* number and then forward port 80 on R1 to 192.168.2.168
+(And the reason that you can see them even when the network card is disconnected is that the site is hosted on the machine you're browsing from.)
+If none of that works, then most likely you DSL1 is serving dhcp to R1 and PC (because DSL1 is plugged in to a lan port of R1 and DHCP is enabled on both)
+Meaning that R1 is getting the ip of 192.168.1.2 and PC is getting 192.168.1.3., which means .3 is really just a localhost and .2 runs direct to R1, which has 80 forwarded to 2.168 and opens the host. 

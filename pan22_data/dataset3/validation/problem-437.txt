@@ -1,0 +1,23 @@
+If all you want is to perform network monitoring, I would recommend some slight re-engineering.
+Then, you build your Snort box, put in an extra network card for monitoring, and plug in the cable from your monitoring port.
+From this point using a system like Snort is relatively painless.
+So while they are installed in-line, they are significantly more unlikely to suffer downtown than a computer.
+Network taps get around the performance and scaling issues by being special purpose hardware devices that mirror the traffic.
+They work by sitting in-line and physically splitting the signals off.
+No matter which method you go with, you'll likely have one or two cables that will be feeding you all the data you want.
+The precise terminology for a mirrored port will be different depending on your vendor.
+Often you will want this to be the uplink, but will depend on exactly what you want to monitor and how your network is laid out.
+There do exist both copper and fibre versions, and they can be somewhat expensive (think $500-$1500USD expected).
+Configure snort to listen on that interface and watch the false positives roll!
+Most equipment also limits the number of things you can mirror as well.
+At the risk of shilling a specific vendor, NetOptics (a manufacturer of network taps) does have a reasonable write-up.
+For example, Cisco calls them Span Sessions, Juniper uses the term analyzer port, but in all cases what you do is have your network equipment (typically a switch or router) send a copy of some set of traffic to another port.
+The biggest advantage to using a mirrored port is that it's cheap.
+You are better off monitoring the traffic passively using either mirrored ports or network taps.
+The exact capabilities will depend on the hardware, but at minimum you should expect to be able to monitor all traffic going in or out of a specific port.
+Most Cisco equipment is limited to two span sessions, and FYI installing an FSWM in a 6500 chassis consumes a span session.
+This is a capability that already exists in pretty much all "enterprise" class hardware and simply requires that it be turned on.
+Otherwise it only adds complexity to your network and adds an additional point of failure.
+Since this requires the network gear perform more stuff, it can impose additional load, so depending on how close to capacity you are it could be a problem.
+Putting a device inline, such as what you're suggesting, is really only useful when you want to be able to take action on the activity.
+Having a limit of two is not normally a problem, but since it is a fairly low number it's definitely something to keep in mind.

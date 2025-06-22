@@ -1,0 +1,11 @@
+The solution is to remove the access privileges to the production systems from the developer's accounts.
+I previously worked for a company that had this problem with one developer. He was fired, but we also implemented a table that had the LoginName and AllowedMachine (Application Server) via a Login Trigger. This resolved our problems. Or maybe it was due to the firing.
+Now sys.dm_exec_sessions DMV and Program_name() will show you what you passed in your connection string in Application Name parameter:
+Debugging is arranged on a case by case basis with a copy of the production data in a staging environment as a preferred solution or a temporary account with limited privileges if needed.
+You can use a server logon trigger to make custom logon validations and reject them whenever you see fit. You will see this trigger listed below "Server Objects" and inside "Triggers" if you are using SSMS.
+In Connect to Database Object dialog choose Options, open  Additional Connection Parameters and choose any name for Application Name like this:
+I think there is no reliable solution for your problem since Application Name is modifiable parameter that cam be changed by any user.
+Keep in mind that this code is executed before the session is created, so system views that rely on the session id (SPID) won't contain the currently checked login until the triggers ends without rollback or high enough failure.
+Deployment is performed by a sysadmin; devs produce a package they give to someone with proper privileges and devs never see the configs used on production systems.
+The ROLLBACK inside the trigger will reject the connection (there's an implicit transaction wrapping the call to the trigger on the logon event).
+Be careful when implementing logon triggers, if not coded properly you will be rejecting logins that should be able to login (including your own!). Make sure to test on test/dev environments first.

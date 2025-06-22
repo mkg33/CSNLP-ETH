@@ -1,0 +1,13 @@
+It's the short options -l, -o, -g, -D, etc. which instead of spelling them out separately can be collapsed which is standard behaviour for most Unix tools, i.e. rm -rf is the same as rm -r -f.
+The only thing I have not been able to understand is the meaning of the period "." in the middle of the parameters.
+While the other answers here give some insight into the rsync options, those options may not necessarily apply to your particular situation which may be unique depending on the options you are sending to rsync. 
+You can see from the command found in first example above that for your case the trailing / would be the source path of the rsync files to be copied. 
+I did a little investigation and found the meaning for each letter in the sequence of parameters "-logDtprze.iLsf"
+you can then use the authorized_keys options (see the AUTHORIZED_KEYS FILE FORMAT entry in man SSHD) to add a forced command "command=myscript" to the key being used to logon on the remote server and make that command be a shell script "myscript" which has a couple of lines in it like:
+where /home/test/100m.txt is a large enough file to take long enough to have time to view the process while it is transferring.
+There's at least a couple of ways to do that. One way is to rsync backup of a file big enough to take say 20 seconds to transfer, to give a chance to inspect running processes on the remote machine during the transfer, e.g., a command such as: 
+you have stumbled apon a fairly complex interaction between several parts of an RSYNC over SSH session. 
+To see the actual command being used by rsync over ssh, have a separate terminal window logged on to the remote machine and do
+this then gives insight into where all those rsync command options came from, in my case "logDtpr" from doing "rsync -a", YMMV.
+The real key to this apparently strange set of rsync options is to capture the actual command being sent in your particular case.
+Another way to find the command being sent is to use the environment variable SSH_ORIGINAL_COMMAND, from man SSH:

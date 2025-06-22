@@ -1,0 +1,15 @@
+Build the set without_letters with all the letters already in search.
+When you reach the end of search in every path you followed you would be in a node representing a matching word, you just have to put all these matching words together and you are done.
+The next question is whether you envision this function being run once for a puzzle, or repeatedly every time a new letter is guessed.
+One thing to think about is what is being run how many times.
+If you want to run this just once per puzzle, you could just iterate through letters, but that likely wouldn't be optimal.
+No matter what, you're performing the len(w) != len(search) check every time you run this function.
+Instead, you can just separate the words by length up front; create a dictionary where keys are integers and the values are lists of words of that length.
+Then your code should just be implementing a special search over that trie.
+Obviously, this has a huge upfront cost, building that trie is not cheap in time nor memory, so this only makes sense if you are doing multiple searches over the same list.
+If the latter, @200_success 's answer will be recreating regexes for each letter that are only slightly different from the previous letter, when you only need to check the new letter.
+To do so I would simply build a trie from WORD_LIST.
+And then search the trie with the following rules:
+If you are trying to speed up the search your main objective should be to remove the cycle for w in WORD_LIST:.
+You could also try a regex to create new_word_list and see whether it's faster.
+So suppose you have a function get_positions that returns a list that is empty if the puzzle is finished, otherwise the first entry is the last letter guessed, and the second entry is the positions that letter appeared (if the letter didn't appear, then the list is empty).

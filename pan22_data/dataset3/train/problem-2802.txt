@@ -1,0 +1,19 @@
+While you may not be writing to both servers at the same time, the fact that you are replicating in a non-syncronous way means that you have to have into account issues like pending writes being sent to the slave or pending writes being applied to it locally.
+There is also the ability for the standby master to increment it's indices by 2 instead of 1 to avoid collisions with the primary master, but I feel this is more of a hack than a solution.
+The auto_increment_increment may solve insert collisions between nodes, but not updates between different nodes or inserts of the same queries in the same node twice due to binary log mismatches.
+I praise your methods (even if the final product is not right): test, test and test if you want something that fits your requirements.
+PXC uses Galera Cluster (by Codership), which is synchronous replication with InnoDB.
+Use auto_increment_increment and auto_increment_offset
+An automatic failover is not easy or trivial with this conditions, and even less, the switch-back.
+I followed this post explaining how to implement 'crash resilient' replication, but after implementing the suggested my.cnf changes and rerunning the user simulation, I ended up with the same broken replication.
+http://dev.mysql.com/doc/refman/5.6/en/replication-options-master.html#sysvar_auto_increment_increment
+I am running Percona MySQL 5.5.39 on two masters with keepalived monitoring a VIP which will failover to the standby master if the primary master goes dark.
+There is no right answer, but there are many wrong ones.
+If you feel it's a hack, try PXC (Percona XtraDB Cluster).
+Basically I run siege to emulate user load, for a duration of five minutes, within that time duration I shutdown the primary master, and after about 10 seconds for keepalived to detect the outtage, the VIP is switched the standby master, at which time everything is working as expected.
+Your architecture is not right for asynchronous replication.
+I strongly recommend against runing a Master-Master standard replication in a fully automated system, as you will run into precisely the issue you are describing.
+While testing the fault tolerance of my setup in the lab I noticed that I am getting duplicate key entries on both masters.
+It is during the swapping of the VIP that I think the duplicate entry issue is occurring.
+Then after a minute or so, while siege is still running, I power on the primary master, and when online, it assumes the VIP.
+Is there any better way to avoid primary key collisions in an HA environment?

@@ -1,0 +1,17 @@
+We did this on purpose to allow us to randomize the packet ids each build as a means to deter outsiders from being able to reverse engineer the protocol as easily.
+You typically wouldn't be using the numeric value anyway in the code and would be using some defined enumeration key or defined constant variable in its place for long-term maintence ease.
+We generally keep the numeric representation entirely agnostic of the exchange of data they represent.
+It's very descriptive and helps when debugging something that isn't working as you expected.
+When you keep using this structure, you will soon encounter the problem that not every server message has an equivalent client message and vice versa.
+As others have eluded, I really don't see any purpose in having any coupling between their numeric representations.
+But generally I've usually followed the notion that the underlining numeric representation has no relation between one another.
+And there will be messages to which the other party can respond to with many different messages which would all warrant an own message type.
+For that reason I would recommend you to decouple client-sided message type IDs and server-sided message type IDs.
+Even if you only used an 8-bit int for message IDs, you'd still have 256 available.
+There are times where it makes sense to use some level of coupling between the server and client side exchange of data, particularly in a conversation.
+While reading over the code source, the use of the names makes it easy to understand the context of its use without having to follow the exchange from start to finish.
+Trying to save IDs by using 1 ID for 2 different messages based on the direction of travel is just extra confusion for no gain.
+There will be messages which will only be sent by one party, because there is no reason for a reaction from the other side.
+It naturally doesn't prevent reverse engineering, but does slow their process tremendously :P.
+When your client->server packet #5 has a different structure than your server->client packet #5, you are already separating them.
+A 5S packet (the i-want-to-join-a-lobby-request) has an entirely different meaning than a 5C packet (this-is-the-lobby-you-are-in-message).

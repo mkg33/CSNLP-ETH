@@ -1,0 +1,10 @@
+A lot of systems default to settings that bend the isolation part, because guaranteeing complete isolation often requires serialisation which can significantly impact the performance of concurrent operations.
+This will be rather expensive and once you are talking about that sort of money you might as well at least consider commercial database servers too.
+One final point not relating to any particular database: make sure you have the right options selected for full ACID behaviour.
+If you are looking at these options because they are free, then consider postgres which does offer ACID transactions, even including transactions that make schema changes.
+Referential consistency support is not usually in their key feature sets either.
+As far as I know there are no "nosql" databases that promise ACID transactions, so for banking purposes they are a non starter.
+Whatever DBMS you chose make sure that you understand its options for isolation/serialisation (like "SET TRANSACTION ISOLATION LEVEL" and related directives in MSSQL) and how they interact with each other.
+Please consider your support SLAs though: if this is a system that needs high availability (and the words "realtime" and "banking" suggest it is) then I recommend having a support contract in case something beyond your understanding or access to fix goes wrong.
+mySQL claims ACID transactions when using innodb tables, but I believe there are some caveats around that which may be show stoppers (any mix of other table types, including in-memory tables which are sometimes used for intermediate results in complex logic, will break ACID compliance for instance).
+While MongoDB's lack of transaction support was certainly true at the time of this question, in an upcoming release in June 2018, MongoDB will support multi-document transactions:  https://www.mongodb.com/transactions

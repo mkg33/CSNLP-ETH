@@ -1,0 +1,7 @@
+The typedef struct node { .... } node_t and typedef struct node { ... } node_t; are not needed in "queue.h".  
+In realizing this code, I have found it to be the same speed or a bit slower.  This approach is most useful in reducing memory when there are large count of queues, perhaps many empty ones, in a program run. 
+typedef struct myque *myque_t; is sufficient for "queue.h".  The complete typedefs below in "queue.c".
+Overflow possible.  q->size++; may overflow uint8_t.  Try calling int queuePush(q, "", 1) 256 times.
+With an empty queue, .tail == NULL.  With an N > 0 item queue, the last node points to the first, even if it is itself.   The end of the list is determined by node->next == q->tail->next rather than NULL compare.
+Better to use size_t for sizes and void * for user data.  To be clear: design the interface (function signatures) in ways that make most sense for the user.  Code the structure members as you see fit.  Perhaps a size for this queue can only be 255, still use size_t dataLen and test that for a valid range.  int queuePush() has a nice way to return error indications.
+Although conceptually the .head and .tail works wells, code can get by with only .tail and have .tail->next point to the "head" node.  

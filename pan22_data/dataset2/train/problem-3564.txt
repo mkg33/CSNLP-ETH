@@ -1,0 +1,13 @@
+I checked it by running nmap against the wan IP from a computer outside our network (my computer at home)...it just hung and never displayed anything.
+First of all, what is your policy for each chain? You can check with iptables -L The Policy is the default action that will be performed if no rule matches.
+Just a word of caution though : a two-liner iptables rules is asking for trouble. I suggest you find out more about how to configure by looking at sample configurations found online. You can start looking at this article.
+Depending on your iptables configuration, the first line may not be necessary, and the second line is definitely wrong (p.s is the second line eth0 or eth1).
+How can I set up iptables to block any connections made to my server from the outside, while not blocking anything initiated from the inside?  I have tried doing:
+Traffic from my lan gets forwarded through the proxy transparently to the internet via the following rules.  Note that traffic from the squid server itself is also routed through the proxy/cache, and this is on purpose:
+I think maybe I have the answer.  This seems to be working for me, and if anyone knows more checks to do than I did, please let me know.
+I think I just needed to be sure to match the state of the connection.  I added the following rules:
+I have a setup where my incoming internet connection feeds into a squid proxy/caching server, and from there into my local wireless router.
+This tells iptables to forward all packets coming in from eth1 (WAN) to eth0 (LAN) - that way no connections can be made from eth1 (WAN) to your server.
+I also attempted to connect to ports that are listening on the squid server, and all connection attempts failed.  Everything still works as desired from within the network, however.
+The first line essentially allows your iptables to accept all incoming requests and connections from your internal network.
+But this blocks everything.  I have also tried reversing the order of those commands in case I got that part wrong, but that didn't help.  I guess I don't fully understand everything about iptables.

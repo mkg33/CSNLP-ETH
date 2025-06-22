@@ -1,0 +1,8 @@
+What happens (or doesn't happen) is that the base code doesn't get executed. Debuggin it I step into the base.f(to) and the cursor just stand on function name. If I press step next control returns to the child.
+I don't have access to an Unity setup at this time so this is untested, I also don't know what happens with an IEnumerator that never returns a single value (or if that is even legal).
+So you're not running your code in yield return base.f(to), you're just creating an object and returning it.
+CoRoutines are also special and magic pieces of Unity, they iterate over what is returned and if given some special type of value it does something else special.
+Coroutine inherits from YieldInstruction, and yielding on one will cause your coroutine to pause until the other coroutine completes.
+So what you're returning from your CoRoutine (the override) is an IEnumerator, Unity doesn't know what to do with the coroutine so it doesn't do anything special and asks for the next value. Which runs the bit after your yield return and... stops, because there's nothing more to be done.
+What is happening is that the compiler creates (at compile time) a class that packages all the state of the function you wrote. And then substitutes the function with a stub that creates an instance of the class and returns it.
+I want to have a CoRoutine declared as virtual in parent class and then overridden in child classes. 

@@ -1,0 +1,25 @@
+I haven't tried to resume from hibernate with a file based swap, though.
+In my opinion during typical usage having too much swap is completely unnecessary.
+Linux kernel luckily supports file based swapping, so you can configure a lot of swap on-demand without need for repartitioning, should the need for swap be there for any reason.
+It's ok if it transfers a not-so-commonly used process to swap, but if it needs to swap for the active processes to survive, then you're in a very deep trouble.
+That is an over-simplistic view of how the swap file operates.
+On the other hand, if you occasionally do something very memory consuming, such as rendering very complex 3D scenes, having some swap around is a good idea.
+But it's hard to imagine a scenario where having 2 GB of RAM and 2 GB of swap running near its limits would be a good idea -- in that case most of the time will be spent waiting for OS to swap pages in and out from and to the disk and not any real work will be done.
+If you're never thrashing, it's not a problem, and if you are thrashing, you have an issue that'd probably be even more serious if you weren't running a page file at all.
+The various swap size rules ("thou shalt have as much swap as you have RAM", "thou shalt have twice the swap as you have RAM") made more sense when we didn't have this insane amounts of RAM we today have.
+For Linux users, when you install Linux without swap, the installer will warn you that you didn't have swap mount.
+If you feel things are being paged to disk too often, you can look at tweaking your swappiness to be less aggressive.
+However: allocating 2GB out of a 500GB drive is cheaper (a half-dozen cents per gigabyte) than buying more RAM.
+And on the server side you don't want your server to never, ever, swap.
+That said, you can operate without a swap file, as long as you're 100% confident that you'll never exceed your RAM's capacity, at any point in time.
+No I just don't need it because my RAM is just big enough, right?
+The difference between "big enough" and "too much" is when the architecture no longer supports it.
+It's true that we have more RAM now, and it's cheap.
+The swap file is not simply a buffer to run into when you run out of physical RAM.
+FWIK the hibernation may need the same size swap to persist memory when power off, but generally, if you got a big RAM, you even don't need swap at all, isn't it?
+Note that since the 2.6 kernel you can also use a swap file, so you could avoid swap altogether until you have some usage analysis to justify it.
+Unless you have a compelling disk space constraint, I'd recommend sticking with a decent size swap file.
+IMO, better to keep the page file and also keep tabs on how often it's being used by the system.
+It's less critical for servers than desktops, since you'll never want to hibernate a server.
+Many say that, if you have a 2GB RAM, you should configure a 2GB or more swap.
+If your typical usage pattern equals to typical desktop usage - web browsing, listening to music, watching movies etc, 2 GB RAM should be more than enough.

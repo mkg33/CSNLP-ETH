@@ -1,0 +1,26 @@
+If you have a lot of values far between eachother, using a set or unordered_set is probably a better choice.
+They don't seem to me to make much sense for const variables.
+My goals were to write the best C++ I could, remove any magic numbers and allow the solution to scale for different sets of numbers.
+It might be worth considering wrapping those bits and pieces into a coherent class for dealing with a value in a range, and let the outside world create and use objects of that class.
+In fact, they only make minimal sense for object-like macros--they were originally used for function-like macros as kind of a warning that you should be cautious about passing an argument with side-effects, because they might happen more than once.
+I coded my own solution for the problem statement.
+  - Did I miss anything in C++14 or C++17 that might improve the code?
+You can then remove the getFrequencyCounts function and the whole thing gets a little more efficient.
+Personally I would use std::size_t or a well specified integer type like std::uint32_t rather than unsigned, which depends on the implementation.
+In range based for loops where the type is unambiguous I am not really a fan of auto.
+Also you should consider const correctness so rather use const int or const auto if you prefere that.
+For example, instead of defining FREQUENCYSIZE by itself, I'd probably do something like this:
+If you go for modern C++ the static variables should be marked as constexpr instead of plain old const.
+This works well when you have a set of values in a dense range like [80,85].
+One idea for simplification is to count frequencies directly instead of putting all the values in an array that you only use for counting frequencies.
+I recently reviewed a question here on Code Review.
+I'd prefer to have a function on the general order of:
+Note that you have a truncation warning here as MINLEGALVALUE is of type int:
+That let's us simplify the rest of the code a bit, something on this general order:
+  - Are the variable and function names good or can they be improved?
+I'd at least consider separating validating data from reading the data.
+That way there is probably less memory consumed and we count automatically.
+Technically, this doesn't meet the requirements as-is (e.g., it doesn't print out a prompt to tell the user to enter data), but I think it gives at least some idea of a direction things could go.
+I'd typically try to keep the magic numbers to a minimum.
+As was said in the other question, it should be beneficial to create an array of length MAXLEGALVALUE - MINLEGALVALUE and directly index into that array.
+We have a number of different things related to reading and working with numbers in a specified range.

@@ -1,0 +1,9 @@
+I am working on a rendering problem where I want to render as many raw triangles to the screen as I can with either OpenGL or DirectX with the absolute fastest performance possible.
+Yes, it is possible. When you configure your input layout (in D3D10+) or vertex attributes (OpenGL), simply only include the position. Don't configure any additional data such as normal or texture coordinates.
+This will be slightly faster, because your vertex shader doesn't need to transform or handle the extra data at all. You also won't need to copy as much data from the CPU to the GPU when you define the buffers. Will it be appreciably faster? I'd guess no, but if you're pushing as much data as possible, then maybe. You'd have to profile it and see.
+p.s.  Yes, I realize that omitting normals will leave you with the problem of how to shade the triangle during the shader stage, but I could at least render a solid color to the screen (no shading).  At this point, all I'm wondering about is how much data I can eliminate from the typical pipeline to increase the pipeline throughput to the absolute maximum.
+Then, when you fill your vertex buffers, you only need to fill them with position data. Perform your fixed coloring in the fragment shader.
+I wondered about omitting vertex normals completely and only transforming vertex positions during the vertex shader stage.
+2)  Is it actually going to increase performance --or-- is the "bare metal" of the GPU designed in such a way that trying to omit normals won't gain any more throughput?
+The performance difference will depend a lot on the hardware you're using, the only way to be sure is to test it.
+Technically you don't need a vertex buffer or index buffer at all - you can generate the position in the vertex shader in DX10/11, based on the integer index of the vertex.

@@ -1,0 +1,9 @@
+@MaxVernon is right, you can't access the mirrored database. Mirroring is a High Availability option, which means that it helps keep a database available in case of a problem. This is done by means of delivering transactions to the mirrored machine.
+It provides cluster like technology but per database, not per machine. You can fail over from the principle db (main) to the mirror in case of any troubles, and still have the database available, with little (or no) data loss.
+The mirrored database is kept in Restoring mode exactly for SQL Server to be able to apply transactions coming from the main server as soon as possible.
+Now, if you need to scale out your db, or just read data from it from another place than production, you might need/use a different technology which allows the child db to stay online:
+log shipping (same or different machine, allows child db to be available as read-only)
+replication (same or different machine, allows child db as read-write)
+But this is a longer story to what technology to chose.
+You appear to be attempting to access the database on the mirror machine.  You can only access it from the Principal.  
+If the Principal has a problem or shuts down or whatever, the mirror will become the Principal and you then use that machine to access the database.

@@ -1,0 +1,16 @@
+So these Windows send back packets through the originating router. This is probably not a "good" behaviour, but for my need it is very nice.
+If you can setup your ADSL modem/router to disable its internal port whenever the internet connection goes down, then you have another option.  Just set a secondary gateway in the IP configuration of the hosts.  They'll try to use the primary, but with that interface down (the lights on the port on the switch for the ADSL router turn off whenever the ADSL connection goes down) the host will be unable to contact the gateway and will go to the next one (the LTE modem/router).
+The other option, again depending on your hardware, is if you have separated modems and routers (instead of all-in-one units).  If the modems can be separated from the router, then you can plug both modems into one router; this will allow for you to do route tracking and fail-over in the router (making the solution 100% on network again).  But this tends to require that you have an "above-average" router available.
+Since the gateways (inside port) and the host(s) are all on the same subnet, then the use of NATs like @KamilJ pointed out is very easy.  And it has the benefit of being 100% in the network.
+The answer to How to tell Windows 2012 to send packets back to the originating router, à la Windows 2003? is very simple: you can't.
+This all depends on your routers.  The ability to do this is uncommon in consumer@home routers, but is more common in business class (and the norm in enterprise grade) routers.
+Logically if your windows 2012 default router is the ADSL one it doesn't matter from where the original request came from, the response will always go to the default router in all cases.
+@KamilJ is correct in pointing out that this is best served at the network layer.  What you're looking for is a redundancy with fail-over of the default gateway to an active ISP.
+If you want the traffic response go back from where it came you can always source NAT the original traffic with the internal IP address of the router (this option is not always available). The drawback is that you'll lost the source info
+The Windows's network stack is simplier than Linux's one, and rare needs as the one described here are currently not addressed.
+The default gateway is 192.168.0.1 (ADSL) so the backup router is never used for outgoing connections.
+This case is hard because your traffic will be routed to the ADSL provider and lost there. Adding another default route will not solve the problem
+This is an easy case: just add another default route in the ADSL router going through the 4G router. When the Wan interface is down the first default route is disabled and the traffic will be redirected to the 4G
+With Windows 2012, the packets are sent back only through the default gateway, wich is the logical thing to do.
+With an old Windows 2003 and an old Windows XP, the incoming connections are ok from whatever router: when I connect through ADSL or 4G I can interact with these old Windows computers.
+I have one ADSL connection and one 4G backup connection, each with its own modem/router on the same 192.168.0.0/24 subnet: 192.168.0.1 (ADSL) and 192.168.0.2 (4G)

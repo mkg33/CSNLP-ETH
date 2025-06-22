@@ -1,0 +1,24 @@
+In a way, you can argue that using a callback is a very specialised mini-interface, and that is fine.
+Generally I try and avoid bidirectional links, but if I must have them, I make absolutely sure that there is one method to make them and one to break them, so that you never get inconsistencies.
+I wouldn't exactly call it a best practice, but it's a common pattern to have entities that are contained by something to have a pointer to their parent.
+Another option in your case, I would probably figure out why the monster class needs to know about the world class and you'll most likely find that there's something in the world class that can be broken out into a class of its own that it makes sense for the monster class to know about.
+Takes some work, takes passing a billion parameters around, but those are parameters you'd need to pass around anyway.
+And if you decide you don't want a singleton anymore, it's usually pretty simple to get rid of it.
+That being said, it might be worth your while to use the interface pattern to give your monsters a limited subset of functionality they can call on the world.
+You could pass in an extra parameter to every single function - and make no mistake, that's where this leads.
+But unless you can think of that situation right now, you probably won't.
+In my opinion, the ideal solution is for the higher level classes to be smart enough to manage the lower level classes.
+Don't use a callback function to hide what function you're calling.
+A trivial refactoring is to make it so that instead of having the monster keeping a link to the world, you pass the world in by reference to the monster methods that need it.
+Better still is to only pass in an interface for the bits of the world that the monster strictly needs, meaning the monster doesn't come to rely on the world's concrete implementation.
+For example, the world knowing to determine if a collision between a monster and a knight occurred without either knowing about the other is better too me than the monster asking the world if it collided with a knight.
+You're just masking it with another layer of abstraction.
+This corresponds to the Interface Segregation Principle and the Dependency Inversion Principle, but doesn't start to introduce the excess abstraction you can sometimes get with events, signals+slots, etc.
+If you were to put in a callback function, and that callback function will have one and only one function assigned to it, then you're not really breaking the coupling at all.
+At least this way you're not writing large amounts of unnecessary code.
+You have to decide whether you can more meaningfully achieve your goals via one collection of methods in an interface object or several assorted ones in different callbacks.
+You're not gaining anything (other than maybe compilation time), but you're losing clarity.
+Doing it this way requires a bit of discipline to clean things up when it gets messy (that's "when", not "if") but there's no way you can prevent code from getting messy - either you have the spaghetti problem, or the thousands-layers-of-abstraction problem.
+I try to avoid having contained objects call their container because I find it leads to confusion, it becomes too easy to justify, it'll become overused and it creates dependencies that can't be managed.
+Often you can avoid the bidirectional link entirely by passing in data as it is necessary.
+The purpose is to make a game that is fun, and everything that gets in my way is going to result in a game that is less fun.

@@ -1,0 +1,10 @@
+Since we removed ojdbc14 manually, this problem hasn't come up again in the past 24 hours.
+I assume ojdbc14 is no longer officially supported, so it could cause all sorts of funny problems.
+What's puzzling to us is that starting from this week (after we started using connection pools [we use dbcp]), we occassionally see sessions in the
+And during all this time, CPU usage on the DB is high.
+In other words, normally, if a session is in this event, it should be "INACTIVE" rather than "ACTIVE".
+suggests the Oracle DBMS is waiting for the client to send new commands to the DBMS, and therefore any time spent in this event should be client-side time and not consume DB server CPUs.
+If the DB session is waiting for the client to send a message, what can it be "ACTIVE" and consuming CPU cycles for?
+Following the recent app server upgrade, we inadvertently included both ojdbc14 and ojdbc6 jars into our deployment, and evidently, the jvm picked up ojdbc14 for its Oracle DB driver.
+Our next step is to find out how ojdbc14 sneaked into the deployment in the first place.
+event and showing "ACTIVE" at the same time for extended periods of times.

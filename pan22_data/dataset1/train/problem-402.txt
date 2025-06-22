@@ -1,0 +1,10 @@
+I'm told that I can't make the root of a domain (example.com) a CNAME - I have to specify an IP.
+Given that you can't use an IP address to point at your Elastic Load Balancer, what's the best thing to do?
+example.com - A record to elastic IP of first server- redirects to www.example.com
+www.example.com CNAME to hostname of load balancer
+If the first server is out of action, the redirect will fail. 
+Looks like Amazon have now implemented a solution for this.
+"Amazon Route 53 has integrated with Amazon EC2’s Elastic Load Balancing in order to easily let you map your root domain, or “zone apex” (e.g., mydomain.com, without the ‘www’), directly to your Load Balancer."
+http://aws.typepad.com/aws/2011/05/elastic-load-balancing-ipv6-zone-apex-support-additional-security.html
+what you could do is Round Robin DNS your root record by just adding multiple A records for the example.com. domain and replicate the redirection code accross all your servers. this way its not so reliant on the first server.
+if your redirect is a 301, virtually all users will cache the 301 so likely next time they view the site if they went via example.com there browser should (if they dont clear cache) auto redirect to www.example.com without even checking the servers and then go straight to your load balancer

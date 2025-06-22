@@ -1,0 +1,19 @@
+If not then enter nslookup, then enter "server ROUTER_IP" at the prompt and try to do a lookup on google.com.
+I changed the Local domain name setting on the router to local
+The problem seems to be that if you try to address a local host name, the router automatically appends ".belkin" assuming belkin is what you have set as your local domain name.
+You need to make each client use the router for their DNS lookups, which they likely will out the box assuming you're also using DHCP.
+I would opt to setup a DNS server myself, but if you do not have that option this is a quick and dirty alternative.
+Install and configure dns server within the local network, register it on all hosts, enter the internal dns server first in the list of dns servers on the Belkin router.
+As xaccrocheur said above, most modern OSs will access most things by appending .local
+I have done a sort of work-around which works well with most of my machines.
+Oh dont forget if you plan on doing this, add yourself to the security permissions on the hosts file so you can write to the file.
+If it's doing this then I'd think you could resolve those local, .belkin, names.
+That is, in DHCP they'll give out their own IP as the DNS server and then they'll turn around and hit the real DNS servers.
+In general the router won't act as a DNS server but they'll often act as a DNS proxy.
+Check ipconfig /all and see if the Default Gateway and DHCP Server have the same IP.
+Now try to ping hostname and hostname2, you should see the following
+Changing it to something else will not solve the problem and you can't leave this blank.
+Your router should be able to do this as long as you have its DNS serving abilities turned on so that it processed DNS requests for the your LAN for that domain (it'll forward requests for other domains to your usual DNS servers such that your web browsing isn't broken on the clients).
+While I do not suggest doing this, it would give you the desired result (being able to ping local hostnames without setting up a separate DNS server)
+If that works then there's probably a setting in the router to have it give it's own IP as the DNS server that's not checked.
+Also do not forget to copy this hosts file to all of the other machines on your network.

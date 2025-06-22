@@ -1,0 +1,11 @@
+However, when I try to connect to the machine from itself via the fully qualified domain (either in another service, or just via url in IE), the Windows Login prompt tries to force the use of the computer as the domain, and not the proper domain for logging in.
+I can tell you, based on some experience setting up SSO, that IE will automatically pass a kerberos ticket for logon only if the site and client are on the intranet together, or if the site is in the trusted zone.
+Trying to specify the domain with domain\username or username@domain.com fails.
+I have a web application set up in IIS 7 configured with Windows Authentication.
+Two things we found that work for allowing the FQDN on the intranet is providing the web server with a certificate and using SSL, or adding it to the Trusted Zone.
+I can authenticate to the machine via it's fully qualified url from any other machine and it uses the proper Domain.
+http://blogs.msdn.com/b/friis/archive/2009/12/31/things-to-check-when-kerberos-authentication-fails-using-iis-ie.aspx
+If IE sees http://site.company.com/webservice it will assume that the site is on the internet and will not pass credentials for logon.
+What can I do to make it use the proper login domain?
+There's some useful information at this link regarding IIS, IE, and Kerberos.
+I should note that viewing the web application via localhost on the machine works, but using the full site.company.com/webservice style url does not work on the local machine, because the login domain is wrong.

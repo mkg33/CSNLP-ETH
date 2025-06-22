@@ -1,0 +1,27 @@
+When we used intefaces in the same subnet for the intersitial network we got a route to the interstitial network "for free" (because an interface with a netmask smaller than /32 implies a route to the attached network via that interface).
+x.x.11.0/24 -> R1 - x.x.12.1 .... x.x.12.2 - R2 <- x.x.13.0/24
+Using crazy disjoint IP addresses for the interstitial network means we need to add routes to make the interstitial network work in addition to the routes to allow traffic to flow between the "ends".
+There is no advantage to using a /24 to connect two routers.
+You could always do something like the network below:
+In this network, you'd need the routing table entries "5.4.3.2/32 is reachable via interface e1" AND "1.1.13.1/24 is reachable via 5.4.3.2" in Router A.
+So, the x.x.12.0/24 subnet lies between the two routers.
+Using a /24 as an interconnect is fairly uncommon.
+In fact you will never see that outside of possibly very large ISPs and backbone providers in a well designed system.
+Router's job is to connect different networks, so you cannot connect them with same network address as the opposite network cause it will fail.
+No matter how you address that interstitial network, you'll need routing table entries in both routers to get traffic to flow from one of the "end" networks all the way thru to the other.
+You will see routers with loopback interfaces all out of a /24, but if there's any IP at all on an inter-router link (true point-to-point interfaces don't always need one at all), it would commonly be a /30 or a /29.
+Let's not get hung-up on the phrase "static routes".
+Consider the below... 3 subnets and two routers...
+That said, the routers NEED to have an interface on the same subnet to allow them to talk to each other and pass the forwarded packets back and forth.
+How those entries get there, either statically assigned or via a dynamic routing protocol, is immaterial for this example.
+To save more hosts in your network you can subnet the network between your routers into /30 xxx.xxx.12.1 - xxx.xxx.xxx.12.2 255.255.255.252 so you can save the other hosts to add and 4th network.
+I still have to put a static route from the .11.0/24 network to the .13.0/24 network via the interface x.x.12.1.
+You're conflating the need for routing table entries on both routers to reach the "end" networks with the addressing of the "interstitial" network.
+But why is it good to have the routers linked on the same subnet, couldn't you just allocate any address on each side of the link?
+My question is, what is the advantage of having the routers linked by the 12.0/24 subnet?
+You know that Router A will need a routing table entry that says "1.1.13.0/24 is reachable via 1.1.12.2".
+I am new to networking and have a very basic question on subnets and routers..
+Likewise, you know that Router B will need a routing table entry that says "1.1.11.0/24 is reachable via 1.1.12.1".
+at most you would see is a /29 if you have a fail-over setup.
+I'm getting from your comments to Zypher's answer that you're unclear why the "interstitial" network between the Router A's e1 interface and Router B's e0 interface need to be in same subnet.
+Likewise, you'd need the entries "9.8.7.6/32 is reachable via interface e0" AND "1.1.11.0/24 is reachable via 9.8.7.6" in Router B.

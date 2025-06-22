@@ -1,0 +1,8 @@
+Install Wireshark and watch all packets related to name resolution. Set the display filter to dns or nbns or udp.port=5355.
+Repeat that server and machine2 commands for each IP address in your list.  One of them should fail with:
+The timeout will be in the DNS resolution.  It may be because you have more than one DNS server specified and one of them is not responding.
+(EDIT: In windows the file you're looking for is at C:\Windows\System32\drivers\etc\hosts by default.)
+If your setup doesn't have reverse DNS configured for the 1.168.192.in-addr.arpa (or at least an entry for 192.168.1.1 in your hosts file, it's going to time out trying to reach a DNS server to complete the lookup, and it can't start printing the response packets until the lookup gets resolved (either by a correct DNS response in which case it prints the returned name, or by a timeout in which case it just prints the IP address).
+Then it's just a case of finding out a) why that DNS server is not working, and b) if you should even be using it at all.
+It could be that your DNS server is not responding to the queries, or that the other machines have NBNS and/or LLMNR disabled or firewalled. (I don't know the exact order, but DNS always seems to be tried first.)
+The cause turned out to be that once return packets start coming, certain versions of ping by default attempt to do a reverse DNS lookup of the IP address the response is coming from:

@@ -1,0 +1,12 @@
+Originally I assumed it was some bad code -- everything is running PHP scripts -- but after awhile we saw hung processes resulting from a variety of different requests, many of them simple, but always showing POST as the last type of request handled.
+27-31   7629    1/34/107074 W   0.96    4480    0   0.0 0.39    1394.10 xxx.xxx.xxx.xxx www.mysite.com  POST xxxxx HTTP/1.1
+This combination lead to a death-spiraling experience: a seemingly innocent page was causing Apache to recursively call itself and Apache became totally unresponsive.
+If apache still manages to hang then problem with POST method. If this works then problem with large number of scripts may be due to common included file in all scripts.
+Probably that war story does not help you at all, so I point you to couple of other debugging techniques:
+The process itself is always doing something, usually consuming significant CPU resources until we kill it.
+We are having Apache processes get hung up after seeing a POST request, and wondering what the best path might be to troubleshooting this. When I look at the extended server status for the requests that hang, I see entries like:
+I don't expect that the community would instantly be able to solve this without seeing the actual code running; what I am really looking for is the best path to debug this as I am out of ideas. Some things that do come to mind:
+Create a simple php page which takes just one post variable and prints it on screen. Block all clients so that only you can access server. Restart web server. Now use your simple script and send only one post variable. 
+53-31   28616   9/13/74232  W   0.71    7174    0   7.6 0.01    961.47  xxx.xxx.xxx.xxx www.mysite.com  POST xxxxx HTTP/1.1
+Don't know what's going on in your case, but I've spotted some broken rewrite rules with Apachetop. For example, in one case a rewrite rule was pointing to a local, but non-existing page, and did so by performing a redirect (R in RewriteRule line). Unfortunately also the Apache's Error Document was misconfigured -- ErrorDocument 404 http://thesiteimtalkingabout.com/404.html and that 404 page was missing, too. 
+One very useful utility is apachetop. It's like top, but is keeping its eye on your Apache's access log in real time. You can sort the results by many different criterias -- amount of requests, amount of kilobytes transferred and so on.

@@ -1,0 +1,10 @@
+If it is in fact code 3 (port unreachable) then there's something flaky somewhere.
+Determine which by trying to do a traceroute to google.com traceroute google.com and see if that also fails.
+there's likely a firewall between you and your ISP blocking ICMP communication, or your ISP is having issues.
+I would almost think it's a routing loop but that would typically generate a "TTL expired in transit" response.
+If that has nothing, contact your hosting provider or ISP and ask them if they are blocking ICMP outbound.
+There's a misconfiguration somewhere, probably on the server or the router, as ICMP doesn't use ports but your ping response indicates "port unreachable".
+You could see this if you don't have a default gateway set.
+You can run a packet capture on the server and ping again and look at the ICMP code returned with the response to determine what's happening.
+If so, it's likely either PING or ICMP is blocked outgoing.
+Then check your software firewall - if you have iptables try iptables -L and paste the output, although Ubuntu might come with a different firewall by default.

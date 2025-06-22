@@ -1,0 +1,28 @@
+You can obviously add further bells and whistles but this does a simpe basic dump.
+They are also pretty useful as the debugging tool as they record exactly who changed what and when.
+The data is backed up by the normal netbackup backup to tape.
+How often you backup your data is up to you however.
+You might be running some special configuration dictated by the requirements of your applications.
+I use a script that uses mysqldump to extract the data/schema to a file for each database.
+There is a lot more beside that, particularly with a database.
+The advantage of this method is that you can restore from one of the twice daily backup and then apply the log files up until the last 15 minutes at the latest.
+We do a full back up once a day and then have a per-customer policy of weeding out old backups, generally we keep 4 last daily backups (to survive the weekend ;), 4 last sundays and 4 last first sundays in a month.
+After that one or two dumps a year are going to the archive to be kept forever.
+For MySQL I use automysqlbackup (http://sourceforge.net/projects/automysqlbackup/), since my backup software (Backup Exec) don't support snapshots on Linux systems.
+You might have a large number of patches on, which you'll need to also put on your recovery environment to get it to the same level.
+If you can afford to lose a days worth of data then backup once a day.
+Table descriptions, views, stored procs, you name it.
+Our standard setup is a HA cluster with two databases one replicating to the other which is read-only.
+Theoretically all you need is one full backup and all the replication logs to be able to do a point in time restore, but more frequent full backups will speed up the restore.
+There is also the RDBMS application and config to consider.
+It works OK, but I'm going to monitor this thread for suggestions :)
+I wouldn't advocate a CSV dump as a backup solution; all it will give you is the raw data.
+We do twice daily backups and also run log backups every 10-15 minutes.
+You might even have a specific set of OS settings required for your database to run optimally.
+One neat trick with backup is to use innodb tables and --single-transaction paramater for mysql dump, that way the backup won't block the database while it runs.
+The whole purpose of backing up is to be able to restore.
+This way you are minimising the amount of data that you can lose.
+All of these will also need to be got back, and unless you have a backup solution that's capable of doing them, it's further delays in your recovery time, not to mention no guarantee that you'll get it back the same as it was.
+We also keep the replication logs for however long we can afford to spare the diskspace.
+For database backups (and backups in general) I would always prefer to use "real" backup software that can handle all of these.
+If you don't have these as well you won't be able to get it back successfully.

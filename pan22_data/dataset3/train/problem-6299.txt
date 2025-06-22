@@ -1,0 +1,16 @@
+http://registrar.verisign-grs.com/whois/iframe/help.html?ppath=www.verisigninc.com/products-and-services/domain-name-services/whois&
+When you request WHOIS info for google.com, it searches for "google.com" in all records, not anchoring the pattern to the end as you expect.
+You're asking for all record types, rather than just domain records.
+By default, when you query Verisign from the domain example.com, Whois performs a very broad search of the string "example.com" in several different objects including the domain name, the registrar name and the nameservers.
+The short answer to your question, assuming you are using the debian/ubuntu whois library, is to use
+My guess is that dnsstuff and godaddy just have probably more tuned heuristics.
+Do a whois query with an equal sign at beginning just before domain name.
+When you peform a WHOIS query, the WHOIS tool first sends a WHOIS query to Verisign (hostname whois.crsnic.net) and extract the referral from the the response.
+And it depends on the WHOIS client and which servers it is configured to use.
+Instead of google.com it sends to Verisign the full query "domain google.com".
+You have to explicitly pass the -h flag because Whois attempts to guess the hostname to query from the query, but it will fail because it won't recognize the query "domain google.com" as a valid domain.
+See Why there's junk in your whois results, and how you can get rid of it for more info.
+Use a whois host that only returns 'domain" results
+What you see is just pure vanity nameservers created at the registry, as a useless prank (no technical consequences).
+You can refine the query by specifying a keyword, as described in the Verisign documentation.
+I did some research a couple years ago about setting up an internal WHOIS service (I work at a university, so we have lots of little fiefdoms and lots of networks) and from what I could tell, there was very little consistent structure in the data formats, so clients have to employ lots of heuristics to figure out referrals and such.

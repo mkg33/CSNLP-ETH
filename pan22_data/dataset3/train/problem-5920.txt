@@ -1,0 +1,19 @@
+One of the external NTP servers (the primary one--currently) we're using as source seems to not be responding to NTP calls.
+As a result, our core router which is pretty much our main internal NTP source is 2 minutes late.
+I'm planning to fix the external router issue by making the external NTP source be the one currently working.
+Obviously you cannot schedule a small downtime, do you?
+If NTP has only two primary sources and they're both out by a significant amount, NTP has no way of knowing which one to trust.
+You need at least 3 (preferably 4-6) time sources for NTP's algorithm to accurately converge on the correct time.
+This document disappeared from view when Oracle bought Sun, but you can still find it on the Wayback Machine.
+Specially since these days, we're heavily relying on certificate-based authentication.
+The single biggest help to me in understanding this was the diagram on page 9 of the Sun blueprint "Using NTP to Control and Synchronize System Clocks, part III: NTP Monitoring and Troubleshooting".
+looking out to two external NTP servers (in which the primary one is not responding to NTP calls)
+I would push for a downtime in order to restart the ntp service on all affected servers.
+I'm wondering, how much will a 2 minute change affect my users and services?
+There are also plenty of hits around the web if you search for the title.
+Synching with Core router 1 (primary), core router 2 (secondary)
+Synching with Core router 1 (primary), working external router (secondary)
+Unfortunately, on our core router (Cisco 6509), the NTP functionality hasn't switched to the secondary NTP external server as it was expected.
+(I was going to make this a comment on vortaq7's answer, but i think it deserves repeating in its own right, since many people make this mistake.)
+You may want to consider looking at other NTP server(s) than your core cisco equipment: serious NTP traffic gives a high cpu load on the cisco equipment which could result in network problems.
+If that is not possible, then you have to wait for some time.

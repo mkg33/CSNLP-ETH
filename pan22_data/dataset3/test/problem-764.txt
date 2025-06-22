@@ -1,0 +1,12 @@
+For example, do you really need a separate FROZEN state, or would it be enough to just treat any cold and wet items as frozen?
+That way, the state change methods themselves can take care of any additional changes.
+Representing your states as bitmask like you write, you can just translate your descriptions of the constraints into code:
+You could wrap that into an makeStateConsistent() that you can call before testing the state bits to ensure that the state makes sense.
+However, one limitation of this approach is that it can't account for the order of state changes.
+For example, if you want to have a different outcome for hot items that become wet than for wet items that become hot, you can't do it like this: all the makeStateConsistent() method sees is a hot and wet object, with no information about how it got to be that way.
+Also, in some cases you may be able to simplify your code by eliminating unnecessary states.
+This makes using them for stuff like apply_cold() very easy and you can obviously build in your state conditions like dry and wet.
+For example, the heatItem() method might look something like this:
+Instead, what you could do is make the item state private (at least conceptually) and manipulate it through a set of methods like coolItem(), heatItem(), wetItem(), dryItem() and so on.
+Of course, you may still want to also have a makeStateConsistent() method as a backup, just in case you have a bug in your state change methods.
+When I need to use flags I usually do something along these lines.

@@ -1,0 +1,13 @@
+Anyone have experience with a setup like this in EC2, that can hopefully point out something obvious I'm missing?
+So, my next plan was to add the new IP to the existing internal NIC, which results in this config:
+The generated iptables rules appear sane, however, I do not have connectivity to the 10.0.81.0/24 subnet (either pinging or nmap)
+All of the  instances are within a VPC setup, with the following subnets:
+Have you tried adding another private IP to it through the AWS console (right click the instance and click manage network interfaces, or something like that)?
+Heres a table: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI
+My initial plan was to just add another NIC in the 10.0.81.0/24 subnet, but that seems to be impossible.
+I'm currently working on setting up a QA environment on EC2 along side our production environment.
+I have a EC2 instance running as a gateway machine that is already has 2 NICs, which seems to be the limit (One NIC for the external IP, the other for internal).
+I then set up shorewall for the new address, and restarted it:
+I dont think you can just alias an Elastic Network Interface (ENI) into another subnet.
+And then insuring the virtual NIC is in the correct security groups.
+Also, different instances have limits on the number of interfaces they can have.

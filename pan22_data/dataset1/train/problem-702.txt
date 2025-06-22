@@ -1,0 +1,16 @@
+Well, my first Impression is "Gah! So many classes! Boilerplatomania!".
+The fact of the matter is that C++ is multi-paradigm, and you are encouraged to choose the best way to do things, which is rarely straight-up fully object-oriented. Object-obsession is an illness too often seen in recovering Java-programmers and the like.
+Your CardProperties.hpp works, but it creates an Independent static copy for each TU including it. You might not actually want that.
+I'm thoroughly confused by the order you give the suits, that's very "original". Also, why don't you re-use two of the 4 suits for red/black?
+Aside from that, prefer std::string_view over std::string if you have the choice.
+Also, using a std::array instead of a native array makes things needlessly complicated.
+You might to fix your parameter-passing: Anything up to a few pointers worth, unless copying is expensive, is best passed by value unless it's an out-parameter.
+If you slightly change your representation, your Card could be a single byte big, instead of at least two. Admittedly, that means it must be intimately conversant with details of Suit and Rank, but that might still be worthwhile. The consuming code would never know, as you don't hardcode the size.
+Consider deriving all your custom exceptions from a single custom exception for ease of use. And consider deriving that from std::runtime_exception instead, both for semantics and for it's proper handling of the message-buffer (see the notes).
+By the way, "The Joker can only be red or black.\n" is an interesting response to trying to create a red two. Aside from the fact that ending the exceptions message with a newline is rarely expected.
+Deck::dealCard() gets a reference to a card, removes the Card from ist vector thus turning it into a dangling reference, and then returns that reference. Are you sure you did want to use references at all there?
+Don't bother using move-semantics for trivially copyable types. It's a complete waste of effort. Also, you can construct a std::vector directly from an iterator-range, that's clearer, more concise and more efficient than going the long way around.
+I'm sure there's much more, but slogging through all that code and wishing for at least a little bit less verbosity is tiring.
+I've implemented a card game called Macau. This is a follow-up from this topic, where I tried to get the game's design right before actually implementing it. 
+Even if the game is presented on that topic, I will give a brief explanation as it follows. The game consists of a standard-deck that contains 52 cards. At the very beginning, every player receives 5 cards from the deck. (The first player that runs out of cards is the winner). Then, a card is put on the top of the pile. A player can put on the pile any card that is compatible with the top one. Two cards are compatible if they have the same suit or the same rank. There also exist several special cards:
+Please note that, even if I mentioned 7 and the Joker as special cards in that topic, in the current state of the game they are not implemented. More precisely, the Jokers are disabled and the 7 is considered a normal card.

@@ -1,0 +1,13 @@
+Generally you never want a user to be able to create objects that will be owned by a different (and especially a privileged) user.
+Granting a user the ability to alter another user's schema gives that user the ability to SELECT, INSERT, UPDATE and DELETE rows in any table owned by the owner of that schema.
+I want to give Create , alter and drop permission to user A on a schema1 of a database.
+No, if you dont specify schema which he can alter, and just add him GRANT CREATE TABLE TO User A, wont be able to CREATE a table anywhere.
+The safe way to do this is to make A owner of that Schema.
+You need to specify schema he can alter in order to make CREATE TABLE permission active.
+EG, just granting CREATE TABLE, ALTER, and INSERT creates a security hole:
+After all, adding/removing tables to schema is considered schema modification and any time you do any kind of DDL, sql server requires Sch-M lock which is essentially Schema modification
+I guess this question has been already asked, and what i have found is to Grant Alter to the schema and also grant create table to the User A:
+This is called "Ownership Chaining" and it's what makes Views and Stored Procedures really simple ways to control security, as a user who has permissions on a View or Stored Procedure does not need to be granted permissions on the underlying Table, so long as the View/Proc is has the same owner as the Table.
+If this is right then , will the userA will be able to create table on other schemas too?
+GRANT ALTER,  DELETE, EXECUTE, INSERT,  SELECT, UPDATE ON SCHEMA::schema1 TO user A;
+However in this scenario you can easily create a security hole with Ownership Chains.

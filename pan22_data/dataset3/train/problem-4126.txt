@@ -1,0 +1,45 @@
+The protocols were adjusted to be able to deal with prefixes of different sizes and it became possible to route (both internally and externally) prefixes like a /30 or a /21 or a /15 etc etc.
+This is the reason classfull addressing is a thing from the past.
+These specific subnet masks are still very popular, especially /24, because they are the easiest on us humans.
+A prefix in the routing table might by coincidence (or because of history) match the classful structure, but protocols will no longer assume they can deduce the prefix length (subnet mask) from the first part of the address.
+What people mean when they use the term is the netmask size of 24, 16, and 8 respectively.
+The first octet of a C class was by definition between 192 and 223.
+With VLSM your subnets don't all have to be the same size anymore.
+They don't mean class semantics are being applied.
+This was very inefficient for networks that didn't fit these sizes.
+You need one subnet with 128 addresses and another subnet with 16 addresses: too bad.
+If you look at old obsolete routing protocols you can of course still see the assumptions they made based on address class, but that was 20 years ago...
+A Class C network cannot be a subset of a Class B network, because the top bits cannot match both.
+In Classful routing, the netmask is implied by the top bits of the address, and is not stored in routing tables; the class is a property of each address, not just of the routing topology.
+With classful addressing, the netmask is a fixed value based on the address.
+You (and a lot of other people) are still hung up on the words "Class C", "Class B", and "Class A".
+These days all routing on the internet is done without classes.
+But they do not make sense anymore, and saying 10.11.12.0/24 is a class C is simply wrong.
+It's true that IPs might handle a C-class network, but this is not true for all ISPs.
+For these masks, the end of the subnet part of the address lines up with a dot in the (dotted-decimal) IP address.
+With CIDR routing, they can use a netmask that allows all of their computers to be in the same subnet.
+A network that needed 4096 addresses would either get sixteen Class C delegations (which would be bad for the global routing table because each of them would have to be routed separately: the class size was built into the protocol) or they would get one Class B delegation (which would waste a lot of addresses).
+Address delegation really used to happen in three sizes: class A, B and C. Class A delegations would be given from a certain address range, class B delegations from a different range etc.
+As many answers already explain, classes are a thing of the past because they do not allow subnet masks other then /8, /16 and /24.
+Originally each subnet within your classful network had to be the same size.
+The netmask for each range is automatically 24 bits.
+So CIDR is basically extending VLSM to inter-domain routing.
+The way you could internally subdivide those addresses was also limited.
+You can assign a different number of addresses for each subnet, depending on your needs.
+In your example, you cannot "merge" three class C ranges to have 700 hosts in one LAN.
+[1] 10.0.0.1/24 is an invalid configuration in a classful system.
+Addresses are distributed completely classless by the RIRs (Regional Internet Registries, the organisations responsible for delegating addresses to ISPs and businesses with their own independent addresses).
+Furthermore, in the previous era, classfull addressing was used in all subnets (even for home subnets, or corporate subnets), where nowadays only classless addressing is used (if not NAT).
+Thus it is visually clear if two IP addresses are in the same subnet or not, no calculations required.
+This is true because nothing in the modern internet does classful addressing[1].
+IPv4 addresses classes really don't exist anymore, and have been deprecated in 1993.
+As you correctly described, classfull addressing is not efficient compared to classless addressing, since a lot of IP addresses remain wasted inside the subnets with classfull addressing.
+Those constructs no longer exist; and haven't for decades.
+Variable Length Subnet Masking (VLSM) is the internal-network equivalent of CIDR.
+Organisations that needed 2048 addresses could get a /21: exactly what they would need.
+CIDR fixed this by abolishing the rules whereby the address dictates the mask.
+All prefix lengths are explicitly communicated: classless.
+Saying that an ISP is in charge of a Class C network is similarly obsolete.
+Your hypothetical organization with 3 Class C networks would have to pay attention to which computers got addresses in which of the 3 networks.
+This is why the class A, B and C terms stick around, they still align with the most common subnet masks.
+Because the different classes used different address ranges you could determine the class by looking at the first part of an address.

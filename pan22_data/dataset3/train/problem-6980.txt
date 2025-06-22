@@ -1,0 +1,15 @@
+Because of this, I had to move all my other required modules to be before the YubiKey authentication.
+password-auth is commented out because I use SSH key authentication rather than password authentication.
+If it fails, then PAM will ignore it and move on to any further auth rules.
+Originally I had the following in my auth section:
+Hence, I moved auth       required     pam_sepermit.so up to be on the first line.
+Failing to retrieve the user info would also manifest in the secure logs or the journal with message such as:
+Troubleshooting Authentication, Password Change and Access Control
+I ran into a similar issue to @DionSteel in that I am using YubiKey for 2-factor authentication for my LDAP users (but not for local users).
+Finally I un-commented the password-auth line so that local users could authenticate with passwords in the case that YubiKey authentication fails (which it will for my local users).
+Before debugging authentication, please make sure the user information is resolvable with getent passwd $user or id $user.
+This means that if it and any previously listed auth modules are successful, the user will immediately be authenticated and no further auth modules will be checked.
+I had to restructure things to allow local users to also SSH in to the machine.
+In order for authentication to be successful, the user information must be accurately provided first.
+First, I made my YubiKey authentication sufficient rather than required.
+I'm running CentOS 7, so the file I was dealing with is /etc/pam.d/sshd.

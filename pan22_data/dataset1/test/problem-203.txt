@@ -1,0 +1,13 @@
+On AWS Elastic Beanstalk, on the "64bit Amazon Linux 2017.09 v2.6.0 running Python 3.6" platform, there seems to be a problem with the mod_wsgi configuration. I see this in /etc/httpd/conf.d/wsgi.conf:
+If I change the WSGIDaemonProcess directive to the following (thus removing the colon-separated paths):
+This appears to be the same bug outlined in https://github.com/GrahamDumpleton/mod_wsgi/issues/92 which was fixed in mod_wsgi 4.4.15. However, the AMI comes pre-installed w/ mod24_wsgi-python36.x86_64==3.5-1.24.amzn1. 
+If I try to fix the WSGIDaemonProcess using an .ebextensions script, it's unfixed by one of the baked-in deploy hooks, and anyway, the defaults as baked appear to be broken by default. How in the world do I fix this?
+I encountered the same problem today ("64bit Amazon Linux 2017.09 v2.6.0 running Python 3.6", mod_wsgi errors).
+I have a workaround, though I'm not sure it is a proper or the most direct solution.
+First I did the following manually to check it works, then I scripted it so it wouldn't be destroyed on a later deploy.
+Installing mod_wsgi will need apxs, so go to the instance and find packages:
+In my case there were 3. The oldest worked on the ssh console, so I added to .ebextensions/01_packages.config:
+Then in ssh I followed this sequence to test the manually built version od mod_wsgi (I couldn't get any yum package to work - though it can probably be done).
+Then look in var/log/httpd/error_log and hopefully you'll see:
+I reloaded the Python app page and it's working (well it had a different error but mod_wsgi is working).
+After a few iterations, I settled on this in the .ebextensions/... file:

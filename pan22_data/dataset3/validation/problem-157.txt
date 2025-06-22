@@ -1,0 +1,13 @@
+The thread will be put to sleep if the queue is empty and be awoken once a new directory is added to the queue.
+This will shrink your run loop to a few lines and allow you to rely on the well-tested thread-management in java.util.concurrent.
+And you may as well initialize it in its declaration instead of the constructor.
+The service should create the thread itself instead of creating it in getService() to make it self-contained.
+I figured I could definitely use some review on my use of threading, singletons and general Java skills.
+Use a blocking queue, so you don't have to poll and sleep.
+This allows another implementation to use a thread pool for parallel directory creation and easier testing.
+In answering a question on SO, I provided this example.
+It's one thing to maintain a static instance to implement a singleton, but that object should interact with its state using normal instance variables.
+The intention was to provide a thread safe service that queues requests to make directories.
+Executors.newSingleThreadExecutor().submit(new MkDirService());
+getService() is not thread-safe and could allow two or more instances to be created.
+Also to create even one thread it is recommended to use concurrent package:

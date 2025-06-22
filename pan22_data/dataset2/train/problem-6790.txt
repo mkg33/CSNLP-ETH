@@ -1,0 +1,6 @@
+I contacted support but no word yet, and as a temporary workaround I reverted to the previous version (via sudo apt-get install passenger-enterprise=1:5.1.8-2~trusty1 and a nginx restart) which works seamlessly.
+What ultimately worked was to update nginx-extras to the latest version which did not rely on any 'union_station_' type of config. 
+(I was seeing version 5.1.8 in the log, even though the upgrade took me to 5.1.11 ... this is the clue that the old Passenger is still hanging around)
+The effect on the server was surprising: the apps would start (and nginx restart command returned an ok) but the users would receive a "403 Forbidden". Looking at the log it appeared that my user was apparently unable to access the app root folder (/var/www/../public) despite correct (and unchanged! permissions). 
+As this is the top hit on Google for this question, and if you don't have the time to go through the Passenger bug report, the solution is to STOP your running nginx/apache service, and then START it. i.e. don't simply do a reload (which probably happened when you upgraded Apache), but make sure the old service is completely gone, then start it:
+Any insight much appreciated, when I look at the doc ust_router_address is supposed to be set by passenger automatically.

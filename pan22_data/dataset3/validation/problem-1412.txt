@@ -1,0 +1,11 @@
+in IPv4 you'd usually configure 192.168.1.0/24 as the prefix.
+You probably already know the above stuff, but it's worth repeating because it's part of why your setup doesn't work.
+(Maybe the Thomson doesn't have a DHCPv6-PD server at all?
+Router stacking is not a big problem in IPv6; it could work if the Thomson was able to provide a prefix to the Archer – but it looks like that doesn't happen.
+The Archer expects to be talking to your ISP on the WAN side, so it configures its own IP address via SLAAC and tries to obtain a prefix for your LAN using DHCPv6-PD.
+Maybe it does, but the prefix it obtained from ISP is too small to sub-delegate any further?)
+The main difference with IPv6, though, is that usually these prefixes are global and obtained from the ISP (often delegated via DHCPv6-PD).
+(As for "radvd", it's the name of popular SLAAC server software for Linux.)
+But it doesn't have the expected result because you connected the WAN port to another router – the Thomson modem isn't just a transparent modem, it's also a router and it already did the exact same thing as the Archer is trying to do.
+"Site prefix" is simply the network address for your LAN – e.g.
+In short, you're trying to stack two routers, each having its own LAN – Archer thinks it's talking directly to the ISP, but instead it's talking to the Thomson.

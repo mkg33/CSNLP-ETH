@@ -1,0 +1,14 @@
+/home, /etc and /var.  I run a debian box so I also do a nightly 'dpkg --get-selections >/etc/debian.pkgs' so I can track what's installed.
+Tape gets collected the next morning and goes away (off site) for 2 weeks before it's put back in rotation.
+The backup send a report with a good subject on success or failure.  I check that I have received the status messages at least a couple times a week.
+Dirvish uses rsync and the --link-dest option to hard-link identical files for each backup together.  The backup is fast, it doesn't waste space, and restoring is as simple as copying files.
+What tools help you to make this as easy as possible and what is your preferred approach to the matter?
+Depends on the server, but I almost always want /etc, /root, and /var/lib/dpkg.  I then add any data directories.
+For the very crucial things, I have a live spare running. As in: a second server that sits there and idles (and is my toy basicly) but has all the files/services of the first one. When the first one goes down, this one can take over in a flash, all that needs to be done is change a DNS record.
+I have finally set up a RAID6 server together with rsnapshot which is using rsync and hardlinks between different backups, so this saves place but makes restore a simple copy operation.
+/etc/ gets backed up, /home/ and any other directory that will ensure me getting another one up and running asap when it goes down.
+I run incremental every night, rotating the last 14 snaphots, accumulate nightly into to a set of every second weeks snapshots, and then quaterly sets and yearly sets.
+Especially the last question has been troubling me. Compressing backups into tarballs works okay, but causes a serious performance issue when I suddenly need to restore a backup. On the other hand, when not compressing the backups and syncing them to another server, there is a serious risk of creating inconsistent user permissions.
+For offline backup I have just bought a SAS LTO4 tape streamer which I just have received but not installed yet, but I plan then store some of the rsnapshot backups from time to time and store the tapes at my office.
+There have been several questions related to providing backups, but most of them were either too specific, intended for home usage or Windows-based.
+I do a full backup quarterly and nightly incrementals.  This is mostly to cut down on storage costs at S3.

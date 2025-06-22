@@ -1,0 +1,7 @@
+I´ve a Synology DS213 J Nas System. I´m trying to sync folders from a ubuntu 12.04 webserver to the nas without password prompt.
+Next, you need to be able to login via ssh on the Webserver. For this, you should have another user on the webserver, let's call him 'userWeb'. Now you need to copy the public key of 'userNAS' from your NAS to the 'authorized_keys' of user 'userWeb' on your webserver. E.g., to '/home/userWeb/.ssh/authorized_keys'.
+This step probably worked fine for you, I assume you used root user for it. However, it's not clear from your question how have you executed '$ mkdir /root/.ssh', as '$' shows that you are not root.
+Unfortunately If I´m trying an rsync I´m asked for the empty paraphrase and the password for the ubuntu machine.
+Finally, rsync should have an option telling it, that it should login as 'userWeb' on the webserver. Something like '-e ssh userWeb@yourwebserver.com:/remote/dir'
+Now you should be able to run 'ssh userWeb@yourwebserver.com' as 'userNAS' on your NAS and login to webserver as user 'userWeb'. However, if your user on the webserver is also root, ssh will not allow it to log in. Check the separate option in ssh configuration to enable root logins via ssh. However, this is not recommended.
+You should have a user that runs rsync command on NAS. Let's call him 'userNAS'. The 'ssh-keygen' should be run by this user. Then you need a public key of this user, /home/userNAS/.ssh/id_rsa.pub. 

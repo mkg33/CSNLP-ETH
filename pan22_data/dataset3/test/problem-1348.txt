@@ -1,0 +1,17 @@
+(Note: I also posted this on Stackoverflow, where the poster asked the same question)
+This will also give you a level of fault-tolerance if your parsing system breaks or needs to be taken offline for a window of time.
+However, Dovecot comes with the fantastic doveadm utility which allows you to query mailboxes and read from them.
+You don't need to enable the POP/IMAP modules of Dovecot.
+That way, you can decide how you want to process each email.
+With doveadm, you can automatically select new emails, emails from last week, read the whole email, just part of it, delete old messages, and so forth.
+First possibility: You can set a custom mailbox_command in Postfix.
+For each email Postfix receives, it will call the mailbox_command defined in the configuration file and provide the email as plain text on stdin.
+You will have to parse the headers of the email yourself though.
+There is a program called procmail (an LDA) that will do almost exactly what you're looking for.
+There is no reason to use mailboxes when you are not going to store e-mail in them, it's a huge overhead.
+I would poll the mailboxes using POP3/IMAP, download the messages and process them (rather than try to integrate something into the Postfix stack).
+Instead of creating individual mailboxes, I would create one catchall address and then via /etc/aliases send that to a script in which I would do all my parsing and archiving.
+It's a powerful utility, I use it in various scripts to purge old emails or provide learn-as-spam folders for users.
+Additional applications like procmail can also act as a mailbox_command and help you with processing the incoming mails.
+and then all e-mail would be sent directly to myscript.pl and you can handle it in there.
+You can take a look at the Postfix documentation for more of an idea on how to make this work.

@@ -1,0 +1,9 @@
+You could run Perfmon and capture bytes sent/received/sec; you'd have to capture to a file to aggregate the data, but it will show you your peaks. It will include all traffic, not just SQL. 
+If you don't have access to the switch, you can use a network analysis tool like Microsoft Netmon or Wireshark. There are probably easier tools to just measure data throughput, but since I am comfortable with Wireshark I usally use it. I would set up a capture on the relevant network interface using this capture filter on the SQL Server:
+I have 2 servers : a database server (SQL Server 2008, called server A) and an application server (called server B) which send SQL queries to the first one.
+You would want to enable netflow on the switchports the two servers are connected to and analyze that flow.
+I try to estimate the minimum bandwidth required between the 2 servers, so that my application doesn't suffer from performance issues.
+Replace ip adress of server B's actual ip adress, change the port if it is not a default instance, uncheck 'promiscuous mode' and start the capture, and then view the size captured in Statistics->Summary. 
+I'd like to have, for example : for day xx/xx/xxxx, there was approximately 1.5 GB of data send from A to B and 750 MB from B to A.
+I agree with the other posters that it might not be a good idea to split the servers, depending on the architecture of the application. A slight increase in response time between the servers could degrade the performance a lot, especially if there are many sequential SQL queries. That is also something you can observe in your Wireshark capture (but might be easier in SQL Profiler). 
+They are actually in the same LAN, but we planned to separate them in 2 different geographical sites.

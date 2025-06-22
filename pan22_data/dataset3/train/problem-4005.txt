@@ -1,0 +1,19 @@
+But if only 1) is the case, you can fake the link-layer address, and reverse map it onto the right one in the other direction as described here:
+If 1+2 are both true, you need indeed something like IP NAT, DHCP, ..
+2) It might actually be even smarter, and know which IP address should belong to which link layer address (cause it knows DHCP and inspects it)
+As the Pi will be providing WiFi to a printer with only ethernet, I'd like it to be robust to rough handling, so my next step will be to configure the SD card as read only.
+4addr as described in other answers is certainly the best way when supported by the adapter/driver, but not all of them does.
+auto-discovery, bonjour) will fail through the NAT.
+Here's an Arch Linux version of a Raspbian implementation.
+To support DHCP for the device connected to the ethernet port, create a dhcrelay (from the DHCP package) service.
+https://wiki.debian.org/BridgeNetworkConnections#Bridging_with_a_wireless_NIC
+The alternative is using an ARP Proxy (parprouted) as described in https://wiki.debian.org/BridgeNetworkConnectionsProxyArp.
+I tried very hard to adapt the original approach from the Debian Wiki mentioned here to netctl using ExecUpPost and ExecDownPre without success.
+NAT might work for some things, but getting proper communication both ways on the lan will become problematic (ex.
+1) It might only want to see packets coming from you, with your known link layer address (and hence not of bridged packets)
+Everything worked at the command line, but not within the profile.
+I liked the Proxy Arp approach, but the original question specified Arch Linux.
+connecting a printer or accessing other IoT devices on the other side of the NAT).
+This approach worked for me on a Raspberry Pi Model B+ w/ ArchLinuxArm sporting a USB WiFi adapter with the RT5370 chipset.
+Finding the address of the DHCP server by grep'ing through logs seems inelegant, but it works.
+I've set this up on a Raspberry Pi for a printer and it works like a charm (I have added a 10 second sleep in the post-up commands to let it get an IP address first, it might have to do with the slowness of my old RPi...)

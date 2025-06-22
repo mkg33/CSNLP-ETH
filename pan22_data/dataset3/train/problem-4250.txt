@@ -1,0 +1,14 @@
+' Display an input dialog asking the reason for a login and writes it to the event viewer with information of the user.
+I was thinking maybe there's a way in Windows to do it that is similar to the Shutdown dialog that is displayed whenever a server is restarted.
+    Set objNetwork = CreateObject("Wscript.Network")
+I know this can be done by a script but I was looking to see if there's any integrated way in Windows before I start writing it.
+eventDescription = "User '" & username & "' logged in, providing the following reason: " & Chr(13) & Chr(13) & loginReason
+    Set objCurrentUser = GetObject("LDAP://" & objSysInfo.UserName)
+Const EVENT_TYPE = "Information" 'Available Values: Success, Error, Warning, Information
+strCommand = "eventcreate /T " & EVENT_TYPE & " /ID 100 /L Application /SO LoginAudit /D " & _
+Set WshShell = WScript.CreateObject("WScript.Shell")
+I've looked in the Group Policy but couldn't find anything useful.
+Const EVENT_SOURCE = "LoginAudit" 'Setting the event source requires that the script runs with administrative privileges
+    loginReason = InputBox("Hi " + firstname + ", please describe the reason of your login:", "Login Audit")
+I'm looking for a way to display an input dialog upon login to a production server, asking the user to indicate the reason of the login.
+I ended up writing the following VBScript and set it to run on Logon in the GPO

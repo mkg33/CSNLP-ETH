@@ -1,0 +1,15 @@
+But it emits output for all options, so use grep to pick out the nullobj setting.
+Also, the question mentioned multiple patterns, like:
+So, setting the nullglob option gives the desired behaviour for patterns.
+The only solution for this is @Gordon Davisson's continue expression, [ -e "$f" ] || continue .
+But the nullglob option may well interfere with desired behaviour for other commands.
+If no file matches the pattern, the loop does not execute.
+The nullglob option doesn't affect a word in the list which is not a "pattern", so special.ext1 will still get passed to the loop.
+Acknowledgement: both @Ignacio Vazquez-Abrams and @Gordon Davisson alluded to bash(1) and its nullglob option.
+Since they didn't immediately contribute a answer with a fully-worked example, I am doing so myself.
+See the log below (where $ indicates the bash command prompt):
+So, you will probably find it wise to save the existing setting of nullglob, and restore it afterwards.
+Fortunately, the shopt -p builtin command emits output in a form that may be reused as input.
+Switch to the Bourne Again Shell (/bin/bash) from the Bourne Shell (/bin/sh), and a simple solution becomes possible.
+So, the final bash syntax to handle zero or more file matching a wildcard pattern looks like this:
+The bash(1) man page mentions the nullglob option:

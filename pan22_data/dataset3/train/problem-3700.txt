@@ -1,0 +1,24 @@
+I am thinking about using VMWare Server in production to host
+The reason I am leaning toward Server vs ESXi is for backup purposes.
+The files on the disk are not necessarily consistent because of actions which may be in the process of being written, stored in memory, or whatever.
+I know this doesn't necessarily handle file level restores, but I want to make sure in a DR situation, we can restore production servers quickly.
+There is absolutely no assurance that the image on the disk is in any way consistent.
+Using ESXi, if I want to backup the VM's, I would need a second server in the office with enough storage availability to hold a copy of the vmdks.
+This would be a new Dell 410 server with 12 GB ram and (6) 600 GB 15K in a RAID 6, Dual Intel Xeon 2.26GHz procs.
+Tools for VMs generally cost even more money, because of the extra investment a VM infrastructure implies.
+Taking a snapshot of the VM disk system is no different than pulling the plug on a real server -- the filesystem and applications contained on it may, or may not, survive.
+Would a very minimum install of the 2008 Host remove too many resources from the actual production machines?
+The problem with 'snapping' a VM in VMware Server is that all you get is a snapshot of the disk at that moment in time.
+There are a couple tools that allow you to backup a full vm under esxi (
+Don't use VMWare Server in the manner you have described.
+To do storage and virtualization correctly, you need abstraction.
+Doing it correctly isn't trivial, and when your company is on the line you are willing to pay money for the possibility of having someone else who is an expert help you in emergency situations.
+Keep your x86 server for performing the processing.
+A better solution might be to simply split the storage away from the VM server setup your Vmware server to access its storage via NFS.
+You want a type 1 hypervisor for performance reasons.
+Store your files on a second server or SAN which you will be able to access and backup.
+Can a snapshot be triggered easily via a scheduled job?
+There's a reason why backup tools generally cost money.
+I am wondering if putting this virtual environment on top of a basic 2008 server install will allow for easier backups to both tape and/or to offsite storage using JungleDisk.
+Buy a Netapp in order to address the storage requirements for your VMs.
+You'll want to perform some analysis to determine if it will justify moving from a free type 1 to a paid type 1.

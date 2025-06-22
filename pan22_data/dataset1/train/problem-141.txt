@@ -1,0 +1,8 @@
+I have a webservers that send out emails to a sendmail relay server as a batch job. The emails need to be accepted by the relay sendmail server as fast as possible, however, they do not need to go out (be relayed) very quickly.
+I am seeing a couple timeouts once and a while from the webserver trying to connect to the relay server. The load currently is about 30 emails a second for a couple minutes.
+There are quite a few tuning options for sendmail in the sendmail tuning guide.
+In your use case, the need for sendmail to accept / queue up the messages asap is key(batch processing?).  If you haven't, take a look at sendmail options: QueueLA and RefuseLA - Queue Load Average and Refuse Load Average.  If you are really bombarding sendmail your load averages will go through the roof quickly and you'll hit RefuseLA which might be part of your timeout issue.  You may want to increase RefuseLA (if you haven't already).  
+To keep sendmail from doing too much at once (receiving and transmitting) lower your QueueLA.  A lower value of QueueLA will put sendmail into queue only mode so sendmail will focus on queuing work and save the transmit / sending work for later.  A low QueueLA and high RefuseLA will result in the system queueing up large amounts of mail(disk space) then begin sending it out after the load falls below QueueLA.
+For normal sendmail configs it is worth noting that QueueLA should not be much lower than RefuseLA, and possibly it should be very slightly higher.
+Delivery mode 'q' is an extreme version of a low QueueLA setting, where you'd have to somehow initiate a delivery command to begin outbound message transfer.
+http://www.brandonhutchinson.com/QueueLA_and_RefuseLA.html

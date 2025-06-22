@@ -1,0 +1,15 @@
+If you had used A records you'd need to duplicate the list over and over for each subdomain.
+If your CNAME points to @, then all those other records will (incorrectly) start to exist for your aliased subdomains too.
+Is it better to have a fewer A records and dozens of CNAME records or vice verca?
+If the CNAME points to another domain for which your server is not authoritative, it can have a greater impact due to a resolver needing to make more requests to get to the result.. but in the example you've provided, the performance impact is completely negligible.
+Re: CNAME vs A - it really doesn't matter for performance, per other answers.
+it has multiple A records, or even an A and AAAA) then a CNAME to the real host machine is only a single record to maintain.
+The main drawback is that you can't vary those without converting back to an A record.
+From a performance perspective, it's marginally (and by "marginally", I mean "technically, but not noticeably") better to use the A records, as your DNS responses will not need to include the extra data.
+Less glibly, there really isn't much reason to prefer one to the other, provided that you don't point CNAME to CNAME along the way.
+However, if you do use a CNAME, don't make it a pointer to @, make it a pointer to some other sub-domain in the zone.
+If the deployment is as simple as the example that you've provided, then it honestly doesn't matter either way.
+The main advantage that the CNAME choice would mean is that you don't have to add an MX record, or other ephemera, to each subdomain.
+One (or few) A records per unique IP and many CNAME records per A record:
+The reason is that @ also contains other records, e.g.
+From a manageability perspective, the CNAME may be easier, as you'd only need to make one change instead of several to account for an IP change to the system.

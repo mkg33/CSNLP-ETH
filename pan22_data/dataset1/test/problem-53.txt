@@ -1,0 +1,6 @@
+I'm trying to find a way to minimize the amount of space the VM server and storage take up while being able to use ZFS as a file system.
+I've come up with either using xVM on Solaris or using XenServer with a solaris VM installed on the internal harddrive while storing the rest of the VMs on the storage array controlled by the solaris VM.
+Would this work or is this a bad idea? If so, what is a better way around it?
+I think that should work OK. Take a long detailed look at every dependency that the Solaris VM (and the host machine!) might have on an external system, and ensure that none of those external systems depend on anything provided by the other VMs within the ZFS storage. If, for example, your logins depended on LDAP that was in a VM, then if the storage is down, so is LDAP, and you can't login to try to bring it up and fix it.
+This will be a very good time to work on your documentation :-)
+I don't know anything about how ZFS works as a datastore for xVM or XenServer, so I can't speak to that specifically.

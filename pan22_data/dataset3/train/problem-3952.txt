@@ -1,0 +1,12 @@
+The reason this is if the service is compromised in some way, processes on your system may be able to be started with elevated privileges.
+The best way I have found around the port requirement where non-root users may not listen on ports less than 1024, is to use IPTABLES, with the PREROUTING chain in the NAT table.
+Taken from http://httpd.apache.org/docs/1.3/misc/security_tips.html#serverroot
+For example, if you choose to place ServerRoot in /usr/local/apache then it is suggested that you create that directory as root, with commands like these:
+In typical operation, Apache is started by the root user, and it switches to the user defined by the User directive to serve hits.
+This way you can maintain the security of least required permission, yet still answer on the popular ports.
+As is the case with any command that root executes, you must take care that it is protected from modification by non-root users.
+You can create an htdocs subdirectory which is modifiable by other users -- since root never executes any files out of there, and shouldn't be creating files in there.
+Typically you should run as many services as non-root users as possible.
+Not only must the files themselves be writeable only by root, but also the directories and parents of all directories.
+When you install the httpd executable, you should ensure that it is similarly protected:
+It is assumed that /, /usr, and /usr/local are only modifiable by root.

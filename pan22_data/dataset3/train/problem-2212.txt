@@ -1,0 +1,30 @@
+Once you cluster your load balancer there's no real way to make your system highly available without introducing another mechanism, away from pure TCP/IP and routing.
+Generally you should always have multiple of those if you're running a decent site with redundancy in place.
+If a client fails to connect to the first IP-address, it can try to connect to the next IP-address in the list if more than one IP address is provided.
+The DNS specifications state that if you get more than one, you should ideally "pick one at random".
+These initial IP address are the IP addresses of your Load Balancers.
+Thus, multiple-A or multiple-AAAA (IPv6) are less used than they used to be.
+This is where multiple DNS records solves the problem.
+It is up to the client/browser to resolve which IP to use.
+And the order of the addresses is altered  (round robin) so it also works as a "cheap" load balancing.
+If you own a domain (www.example.com) and you are trying to make it highly available, and you end up at the point where you have clustered all your infrastructure across multiple regions and availability zones, and have taken the time to implement a load balancing cluster, you will want to point your domain to all the load balancing endpoints in your load balancer cluster.
+It will happily deliver multiple records of a particular type even if it is not useful to the end-application.
+Which will then route your requests accordingly to the cluster.
+It's only cheap, if that's your overall plan for High Availability (HA).
+There are many record types that really need multiple answers, like MX (mail servers), and NS (name servers) records.
+Once you start clustering your infrastructure you will inherently require some sort of load balancing appliance that sits in front of your cluster.
+In order to make your Load Balancers highly available, and prevent single point-of-failure (SPF) you will also need to cluster your load balancers.
+This way, every time a client requests www.example.com, they will get 2 or more IP addresses in return.
+But remember: DNS, the protocol, is designed not to care about the data it is carrying.
+Herein lies the issue, and where multiple DNS records solves a very real problem.
+This is highly helpful for spreading load across multiple machines, though in practice it's not as ideal as you'd like which is why there is a more common practice of IP-based load balancers rather than using multiple answers.
+Using Multiple DNS entries is a form of fault tolerance, but I wouldn't always consider it a 'cheap' form.
+The DNS server returns all the IPs for services matching that A record.
+You can see it as a "cheap" fault tolerance solution.
+That could be done by only returning 1 address at a time.
+I know this is an old question, but I stumbled across it and thought I'd put in my 2 cents.
+Please, retort, as I enjoy hearing other's point of view.
+For addresses, however, there are times that people like returning multiple records.
+If the 1st one succeeds, it will be used, but if it doesn't, then the second IP address (or 3rd or 4th, etc.
+If you want to build a highly available architecture you will also require other mechanisms, such as clustering across zones and regions.
+For one thing, the DNS protocol is designed to be independent of the data that's actually stored in it.

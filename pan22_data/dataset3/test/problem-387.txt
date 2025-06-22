@@ -1,0 +1,14 @@
+What I suggest is a completely different approach.
+My OpenVPN server was not set to push any DHCP or DNS options, but the client was still using the DNS server over VPN, instead of the local, non-VPN DNS server that I wanted it to use.
+As you explicitely mentioned: "My goal is to automatically apply a default DNS server to not-technically-skilled users, while also allow skilled computer users to set their own DNS servers."
+In the official OpenVPN documentation you can find:
+The solution was to go into Tunnelblick's Configurations → Settings tab and change Set DNS/WINS to Do not set nameserver.
+it looks like you know exactly which users you want to provide a DNS-config and which users you don't want to provide such config.
+Unfortunately, in addition to what you're asking, this has the side effect of disabling also the redirect-gateway provided by your configuration and this can represent an issue, for your case.
+and add reference to the /etc/openvpn/userconf directory (as an example.
+Hence, instead of pushing your config directly in the main OpenVpn config file (...and, as such, provide such config to ALL of your users), you can implement a per-user config.
+As a final note, you may be interested in the ccd-exclusive parameter as well.
+Thanks for @aldaviva , it's working on my macOS 10.11.
+Obviously you're free to fine-tune the openvpn config for every user, not limiting the customization to the two rows above.
+Then, in such userconf directory, create one file for each of the user you want to provide such DNS, including in such file the two rows deleted above.
+My problem wasn't exactly the same, but the symptoms were similar enough for this question to appear in search results, so in case anyone else winds up here for the same reason:

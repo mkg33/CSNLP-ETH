@@ -1,0 +1,27 @@
+Now I need to add an ethernet client to the eth0 of the RPI which gives me massive problems....not sure if I do it all right but no packets sent to eth0 or the client connected to eth0.
+And having only three addresses means that you can connect multiple stations to an access point, but you cannot put a bridge behind a (non-access point) station.
+I have a RPI3 with 2 external WLANs (wlan0 and wlan1) which work perfectly as WLAN Repeater (wlan0 gets signal from router) and wlan1 is set as hostAP...done via NAT iptables.
+Further information you can find at Raspberry Pi WiFi to Ethernet Bridge.
+My feeling is that if I do NAT via iptables and in parallel setup a bridge br0 between wlan0 and eth0....still IPtables will decline packets to be sent within the bridge....
+To complete the answer from @TheDiveO, it is possible to bridge wifi interfaces on OSI layer 2.
+The reason why requires some deeper explanation of the Wifi 802.11 technology...
+There are workarounds on OSI layer 3 with NAT (Network Address Translation) and Proxy ARP.
+The problem with your intended system configuration is that you want to have multiple stations behind a Wifi station ("client").
+The reason lies hidden in how Wifi IEEE 802.11 works: it currently has a 3 MAC address model only.
+I'm afraid you cannot achieve what you want with a single Pi.
+But as told you need 4 address fields enabled in the ip header instead of 3.
+and wlan1 is an AP that spans a new network (NATed) 172.16.1.x...which also holds a seperate isc-dhcp-server.
+That is, because on the wireless medium you need two MAC addresses, one for the radio (!)
+My limited understanding is that you can't do this with a single Pi and without a wired connection to your upstream router/access point.
+Please don't mix up radio sender/receiver MAC addresses with the end-to-end source/destination MAC addresses.
+At the moment, you route (NAT) at the IP layer between wlan0 and wlan1.
+This is done with WDS (Wireless Distribution System) which most wifi router support.
+Even if you put a bridge br0 into play and connect the upstream wlan0 to it, as well as eth0, with br0 going into the IP stack for routing, it won't work (to the best of my knowledge).
+For bridging to work on a non-access point station, we would need a four MAC address configuration, with source/dest MACs as usual so we can address individual destinations beyond a single radio receiver/station.
+It is highly important to understand that this configuration works, as the wifi client side has just a single MAC address.
+Thanks for some feedback and maybe hints how this would work togehter....if at all i still need the br0 or in the case of existing iptables between wlan0 and wlan1 i only have to extend iptables rules to make the bridge between wlan0 and eth0 work.
+Can anyone help with an example how this would work if wlan0 is from 192.168.1.x network....so the client behind eth0 should also receive a dhcp address from the router.
+Unfortunately, that's reserved and unspecified IEEE 802.11 territory.
+Could you use a second, separate Pi that just bridges your Wifi and which you have wired up via eth0 to your upstream router/access point in order to monitor traffic?
+As another small side note, this isn't a (Wifi) repeater, as a repeater works on the MAC layer.
+This leaves us only a third address, which can be either a source or destination address in a larger, bridged IEEE 802.1 network.

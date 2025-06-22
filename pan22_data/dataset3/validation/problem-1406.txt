@@ -1,0 +1,21 @@
+Subsequently, each of these zone declarations point to the same zone file, which resolves all hosts in that domain to our honeypot servers.
+That last bit is necessary to prevent your server from download the real root hints from the internet.
+via $INCLUDE) and then changing that file from being a hint to a master.
+Also, can I ask if that list is publicly available?
+Then I just add the domains in my list in named.conf.local :
+Maybe You can include a file generated from a database ?
+Haven't found a good way to eliminate having to load each domain in its own zone, but using the following rndc command eliminates the concern of causing the server to fail in the event of a malformed entry.
+Then just go with @syn's suggestion of running named-checkzone before each reload and/or restart.
+...basically this allows us to capture any "phone home" attempts by malware that may infiltrate the internal systems.
+There's no real need for NS records or separate zone statements for each blackholed zone - you're effectively inserting fake authoritative data into your local copy of the root zone.
+So I'm looking for something more efficient and potentially less error prone.
+In theory you can avoid the slow load time by making your blackhole list part of your root hints file (e.g.
+PowerDNS even has a tool to convert a BIND zone file to SQL for migration.
+I haven't used any yet, but there are MySQL driven alternatives with web frontends such as PowerDNS with Poweradmin.
+I don't need to define it in the zone file, it is generic.
+Our current solution for this requirement is to include a file containing a zone master declaration for each blocked domain in named.conf.
+Currently running BIND on RHEL 5.4 and am looking for a more efficient manner of providing DNS redirection to a honeypot server for a large (30,000+) list of forbidden domains.
+Just make sure you download the real root zone occasionally!
+A full on server restart/reload will still result in a failure to start.
+The problem with this configuration is the large amount of time taken to load all 30,000+ domains as well as management of the domain list configuration file itself... if any errors creep into this file, the BIND server will fail to start, thereby making automation of the process a little frightening.
+This might make updates less error prone and risky.

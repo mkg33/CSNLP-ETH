@@ -1,0 +1,17 @@
+If you really just want to make sure something's running at a given PID, a script that just runs pgrep $(cat /path/to/pidfile) would work, but that's chock full of false positive potential -- if your process has died, then something else runs and gets the same PID, then your process check will succeed when it shouldn't.
+The solution to this, really, is to write a check that monitors your background process for proper functionality.
+Or is there some reason that you can't rely on the process name for verification that it's running?
+The proper way to do this is to bugger off the daemonisation code in your service and run it under something like daemontools -- then when it bombs it'll get automatically restarted.
+nagios checks processes due to different checks, not by PID.
+Then I would use the check_http plugin and the check_dns and make nagios do a dns lookup for one of the domains I host the dns for and see if the webserver is still running.
+All services (like HTTP, MySQL, DNS, ...) have seperate configurable checks.
+You then also need to monitor the functionality, to catch times when the process doesn't die, but somehow fails to run properly.
+The first (OpenDKIM) has to have 2 processes running in order to pass the test.
+All checks in nagios can be configured with different parameters.
+If the background process always has the same name, then the check_procs command will work.
+For instance, I have a webserver and DNS server running.
+Here are the local command definitions for two background processes I check on my server.
+If the service is not working properly, nagios will show an alarm.
+Here's how to set up the same checks in an nrpe.cfg file:
+The check_procs command is used to see if your server is not running to many processes at the same time (overload).
+The second (dk-filter) has to have 1 process running to pass.

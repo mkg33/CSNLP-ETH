@@ -1,0 +1,35 @@
+I picked two tables for evaluation: our "users" table, which contains 20 million rows and is excessively wide, and a "linkage" table that also contains 20MM rows but only two columns.
+I didn't run queries against the linkage table because it didn't seem to provide more information.
+The main drawback of this approach is that it's not going to touch the index blocks.
+It retrieves all table data and writes it to StdOut, along with  DDL to recreate the table and its indexes.
+It is specific to MySQL, but I would consider the Postgres VACUUM command to be similar, and I'm sure there are equivalent commands for other database systems.
+As it appears there's no simpler approach than what I've already been using, I decided to evaluate these approaches.
+As I've given some more thought to the issue, I've come to believe that my pain is due primarily to the fact that I'm using this instance for testing reporting loads.
+However, if I was on Postgres then VACUUM might a valid choice, assuming that the source database was regularly vacuumed.
+If we regularly optimized, perhaps the numbers would be lower.
+I chose a different field for the "touch" query versus the "test" query.
+The OPTIMIZE TABLE command will rebuild an InnoDB table and index, freeing space in the process.
+However, mysqldump is far easier to execute, because the all-rows select requires some thought to pick an appropriate query.
+For a test environment, I spun up one instance per approach: an r3.large (2 VCPU, 15 GB RAM), using the same snapshot for each.
+This is possibly an unfair test for our large table, as it is subject to many updates and has no doubt never been optimized in its multi-year life.
+After running these tests I brought up a new instance and started 10 concurrent mysqldump sessions (randomly dividing tables between them).
+However, the same pain will affect read replicas, perhaps moreso because you'd only bring up another replica in response to heavy system load.
+OPTIMIZE is dramatically slower for the large table and uses too many write IOPS.
+As with the dump operation, this accessed only table data blocks.
+Even so, I ran on a same-AZ EC2 instance to keep all network traffic within the Amazon data center.
+Much like the test query, this approach was a simple select that aggregated data from a non-indexed field.
+Since I don't care about actually backing up the table, I redirect the output to /dev/null.
+If it were an OLTP instance, I suspect that I could transition it into service with minimal pain (albeit slower performance).
+These instances have 1,000 GB of disk, so should be able to maintain 3,000 IOPS.
+All timings are in the format H:MM:SS (hours:minutes:seconds), and are from a single run.
+I suspect this is because the blocks were cached in memory (I probably should have rebooted the instance between touching blocks and executing queries).
+The difference between an all-rows select and mysqldump was minor, and possibly due to network or VM load.
+Long-term, I can only hope that Amazon will see fit to add a "fast init" operation that touches the volume's blocks in parallel.
+After loading, I ran two queries against the users table: one that forced a table-scan by summing a non-indexed numeric field, and one that performed an aggregate operation against an indexed column (which should traverse the entire index).
+I also tracked read and write IOPS, using Cloudwatch metrics (generally averaged over 5-15 minutes).
+Also, those query times are not misprints: they're more than an order of magnitude faster than the others.
+The database as a whole contains several hundred tables, ranging from a few hundred rows to several hundred million rows (a couple of tables that are used primarily for logging, but may be involved in some reporting queries).
+I could extend it to access index blocks via some form of index aggregate, but I think that's less relevant for my needs.
+Our database uses MySQL, but I believe the general approaches are relevant for any DBMS.
+Since I don't want to be held up by the network, I use the --compress option.
+The mysqldump program is used for backing up databases or individual tables.

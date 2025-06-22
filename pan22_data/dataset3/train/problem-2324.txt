@@ -1,0 +1,14 @@
+objects were moving faster than the recording frame rate could handle.
+This would essentially be the equivalent of interpolation between frames and allow you to scale up your lower frequency videos to match the higher frequency ones.
+I don't believe there is a well-known method to deal with this.
+"twixtor"), but I read they have problems with things such as rotating objects.
+This is based on the U-net model architecture: an encoder/decoder that also introduces skip connections between layers of different scales.
+It seems that they train two models: the first encodes the optical flow between frames and the second model uses that, along with the base images to perform the interpolation.
+There are older algorithms that try to do the same thing (e.g.
+Another thing to keep in mind is the usual GIGO: garbage in garbage out.
+Nvidia released a research paper with an accompanying video showing how they were able to train a model, which could estimate the frames between frames - effectively interpolating video and increasing its frame rate.
+While I haven't done this with images/videos, I know from general time-series analysis that you basically have to interpolate the lower frequencies or you need to down-sample the higher frequencies.
+Here is the sketch of their model for flow computation/interpolation:
+There are still some artefacts of interpolation in the Nvidia video, but that likely comes from blurry input images used during training when e.g.
+We can see that it is an encoder/decoder-looking model, introducing a bottleneck that condenses the information, before upsampling again.
+It also outlines how they train the model (learning rates, number of epochs, augmentation steps, etc.

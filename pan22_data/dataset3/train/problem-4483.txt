@@ -1,0 +1,13 @@
+a perl script, but why not use tshark, the textual version of wireshark instead?
+I would suggest using a dumbed down tcpdump command line that stores everything in a pcap file for post process.
+  tshark  'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+as reference for others httpry [ server seems to be down now but i hope it's temporary ] and tshark are also useful for passive protocol analysis - first one just for http, second - for much more.
+Justniffer works well on tcp packets reordering  retrasmissions and ip fragmentation
+Depending on what exactly you are looking at diagnosing tcpflow works great for putting communications back together in a coherent way for analysis.
+Surely that'd be a much better way to monitor HTTP traffic, there's a plethora of tools to analyse the data and any competent webserver should produce reliable logs.
+ -R'http.request.method == "GET" || http.request.method == "HEAD"'
+it takes the same arguments as tcpdump (same library) but since its an analyzer it can do deep packet inspection so you can refine your filters even more, i.e.
+"Garbage" you see are actually TCP package headers.
+  tshark  'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+take a look at ngrep - it mighe be of some use for you.
+Some other good information including some usages for httpry can be found at: http://taosecurity.blogspot.com/2008/06/logging-web-traffic-with-httpry.html

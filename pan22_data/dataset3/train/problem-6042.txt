@@ -1,0 +1,27 @@
+The number of logical partitions is theoretically limited only by the disk's size; in theory, you could have just under half the number of logical partitions as their are sectors on the disk, with each partition being one sector in size.
+Importantly, no matter what the partition table type, partitions are contiguous groups of sectors, such as sectors 2,048 to 2,664,447; you can't have a partition that has "holes" in it.
+This is helpful for a Windows-only system because the Windows partitioning tools are awful at handling extended and logical partitions.
+LVM is more flexible than a "basic" partitioning system because it enables more flexible use of disk space.
+The successor to MBR is the GUID Partition Table (GPT), which doesn't have the equivalent of extended and logical partitions (and therefore makes the word "primary" in "primary partition" pointless).
+GPT supports 128 partitions as a default value by most partitioning tools, although the standard permits that value to be raised if necessary.
+Microsoft tends to shift from a "basic" disk setup to its dynamic/LDM setup when you create more than four partitions on an MBR disk.
+(Today, just about everything understands MBR, and most OSes understand GPT.)
+A "dynamic disk," by contrast, uses Logical Disk Manager (LDM), which is Microsoft's proprietary logical volume management (LVM) system.
+If you select the MBR Partition Table, the you can create 4 Primary Partitions, or 3 Primary Partitions and 1 extended Partiton, and the extended partition can be used to create 28 Logical Partitions (not sure about this number).
+(I have created a disk with well over 100 logical partitions and accessed all of them in Linux, though.)
+What Microsoft calls a "basic disk" is just a disk with a conventional partition table (MBR or GPT) and filesystems stored directly on partitions -- that is, partition #1 might be FAT, partition #2 might be NTFS, etc.
+I'm not positive, but I'm pretty sure that Microsoft's tools are less likely to impose an LDM setup on a GPT disk.
+Any OS can find filesystems stored on a "basic disk," with the caveat that the OS must understand the partitioning system and filesystem.
+Partitions (aka physical volumes, or PVs, in LVM-speak) can be grouped together into volume groups (VGs), which in turn can be split up into logical volumes (LVs).
+FWIW, MBR is on the way out as a partitioning system, although we may continue to see it in use on USB flash drives and the like for years to come.
+Note that I'm more familiar with Linux's LVM system than with Microsoft's, so it's conceivable that Microsoft's LDM is different in some subtle way that I'm misrepresenting; but AFAIK the two are pretty similar at this level of analysis.
+It's limited in quite a few ways, including a 2 TiB disk-size limit (assuming 512-byte sectors) and the awkward distinction between primary, extended, and logical partitions.
+This enables you to create a single filesystem that spans multiple disk drives.
+The 28-logical-partition limit you cite might be accurate for Windows or it might be complete hogwash; I simply don't know the Windows limits.
+I have learned that first you create a Partition Table, and then you partition your disk the way you are allowed in the Partition Table that you specified.
+I am trying to understand how disk partitioning works.
+This can make managing partitions awkward and dangerous, since if you use a disk for a while and then decide to delete a couple of partitions and create one new and bigger partition in its place, this might not be possible without first moving other partitions to make the free space contiguous.
+You can also add and delete LVs without worrying about their start and end points, and even if a new LV covers multiple non-contiguous ranges of sectors, which is handy if you need to frequently add and delete filesystems.
+Basic Disk and Dynamic Disk, what are these terms, are they Microsoft specific?
+But now I am introduced to the terms Basic Disk and Dynamic Disk, what are these terms, are they Microsoft specific or something?
+The problem is that LDM is a proprietary Microsoft system, so if you want to dual-boot with something else, you're likely to have problems accessing the Windows filesystems, or even installing your new OS.

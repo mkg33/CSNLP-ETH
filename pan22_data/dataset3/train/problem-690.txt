@@ -1,0 +1,13 @@
+This is done easily enough by opening up a client connection and running a count on the pg_stat_activity table.
+However, if the maximum number of connections has already been reached, the connection, and check script, will hang waiting for the connection.
+Is there anything that might be in the process list that I should include or grep out?
+So ps aux | grep postgres: | grep -v grep | grep -v process | wc -l seems to give me the exact figure you are after.
+I'd prefer to not have this as it complicates the check script and could hang for an indeterminate amount of time.
+For a monitoring script I need to count the number of open connections to a postgres database.
+This seems to match the number of entries in pg_stat_activity, but is sometimes, but not always, off by 1 (can be above and below).
+This gave me the idea of using the linux command ps to list the current running process and grep out those that are related to protgres.
+Or is there another way to do this without using a db connection?
+I'm on FreeBSD and see the processes after the initial server command all start with postgres:, end with (postgres) and the server helpers all have process in their command.
+With ps aux | grep postgres | grep -v grep I see 7 server processes plus one for every open client connection.
+Also, although it is only one connection, opening up a client connection adds to the connection pool which is not ideal.
+Looking at the pg_stat_activity table there is a column listing the process id for the connection.

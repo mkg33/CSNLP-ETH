@@ -1,0 +1,23 @@
+I did this by configuring the DD-WRT router my servers are on as a type of bridge.
+When I move, I simply change the wireless network the router uses to contact the internet with, and give the DD-WRT router a static IP as well as forwarding all ports on the new router to the DD-WRT router.
+I've "solved" this problem by using DNSMasq rules.
+(Practically the only widespread SRV users are Kerberos, LDAP, SIP, XMPP, and Minecraft.)
+If the sending mailserver finds one, it will only use the servers listed in the MX record.
+For port 25 (server-SMTP), create a MX record that points to another domain.
+Therefore, whichever one of your hosts example.com resolves to, must be able to handle all of those connections – possibly using a HTTP reverse proxy where possible, or yet another layer of port forwarding (iptables, pf redirect, &c.).
+TCP ports only get involved after the address lookup has been done.
+Note that only some programs care about SRV records.
+I have a pretty complex series of servers all connected to a router running DD-WRT.
+Is there a way to achieve this configuration WITHOUT configuring the generic router?
+For IMAP and client-SMTP (143, 993, 587) you might have luck with creating SRV records for each service.
+(That's how nearly all domains redirect their mail to a dedicated 'mail' server or even to Google Mail.)
+I tend to move the whole setup quite often, so I attempted to make it "mobile".
+Some specific apps have their own mechanisms, though.
+The problem I'm having now is that I want certain ports on example.com to be forwarded to different servers.
+They're similar in purpose but can tell the app which host and which port to use:
+The DD-WRT router already has it's own subnet, static IP allocations for all the servers I want on my network, and all the correct port forwarding configurations.
+The problem I'm having is that Hairpin-Routing won't work in this configuration because even if it is enabled on the DD-WRT router, the new router is usually just a standard all-in-one modem/router from Century Link or whatever.
+For example, I would like 587, 993, and 25 to forward to 10.0.0.101 and I would like 80, 8080 and 3000 to forward to 10.0.0.102.
+That's not something dnsmasq can do, because it's not something DNS itself can do.
+it's not meant to really be configured by the end user, so I can't enable hairpin-routing.)
+While the above _imap &c. examples are technically standard, they're still very rarely used by actual mail apps.

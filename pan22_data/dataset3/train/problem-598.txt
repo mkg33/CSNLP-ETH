@@ -1,0 +1,18 @@
+But that may not be necessary to get both the precision and scales you need.
+The basic idea is that the player characters/vehicles are kept near the origin, so that Unity's physics system remains well-behaved for interactions between vehicle parts, characters, and terrain.
+I infer from your other question that you may have multiple simultaneous players or active regions, so you can't rely on a recentering around a single viewpoint.
+Then scaled representations can be arranged in the single-precision scene for display.
+This will handle something on the order of tens of simultaneous chunks, depending on how many distinct layers you need within each.
+The developers have been great about sharing their process for dealing with these issues:
+When one chunk's contents are visible from a camera in another, you'll position proxy objects in the viewing chunk's layer, with their positions calculated from their position in their parent chunk and the offset of that chunk from the viewing chunk.
+Since the area closest to the camera has high precision even in the single-precision scene, this downgrade doesn't produce visible errors.
+Not without recompiling the engine source at least.
+I doubt that there's a way to change the coordinate system Unity uses internally for its transforms/physics/etc.
+Similarly, when the player zooms their camera around in the map, the displayed objects are shifted around to keep the camera near the world origin to avoid visible jitter.
+More distant content can have rounding errors, but this is hidden by the fact that it's far from the player's view, and is only being used for rendering.
+All the positioning & movement on planetary and interplanetary scales is done in their own code using double-precision values.
+What you can do is have multiple active chunks each re-centering independently, using Unity's layers to keep them from interfering with each other's rendering or physics.
+This complicates the floating origin solution, but doesn't rule it out.
+Kerbal Space Program is made with Unity, and plays out over interplanetary scales.
+Either aggressive simplification/approximation or a custom engine may be needed to handle fine-scale gameplay so widely distributed.
+This will break down if you need more like hundreds of chunks actively simulating, but by that point you're well past the bleeding edge of Unity games and closer to theoretical physics simulations.

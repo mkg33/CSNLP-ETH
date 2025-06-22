@@ -1,0 +1,25 @@
+are probably reasonable for you at both ends of the system.
+Raising the read and write payload sizes can help.
+Also, if there is a possibility of packet loss, TCP will perform better than UDP.
+The 50MB/sec isn't great, but it's not much below what you'd expect over a single Gb network cable - once you've put in the NFS tweaks people have mentioned above you're going to be looking at maybe 70-80MB/sec.
+nfsvers=3,tcp,timeo=600,retrans=2,rsize=32768,wsize=32768,hard,intr,noatime
+On the NFS server(s), at least for Linux no_wdelay supposedly helps if you have a disk controller with BBWC.
+For our RHEL/CentOS 5 machines we use the following mount flags
+And, as was already mentioned, don't bother with UDP.
+Also, at least for Linux server, you need to make sure you have enough NFS server threads running.
+And the host server is running CentOS with VMware Server installed, which is in turn running the 7 VMs?
+Newer Linux kernel version support even larger rsize/wsize parameters, but 32k is the maximum for the 2.6.18 kernel in EL5.
+To get above that you're going to need to look at teaming the network cards into pairs, which should increase your throughput by about 90%.
+If you're not worrying about data integrity that much, the "async" export option can be a major performance improvement (the problem with async is that you might lose data if the server crashes).
+NFS performance on ZFS is greatly improved by using an SSD for the ZFS intent log (ZIL) as this reduces the latency of operations.
+Is there a particular reason you've gone with CentOS and VMware Server combined, rather than VMware ESXi which is a higher performance solution?
+"ro,hard,intr,retrans=2,rsize=32768,wsize=32768,nfsvers=3,tcp"
+You might need a switch that supports 802.3ad to get the best performance with link aggregation.
+Switching to UDP transport is of course faster then TCP, because it saves the overhead of transmission control.
+the dd command will write to cache and no disk, this you can get crazy numbers like 1.6G/s because you are writing to RAM and not disk
+But it's only applicable on reliable networks and where NFSv4 isn't in use.
+This thread about VMWare NFS on ZFS performance on the OpenSolaris NFS and ZFS mailing lists has further information, including a benchmark tool to see if ZIL performance is the bottleneck.
+Just to clarify, you're getting 50MB/sec with NFS over a single Gb ethernet connection?
+One thing I'd suggest though is your IO throughput on the OpenSolaris box sounds suspiciously high,  12 disks aren't likely to support 1.6GB/sec of throughput, and that may be heavily cached by Solaris + ZFS.
+Also, if you use the noatime flag on the clients, it probably makes sense to mount the filesystems on the servers with noatime as well.
+With higher speed networks (1GbE+) there is a small, but non-zero, chance of a sequence number wraparound causing data corruption.

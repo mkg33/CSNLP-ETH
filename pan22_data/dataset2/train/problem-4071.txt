@@ -1,0 +1,8 @@
+Buffer0 is world space positions, buffer1 is world space normals. The rest are colour, and emissive properties, depending on your lighting model (let's take a simple example). Buffer2 rgb values are diffuse colour, and the alpha value is reflectity (or clamped specular value). Buffer3 is glow/emissive. Any additional buffer textures are for whatever else you may need.
+The data that gets written to each buffer is in world space, at screen space position for each buffer target.
+When you are done, finally, render a full screen quad, with the last written buffer as it's texture, directly to the back buffer.
+Lighting calculations are performed in world space, by sampling all the information they need from the buffers.
+Then, if you want to perform, additional post processing(HDR/AA etc), you swap and clear your swap buffers for each post process.
+This is the simple version, bereft of specific technical details, but I think that should answer any general questions you may have, and give you what you need to google anything else that pops up.
+Compute the screen space position as normal (vec4 s = pm * world * vertex), in the vertex shader, along with your per vertex TBN (tangent space) matrix, this is obviously used for normal/parallax mapping. Your Bi/Co tangents should be computed when you load your meshes, for a faster, more efficient pipeline.
+Then you bind the GBuffer textures for sampling, and activate your swap buffer(composed of two buffer textures) and shaders.

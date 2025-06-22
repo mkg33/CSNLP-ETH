@@ -1,0 +1,12 @@
+Hope this helps others like it did me, and saves you a couple hours of time.
+I struggled through this and finally found a solution which doesn't cause a potential security breach like StrictModes No does.
+Try taking the group writeable permissions from your home directory:
+In my case it was the home directory which had another owner (root) than the actual user to which this home directory belongs to (my stupidity when creating the home dir with root for another user).
+Make your .ssh folder readable/writeable/executable only by you:
+I copied the authorized keys file to a directory outside of the encrypted home directory, changed the permissions appropriately (chmod 700 [dir], chmod 600 [dir]/authorized_keys, etc.
+I copied this from my user config that worked, and, presto!
+Then edit your sshd_config to tell sshd of the new location for the authorized keys file, restart sshd, and that's it.
+Make your authorized keys file readable/writeable only by you:
+has solved this issue (and of course stick to the file/dir permissions as shared in other answers).
+The key is chmod 0755 which ensures that only the user can write to the home drive.
+When poking around I noticed that I had my home directories encrypted, and suspected that was the issue.

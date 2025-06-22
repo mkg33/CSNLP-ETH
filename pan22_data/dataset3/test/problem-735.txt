@@ -1,0 +1,10 @@
+Configure the servers with appropriate server aliases.
+Configure the authenticating proxy to listen for these names and proxy them to the appropriate sever.
+If you want to use a regex, then you likely want /(serv.)(.
+I have several web servers in the LAN, addressable as http://serv1.lan/, http://serv2.lan/, etc.
+If these are different sites use an external naming scheme like serv1.example.com, serv1.example.com, etc.
+What are the regular expression rules needed to effect this conversion?
+The proxy should be perfectly capable of routing the address based on the received host address.
+To be addressed from outside the LAN, requests need to be passed through an authentication reverse proxy, such that https://proxy.com/serv1/ be translated into http://serv1.lan/ etc.
+The authentication server is IIS, but the proxy could also implemented in IsapiRewrite (which has a syntax similar to Apache).
+For microservices, you likely don't want to change the path, so you would route to http:/$1.lan/$1$2 assuming the servername and context path are the same.

@@ -1,0 +1,24 @@
+The actual "data" (i.e., your document) is contained in the TCP segment (after the TCP header) of the packet.
+What I can't get a definitive answer to is where does the actual content go in a TCP segment?
+Maybe the fact I am asking proves I have no clue...
+The 'datagram' is the size of the IP header + data.
+The data portion continues to the end of the packet.
+When I email something or download a program, or do anything else over a network, where in the segment is the actual content?
+That's the size of the entire packet including headers.
+Please see RFC 793 (http://www.ietf.org/rfc/rfc793.txt).
+That should give you a much better idea as to what's happening when you sent data via TCP.
+http://en.wikipedia.org/wiki/TCP_packet#TCP_segment_structure
+I think I understand the concept of header wrapping of each successive layer in the protocol stack.
+I suggest downloading a tool like Wireshark (http://www.wireshark.org) and capturing the network traffic as you send your file.
+A packet can be variable size due to differing MTu settings along the path, so the exact number of packets a portion of higher-protocol data gets carved into depends.
+Here's a pretty good representation of the data portion of packets, which I found on http://concept51.co.uk/in_how_networks.html :
+The offsets for that data section were mentioned in another answer.
+Wireshark will interpret the packets for you (you can even right click on one of the packets which contain data from your file and select 'Follow TCP Stream').
+The size of the data in the packet is determined by the TCP Maximum Segment Size (MSS).
+The data comes at offset 160 if no option-headers are present, and further down (multiples of 32) if IP option headers are present.
+The content gets broken up into chunks and put into the "data" portion of the packets.
+I get, I think, the OSI model and I have a decent grasp of the IP protocol.
+The data-field size is variable based on header length, as I described above.
+If I am emailing a 20KB word document, and the maximum data field size in a segment is 1500 bytes, does that mean it takes about 14 segments to mail my document wherever it is going?
+You will also be able to look at each successive packet header which is decoded and explained for you by Wireshark.
+You are incorrect in the maximum data field size being 1500b.

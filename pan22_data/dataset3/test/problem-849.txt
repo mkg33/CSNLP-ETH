@@ -1,0 +1,15 @@
+Right click, properties, compatibility tab, check "override high DPI scaling behavior" and select "System" (Note that "System enhanced" did not work for me).
+Now jar file windows should scale properly with readable text.
+This is because the Java runtime declared itself to be "DPI-aware" but didn't really supported it for AWT and Swing.
+Go to C:\Program Files (x86)\Java\jre\bin and find javaw.exe.
+Java applications were sized and rendered based on pixels rather than being properly scaled, this included HiDPI displays.
+Then, You need to run it on JRE 9 because it really supports this feature.
+Instead of HKCU you could use HKLM, but then you cannot change the dpi-scaling setting manually anymore in the properties > compatibility dialog of the java*.exe files.
+I tried most of these solutions, but the one that worked for me was setting the system compatibility mode on the files I found in the following location:
+A third party fix is available at: https://johann.loefflmann.net/en/software/jarfix/index.html
+Just found an easy solution on my Windows 10 machine:
+If not, it might mean that Windows doesn't link jar type files to javaw.eve like it should.
+See the issue JEP 263: HiDPI Graphics on Windows and Linux
+To force all java executables to have "properties > compatibility > dpi scaling mode" set to "System", in an administrator powershell (win-x, a), run:
+So, increasing the font size does not work (because it does not increase the rest of the things); the jvm argument -Dsun.java2d.dpiaware=false does not work (because it is not really supported); and the manifest file + registry edit (for Windows) just does not work.
+Elderry's solution is good, but what if you want to run a jar file on Windows and it doesn't have compatibility options?

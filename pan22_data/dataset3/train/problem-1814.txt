@@ -1,0 +1,10 @@
+I SSH'd in and did a ps axfw | grep r1soft and identified the subprocesses responsible and killed them.
+If running Apparmor, run "service apparmor teardown", simply running 'aa-complain' for mysqld and "service apparmor stop" will not resolve the issue.
+When initiating a DB restoration, the CDP Server will transfer MySQL data to the Agent, that will write the data into the cdp-agent's tmp directory (/var/lib/r1soft/tmp).
+Once a tmp MySQL instance is created, the Connector/J will connect to both instances and migrate the InnoDB database from the tmp instance to the primary instance.
+Common causes for this failure are security mechanisms such as SELinux and Apparmor.
+I had this problem, and found that when it failed, it left the process running on my server.
+The agent is unable to start the temporary instance.
+The CDP Agent will also create a temporary instance of MySQL to conduct the restore too.
+If caused by SELinux, put SELinux in permissive mode while doing the restore.
+You can have this fixed with the resolution below:

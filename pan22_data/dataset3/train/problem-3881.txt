@@ -1,0 +1,8 @@
+Your geometry (the quad) is initially defined in world space, think of this as some global coordinate system.
+To understand what's going on, you have to understand the rendering pipeline:
+Inside of the vertex shader those are transformed to normalised device coordinates (NDC), a virtual coordinate system defined so, that everything from -1 to 1 will get drawn to the screen.
+This transformation from world space to NDC is done by the model, view and projection matrix (in a simple form, just one matrix for everything or the geometry was even defined in NDC to begin with!
+So to make sure your quad gets rendered in the correct aspect ratio, you also need to adjust the projection matrix to include the expected aspect ratio of the glViewport call.
+The hardware will then convert from NDC to pixel coordinates by a simple scale and shift - and this is what you see in your example: a scale in the Y axis.
+Note, that NDC is ranging from -1 to 1 in X and Y, and it's totally independent of the devices aspect ratio and resolution.
+The rasterisation unit needs to know where and how large it should raster and this is what you define with the glViewport call: where to start are the first two parameters, the size are the second two.

@@ -1,0 +1,27 @@
+NTFS is now self-healing enough that we run into problems very, very rarely.
+Obviously, one doesn't really want a file server to be unavailable...and file servers now have so much storage that it could take days to run a chkdsk...so how are you protecting data from corruption?
+For more information you can take a look here:Tripwire File Integrity Manager
+Even on our 2TB, 4 million file LUN it runs in less than a day.
+Another example would be "file archiving software".
+As for preventative maintenance, NTFS is now automated enough to do nearly all of that by itself.
+Therefore, routine defrags do very little to help for a lot of I/O overhead.
+I maintained file-servers with around 7TB of general user data.
+About defrag... our FC disk array has 48 drives in it, and as it is an HP EVA the stripes are randomly distributed across the spindles.
+In fact, we recently survived a catastrophic UPS failure.
+A backup power source with extended runtime is highly recommended.
+NTFS recovered with nary a peep, and no need to run chkdsk.
+Here you will also find an overview of solutions in the market for File Integrity checking:File integrity checkers
+I don't have an exact number because it takes so long to get, but somewhere between 7-12 million files in the various file-systems on our Server 2008 fail-over cluster.
+That said, there are some architectural decisions you can make that can help reduce the eventual need for an offline chkdsk and make it go faster if you ever need to do one:
+Yanking the power out of the back of the server is eminently surviveable.
+Measures should be taken to ensure that a crash would not occur.
+Once in a while I'll run chkdsk in read-only mode to see if running it in full mode is worth it.
+https://www.microsoft.com/downloads/en/details.aspx?FamilyID=35a658cb-5dc7-4c46-b54c-8f3089ac097a
+We never run chkdsk except to fix problems, and we never defrag.
+When we do get into problems it's generally due to a fault in the storage-system infrastructure in some way; spontaneous fibre-channel array controller reboot, FC switch panic-and-reboot, that kind of thing.
+That 7TB was built up mostly of office-type files, so we're talking millions.
+An example would be not using the file server as a print server (printer drivers have a long notorious history in blue screen land).
+This means that even largely sequential accesses are actually random as far as the drives are concerned, which further means that a significantly sequential file-system performs minimally better than a significantly fragmented one.
+Not in the document, but highly recommended:  using a multi-purpose server for file serving hundreds of millions of files increases that probability that a crash may occur, and a volume will be marked dirty.
+I'm just wondering how folks handle ongoing file system stability when using a Windows Server as a file server without taking the system offline to perform chkdsk /f or chkdsk /r?
+Microsoft has published prescriptive guidance for improving the performance and minimizing downtime when running checkdisk:

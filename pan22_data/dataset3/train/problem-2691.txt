@@ -1,0 +1,26 @@
+I have searched into the OS logs and into the SQL server error logs but I find nothing relevant that could give a hint about what is causing the SQL server to become unresponsive.
+As a consequence, I have to do a stop-and-start process with the SQL server service and after that the instance will become available once again.
+Try running sp_Blitz, a free health check for your SQL Server (disclaimer - I'm the author).
+Turn that on so you can have an administrative "Back door" that ought to be up even if nothing else is.
+I've got a hunch that you're running into THREADPOOL waits, and sp_Blitz alerts about that.
+You can also run it with @OutputType = 'markdown' if you want to share the results here at Stack.
+Also don't forget to check your WINDOWS event logs on the server.
+Sometimes SQL Server events are written there, as well.
+My suggestion would be to enable the default trace for 10 minutes or so before the specific time you are experiencing the issue, then disable a few minutes after, and examine the trace file.
+I can RDP the server but I cannot connect neither from SSMS nor from the application.
+You might also set up a scheduled job to run this query once every 5 minutes during business hours (or whenever the lock-ups occur), and either send you the data or store it in a table somewhere.
+The first thing you need to do is set up SQL Server so you can get in during the lock-up.
+From there, try to see what processes are running during the lock-ups.
+I manage a virtual SQL server that holds several databases for some applications that run in a front-end server.
+Anyone who might have experienced this in the past?
+From that, you might see if something shows in the blocking_session_id column or wait_type columns near the time of your error.
+The issue I'm going through is that, at a specific moment during the day, the server gets stuck and the instance becomes unreachable.
+THREADPOOL means your SQL Server ran out of worker threads to service incoming queries.
+From there, you'll be able to see which queries are burning up all the worker threads - typically it's a blocking problem.
+It won't show up in the OS or SQL Server error logs.
+It may hurt performance a little bit for the time period, but seems that shouldn't be much of a concern at this time.
+If you have a specific time of the day when it gets stuck, a simple SQL Profiler trace should help identify what processes are being executed at that time.
+Perhaps there's something in the sys.dm_exec_sessions or sys.dm_exec_connections views that can point to what's locking, assuming the database knows what's going on.
+When it's happening, you'll be able to connect to SQL Server using the Dedicated Admin Connection (DAC) (disclaimer: that's a blog post on my site.)
+The DAC is a set-aside CPU scheduler used just for emergency troubleshooting.
+Brent Ozar explains the Remote Dedicated Admin Connection here.

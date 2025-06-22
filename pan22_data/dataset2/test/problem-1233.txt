@@ -1,0 +1,5 @@
+I considered using alarms for that purpose, but the build process has parts where the CPU is not used much (e.g. uploading files where network is used but almost no CPU) and alarms can not handle checking for both CPU and network traffic (AND operator is missing).
+we would like to run a time consuming C++ build on an AWS EC2 Windows Server Instance with 16 vCPUs. Due to the high cost we would like this instance to 
+Are there any other mechanisms I can use for idle detection? To some extend we can change our build scripts to send messages (e.g. network messages) to AWS.
+Instead, use a scheduled Lambda job (or a cron script running on another server somewhere) to detect when a build is needed, and then start up the server. Then for shutdown, give the instance an instance role with permissions to stop itself, and as a last step in your build process, the instance can use the AWS API to shut itself down.
+You're going about this the wrong way - as you've discovered, performing shutdown tasks like this based on resource utilization is not the most reliable solution.

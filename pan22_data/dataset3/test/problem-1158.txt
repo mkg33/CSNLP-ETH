@@ -1,0 +1,28 @@
+It only allows per-database restoration from .sql dumps, which due to the size of the database would take hours/day to restore to a dummy database just to extract one table.
+It works by taking a complete snapshot of the MySQL data directory.
+It has multiple databases on, combined total is about 150GB.
+Looking for suggestions for strategies/software that could be used.
+Restart the replica server and it'll catch back up from the binary logs.
+Database is mixed engine MyISAM and InnoDB (plans to overhall are taking place long term but nothing possible short term).
+(using filesystem snapshots might be another approach - but there is a big performance overhead with LVM or BTRFS).
+It locks for a very small amount of time whilst a snapshot is taken and is consistent.
+When you want to take a backup, stop the DBMS, flush the write buffers, break the mirror and restart the DBMS, then mount the mirrored filesystem elsewhere and start a second instance of the DBMS using the copy and use that for backup.
+(while you could break the mirror without shutting down the DBMS you'll then have to repair the data and won't have a consistent snapshot).
+I presume you are aware that objective 3 contradicts objective 1.
+1, 2 and 3 you can achieve if using Xtrabackup and InnoDB.
+I'd like to implement a MySQL backup strategy on a dedicated server.
+-> Spins up a separate MySQL instance based off this snapshot
+I'm not a sys/db admin by profession, so I would appreciate the learned advice of the community.
+Alternatively, setup a replication cluster to a second machine and carry out the backup from the other node.
+Most of this is weighted toward one of the databases.
+You can also consider Percona XtraBackup (http://www.percona.com/software/percona-xtrabackup) though AFAIK it is not compatible with MyISAM
+I'm thinking the mysqldump step could be amended to loop through each table and mysqldump to database/table.sql instead.
+Use MySQL's replication functionality to create a second, replica database.
+-> Kills separate MySQL instance and removes snapshot
+Obvious solutions would be to implement the data storage on a mirrored filesystem.
+Objective 3, not so much... only restoration of the whole data directory is possible.
+Locking/slowing the replica database won't affect the performance of your master database at all and will provide consistent backups.
+-> Performs a mysqldump on each database to database.sql
+Backing up each table separately will require writing a wrapper script around mysqldump to separate the backup files, OR (even faster but only works on MyISAM tables) you can shut down the replica database and just copy the entire data directory.
+It's not possible to do per database restoration, never mind per table.
+The ideal MySQL backup procedure will achieve the following objectives.

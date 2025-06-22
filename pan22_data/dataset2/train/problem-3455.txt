@@ -1,0 +1,10 @@
+Unused variables are a sign of poor code quality, so eliminating them should be a priority.  In this code, j is defined but not used. Your compiler is probably also smart enough to tell you that, if you ask it to do so.  Also, the code includes a number of unused #defines, one unused typedef and one unused struct member, all of which just add to clutter in the code.
+This program leaks memory because you have allocated space using malloc but never released with free.  That's bad practice.  
+This has the effect of copying each word in the name and only saving the last one which is not very efficient.  See the next suggestion for a more efficient means.
+Note too, that this code uses the safer strncpy and also assures that each string is properly terminated with '\0'.
+Instead of defining your own values for true and false, you might consider instead using #include <stdbool.h> which defines true and false.  However, in this program, neither is used.
+With only 10 characters allocated for both nom and prenom, many names simply won't fit. "Ludwig van Beethoven" is one such example.
+Since C99, the compiler automatically generates the code corresponding to return 0 at the end of main so there is no need to explicitly write it.
+So the for loop claims that the loop exits when i >= sizeof(names) but the following line says we exit when names[i] == NULL.  In this program, only latter is actually used, so the loop should be written to reflect that:
+The code has #include <time.h> but nothing from that header is used.  This clutters the code and makes it more difficult to read and understand.  Only include files that are actually needed.
+There is not a big difference for most uses, but if you don't need to save the pre-incremented value, make it simple for both the reader and the compiler and say ++i.  This also will help when you start using C++ iterators which often only implement the prefix ++ operator.

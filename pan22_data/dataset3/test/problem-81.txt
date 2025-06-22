@@ -1,0 +1,26 @@
+RFC 5321 (the current SMTP spec, obsoletes RFC2821) states:
+NVARCHAR is also an alternative but I would recommend it to use only if the email address contains extended chars and keep in mind that it requires double amount of storage space as compared to VARCHAR.
+In my environment, we use varchar(70) as the longest ones that I have came across are closely 60-70 char long, but it depends on your company's customer base as well.
+VARCHAR is the best data type to be used for email addresses as Emails vary a lot by length.
+Though the command to increase a VARCHAR size may look simple and run instantly on a small table, doing so on a table with thousands of rows or more is probably going to require some kind of database quiesce while regenerating all the data and index blocks.
+Thus, you should consider the VARCHAR column size largely immutable once a production table is loaded.
+Also, as a side-note, make sure that you have some Email validation check in-place for the validity of Email addresses.. like using check constraints or CHARINDEX
+In this analogy, the application program is like a form printed on the page.
+One way is to copy everything to a new table with the larger columns.
+Only as much space as each row needs will be used.
+For instance, if you have an application where you can only enter 80 characters for an email address, why would you want to the data type to be any larger?
+There is a lot that can be done to adjust how much data we can hold in the form.
+You probably will never need this much but it's safe to have it, just in case.
+A database design is like a physical piece of paper in that it sets out the hard limits as to size.
+There are a few considerations with this decision.
+This may seem out of the ordinary, and it most likely is, but you need to size your data to the business requirement.
+Since a VARCHAR column length is really a "maximum length," it should be set larger than the maximum length possible under any circumstances.
+Whatever technique is used, it's a-big-hairy-deal.
+The application programs should then be designed with scrolling fields or whatever makes sense based on typical values.
+First and foremost is to use current and future predictions of necessary limitations that the data will have to conform to.
+There is going to be a sort of offset for the variable length data to record the length of it.
+There's a reason why you don't want to set every string column data type to varchar(1024) when you are just storing a string that shouldn't exceed 32 characters (emphasis on the should keyword).
+If you have some sort of vulnerability where emails are all modified to become 255 characters, then you could potentially have a long performance impact of page splits.
+The additional bytes for storing the length are trivial compared to the space that would be wasted using a fixed-length CHAR instead.
+Much like the age-old constraint at the database vs. application debate, I'm a firm believer that data type limitations and allowable values should also be enforced at the data tier.
+Any variation of VARCHAR uses only as much space in the data block as needed.

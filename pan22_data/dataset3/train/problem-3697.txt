@@ -1,0 +1,21 @@
+the command to set those permissions would be: chmod 750 file
+One way of approaching chmod is to use the chmod math where read=4 write=2 execute=1.
+Yes, although execute permission without read permission is meaningless on a non-binary file (since you need to read a script to execute it).
+The permissions are checked strictly in this order; i.e., if the user tries an access, the user permissions apply, and nothing else is checked; if not the user but belongs to the group, group permissions apply; if none of the above, others permissions apply.
+Permissions are shown by ls(1) as rwx thrice (user, group, others).
+the positioning of the number you want goes in the order U=user G=group O=Others
+Write permission without read permission on a file does just what it implies: you can write to the file, but you can't read back what you've written.
+If you want group to have read and execute it would be read(4)+execute(1)=5
+On a directory, execute without read means you can traverse the directory, but not list it or do anything else with its contents.
+Unix distinbguishes between user permissions (for the owner of the file), group permissions (for anybpdy belonging to the file's group) and others.
+So yes, it is possible to have write but not read permissions on a file.
+The read, write, execute permissions in Unix generically are totally independent.
+So r-- means read-only, rw- is read-write, and --x is execute only.
+Is it possible to have write but not read permission on a file in Linux?
+If you want user to have full permissions it would be read(4)+write(2)+execute(1)=7
+Otherwise, for binary executable files, read permissions are not required; just execute permissions.
+The command chown(1) is normally fed octal numbers giving the permissions, but you can also use the above notation, i.e., chown u+r,g-x,o=rw somefile means "add r for user, subtract x for group, set r and w exactly for others".
+If directory foo has mode 0711 (full permission for owner, execute only for group and world), while directory bar has mode 0755 (full permission for owner, read and execute for everyone else), then accounts other than user may cd /home/user/foo/bar and find that bar behaves as any ordinary directory; however, while cd /home/user/foo will work, ls and any other command in that directory will fail due to insufficient permissions (i.e., you can't read the directory to list its contents).
+This might be useful in a case where processes under multiple accounts write to a single logfile, but a process belonging to one user must not be able to read the (presumably sensitive) log entries from a process belonging to another user.
+It is possible to have execute only permissions only if the file is not a shell script; a shell script needs to be read (and therefore needs read permissions) by the shell interpreter.
+What about execute but not read and write permission?

@@ -1,0 +1,41 @@
+Probably the best definition of "highly available" is that you can do some math to get an estimate of your uptime.
+What's the MTBF rating and average repair time for each part?
+Figure out how these and similar questions apply to your situation and you will have a good working definition for your site.
+Doraemon, to yor question about parts failing in the enclosure.
+Plus you have to consider the scope of HA, you could have something that is HA for storage but not for the app (single server.
+It's probably more useful to figure out your uptime requirements and then work backwards to address the different components.
+Once again, RTO/RPO requirements affect the design and decision process.
+Replication is tricky as failover to a replica is always a complex process but even at its most basic it will be far quicker than rebuild\restore.
+in the RAID enclosure are fairly simple, they may be resilient enough to ensure 99.99% uptime (say, 4 hour repair time and 1 in 5 chance of a failure in a year) or something like that.
+Is there any maintenance operation that will cause downtime?
+Parts in the enclosure could and will fail at some point.
+Some also have an up-sell that allows the host OS to seamlessly fail between the two.
+As with everything there are different degrees of high availability.
+That's likely better than your network or power availability, even with a couple network paths to your site and a reasonable UPS infrastructure.
+All of which should ideally be hot swappable so you can withstand a failure\carry out proactive maintenance without shutting it down.
+At the array level the features that are added to improve availability are things like redundant power supplies, redundant controllers (with cache\state mirroring), redundant fans and redundant IO interfaces.
+The next step up is, "Business Continuity", when they try to sell you the block-level replication technology between two of their Disk Arrays.
+SAN's get around this to some degree by recommending dual (or more) fully independent fabrics so that physical and configuration errors are isolated but at the array level that level of resilience is not something I've seen much of.
+It's possible that the RAID enclosure is really electronically two separate units with a separate path to each drive (dual-connector drives are common enough now), some kind of heartbeat between them and both systems connected to both controllers.
+"High Availability" means a lot of different things to different people  When I was writing software for carrier-class telecom systems, we had several redundancy requirements:
+Also, to me, HA covers availability in a single location.
+In addition you may (should) be considering replication to a separate array in a different server room\datacenter\city.
+If the non-redundant parts are simply a metal box and very simple wiring, that would qualify as "highly available" by most standards, since metal boxes don't generally fail and simple wiring is unlikely to fail unless it's made poorly.
+So you can have a combination of both, HA in each location with DR being the most expensive.
+If you have a second array, typical DC layouts tend to cluster storage arrays together so if one say catches fire, it's probably going to affect others.
+But depending on the array, there can be redundant parts inside the array.
+"True" HA would involve a disk array on a storage area network of some kind, be it Fibre Channel or iSCSI.
+In my opinion, the above isn't quite HA as the disk-array in question sounds like it only supports two hosts at most.
+As to what you described: it's a good start, and it depends.
+There's a difference IMO between "Highly Available" and "No single point of failure".
+Highly available direct attached storage of the type you describe has the ability to withstand most single points of failure but if something kills the array then obviously it's going to fail.
+On the redundant power front high end systems have independent standby power systems as part of the standard setup and for the truly paranoid you feed them from independent AC grids with independent backup generator options.
+The stuff that's prone to failure, in roughly the order of likelihood is:
+Battery backed cache\cache destaging is used to ensure consistency even if everything you've done to keep it running still doesn't prevent a failure.
+Business Continuance/DR addresses the multi-site part.
+This has been used as "Highly Available" in the industry for quite some time, and is one step on the storage marketing tier.
+Once you get past about 3 nines, it's likely your servers will have better availability than the network, your power, etc...  (seems like there's vast swaths of the internet having problems for a few hours every few years, so you probably can't realistically get past 4 nines if the customers get to you over the internet)
+It's worth noting that the single biggest problem tends to be human mistakes - designing storage so that it is capable of withstanding human error is pretty hard.
+So that leaves the enclosure itself which IMO is not that big of a deal.
+This almost certainly means that you don't have any component requiring maintenance that brings down services when it gets a firmware update or something like that.
+usually measured over a month or a year)  And it's got to be a measurement of the availability of services to your customers; any measurement of "the server itself was up, it's not my fault the network was down" doesn't count.

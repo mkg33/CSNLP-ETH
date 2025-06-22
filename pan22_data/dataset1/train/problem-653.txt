@@ -1,0 +1,9 @@
+GIN indexes inherently do not support indexable order by.
+It either needs to find all results which match the ilike using the gin index, and then sort them.  Or it needs to walk through the sortable index in sort order, until it accumulates the LIMIT worth of things which match the ilike.
+If you would like to force it to switch to the second mode to see what the performance would be like, you can phrase the restriction like this:
+It is theoretically possible that it could walk the sortable index in index order, while also taking an adjunct bitmap of things to filter on.  But that feature is not implemented in PostgreSQL currently.
+It might be possible to use the RUM index extension for this purpose, but I haven't evaluated it myself for that purpose.
+Another possibility would be to use gin_fuzzy_search_limit to return incomplete results to those who specify vague queries.  
+The above posters are correct, postgres will NOT allow you to create a trigram index with an order by as a secondary field. But I finally found a good way to do this, using postgres' materialized views. 
+Create a materialized view, that orders in your preferred way.
+I've found unfortunately that using the CONCURRENTLY option, IE, refresh materialized view concurrently MY_VIEW won't correctly preserve your preferred sorting order, even though the data will be updated. Only doing so without the CONCURRENTLY option will keep the ordering correct. 

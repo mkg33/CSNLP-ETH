@@ -1,0 +1,14 @@
+If you prefer the hard link, then you'll have to go with
+C:>mklink /h "C:\Program Files\MyNewHardlinkFolder" NUL
+I'm brand new to PoSH so this script may not work, but I think the concept is sound.
+Why not just write a script that removes any .log files that get written to the offending directory on a regular basis (or at the beginning/end of using the program)?
+If the program does require the log file to continue operation and 'kasplodes' when it can't write then you may need a programmatic solution such as log rotations if you've been unable to pipe to null.
+Hard links are only available inside NTFS, and the NUL file is not an NTFS file - it's the WIN32 name of the \.\Devices\NULL namespace object, but you can't create a hardlink to it.
+Granted, it's a band-aid until you can get the company to fix their program.
+If you don't need the offending log file and the path/name is a known variable, try creating it as a read only file as root/privileged user to prevent it's creation.
+If you can persuade the program to write its log files in the root of a drive letter, say, T:, try
+Alternatively you could create a read only volume/partition or ramdisk of a limited size that you symlink to, to limit the size of the file.
+You could create a soft-link (a shortcut) to the NUL file if you wanted to, but I can't really think why that would be a good idea.
+Which sorta makes sense, but maybe your app relies on those.
+What won't work are reads from the fake T: drive, folder creation and file read access.
+because then redirection to the bit bucket works, eg things like this work:

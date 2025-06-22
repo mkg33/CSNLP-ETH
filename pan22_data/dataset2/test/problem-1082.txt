@@ -1,0 +1,9 @@
+Another cheaper option (although slower) is to move the datastores off to iSCSI storage made from a box running some free iSCSI software like FreeNAS.
+2 - Shutdown the exchange box (Arranging a downtime), replace the hard disks for DB partition only (2 disks) with larger capacity
+Do you think that would work ? BESR 2010 flushes the logs but we have circular loggin enabled - it does howerver stamps the exchagne db as backed up and in Clean state.
+If you are out of space, it's probably time to run in circles scream and shout.  If you have space but its on the "wrong partition" you could set up another information store on a new storage group on the other partition and move some mailboxes there.  After you have some breathing room it's time to sit down with management and decide whether to get bigger disks to resize the partition (if that's possible with your raid controller) get another server, or decided to create and enforce some retention policies and quotas.
+Good news is that Exchange 2007 SP1 has database portability, meaning you can dismount the databases, move them and remount them with no ill effects other than down time.
+The biggest challenge for Exchange with large datastores is I/O. You can get huge drives now (like 2TB) but the random I/O of Exchange will quickly swamp most storage. So you need to split your datastore into multiple smaller DS spread out across more disks. Expensive.
+4 - As I won't be replacing the OS Disks, I will just use BESR to restore the DB to the new raid-1 set (new disks - larger capacity).
+Best solutions is to get another server and dedicate it as a mailbox server only and keep you existing server as a CAS server. Again, expensive.
+1 - BESR 2010 - Image the whole server, test baremetal restore on another box and also test virtual conversion to hyper-v (just to be sure).

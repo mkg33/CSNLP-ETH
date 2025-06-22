@@ -1,0 +1,10 @@
+Generally the difference would be negligible although Microsoft describe DTC transactions as such:
+Sorry, I don't have enough reputation to comment on the question, but from my experience if the client application raises a transaction for a query which uses cross database joins then it would promote the transaction to distributed and have the overhead of a DTC transaction.
+As Thomas Stringer points out in his comment, there will be extra overhead in authentication although I think as this will be SID-driven there will be minimal overhead there unless you have to use separate credentials to access the other database.
+...which would suggest a performance degradation if your server cannot offer the resources it requires.
+Database collation could manifest as a functional difference, not just a performance difference.
+I think Aaron has the strongest argument for performance with the optimizer not having the advantage of using relationships for cross-database queries whereas self-contained within a database you could use relationships to your advantage.
+Are cross-database queries expensive in SQL Server?
+The DTC overhead in this case could be viewed as a negative to performance.
+Just to clarify, the article above describes local transactions being promoted when remote systems are introduced, but I have seen this become the case for transactions on the same server when using cross database queries.
+If there were difference in database settings which caused additional overhead in the join that could impact larger than the previous suggestions - for example database collation.

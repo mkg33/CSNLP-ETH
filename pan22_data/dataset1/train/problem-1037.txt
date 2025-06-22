@@ -1,0 +1,10 @@
+I've got an XP machine acting as a server and a Windows 7 PC connected via wired LAN.
+Occassionally, usually after a long day, the connection to the server gets very slow.
+Today I pulled out the Resource Monitor and saw that the traffic (with only those two PCs on the network) was a steady 10 mb/s with nothing running between those two computers.
+Resource Monitor showed over 95% of that traffic was from System.
+Is there some way to drill down and see what System processes are generating that traffic?
+This is a bit more advanced than the NetBalancer suggestion from Amith (which looks like a nice program, but I have never tried it).  However this method uses only free tools or ones already native to Windows.
+You can download and use Wireshark to capture the network traffic going into and out of the computer.  This will allow you to see they type of traffic that is being generated and the port numbers in use.  For your purpose, after capturing data, it would probably be best to use choose the "Statistics" menu and open the "Conversations" report as this will sort the data into source/destination conversations.
+From a elevated command prompt (click on the "Start Button --> type "cmd" in the search box --> right-click on "cmd.exe" in the found programs --> click on "Run as Administrator"), you can then run the command netstat -b which will provide you a list of all the computer's network connections.
+Your output would look something like the below. The last connection is ESTABLISHED (currently open) from my computer using the local TCP port of 51888 going to stackoverflow on port "http" (the translated name for 80) and finally the binary that is associated with this connection is chrome.exe.  If you don't want the IP address and ports to be translated, add a "-n" to the netstat command.
+Find the entries that match the traffic you captured and this will tell you the program(s) using the connection.

@@ -1,0 +1,10 @@
+Where you're entering the group name, is the location set to your domain?  And the type of object is set to users/groups?  Can you add other arbitrary AD groups(from the same domain & OU)?
+I have a group of users in AD which reside at DOMAIN\mediapeople and i can assign this group to a share, like i have done on to a file share on the domain controller.
+It turns out the answer to this one was I wasn't using universal security groups. Once I'd changed the groups to universal, the appear as expected
+If the DNS settings are not correct on the new server, it will not list AD groups or users in the security dialog.
+Make sure you have the file server joined to the domain, and that when on the file server trying to add the group to the share's permissions, that your location is set to the domain and that the objects you are searching include groups.
+If you get an error instead of the message "Active Directory has replicated the connections" you've got bigger AD level problems to deal with...
+Here's how to do that, straight from MS: http://technet.microsoft.com/en-us/library/cc776188%28WS.10%29.aspx
+This might be an indiciation that you're having bigger problems with Active Directory not replicating... if one of your fileservers is using 'DC1' and the other fileserver is using DC2 to answer queries and DC1 <-> DC2 replication is broken, you'd see this problem.
+I have a new server, which also hosts some large media files, (this is it's purpose). I wish to add this group DOMAIN\mediapeople to this new share, but it is not available? I have a RDP session open to the main server, and also this secondary server, logged in with the same credentials, and this security group is available to one server, but not the other This is the first I have ever seen this, and I am wondering if anyone else has ever seen this before?
+I'd go take a look at 'AD Sites and Services' on both your domain controllers, and make sure you can force replication.

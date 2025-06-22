@@ -1,0 +1,5 @@
+Because of this, the WoL magic packet is usually sent as a broadcast. As the switch's MAC table will likely have aged as well, a unicast WoL packet would effectively be sent as broadcast anyway.
+Directed broadcasting usually requires explicit enabling and can be tricky, depending on the equipment. A static ARP entry for e.g. 192.168.0.254 => FF:FF:FF.FF:FF:FF will send all IP packets to that IP as a local Ethernet broadcast, doing the trick. Of course, you only need one entry on each subnet you need to direct WoL to.
+Since the unpowered destination machine will not answer to ARP requests, it's likely that the ARP cache just times out - the sender can't resolve the IP address and nothing is sent.
+A broadcast is only sent locally, so when you need to send a remote WoL you need to use either directed broadcasting or a static fake ARP entry on the destination router.
+The static ARP trick can also be used to wake a device from the Internet: set up port forwarding for any obscure UDP port to the fake ARP IP address and send the WoL packet to the forwarded port on your router's public IP address.

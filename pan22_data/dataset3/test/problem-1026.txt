@@ -1,0 +1,15 @@
+We ended up with a bucket full of objects with no permissions.
+However, after some investigation it turned out that there was a policy set incorrectly on the bucket, denying all access except to a single, arbitrary IP address.
+We are able to download these files with out any issue but the issue is when we change acl, adding metadata, changing permission etc..
+There is no issue for already existing buckets and newly created buckets.
+Through Amazon s3 console when we logged to destination with main account user (admin user) under permission section for all files its showing as “No permissions added...” .
+The issue is only with transferred files from another account.
+Once the policy was removed, the grant-all-access to the bucket took effect, and while the objects showed no permissions, it was possible to manipulate them normally again as described above.
+Through S3browser when we access permission of these files we are getting error as “Error occurred during Permission for  .
+This is a bit old, but I recently ran into the same symptoms with an different solution.
+We could see them from the console, download them from the console, but not from our CLI tools.
+To change permissions/acl public read for a bucket (this includes objects in bucket) use s3api put-bucket-acl
+This policy trumped the acl policy lists set on each object.
+The objects showed in the console as having no permissions, but it was not possible to add or remove permissions from these objects over the AWS console, aws cli, s3cmd, etc, even after granting everyone(all-aws-users) access to the bucket from the CLI.
+Now we files of s3://dest-geo/webroot/ are publicly accessible.
+We transferred files from one bucket to another bucket on a separate account with --acl-public as follows:

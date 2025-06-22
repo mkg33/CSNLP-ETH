@@ -1,0 +1,8 @@
+While I think about that I'd also like to create my custom ContentManager with a view to get other niceties such as automatic unloading, on-demand or in advance loading of assets, pre-loaded place-holder assets etc.
+I'm currently facing a problem with management, where for some resources I don't want to deserialize them repeatedly (e.g. a texture) but for others I do (e.g. destructible level geometry). As it is now when I replay a level I get back the original class with the player's changes.
+It sounds to me like ContentTracker has what you require.  It allows for disposing and reloading of individual items, among many other things.
+For this reason I decided to inherit from ContentManager to provide some way of re-deserializing a resource to get a new copy (probably using the protected ReadAsset<T> method).
+Now I'm thinking about how I should manage this. Ideally I want some way of saying you can re-use Textures, but not Levels (i.e. when a Level is requested it always deserializes a new instance).
+How is this sort of class typically designed and how can I overcome my immediate problem (reloading particular types and re-using instances of others)?
+(Do note, that it's for XNA 3.1 only, however there is a link at the bottom of the Codeplex homepage where someone has kindly ported it to 4.0)
+Currently I'm using XNA's ContentManager to load my content. For the unfamiliar the ContentManager deserializes classes from disk and keeps a reference for future requests.

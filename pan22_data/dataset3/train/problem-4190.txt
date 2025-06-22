@@ -1,0 +1,16 @@
+Apache is able to forward .php requests to the fcgi proxy and PHP executes correctly.
+Any suggestions for simulating a standard mod_php setup but actually proxying through fcgi?
+Since this is the only post or article I was able to find that helped me to adequately solve the issue, I wanted to add my solution to the mix.
+I am migrating my server to use mod_proxy_fcgi and php-fpm instead of mod_php.
+My ErrorDocument rule isn't invoked, and DirectoryIndex index.php  index.html doesn't fall back to index.html.
+message , this fixed my issue and allowed me to setup a 404 page :
+Or you can wait for Apache 2.4.10, which should include the module.
+You'll need a recent Apache 2.4 (RedHat back ported that to 2.4.6)
+I had precisely the same problem as ide and spent far longer trying to solve this than I had hoped.
+However, the Apache documentation does not recommend RewriteRule: "This is because this flag triggers the use of the default worker, which does not handle connection pooling."
+To solve the 301 redirects (#2), I'll simply leverage the error handler to issue redirects.
+Ideally, I think I'd either like to use ProxyPass in a FilesMatch block (currently unsupported), or define a new handler that proxies through fcgi and use it to handle .php requests, similar to what mod_php does.
+Unfortunately, Apache forwards all .php requests to the proxy, even when the file doesn't exist.
+I had same issue when file did not existed was showing "File not found."
+https://gist.github.com/progandy/6ed4eeea60f6277c3e39
+I was able to fix these problems with mod_rewrite:

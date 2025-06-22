@@ -1,0 +1,14 @@
+If you were to upgrade to SQL 2008, you could make use of Change Data Capture.
+Your replication subscriber will simply accumulate data w/o ever deleting it.
+It sounds from your comment on Marlon's answer like these are tables whose structure changes frequently.
+INSERT, UPDATE, and DDL changes would be replicated to your destination table.
+A very easy way is to setup transactional replication and simply don't replicate DELETEs.
+* INTO TableName clause with the DELETE statement to insert the deleted records in a target table.
+See Set the Propagation Method for Data Changes to Transactional Articles:
+For 2008 and up, you can use CDC (Change Data Capture) as described here.
+Note: Remember the overhead of using triggers as if you perform large deletes on table, then everything will be logged.
+That would be the most robust solution, and easier to maintain than the Replication method.
+But I know getting the approval/budget/time for such upgrades is not always easy.
+If keys are reused you'll have to take care of that by adding a subscriber-only surrogate key.
+For SQL Server 2005, you only have the option of using TRIGGER based solution for INSERT/UPDATE/DELETE operations which is nicely described here.
+In that case, investigate the alternative of doing a Transactional Replication publication and excluding DELETE transactions from the publication.

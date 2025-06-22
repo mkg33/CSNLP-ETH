@@ -1,0 +1,8 @@
+It's not Atomic; a delete transaction in the primary system fails to complete ever, thus the transaction is never completed, and never will be.
+And, note that the individual systems may be fine; it's the fact that you've created a hybrid system, and the problem lies there.
+Conceptually, a transaction in one system isn't truly complete until it has been applied to both systems. There are several ways to do this: replication is probably the most comprehensive, but comes with a certain amount of both system and human overhead.
+There are a number of fixes. I know one's already in the works, but I will mention one that worked for my company: we used a delete trigger to record the deleted records, and made removing deleted records a part of the sync process.
+It's an issue of data integrity. You have two systems that should reflect the same data, and they don't.
+The key is in the fact that you've got a hybrid, home-grown database system. There's nothing wrong with that (for small amounts of data, replication or log shipping entire DBs to get one table are overkill), but it is possible to miss a facet when building such a system, and your system is going to have fewer eyes on it than Oracle, MS SQL Server, or MySQL.
+This means that, as it stands, the database system as a whole (taking both systems involved as one system, for this table at least), fails to be ACID compliant.
+The method you're using involves asynchronously applying the transactions. You finish in one system, and catch up the other system periodically. The problem you've identified is that a certain type of transaction is not being caught, and thus is never being applied to the remote system.

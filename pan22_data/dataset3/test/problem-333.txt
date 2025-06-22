@@ -1,0 +1,11 @@
+this, however, will generate a loop at host B that will be resolved only by TTL running out, and will generate excess load on network.
+It would be better to have a properly configured switch, or a separate link to host B->C to send these packets.
+Generally, in order to accomplish this, you will need to do this:
+Have a look at the man pages, this should be a start.
+As your original question does not assume that the packet would be actually received by host B but just forwarded to host C I would do the following on host B:
+If this is a application, depending on your protocol, create your own custom packet with a final destination IP (what I had to do).
+Yes, it is possible to do that by updating source and destination MAC address before sending the packet onto the network again but leaving the IP addresses unchanged.
+This is the simplest way how I would accomplish this.
+In single-interface and non configured switch case you will always result in a loop unless you write a specialized software for this using pcap and you will have to trick the switch anyway by pretending to have the IP address configured.
+If this is Linux, I might suggest looking into prerouting and postrouting.
+This principle is used in some DSR based load balancers.

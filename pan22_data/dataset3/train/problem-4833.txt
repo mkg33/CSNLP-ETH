@@ -1,0 +1,31 @@
+For most small scale developers that is not a good tradeoff.
+If your mechanics run at 120 Hz, and you decide that the threshold should be 1200 then you can make the shield recharging be any multiple of 0.1 per second, and you can change it simply by changing how much you add to the accumulator each step.
+I understand that you shouldn't have a static loop, say 100ms and set something's speed to 1px/frame so it moves 10px/sec.
+If you want your shield percentage (for instance) to actually be an integer from zero to one hundred, then there's little you can do; as you note, you'll be prone to error on things like recharge simply because your 'resolution' isn't fine-grained enough for what you need.
+For example, to maintain a float value for shields for one million enemies is only 4M RAM, typical low end PCs have at least 2G so this kind of data storage isn't really a problem.
+Instead of adding some value to the shield every step, add a value to an integer accumulator every step, and whenever the accumulator reaches a given threshold, subtract that threshold from the accumulator and add 1 to the shield.
+If so would it work out for the next fire cycle to only check for .496 seconds to average out?
+But I think you're confusing an integer value with an integer view - simply because you present shields to the player as a whole number between 0 and 100 doesn't mean that you need to represent it that way!
+I know it most games under 10 minutes this would barely be noticeable, but over the long term this may actually mater in some cases.
+I disagree, or that is, I disagree to the extent that variable step is a performance optimization at the cost of making a lot of things slightly harder to handle.
+I guess my question is, how exact are games really?
+But you must keep the rendering flexible, an easy way of doing this is to set up a loop that first advance the game mechanics one step, then render a frame if the mechanics are ahead of schedule, and then if necessary wait until the mechanics are back on schedule.
+I have a damage system is my game and I would really love to stay away from float damage values, both for memory and game design reasons.
+The easy fixed step solution is to run the game mechanics at 120 Hz (good number for 60 Hz screens).
+Unless you're processing far more enemies than most games can dream of (literally tens of thousands at once if not more), then it's hard to believe that using four bytes instead of one for a handful of values will have any substantial impact at all on your memory footprint.
+Most games do carry over left-over time in systems, particle emitters work this way to avoid stuttering for example or the +1 shield regeneration above.
+However if I just have a running total of elapsed time, and I recharge one point once this elapsed time is over 1 second then over the course of time won't I have some consistency errors between recharging over one set of 100 real seconds and another set of 100 real seconds because those two sets may not have the same number of frames in them.
+Trying to process one million enemies, that's a problem =)
+This is really a drop in the bucket, and I can almost guarantee that you'll have far more important things to worry about memory-wise.
+I think the deciding factor should not be "how small a number doesn't matter" but "what am I modeling?"
+This works fine for values that can be floats, but what if I need integer values?
+Do most games just do a check every frame and say, "Well your rate of fire is .5 seconds, and its been .504 since you last fired, so fire now."
+You should have a speed and multiple that by the elapsed time so frame rate does not effect game speed.
+As others have mentioned there is no need to use integers for the sake of performance, but for the sake of gameplay they are often the best choice, in some cases even as implicit fixed point values.
+In day to day C++ a float is 4 bytes, an int is 4 bytes, there is no memory reason.
+Indeed, reasons like your recharge example are exactly why even values that look like integers to the player are often represented as floats (or, at least, 'higher-resolution' fixed point numbers - for instance, imagine that shields scale from 0 to 1,000,000) and rounded (or truncated) for purposes of showing to the player.
+You say you 'would like to stay away from float damage values for memory reasons' - how many enemies are you expecting to keep track of?
+Specifically for shield recharging and similar slowly changing values it may be a good idea to use a fraction accumulator.
+Sometimes it may fire every .501 seconds and other time .510 seconds?
+If I need a turret to fire every .5seconds, won't there be some variance if I do a running total of elapsed time?
+As for game design please keep in mind that what you show the player is only a representation of the underlying simulation, if you simulate +1 shield/second then your simulation works in fractional seconds but you only show the integer representation.

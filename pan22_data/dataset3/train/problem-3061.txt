@@ -1,0 +1,17 @@
+if you're a gimmiedehcodez kinda person, that code should compile in with .NET 4.0 and
+Please note that you will have better success using WinRM (winrm quickconfig on the remote servers to enable WinRM) which can use the Invoke-Command cmdlet instead of the Invoke-WmiMethod but this method works for me on Server 2008 and newer.
+$trigger = '{00000000-0000-0000-0000-000000000108}'
+I came across that script a while back, can't remember if it worked or not but I did get something to work.
+You can do this with powershell similar to what the script you posted tries to do.
+In a nutshell, I used the WMI query "SELECT * FROM CCM_SOFTWAREUPDATE WHERE COMPLIANCESTATE=0 AND EVALUATIONSTATE < 2" and passed each update one by one to the InstallUpdates method, because I wanted to display the progress similar to how Microsoft does it.
+$scan = Invoke-WmiMethod -ComputerName $server -Namespace root\ccm -Class sms_client -Name TriggerSchedule $trigger
+Here is what I put together from various web pages.
+You must pass an array to the InstallUpdates method, even if you're only passing a single update object.
+don't know why his wouldn't work, it does use the same methods, but I was able to do this with .NET and WMI using C#, so I know it can be done with powershell.
+[System.Management.ManagementObject[]] $CMMissingUpdates = @(GWMI -ComputerName $server -query "SELECT * FROM CCM_SoftwareUpdate WHERE ComplianceState = '0'" -namespace "ROOT\ccm\ClientSDK") #End Get update count.
+Also, what about configuring a maintenance window for this collection, and telling sccm not to install updates outside the maintenance window?
+You could pass the entire returned array if you want, and it will queue them up like it always does, installing them one by one.
+For Server 2003, the Updates deployment evaluation scan works but Powershell will complain about something.
+#Start the System Center Configuration Manager Software Updates Deployment Evaluation Scan
+(GWMI -ComputerName $server -Namespace "root\ccm\clientsdk" -Class "CCM_SoftwareUpdatesManager" -List).InstallUpdates($CMMissingUpdates)
+When one update is finished, if it's past the maintenance window then it will stop installing updates (in theory for me, I've never had the maintenance window luxury).

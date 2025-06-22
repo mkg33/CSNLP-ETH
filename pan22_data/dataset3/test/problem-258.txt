@@ -1,0 +1,22 @@
+As psmears mentioned, you'll get better performance if you set the block size to 1 MB (bs=1M) instead of 1 B (bs=1).
+You can optionally specify count if you want to limit the size, but if you omit the count, it will just run until you're out of disk space.
+I recommend making the block size much higher than one, because this will determine how many system calls the dd process makes - the smaller the blocksize, the more syscalls, and therefore the slower it will run.
+Stop using seek and use a very large bs and/or count.
+which will take much longer, but will actually fill the disk.
+I don't believe you could make huge files, taking actual disk space in an instant - taking physical space means the filesystem needs to allocate disk blocks to your file.
+As it is you're making a sparse file, and obviously you need to not do that.
+Extra credit: one practical use for zeroing the free space is that, afterward, you can then delete the "zero" files and dd the entire partition (or disk, if you've zeroed all the partitions) to a disk image file (say, disk-backup.dd), then compress the file.
+This will still take a while, but if you want to check on the progress of your command, open a separate console and run these commands:
+If you're just testing for cases with filled file systems, maybe fallocate is good enough.
+If you want to literally fill the hard drive, do this:
+I think you're stuck with the oldfashioned "dd if=/dev/zero of=filename bs=100M count=100" which is limited by your drive sequential write speed.
+However, there are other times when it's handy to make dd output its progress.
+The free space is now highly compressible, so your compressed dd image will be a lot smaller than the original block device whose contents it contains.
+You have created what is known as a "sparse file" - a file that, because most of it is empty (i.e.
+The trouble with the seek=<big number> trick is that the filesystem is (usually) clever: if part of a file has never been written to (and is therefore all zeros), it doesn't bother to allocate any space for it - so, as you've seen, you can have a 10GB file that takes up no space (this is known as a "sparse file", and can very useful in some instances, e.g.
+(Though beyond 1MB or so it probably won't make much difference and may even slow things down...)
+reads back as \0), doesn't take space on the disk besides what is actually written (1B, after 10GB of gap).
+Use the PID of dd in this command (replace PID with dd's PID):
+Shenanigans: zip up a large zeros file and e-mail it to all your friends.
+You can force the space to be allocated with (for example):
+Of course, this is of limited use when you're just trying to fill up the drive (you could just use df or du to check free disk space or file size, respectively).

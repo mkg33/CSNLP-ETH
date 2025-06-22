@@ -1,0 +1,7 @@
+I set up an NFS share from ext3 partition using Openfiler's web based configuration, and I succeeded to mount the share from another host. Both host are connected using dedicated gigabit link.
+Have you tried with a different filesystem, like XFS? It solved all my problems when doing extreme amounts of small iSCSI block transfers. No idea why.
+Just to add to Evan's answer, you also have all of the overhead of creating the metadata (directory entries, etc.) for each file you are copying over.
+But if I copy a directory containing many small files (.php and .jpg, around 1-4 kB per file) of total size ~300 MB, the cp process ends in about 10 minutes.
+Is NFS not suitable for small file transfer like above case? Or is there some parameters that must be adjusted?
+Also, iSCSI/NFS is usually configured for pretty large dataframes (jumbo frames etc), it might hurt you if you are copying tiny files one at a time. Maybe tar'ing and then transfering would help you.
+I don't have a lot of NFS experience, but my experience with other network file sharing protocols says that performance suffers in the "many small files" scenario nearly universally. You're incurring round-trip latency, and over a large group of files that latency adds up.

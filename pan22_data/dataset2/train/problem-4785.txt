@@ -1,0 +1,11 @@
+You can adjust the clock speed (labeled, "Execution Cap") by sliding the indicator on the bar all the way down to 1 percent.
+On VMWare ESX and ESXi you can create a Resource Pool and limit the CPU Resources for that pool.  This would allow you limit the CPU speed of any systems created in that Resource Pool.
+So if you have a deca core (10 cores) on host and a tri core on guest (three), and you want guest run at X MHz while host runs at Y MHz, just ignore the number of cores to calculate the percent.
+Some resource limiting software will allow you to limit resource percentages.  This would make it easier to limit CPU speed.  To do so you need to disable access to spare resources.
+I have been tasked with the same problem and I installed Oracle VirtualBox on Windows 7 (as host) and Ubuntu (as guest). I used a standalone laptop, HP EliteBook 8540W with Intl Core i7 running at 1.87 GigHZ and 8Gig RAM.
+I assumed that the host OS (Windows 7 in my case) was not consuming any clock cycles (I confirmed this by checking the "Task Manager" and I found ZERO CPU utilization on the host machine .i.e. windows 7 in my case). Therefore, I asuumed 100% "execution cap" equals that of host machine (e.g. 1.87 GigHZ). I think by taking a percentage between your host machine clock speed and 800 MHZ, you are able to figure out the percentage value that corresponds to 800 MHZ.
+Assuming your installation works properly, on your Guest machine (e.g. in my case, Ubuntu) select "Settings..." from "Machine" in the main menu; select "System" and click on "Processor" tab.
+You might be able to simulate this with CPU pinning.    Then create some CPU bound processes pinned to the same CPU.  Estimated CPU speed is (Real CPU speed / # of processes).
+--cpuexecutioncap <1-100>: This setting controls how much cpu time a virtual CPU can use. A value of 50 implies a single virtual CPU can use up to 50% of a single host CPU.
+On VirtualBOX there is no way to simulate a multi-core with diffrent speeds on each core, only one slider for all cores.
+On VirtualBOX there is a slider where you can configure the % of host CPU that guest CPU can use. Such percent applies to each core.

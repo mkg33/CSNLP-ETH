@@ -1,0 +1,7 @@
+This error aborts the statement (attempting to release the schema lock) on the remote server, but when XACT_ABORT is OFF, the remote server continues processing the next statement. The insert completes, despite the schema lock release error.
+The setting of XACT_ABORT is propagated to the remote SQL Server, as documented in Handling Errors in Server-to-Server Remote Stored Procedures.
+See the related Q & A Which one is more efficient: select from linked server or insert into linked server?
+You can avoid the problem in several ways, including wrapping the INSERT in an explicit transaction (assuming DTC is available to you).
+I recommend you avoid four-part name syntax for remote changes, since the implementation is based on a cursor model. You will normally get better performance using a bulk method, or by pulling the data at the remote server (rather than pushing it from the local server).
+The setting also affects if updates are possible, and how they are handled, as documented in Distributed Queries and Distributed Transactions. Your INSERT is allowed with XACT_ABORT OFF because SQL Server supports nested transactions.
+Nevertheless, there appears to be an implementation bug, because tracing the activity on the 2014 server during the insert reveals that an error occurs when SQL Server attempts to release a schema lock:

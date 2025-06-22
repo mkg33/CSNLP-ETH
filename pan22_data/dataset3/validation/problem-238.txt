@@ -1,0 +1,8 @@
+What I'm actually trying to do: the color textures contain lighting information (as seen from light view, it's a reflective shadow map).
+So I have to sample the depth texture completely per each slice, and I also have to go through the processing (at least until to discard;) for all texels in it.
+I want to accumulate that information in the 3D texture and then later use it to light the scene.
+a point at (x/y) in the depth texture will be rendered to (x/y/texture(depth,uv)) in the 3D texture).
+More specifically I'm trying to implement Cryteks Light Propagation Volumes algorithm.
+It would be much faster if I could rearrange the process to
+Simply doing one manual draw call for each slice of the 3D texture (via glFramebufferTextureLayer) is terribly slow, since I don't know beforehand to what slice of the 3D texture a given texel from one of the color textures or the depth texture belongs.
+I have an existing depth texture and some other color textures, and want to process the information in them by rendering to a 3D texture (based on the depth contained in the depth texture, i.e.

@@ -1,0 +1,15 @@
+What's the best / closest to that I can get to hiding all this info from the outside?
+If you have installed nginx using apt-get in Debian or Ubuntu, you might need to install the package nginx-extras to set or clear "Server" header
+There are tools out there (such as BuiltWith) which scan servers to detect what tools they're using.
+Also, some cracking tools might help with deteting.
+If not, there is likely an alternate package you can use to get it.
+Instead of the header_filter_by_lua it is recommended to use the new directive header_filter_by_lua_block which inlines the Lua source directly between curly braces ({}).
+With this it is not needed to escape special characters.
+I don't want anyone to be able to detect that I'm using NGINX or even Ubuntu from the internet.
+https://github.com/openresty/lua-nginx-module#header_filter_by_lua_block
+On ubuntu 14.04 if you install the nginx-extras package you can remove the server header by using:
+header_filter_by_lua 'ngx.header["server"] = nil';
+Throw this in the http block and every request will be lacking a Server header.
+If it doesn't work run nginx -V to verify that you have the lua module compiled into your copy of nginx.
+After a lot of time working out how to do a custom flavor of nginx on ubuntu I realized you can use the lua module for this.
+Once this is done, you can add the lines below in nginx.conf (usually /etc/nginx/nginx.conf):

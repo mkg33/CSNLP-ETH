@@ -1,0 +1,9 @@
+It still uses ssh as the transport protocol, so it's obviously just as secure as a looped ssh connection. 
+If you're doing anything complicated I'd recommend creating the script in a separate file and then scping it to the server you want to run it on then ssh in to run it.  Trying to get something complicated into ssh via quoting and escapes is more challenging than it is worth usually.
+I'm creating a script where I ssh to several different hosts one after a time. The goal is to ssh to a machine, do some local commands, execute a a script, wait for it to finish and then exit the ssh session and move on to the next.
+I've read several posts on here about this topic but every solution I find seems to be a one liner where you run one command.
+I'd recommend looking at pssh for what you are trying to accomplish - it allows you to easily handle the nuances of opening/closing connections across machines, and can even run in parallel to reduce execution time.
+The source builtin executes your script in the current shell context, while ./exit.sh launches a new shell to run it.
+I guess that your script is not exiting the shell session because you are calling it directly with ./exit.sh. You should source it instead.
+I've done this hundreds of times and it works fine when you want things to run on one server at a time.  If you want things to run in parallel there are other options, but I'd look at ansible first.
+So in this case I ran uptime on the other side.  You can replace uptime with what you want to run.  Whatever you put there is where the exit needs to be.  uptime exits once it prints its output, but if you are writing the script you may need to make sure it eventually exits so the for loop can continue.

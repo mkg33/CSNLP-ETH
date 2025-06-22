@@ -1,0 +1,11 @@
+Say you have 500 distinct deformable shapes/models in the world (ie you want to be able to change/delete vertices from the models somewhat arbitraily as the game progresses).
+In this case, maintaining the original vertex points is completely useless.
+http://msdn.microsoft.com/en-us/library/windows/desktop/ff476899(v=vs.85).aspx
+Without knowing your particular scenario, and the extent of the deformations, relative interval of the deformations, a specific architecture is pretty much impossible to recommend.
+So how should you handle your vertex buffer, assuming D3D11 interfaces (so vertex buffers are your only option to draw anything):
+However, if your deformable objects retain somewhat of their original shape, you may be able to rely completely on geometry shaders, or other types as you need, and not have to update the vertices.
+In other words, just let the DirectX API manage it for you.
+At the bottom of this article, there are references to how to make dynamic vertex buffers.
+This particular solution is "supposed" to dynamically "optimize" itself based on how frequently you are updating the vertices, etc.
+The requires you refresh the vertex buffers in the frames the model has become dirty, at least.
+I have had a similar problem rendering chained deformations where one object's deformation affects another, and so on, until it becomes cyclical.

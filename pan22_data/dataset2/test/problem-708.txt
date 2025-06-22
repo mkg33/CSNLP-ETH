@@ -1,0 +1,21 @@
+The "Device" field should be set to the Folder Name we specified via VirtualBox Manager Add Share.  I had changed the default "G_DRIVE" to "share".
+(In your case you should select whatever folder or drive you intend to share, then click the OK button.)
+Next open the terminal and copy and paste the following or type it in. You can enable shared clipboard under Device-> Shared Clipboard-> Bidirectional 
+I was not using the name of the share I created in the VM, instead I used share or vb_share when the name of my share was wd so this had me confused for a minute.
+Unfortunately this means that you use the default share name or host's share directory name is the same as the mounted guest share name. 
+(I personally used vi, but because nano is the default editor on Debian jessie I specified it in the above example.)
+(Note that there should be whitespace -- space(s) and/or tab(s) -- between the fields of the definition, but no whitespace within a field.)
+When you've made your selection and clicked the OK button, VirtualBox Manager will fill in the Folder Path and Folder Name fields of the Add Share form.  Leave the Folder Path field alone, but you can change the Folder Name if you like -- just be sure to remember it for later.
+To mount this share in my home directory, with its ownership and group set to my personal UID and GID, I added the following definition to /etc/fstab:
+The newly-configured share should now appear as an entry under Machine Folders in the Folders List.  Click the OK button.
+Finish up the Add Share form by selecting the Make Permanent check box, but be sure to leave the Auto-mount check box cleared -- we're going to take care of mounting later.  (And of course, if you want to make the folder or drive read-only, then go ahead and check the Read-only box.)  Then click the OK button.
+Whatever you name your share here will be the name you will need to use when mounting in the vm guest OS. i.e. I named mine "wd" for my western digital passport drive.
+The "Options" (comment=systemd.automount,uid=conib,gid=conib,noauto) were the tricky bit, and took a bit of trouble to get working for this setup.
+When you've added the definition line to /etc/fstab, reboot your Debian guest and confirm that you can see the files and subfolders of your Share.
+In the resulting pop-up window, select Machine Folders in the Folders List and then click the "Add a New Shared Folder Definition" button (the blue folder with a green "+" sign icon to the right of the Folders List).
+In the resulting Add Share pop-up form, click on the down-arrow button in the Folder Path field, and then select Other.  A Browse For Folder pop-up window will appear.
+The "Mount Point" is a directory path spec that must already exist but should be empty.  (That is, anything already present in that directory will be hidden by what you're mounting on top of it.)  I had created a new, empty subdirectory named "share" in my home directory.
+In order to mount this share during boot (startup) we need to add a mount definition line to /etc/fstab in our Debian jessie guest installation.  This edit needs to be done either as root or via sudo, for example:
+Install virtual box additions on the guest os. Then shutdown the guest OS. Open the guestos settings in virtual box. Then add a shared folder and save the settings. Then start the guest os and for ubuntu issue the below command. It adds the current user to the vboxsf group.
+Ok this was a little confusing for me but I finally realized what was happening. So I decided to give my 2 cents in hopes that it will be more clear for others and if I forget sometime in the future : ). 
+(In my case, I had just added another hard drive to my workstation to be used for a dedicated share, already formatted for NTFS, with a volume name of "share", and mounted as "G:". So I clicked the arrow next to Computer, selected drive G: and then clicked the OK button.)

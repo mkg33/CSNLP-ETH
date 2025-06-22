@@ -1,0 +1,9 @@
+If package is not relocatable you may still extract the files from RPM and try to run it. You can extract RPM files using for example:
+Yes, but you may not want to. I have used custom puppet manifests and rpm packages to maintain software on compute clusters on which I did not have root access. In theory it is as simple as
+Depending on the contents of the package you could simply extract the contents of the rpm and use it from somewhere withing your home directory.  Even if it isn't flagged as relocatable.  If binaries in the package have hard-coded paths, or if the application requires root access then it may not be possible.
+This will put an rpm under the current directory and extract the scripts so you can edit and run them if necessary.
+However, there are quirks in how this behaves across EL4, EL5, and EL6, so you'll need a different set of steps and options for each one. I don't have that information handy anymore. Those quirks, as well as frequent RPM database issues (perhaps due to NFS), made me regret using rpm.
+Considering all of the above, regarding relocatable builds, you could try following the instructions listed here.
+You can force it to install under a different directory using a different dbpath. Also you should probably not run any scripts directly without checking them out.
+Copy the files into your ~/ folder, add any additional dependency libraries and hope for the best. Not guaranteed but you may get some non-relocatable packages working this way.
+Some packages are relocatable so they may work fine without root, just specify prefix when installing it:

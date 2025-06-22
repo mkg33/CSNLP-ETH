@@ -1,0 +1,9 @@
+Which is basically ban for 30 min, if more than 100 hits/min on port 80 and if the attack continues, keep extending the 30 minutes.
+None the less, IPTables have their uses, and if you can't setup devices external to (upstream from) your server, they may be a reasonable defense.
+The starting point would be to close all ports other than the ones you need. For web requests you will need port 80 open (and port 443 if you do HTTPS/SSL). Any other services (SSH, FTP, POP, SMTP, IMAP, etc) your server runs will require additional ports open.
+If you want something more complex, you can implement a tiered system, where you block the IP for 10 minutes the first time, 30 minutes the second time, etc.
+I use something similar, but for non-HTTP connections (e.g. SSH, FTP, etc) which you can see here. For you, a possible (incomplete) implementation might look like the following:
+As for the DoS, you probably want to look into the recent module. It will monitor the number of incoming requests from a given IP address, can be used in such a way that if the limit you specify is exceeded, all future packets from the IP address in question will be dropped (for a time you specify).
+e.g. You may say that if more than 100 new requests come from an IP in 60 seconds, drop requests from this IP for 1 hour.
+As you have noted, IPTables is not a definitive solution to DoS - at least one reason being that your server still receives the packets and must process them. If enough packets are sent, your bandwidth will be exhausted and your server will still do a lot of processing while legitimate requests might not make it through.
+A word of caution - before you block too many ports, ensure you have implemented something to reset your configuration if you get yourself 'locked out'.

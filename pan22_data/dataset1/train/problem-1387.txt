@@ -1,0 +1,16 @@
+There are 2 hard problems in computer science.  Naming things, cache invalidation and off-by-one errors.
+If you have a record of "is this inside", whenever a block is placed or removed it is pretty easy to update it and its region via a flood fill.
+To optimize this you may want to have a set of tiers of "insideness".
+A "cell" is a region surrounded by player-placed blocks (up to a certain size).
+"Inside" is a room with a door, a light and a chair.
+When you place a player-placed foreground block, do a clockwise/counterclockwise walk to see if a new cell is formed.  When you remove a player-placed foreground block, examine if it breaks any cells -- if so, see if a new cell is formed by merging the two.
+When a new cell is formed or unformed, check for it being a room or an inside.
+Cells can keep track of how many background tiles they need to be a room.  Then a simple count when a cell is formed, a background tile is added or removed from the cell, can determine if it is a room.
+Similarly, Cells can keep track of how many chairs and light sources (and in fact objects of all kinds) are within them.  Then the inside check is trivial.
+So we augment the map with "cells".  When tiles are added or removed we check the cell of the location, and increment/decrement the count in the cell.
+Use clockwise/counterclockwise walking to define the interior and exterior of a cell when a foreground block is added or removed.  As the size of cells is limited, this walk will take a bounded number of steps.
+As a bonus, you now have a cheap way to talk about "opulant" rooms, or "room is blessed by a holy fountain", or anything else about a room, as rooms have a count of each object type within them.  (Or, as rooms are bounded in size, just do an iteration; this removes a cache).
+Each location is in at most one cell, so you can store the cell-id of each location on the main map.
+Like @Ferreira da Selva said, try the flood fill algorithm. Though, you can use a few different criteria when running the algorithm to determine whether it is enclosed.
+For example, for each tile you check if there is a background tile, and if there isn't, then you know that it isn't enclosed. Or you could have it perform a deferred execution by separating it over a number of frames, thus lightening the load on the processor and reducing lag. Or you could create a room size limit that the player would have to adhere to.
+Using a combination of these would allow you to do it more efficiently and for effectively.

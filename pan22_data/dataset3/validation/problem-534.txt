@@ -1,0 +1,24 @@
+For an Advanced Format drive it's 4K bytes (it doesn't matter whether the drive is presenting 512-byte or 4K-byte sectors at the interface, i.e.
+During reading the firmware reads the ECC along with the data and checks them together.
+As said in the description linked by DavidPostill, it may succeed with an error-free (actually "correctable" is more likely) read; or it may be able to deduce, essentially by averaging the returned bits together, a reasonable guess at the sector contents.
+The result of the check after a read has basically three possible results:
+For a traditional hard drive the hardware sector is 512 bytes.
+This is because it is not possible to know which bits are suspect, let alone what their values should be.
+During writing the drive firmware calculates this data and writes it along with the user's data.
+In the latter case the drive does not normally return any contents whatsoever; it just returns a status indicating the error.
+So to answer the question I think you were getting at — if there was a partial read error but enough information was available to figure out where the error occurred, then it can also be corrected, and the computer won't see any error at all.
+SpinRite works by simply trying to read the bad sector over and over again, using a "maintenance read" function that returns the data (but without ECC bits) even though the drive says "uncorrectable error".
+If all bits were read correctly, the code will validate and the data can be passed back directly.
+Otherwise, you always get bits back, they're just possibly incorrect bits.
+If a larger number of bits was read incorrectly, the ECC code can detect that there was an error, but it no longer has enough information to figure out which bits are incorrect; this is an uncorrectable read error.
+The ECC is a "gestalt" that is calculated across the entire sector content, and if it doesn't match, it's the entire sector that isn't matched.
+An uncorrected error happens when it's not possible to figure out which data bits are valid and which ones aren't, and since the error-correcting code is computed over a sector, this happens at sector granularity.
+There's no such thing as "can't read a bit", unless you have a really grievous hardware error like the head not being able to seek to the correct track, or the servo track is damaged and the correct sector can't be found.
+This is where the error-correcting code comes in; it adds some number of extra ECC bits to every sector, such that any correct combination of data bits and ECC bits observes some algebraic rule.
+If a small number of bits were read incorrectly, the ECC code can be used to determine exactly which ones, and fix them, so all of the data is passed back correctly.
+Obviously in either case you would have, at the very least, an entire unreadable sector.
+The error correction code on a hard drive is an additional chunk of data that's associated with each hardware sector.
+It has no more ability to precisely correct errors using the ECC than the drive does; that's mathematically impossible.
+It is impossible to determine which part of the bad sector is bad, let alone what its contents should be.
+Therefore the entire sector (ECC bits and all) is untrustable.
+If a very large number of bits is read incorrectly, then the code might validate correctly "by accident" and the drive will return corrupted data, but with enough ECC bits the probability of this happening can be made as small as you like.

@@ -1,0 +1,21 @@
+You will probably find that having a single Product table with Name/Flavour/Size combination to be best so you would have:
+Likewise you can INSERT in other units if need be.
+The safest way is to define product_id's with the finest reasonable granularity, to the point that if you decide to sell half the stock at a discounted price, you should define a new product_id for the items in promotion, all things being equal but the price.
+Each product has a UPC code, and it will be different on each flavour / package size etc.
+Nestle come out with a new chocolate bar "Fraggleiscious".
+4 months later they produce a "Fraggleicious Mini" in both flavours, both at 25g.
+This seems like it breaks normalisation rules ( I suppose it does a little bit), but over time as you add/remove items and manufacturers create new flavours of products but in slightly different size combinations, you will end up splitting up your products in the products table too much for maintenance.
+In this way you will manage to balance sales and returns without too many corrections.
+I'm making an assumption here that the products are (mostly) pre-packaged.
+2 months later they reduce the mint size bar by from 50g to 45g and change the price point while leaving the original bar the same size.
+same name, same size, same producer, same provider, and so on, and you will do that in separate tables associating the product_id with those features.
+Then install the extension on your DB and configure your table.
+You will probably find it easier to store each product with a different size, once per line on the product table.
+Your system must cater for all of this and be able to recognise all items at any time as it may take you 2 years to sell out of all of them.
+They'll get stored in those units, but you can select in any unit you want.
+You will have many ways to group your products together, e.g.
+Grocery inventory management has been around a very long time, no need to re-invent the wheel here.
+Use a local UPC range for non-tagged items like fresh meat and bulk vegetables.
+If you're not in the US and working with Imperial Units, take a look at Christoph Berg's brainchild postgresql-unit.
+Remember that a different barcode may or may not be issued with each change.
+So yes, the 250g peas and the 500g peas will be different entries for two reasons:

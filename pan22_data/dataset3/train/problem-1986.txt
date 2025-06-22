@@ -1,0 +1,14 @@
+Then, the 1.4M rows have to be retrieved and the 3rd condition (LocalDateTime >= '2009-04-18T00:02' AND LocalDateTime <= '2009-04-20T00:02) - that is not covered by any index - has to be checked for every one of these 1.4M rows.
+A multi-column index on either (VariableID, SiteID, LocalDateTime) or on (SiteID, VariableID, LocalDateTime) would be enough to narrow the search to only the needed keys (with the previous example to only 70K) and then only those rows would be retrieved from the table.
+Question: Does this mean the query is using indexes?
+No, I wouldn't remove any index, just add the new one, unless I was sure I don't need an existing index.
+If this 3rd condition narrows the results to, say 5% or 70K rows, the overall efficiency of the query will not be the best possible.
+But analyzing queries (and indexing) should be done after examining all the queries against the database and the requirements (which queries need to be extra fast and optimized, which ones we can afford to wait longer for them, how other operations will be affected if we add a lot of indexes, etc.)
+This is most probably not the most efficient way, especially if the query is retrieving a small perecentage of the table's rows.
+The Using intersect(FK_DataValues_Sites,FK_DataValues_Variables) means that the query is using two indexes on table datavalues with the Index Merge Intersection Access Algorithm and then (Using where) the rows are additionally checked against some other conditions.
+The two existing indexes can be used invidually or combined (with tthe help of the index merge intersection algorithm) to narrow the search to (0.10 * 0.05 =) 0.5% of the tables' rows (and that is what the MySQL engine is doing in this case.)
+The best would be if there was an index that covered all 3 conditions.
+Then, the index merge algorithm can further narrow it to the 1.4M keys (at the extra cost of this algorithm).
+With a 280M rows table, this means that the first index can efficiently give us the 28M keys that match the 1st condition and the second index can give us the 14M rows that match the 2nd condition.
+For example, lets say that the SiteID = 15 condition narrows the search to 10% of the rows and the VariableID = 8 condition narrows the search to 5% of the rows.
+Extra question: Do I have to remove the current index and then replace it with a multi-column index?

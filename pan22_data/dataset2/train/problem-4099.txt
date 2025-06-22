@@ -1,0 +1,12 @@
+to find out which apache process launches others. I guess you have in a site a instruction which bifurcates the process and spawn multiple instances.
+Secondly, figure out how much memory each httpd process requiers on avarage. (looks like somehwere around 15Mb from your top)
+Log into an SSH shell and run top. That will give you an idea of what processes in particular are causing problems here.
+ServerLimit 16 How many processes thats allowed at one time (this has to be greater or equal to MaxClients/ThreadsPerChild)
+So if you do not have enough memory to run all those processes try to lower MaxClients and ServerLimit.
+MaxRequestsPerChild needs some more explanation, say you have alot of diffrent PHP-scripts running and one or two of these uses alot more memory then the rest. Once one processes has run that particular script the process will stay at that memory usage until it dies. With this option you can set how often you want the processes to restart.
+So if you have 150Mb free when apache is not running, you should limit apache to only spawn 150/15 = 10 processes. 
+You can control this in the apache configuration. The settings are dependent on what type of MPM (Multi-Processing Module) you are using. 
+My advice is to upgrade your VPS. Or if you want to get the best bang for the buck, ditch Apache and use nginx/lighttpd with php-fpm. I personally use Litespeed Webserver Standard edition on my VPS and it rocks. The only downside is that it's if your sites grow past Litespeed's limit (150 concurrent connections), you will have to pay for Enterprise Edition or switch to other webservers.
+If you are using Apache MPM prefork (http://httpd.apache.org/docs/2.0/mod/prefork.html) you can control it with the following settings:
+Apache is a memory hog, I think it's normal to see apache taking that much ram with a traffic usage like yours.
+If you are using Apache MPM worker (http://httpd.apache.org/docs/2.0/mod/worker.html) you can control it with the following settings:

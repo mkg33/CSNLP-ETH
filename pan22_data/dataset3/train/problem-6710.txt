@@ -1,0 +1,22 @@
+One thing I would point out is that you can then create table methods that, if you can get your ORM to always use table aliases, can then take the place of columns.
+If you were storing this to automatically expire/invalidate certificates, you can run a separate task that does this.
+The reason is that if there is no issuer column the parser will convert the first statement to:
+Adding to Craig's excellent reply, that once you start pulling information from an X509 library, you can do some other interesting things with it.
+Maybe somebody see any other security issue that can arise with this solution?
+The advantage of duplication is it separates the data from the extraction functions for reading and writing, allowing more optimizations to be possible.
+the functions get run on insert/update time) as he mentions.
+Unfortunately this solution have two disadvantages:
+I don't know if SQLAlchemy always uses table aliases or if you can force it to do so, but if you can, then you can avoid duplicating information by calling the parsing routines on the X509 certs directly, and you can even index the output of those functions so you don't have to call them on select time (i.e.
+Therefore I have to store several X509 certificates (PEM or DER format) in PostgreSQL database.
+In the end it is hard to come up with a full recommendation without knowing exactly what you are doing, what your expected workloads are, etc.
+Than I will create object (in SQL alchemy) representing X509 certificate with methods like add_new_X509(), find_X509(search criteria)  etc.
+The advantage of keeping everything functional (assuming your ORM supports this) is that it provides additional guarantees of data integrity.
+In addition I would do the following since you are storing certificates:
+My idea is to have following columns in database: X509data, notAfter, notBefore, subject, issuer etc.
+I'm working on web authenticate system where users will digitally sign random tokens and this will be checked with X509 certificates stored on the server.
+So whenever I will add new certificate with method add_new_X509() it will automatically reads from certificate all data and fill up rest of the columns and put raw certificate into X509data column.
+Sounds easy, but I want to have possibility to search certificates with subject, issuer, notBefore, notAfter and similar criteria.
+Also, since postgresql allows you to use python as a procedure language; you could write a trigger or view that will return back the "parsed" information for your application - if you really wanted to offload it from your app.
+Note that indexing a lot of columns there will shift a lot of computation time from read to write (making inserts/updates slower, but read operations faster).
+Note that the following is not valid and hence my comments about the ORM:
+I didn't quite get why you want to store the various subject/issuer fields separately unless you are going to query for the information from the database; especially as you will have to read the certificate to verify its details (your second item on the list).

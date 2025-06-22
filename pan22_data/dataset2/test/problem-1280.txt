@@ -1,0 +1,6 @@
+I'm currently setting up a new Server using libvirt+kvm. Afterwards there should be about 5 virtual-machines on this server running (+some testing machines).
+In general, using more parts mean more things to break. I'd advise rethinking what you're doing so that LVM isn't needed twice. Perhaps use something like OpenVZ instead of KVM, OpenVZ has support for resizing virtual partitions quickly and on the fly.
+The storage is put on a raid-5 device which is set up using LVM. KVM now runs on some LVM-Logical Volumes.
+The question is: Is there any drawback of using lvm again (a second time) inside the virtual machine to partition the space? So it would be: Harddisk-> Raid Controler -> LVM for Physical Server -> One Logical Volume per VM -> LVM inside each VM -> Several Logical Volumes inside each VM.
+I think, using a second time LVM won't be good for performance but except a network filesystem, I can't think of another stable solution with dynamic partition (you can try zfs with fuse or btrfs but there are not production ready).
+LVM's performance overhead is trivial, using it twice won't change that.  Your raid-5 device is going to have a much much greater impact than lvm.

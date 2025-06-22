@@ -1,0 +1,11 @@
+With that UUID in hand, you can identify filesystems with it regardless of what they're on. This is also great for migrating a filesystem from one device to another without having to update any configuration. The following is an exmaple of my /etc/fstab file, which is using a combination of device labels, UUIDs, and LVM persistent names rather than direct kernel names for block devices:
+I could do something like this to create a /dev/transcend symlink, with partition numbers appended where appropriate, to whatever real device is actually created when I insert my Transcend stick:
+Once you connect a device you can visit /dev/disk and go from there knowing that the symlinks there get created dynamically:
+If they are different sizes, fdisk -l should show you the size of the entire disk in the header along with the block device name, which should help you.
+Likewise, I can use a UUID as a device argument in this mount command to mount my root filesystem to a directory :
+You can easily display which device goes to which UUID/filesystem with lsblk -f. The following is an example from my system, which shows a nice descriptive tree off of my single NVMe drive. The flash drives in this question would probably present a much simpler output.
+If you want to go further than that, you could add udev rules (assuming your linux distro has udev) to map your different drives to different device names, or to provide a different symlink based on the drive model
+You can also check the output of dmesg. When a USB device is connected, dmesg will display the process it undergoes to bring it online, as well as showing you the block device it assigned. Here's a sample output:
+I have 2 usb mass storage devices, and I need to be able to work out which physical device maps to a block device.
+Of course, if I put in multiple devices of the same model, there would be a collision, but with a bit of work you can get around that
+If you have a filesystem on that device, that filesystem has a UUID. You can use this UUID to mount the filesystem reliably, no matter what device major/minor block device the flash drive comes in as on the system

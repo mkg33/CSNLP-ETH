@@ -1,0 +1,6 @@
+I know I could just write the logs to a file, but I'd rather not do that because I very rarely need them, and also the storage is ephemeral since it's inside Docker.
+I have a Docker container which is sending syslog logs to logentries.com. This is working fine, but for times when logentries is down or delayed, I want a way to read logs generated in realtime inside the container.
+Ideally there would be some way to read logs processed by syslog-ng, perhaps via the /dev/log socket?
+I'd use a file destination with templated filenames and the overwrite-if-older() option. That way you could store the logs only for a week or a day. 
+You could use the usertty destination, but AFAIK there is no console you could connect to in docker, and also usertty can be slow in syslog-ng (which might not be an issue if there are not so many logs on your host).
+A third option is to use the disk-buffer of syslog-ng, that way syslog-ng stores the logs on disk if logentries is not accessible, and sends them when it is up again. However, disk-buffer will be available only in syslog-ng 3.8, which is not released yet (but you can compile the development version from the source from GitHub)

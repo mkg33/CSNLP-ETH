@@ -1,0 +1,19 @@
+It looks like you're either coming to PowerShell with a strong CMD/Batch background or are trying to adapt CMD/Batch instructions/tutorials.
+Some of the issues you may be getting is that you're trying to use some commands as if the are being run from the command prompt rather than PowerShell. What I mean by this is, in PowerShell, dir doesn't run the command dir but rather it is an alias for a PowerShell cmdlet Get-ChildItem
+This is why using /s won't work and PowerShell cmdlets don't take '/' flags but rather '-' parameters
+Because the PowerShell team knew people would use dir with the /s switch, they added s as an alias for the -Recurse parameter, which is why that part of the command works.
+Sorry to go on and on about that, but I figured some background may be relevant.
+Onto the problem itself. PowerShell is working with objects and is passing it's objects down the pipeline until it finally output the objects to the console.
+The findstr command is trying to operate on strings (and I'm not 100% sure if it will operate on input from the PowerShell pipeline if you did strip it down to just strings.)
+I'd suggest not using the command and instead use the Where-Object (or more simply its alias Where)
+But what you will find is that there is actually more data stored in the Directory property than what you see when it is written to the console.
+There are two options to account for that extra data, use a wild card:
+or, test a different property which is just the string in questions:
+However if you use the DirectoryName approach you will need to put it before your Select statement, as that property won't be available if you've already limited the object to just the directory.
+I'm sorry that answer went a lot longer than I had intended it to go, I hope it makes sense. I figured giving some background and the how and why of it all would go a bit further than just "Here's a code snippet that will work for you."
+Also, I feel obliged to mention that in PowerShell echo is an alias for Write-Host which is considered bad practise. Obviously it's useful for your debug info, but when it comes to returning the results, you can simply call the variable.
+This harkens back to PowerShell being all about objects. Returning the object (especially as part of a function) means you can keep acting on the data as an object, however if you run it through Write-Host it is converted to a string and means you can only operate on it as a string limiting its portability.
+I have a string which I'm passing into my script as an argument. For the purpose of displaying the code on here however, I have specified these manually in the code.
+As can be seen, at the end of the last line, I'm using findstr -v -x $SearchFolder to display all results which do not match the root directory (of the search), in this case C:\Users\Name\Downloads.
+As can be seen from the code output, although $SearchFolder and the last line of the output seem to be the same, obviously they are not because otherwise it wouldn't display. My thoughts are that there could be a rogue null terminator or end-of-line in there, but since I know of no way to debug using PowerShell, I cannot be certain. 
+How I would be able to essentially filter out the main directory, through the method currently being utilised (or through a better method if such exists).

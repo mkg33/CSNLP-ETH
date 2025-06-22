@@ -1,0 +1,9 @@
+Calling Math.random() many times isn't very good, try instancing a static final Random object once instead (look around on SO for valid reasons). In the above example, I simply used Collection.shuffle() because that's what a dealer physically does.
+You use bare Exceptions for different types of errors. Better is to create specialized exceptions or re-user exsisting ones, and add useful information. 
+You'll notice I'm using a custom exception as @RobAu pointed out. You'll have to handle it in the relevant parts of the program.
+The added value is that this Object would take care of many constraints like not drawing when empty whereas with a simple list you have the add, set & remove methods exposed.
+The Java convention says a main() method starts a Java program. Your function does so much more. You should extract these business actions to appropriate methods/objects.
+I recommend not relying on the exception but rather checking with hasCards() if the operation is legal. The exception should only be thrown if you thought you could draw, but can't for unforeseen reasons (also called exceptions!).
+In getUserInput(), you're creating a Scanner every time. There is no need for that, just make one once, and reuse it. You couldn't do it nicely with that Main class with only static methods. But if you make an AceyDucey class, you can make the Scanner a class attribute, like so:
+It seems the Dealer functionality replaces that object. I would rather have a Deck object with functionalities like restore(), shuffle(), draw(), hasCards() etc.
+Tip: When I see a static method doing stuff on its unique parameter, I instantly know it should have been encapsulated in said parameter.

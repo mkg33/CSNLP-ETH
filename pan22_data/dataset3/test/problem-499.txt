@@ -1,0 +1,14 @@
+This appeared to work, but ran very quickly - in fact it didn't.
+If if you don't find it in your GPO's, look on the computer's local policies using gpedit.msc.
+Neither the msiexec nor registry fixes worked for me (even after rebooting), but disabling User Account Control (as suggested by Ha Ly in this thread) and rebooting did the trick.
+Look on your Domain Controller if you have a GPO disabling "Windows Installer":
+There is probably a better GUI based way to alter the policy, but setting the following reg key as an admin on the machine does the trick:
+I've run into this behavior, where MSI installation is prevented with "The system administrator has set policies to prevent this installation" before.
+Verify that it is set to "Not configured" or "Disabled".
+Note: the fact that you are a domain admins doesn't matter.
+I believe it is due to default Windows Software Restriction policy and I've seen it on both Windows Server 2008 R2 and Windows Server 2012.
+On a whim, I tried this inside the admin command prompt.
+After spending time looking at group policy, as far as I could tell, there was nothing that was relevant.
+I then came across this post that suggest I try launching a command promt as an administrator and running
+Computer Configuration > Administrative Templates > Windows Components > Windows Installer > "Turn off Windows Installer".
+This is usually due to a Group Policy or a Local Policy disabling Windows Installer.

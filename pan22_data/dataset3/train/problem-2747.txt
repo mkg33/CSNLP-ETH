@@ -1,0 +1,23 @@
+Be aware that the script as it is will not be able to convert remotes that were created using URL shorthands.
+Think about what message I would see if my remote path was
+If I was an end user and saw 'existting' or 'exitting' instead of 'exiting' it would lead me, maybe incorrectly, to believe the author did not have good attention to detail.
+There are multiple exit points in the validate_path function.
+But when the text transformations are simple enough, and Bash's parameter expansion can handle it, that's even better.
+Since Janos has covered the functionality pretty well I will focus on semantics.
+Reading paths inside a script is not user-friendly,
+This in turn would potentially lead me to have less trust in the program to operate correctly.
+Such functionality would not affect users who do not need it.
+It is absolutely reasonable to have a default, but if you allow this to be overwritten by user input then it allows the same program to be used in a more flexible environment.
+Following from Janos' suggestion of passing the path as a parameter, the username could be passed as an optional second parameter.
+Without parameter, exit will use the exit code of the previous command, and if that was echo, it's likely to be success,
+when in fact you probably want to exit with error instead.
+The config file will be written using the shorthand instead of the real URL, so your script will not be able to pick up the pattern.
+Instead of echo ... | sed ..., it's better to use here-strings:
+Nothing in this answer will fundamentally improve the functionality of the code, but will result in a better user experience and will thus work towards making your code more acceptable to your reviewer.
+It would be better to let users pass paths as parameters to the script.
+This lets me clone a GitHub repo with git clone gh:user/repo instead of git clone git@github.com:user/repo.
+I(the original poster) have made some updates based on above valuable feedbacks.
+You can easily solve this limitation by using Git commands to extract Git remote URLs.
+Please spell check anything that might be visible to an end user.
+GITHUB_USERNAME having a hard coded value makes the code less portable.
+A much better way to extract the information about remotes is using Git commands.

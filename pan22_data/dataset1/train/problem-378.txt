@@ -1,0 +1,13 @@
+There is a "Jenkins Disable Job" plugin, which you can use in your pipeline to disable the job on failure.
+You will be able to use this plugin for single failure or to disable after multiple failures.
+https://wiki.jenkins-ci.org/display/JENKINS/Disable+Failed+Job+Plugin
+Consider a structure of X micro services and 2 environments; staging and production.
+Each of these micro services is represented by a separate git repository, when a merge to master happens on any of these services, a jenkins job is triggered to test the code locally and if it's successful - trigger a deployment pipeline.
+The deployment pipeline is a single job with the following steps:
+build and test locally -> deploy to staging -> run overall system tests on staging -> deploy to production
+Again, this downstream pipeline can be triggered by any of the X micro services.
+The issue I have comes from the following scenario:
+service A code is updated and merged to master, the code is built and tested -> deployment pipeline is triggered -> code is again built and tested successfully -> service is deployed to staging -> tests against staging fail -> pipeline is aborted and deployment to production is avoided
+this scenario causes a difference of versions between staging and production. The larger problem happens when this failure goes unnoticed and isn't rolled back, then subsequent services that trigger the deployment pipeline will fail the tests on staging because of the previous deployment and the gap between staging and production will just keep growing until someone rolls back/fixes the failing tests and either triggers all the deployments again, or manually syncs between the environments.
+This is of course not ideal, and the immediate solution seems to be "disabling" the deployment pipeline after a certain threshold has been crossed (weather it be a single failure, or a number of them), but this doesn't seem to be possible to achieve using Jenkins.
+Is there actually a way to disable a jenkins job dynamically? Is there another obvious solution that comes to mind with this architecture?

@@ -1,0 +1,9 @@
+I've recently run into this issue on Amazon Linux. My crontab outbound email queue /var/spool/clientmqueue was 4.5GB.
+If you are running an EBS boot instance (recommended) then you can increase the size of the root (/) volume using the procedure I describe in this article:
+It could be coming from Jenkins or Docker. To solve that, you should clean Jenkings logs  and set it's size. 
+If you are running an instance-store instance (not recommended) then you cannot change the size of the root disk.  You either have to delete files or move files to ephemeral storage (e.g., /mnt) or attach EBS volumes and move files there.
+That file, / is your root directory. If it's the only filesystem you see in df, then it's everything. You have a 1GB filesystem and it's 100% full. You can start to figure out how it's used like this:
+Here's an article I wrote that describes how to move a MySQL database from the root disk to an EBS volume:
+...and consider moving to EBS boot instances.  There are many reasons why you'll thank yourself later.
+You can then replace / with the paths that are taking up the most space. (They'll be at the end, thanks to the sort. The command may take awhile.)
+and a lot of old packages were removed, freeing up 5 gigabytes, for instance there was many packages like this "linux-aws-headers-4.4.0-1028"

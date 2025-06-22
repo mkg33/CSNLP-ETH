@@ -1,0 +1,26 @@
+I would rewrite your get_bestFit_freeBlock() function like this:
+Currently, your block splitting function searches through all blocks, keeping a minimum size around, even though that minimum size must always be size.
+Also, you should use memcpy() instead of mymemcpy().
+Suppose your free block list looked something like this (where all blocks are adjacent):
+In calloc(), you don't check if nmemb * size overflows.
+According to the comments, only blocks that are 2x the requested size can be split, because all blocks must remain a power of 2 size.
+Also, you may allocate a new half sized block instead of cutting the original block in half.
+If the "run" ends in a pair of the same sized block, then you can merge all the blocks from the start of the run to the end (like in the example above).
+That is really confusing because it makes it seem like you are allowing arbitrary block sizes to be split.
+It would take another 3 passes to fully merge that list to a single 2048 byte block.
+On the second pass, you will merge the two 128 byte blocks:
+You should just call memset() instead, as memset() is optimized to be as fast as possible.
+In realloc(), it is very possible for your code to allocate the same sized block as before and copy to it instead of just returning the original block.
+In calloc(), you use this code to zero the returned block:
+Also, you don't check if malloc() returned a NULL.
+You should round the newly requested size up to a power of 2 first when doing these checks so that the current block can be reused when possible.
+I think you could do it in one pass, if you tracked the start of every "run", where a "run" consists of block -> block/2 -> block/4 -> ....
+As it is, if you were on a target with 16-bit int and 32-bit size_t, you would be returning 0 when you passed in a size greater than 32KB.
+because you already checked and handled the NULL pointer case above.
+In realloc(), the variable actulSize should be spelled actualSize.
+I don't really think that is enough to ensure the complete job.
+You should be using size_t v instead, because everywhere you call round_to_next_power_of_two(), you pass a size_t as the argument.
+A similar change could be done to realloc() as well.
+This is because the code that checks for these special "reuse" cases only succeeds if the newly requested size is exactly the right size (a power of 2).
+On the first pass, you will merge the two 64 byte blocks:
+You can remove this code, because if the free list is empty, get_bestFit_freeBlock() will return NULL and you will do the exact same call to sbrk() a few lines lower.

@@ -1,0 +1,15 @@
+If connections are left open and not killed by application they would also use up resources but would reach a limit of you defined max connections.
+http://dev.mysql.com/doc/refman/5.6/en/host-cache-table.html
+hope this table's info helps you to discover your root cause!
+http://dev.mysql.com/doc/refman/5.5/en/server-options.html#option_mysqld_log-warnings
+You can log the failed connections to the mysql error log by issuing this:
+if you're using MySQL >= 5.6, then you can potentially use the information I did to resolve my situation without increasing max_connect_errors.
+In my case, I had EC2 instances communicating across a VPC Peering connection and my DBs were failing the hosts with COUNT_NAMEINFO_PERMANENT_ERRORS so i was able to add skip-name-resolve to my my.cnf, restart and everything worked great.
+For every possible root cause, a dedicated column counts the number of error seen.
+The advice you've seen about max_connections is a distraction from the issue you're seeing, because it has nothing to do with connection errors.
+You can also make this a permanent setting in my.cnf so that it persists after a restart.
+But you must fix your application as this is a temporary fix.
+run select * from performance_schema.host_cache; chances are, you'll have records for the host that is experiencing problems.
+Starting with MySQL 5.6, the content of the server internal 'host cache' can be inspected in the performance schema.
+This command will show you if there are dead connections with time specified, you can kill those manually by kill command followed by id or use this script below to kill them with a cronjob.
+you can use this page to figure out what each column means.

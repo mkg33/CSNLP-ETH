@@ -1,0 +1,14 @@
+How are we ensured that jboss gracefully closed from a kill?
+As for signals in general, if the goal is some form of graceful shutdown look into how the software handles SIGTERM and/or SIGINT.
+Regarding SIGKILL (signal 9) specifically, there's nothing graceful about it.
+Software at least has the possibility of taking these into account and gracefully shutting down.
+Just assume every gun is loaded and every application is signal 9 unsafe.
+If the software is non-trivial and comes with a documented means of shutting it down, as appears to be the case here, go with whatever that is.
+Being signal 9 safe means limiting state changes to atomic transactions, and very few stateful applications really do that.
+Assuming otherwise you would very likely waste a huge amount of time in debugging occasional malfunctions, caused by things as simple as a forceful shutdown that happened to be issued during log file rotation.
+The target process cannot intercept and handle this signal; it's just immediately terminated without getting to finish up what it was doing or do any cleanup that it would normally do before shutting down.
+My suggestion was to use the proper jboss command to shut down:
+We currently have a script to stop the server by simply running kill -9 on the java process.
+SIGKILL should be considered a last resort when gracefully shutting down the service does not work.
+But your primary method of shutting down an application should be the graceful one and ever< failure to shutdown through that method should receive at least the same scrutiny as any other bug in your software stack.
+In the java world, you will not get around occasinally killing something that went stuck.

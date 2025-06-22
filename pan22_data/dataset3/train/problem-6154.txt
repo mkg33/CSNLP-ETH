@@ -1,0 +1,32 @@
+There were still a few multiply-claimed blocks but they were fixed very quickly.
+From: http://kernel.org/doc/Documentation/filesystems/ext4.txt
+This happens to me on RAID array of 6 disks, 4.5TB ext4 filesystem.
+This is normal, buy usually about half an hour of fixing the various problems by agreeing to the prompts is enough to get the server back.
+This has great examples to fix: http://www.redhat.com/archives/ext3-users/2009-February/msg00021.html
+Pass 1C: Scanning directories for inodes with multiply-claimed blocks
+Having both the raid bitmap and ext4 journal located on an external device seems to work the best.
+Hours and hours even though it was only a 2MB file.
+Anyway, after a few minutes of those scrolling past, it finally settled down and I got:
+As soon as I removed the faulty drive, the fsck went much faster.
+The other step I took was to enable bitmap on the RAID.
+(There are 32 inodes containing multiply-claimed blocks.)
+So, back to my original question, how long should this take?
+You should report this bug on the linux-ext4@vger.kernel.org mailing list.
+What I did was disable autosuspend compeletely on usb devices with:
+I have experienced degraded RAID arrays in Ubuntu before and usually there is a warning just after the grub phase, but this did not happen in this case.
+Yes, it makes no sense to have multiply claimed blocks that are shared by zero files.
+Is it a lost cause and are there any alternative ways to deal with this?
+I use rsync to sync over entire servers onto the ext4 and these are the files I mostly get these multiply-claimed-blocks and duplicate inode messages on.
+A couple things I did that seemed to help was to make sure that the ext4 was being mounted with barrier and data=ordered support.
+It seems as thought the cause for the large amount of time and also the mystery of the multiply-claimed blocks being shared by zero files was the result of a degraded RAID array.
+After a UPS failure, I am faced with an Ubuntu 10.04 server which dropped into fsck on initial boot.
+Today, I got a huge list of numbers scroll past the console matrix-style for a good few minutes.
+In the past I had experienced this issue when my drives would go into autosuspend mode.
+Writing to them (or attempting to) while they were trying to wake up from a suspended state seemed to cause these issues big time.
+After that, a similar dialogue appeared but this time for a virtual machine image file which is 100GB and reported as being over 17 Million multiple-claimed blocks, shared with 0 file(s).
+This question was answered for me and the process continued.
+How long should fsck take to fix a 100GB (17 million block) file with multiply-claimed blocks?
+You shouldn't ever see this kind of error with a journal.
+What I really don't understand is why the 100GB file is reported as being shared with 0 files which is a contradiction if I understand the meaning of multiply-claimed blocks correctly.
+has 1 multiply-claimed block(s) shared with 1 file(s):
+That didn't sound so bad, but then it started going through some files as so:

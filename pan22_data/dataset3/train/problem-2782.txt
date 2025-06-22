@@ -1,0 +1,12 @@
+The standard behaviour in an AD domain is to automatically add the domain group "Domain Users" to the local group "Users" on each computer that is joined to the domain; this allows all members of "Domain Users" (which by default contains all user accounts in the domain) to log on to any computer in the domain.
+Instead of trying to configure this in the properties of the Computer, Why not use Group policies to modify the membership of the local Users and Administrator group on the workstation.
+However, the problem is going to be that you've already specified a list of workstations on every user account to which that user is allowed to logon.
+You should group your computer accounts into OUs (Organisational Units) and create a GPO (Group Policy Object) per-OU that specifies the "Users who can log on to this computer" attribute in the computer (not user) policy.
+If you have a non-standard setup which doesn't allow all users to log on to all computers, this can be due to two reasons: either your AD user accounts were removed from the "Domain Users" domain group, or that group is not member of the local "Users" group con your computers.
+You should check these two settings and fix them if they are not right.
+Additionally, you can use policies to modify the Security policies like logon locally, logon from network, etc.
+So a Remote Desktop User group for a computer named COMPUTER1, has a corresponding AD Security group called: "Access - COMPUTER1 - Remote Desktop Users"
+If you have a lot of computers, and different "user roles", you might want to lay down a naming convention for these security groups that provide access to the different computers, like:
+I think you're going to have to end up using the computer account permissions to restrict things appropriately and remove your configuration under the user accounts otherwise you would have to add each shared workstation to the list of allowed computers on each users' account.
+I think you can grant a security group the "allowed to authenticate" permission on the computer object itself in AD and then remove "authenticated users", "Everyone", "domain users", etc if you want to restrict access to the workstation.
+So you've been using the "log on to" properties of the user account to restrict the workstation that each user can logon to but now you want to allow members of a security group to logon to a shared workstation right?

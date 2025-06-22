@@ -1,0 +1,30 @@
+The approach below is 3 fold, Steps 1 and 2 should be run against "Central Management Servers" or 'Local Server Groups"
+It assumes all the jobs you are interested in, are owned by the SA account and the job names begins with 'Custom'.
+SQL 2014 and earlier, however, limit input to 8000 bytes.
+Later, if we need to update the version, we can easily operate on the 1st step name as the following
+This answer approaches it from the standpoint of answering two questions with very high reliability:
+For the first time, say my job [test_job] has the following steps
+Now I can run the following code to append the version info to the 1st step name
+Where no version tracking is present, update existing step one to the correct version, and add version tracking as a new step one
+Very useful question; and then you put on constraints such that it becomes quite difficult to meet everything you want.
+For SQL 2016, HASHBYTES can handle VARCHAR(MAX) correctly, so my suggestion is to craft a SQL that:
+Store a lookup table of the job name, the version, and the result hash
+My suggestion is that you append your version information in the step name of the first job step (after all, all jobs have at least a job step to be meaningful)
+It also provides space to track complete versioning history.
+It can be used with or without a versioning tools like github.
+After running the script, you will see the job step name changed to the following
+Thus, in this case, you have a nasty twofold step in order to account for >8000 bytes of data (i.e.
+It is also very easy for you to extract the version number from any job's first step name.
+If there are multiple steps, they are all migrated one step by the insertion of the new step one.
+use HASHBYTES on that string, ideally with SHA2_512
+This solution provides specific version information that is available for searching across multiple servers in the form of a Job step name (sysjobsteps.step_name).
+I'll address SQL 2016 first, and then 2014 and below second.
+big SQL got into a job, whether by you or some other way - say, vendor software).
+The following answer has been tested in SQL 2008R2 to 2016 (Enterprise Edition, but I don't think that matters)
+Notice that new version tracking step is added after the exiting step has been modified to give durability.
+Identify Servers that do not have the current version applied
+Identify  servers with "Custom%' jobs that have not had any version tracking appied
+There are 3 levels of redundancy in the area (SQL Command) used to track version history;
+use FOR XML PATH in a CROSS APPLY on the above to condense all the rows of data per job into a single string
+On any given instance, you can run the same SQL you ran on your sample deployment, and LEFT JOIN to your lookup table on the hash to see what version's out there, as well as which jobs don't have their hash in there, and are thus compromised/impure/modified/suspect/rage-inducing.
+If we run the script, we can see the job 1st step name is changed to the following

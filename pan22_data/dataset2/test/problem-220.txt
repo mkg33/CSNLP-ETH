@@ -1,0 +1,8 @@
+You cannot access MBR from file system, it's a special sector, it's always outside any partitions you create.
+You could probably write into virtual file system itself, but i haven't found an easy way to do it, those files have unusual formats, so you can't just use dd on them.
+Note that "of" option should point to the device itself, and NOT to partition on that device, i.e sda1, sda2
+As far as i know all usb drives are capable of storing a bootloader, it's just that some mother boards can be glitchy when trying to load from usb drives. I used a spare hard drive to play around, it seems more reliable. 
+To write into actual MBR you need to use dd(under linux) or PartCopy(for windows). I've never used PartCopy, so i cannot vouch for it, but dd worked for me.
+Then you just use the vmdk file as a regular virtual file system and write your bootloader into sda as usual. Very handy for testing!
+Bonus trick: you might find it tiring to have to reboot your computer every time, so consider using a virtual machine. VirtualBox is great but there're others. What's useful about virtual box is that you can boot it from real hard drive(or usb stick). You can attach virtual box to real hard drive by creating a proxy virtual file system:
+How do you know the OS is being recognized? If it hits your bootsector, it wouldn't try to load another bootsector, even if your code crashed. BIOS just checks for 0xAA55 tag, loads the 512 bytes into memory and runs CPU on it in real flat mode(default), BIOS basically hands over you the control. Whatever happens next will be result of YOUR code running. So if your code crashes, computer will just sit there and waste electricity. 

@@ -1,0 +1,36 @@
+The Main nagios server listens for these via the nsca daemon and submits them to the external command file for processing by nagios.
+The main nagios server would have all the checks configured with active checks disabled and passive checks enabled.
+personally i don't have any nsca deployment, i have 3 disconnected nagios servers that rely heavily on nrpe for various reasons.
+    check_nrpe -H NRPEPROXYHOST -c check_ping -H 10.0.0.3 ....
+Ideally I'd like a soft-probe that would be installed and then perform the tests and send back the results (via SSH) to the central Nagios installation.
+This can even be configured on some sort of gateway device and would not necessarily require a dedicated server be deployed.
+Reconnoiter is quite different from Nagios, but looks promising if monitoring is more important to you than alerting.
+This is scalable to no end and the preferred solution for installations with tens of thousands of service checks to be performed.
+The reason why I'm recommending it is, because its quite easy to set up.
+So the main nagios sends a check through the server running nrpe.
+This configuration is a true distributed Nagios as documented on their site.
+Method 2 would be configuring a second instance of Nagios at the site and having it perform the active checks and submit the results to the main Nagios server.
+nrpe works wonders if you can reach the proxy hosts through firewalls, but in case you can't there is also NSCA that is the recommended setup for distributed nagios deployments.
+In this setup the secondary server does not run nagios or any bloated daemons.
+In most instances the secondary server is called a "satelite" nagios instance and the results are usually submitted to the main Nagios server via the NSCA protocol (which is encrypted).
+It's quite a bit more robust so if you see yourself having to perform several hundred or thousands checks to these server (every 5 minutes) then this is your best choice.
+It's still very much in the development phase, but you've pretty much described the architecture of Reconnoiter.
+Also, look at building the configs on a central server and keeping them in revision control and have a script on the nagios server periodically checkout the new configs and reload nagios.
+The data connection between probe and core is SSL encrypted.
+You have to have these hosts as passive on the main server and active checks on the satelite server.
+So this solution adds distribution more than it does a proxy into a secondary network.
+http://www.paessler.com/media/flv/1000x700/v2-schemaanimation.flv
+I'm looking for a plug-in or product that will act as a remote probe and perform tests then send back the results to the central Nagios server.
+The "probes" then send information from within other systems to the "core server" which does data analysis.
+The NRPEPROXYHOST runs the command as if it were the nagios server and submits the results back to the main server.
+You can have a secondary server with just nrpe running.
+To the best of my knowledge though this configuration does not allow you to pick and choose which checks are executed by which node (node affinity), or if they are NOT to be executed by a node.
+Just the nrpe daemon, the nagios plugins to be ran.
+It's not open source, but there is a freeware version (with up to 10 sensors, which can be sufficient for monitoring just a view ports of a web server, for example).
+The downside is you have to have the config files on two servers and make changes to both sets of configs.
+If not Nagios, is there any other monitoring system that does such a thing (ideally open-source)?
+It offers "remote probes" (that is a small program) that can be installed on remote computers on the network.
+we are migrating to nagios 3 and will use ndoutils to gather all logging info on a central mysql database and nagvis to produce management maps.
+DNX, http://dnx.sourceforge.net/ an awesome project that patches Nagios so that it can send checks to be performed to "node" nagios servers.
+Does anyone know of a product or plug-in that would offer such service?
+Reason for this is that I'd like to monitor internal systems and servers at customers, but don't want to allow all the traffic passing the firewalls.

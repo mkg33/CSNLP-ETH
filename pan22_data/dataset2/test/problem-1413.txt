@@ -1,0 +1,11 @@
+First of all, I would like to apologies for the title for not including hardware details. This is because I am looking for a command that will work in all Linux distribution.
+(look for ID_SERIAL, ID_SERIAL_SHORT; there are also /dev/disk/by-id/ata-* symlinks for ATA drives based on those values).
+udisks provides a higher-level interface to those data and more (it also gives access to SMART attributes without requiring root privileges, which would be needed for calling, e.g., smartctl directly).
+The ID_MODEL key could be used to localise more precisely the beginning of the serial number, as (it seems to me) its first 15 characters are added to the ID_SERIAL (spaces replaced by '_').
+I am very new to Linux and don't know much, however, is it possible to retrieve the hard drive serial number running as non-root. I am aware there are commands available to retrieve this information running using sudo. However, I need a way to retrieve this information without running as sudo. 
+Unfortunately it is not trivial to find out this by-id symlink from the name of the device. But there is at least one direct way:
+Short of granting root-like permissions to some process, you can't achieve this.  Even as root you can't do it on some hardware configurations.
+The links under /dev/disk/by-id is created by udev. In /etc/udev/rules.d/50-udev.rules such lines can be found:
+On most current distributions HDD serial numbers are stored in the udev database, which could be queried without root permissions:
+As I see a serial number can contain alphanumerical characters and '-' (I have such SCSI HDDs). Does anybody know any limitation about the serial number? It if can contain '_' then this method is not bullet proof.
+Like womble said, without root access or granting root-like permissions to some process, you can't achieve this. However, since you say you are a newbie, let me note you about a handy command called lshw. 

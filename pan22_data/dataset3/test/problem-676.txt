@@ -1,0 +1,39 @@
+One option which might be easier is to simply detach and copy, to the new server.
+putting the database into single user mode will work a treat.
+This will prevent any new logins to this instance, including administrator connections, db_owner connections and SQL Agent connections, but existing connections will not be dropped.
+Unless you are only using windows logins, you want to test that the SQL logins work before doing it for "real".
+(Offline is better than read-only because you want people to get error messages in the event that you have overlooked something when pointing connection strings to the new server.
+(When going for real, if you already have a copy of the database on the new server, it's usually a little faster if you are restoring "with replace" than if you are going from scratch.
+You'd also want to take the database offline when you're done.
+You'll need to take the backup right away in the current connection, to prevent other connections getting back in if you shut the connection & try to use Enterprise Manager to do the backup.
+Then copy the output into your query window and run it.
+You can always drop the offline database tomorrow, after you are sure you have a successful migration.)
+Doing a restore forces you to work out where the files go (drive letters and paths can be different on different servers) and it gives you an idea of how long it will take to do the restore.
+A friend of mine suggested running a script which would put the DB into a rollback state.
+You might want to warn your users or support team.
+It will kill every connection in the current database but yours.
+Gracefully shut the user apps down and/or kick out the existing connections of regular users using KILL.
+You could lose data if the log is not correctly attached to the new server.
+Lastly, run your backup command, just like you were going to.
+This method might not work well if you are using a cluster (it's been years since I would have tried it, and I don't remember the outcome.
+Of course, you need to restore your backup to the server you are migrating to, fix up any SQL logins, then fix the connection strings for the apps or change the DNS entry for the server, depending on how you are handling that, turn on the database checksum feature, run a full reindex on all of the tables, update the database compatibility level if that is appropriate to do, etc., etc.
+You don't want to accidentally trigger a failover.)
+If you have to go back to the old server, it's easy to just alter the database online, but you would have to go through a restore if you dropped the database.
+They get to be the "single user" before my connection does.
+If you are new at this or if this is particularly important or has demanding users, I would suggest trying at least one dry run first.
+You can use "Resume", on the same menu as "Pause", to allow logins when you are done, if you want.
+This will write the kill commands for you, just change/USE to the database to be migrated first, then run this:
+It's best if you have a test system that mimics production, where you can work out your "WTF?"
+My method works best if you are handy with a query window, rather than using the SSMS GUI.
+I find that setting a database to single user can be a problem when you have lots of users who are jumping into that database.
+Set the old database to read-only or offline (preferably) before letting people back in.
+Dropping the database would also get you error messages, but offline isn't as permanent.
+This gives you some wiggle room when giving an estimate to the users of how long the system will be down for the migration.)
+While the server is paused, attempts to connect will fail and get an error message.
+I'm looking for a way to prevent logons from occurring in order to take a full backup of a Database to migrate from its current SQL Server 2000 instance to a new SQL 2005 instance.
+They are important, even though some people don't think so, especially if you are forcing the database down quickly.
+Also, this method might not work well if there are other databases for other apps that are in production on the same SQL Server.
+select 'kill ' + convert(varchar, spid) from master.dbo.sysprocesses where spid != @@SPID and dbid = DB_ID()
+I have another alternative which uses the much-overlooked "Pause" feature of SQL Server.
+You wouldn't need to kick everyone out for a dry run, just take a backup and restore it on the new server.
+Not being a DBA my DDL is very poor and running a script that I don't understand may not be the best idea.

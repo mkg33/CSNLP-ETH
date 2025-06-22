@@ -1,0 +1,21 @@
+This is not a problem at all since your model doesn't really depend on your data being in [0,1].
+I have some temperature values in my training set.
+By "long" it means they can be up to 2 meters long, that is [0-2000]mm range.
+For example, for random forests the ranges don't matter, since one feature is never compared in magnitude to other features.
+But on the other hand SVM or Logistic regression will probably do better if your features have roughly the same magnitude, unless you know apriori that some feature is much more important than others, in which case it's okay for it to have a larger magnitude.
+Euclidean distance is usually the preferred choice to measure the distance between the cluster centers and other samples, in every iteration of the algorithm.
+If you have data in the range 5-20 in the training set then in the test set your 25 will be mapped to 1.33 by the scaling (this is why the Scaler is fit to the training data, so you get a consistent mapping across training and test data).
+This means that rods that have similar temperature (+-1 degree Celsius) but big difference in length (1000mm), will be in different clusters; but this might be misleading.
+For that reason, you should scale all the dimensions in [0,1] range, so that the clustering distance is unbiased from measurement units.
+What if I will have some values to predict that will be outside training set values?
+The temperature in that particular location changes between [20-35]Celsius during summer.
+It is actually depends on the algorithm you are using.
+Data is usually normalized to make sure that all of your features on roughly the same scale and that the units you measure your data in do not make a difference to the model you fit in the end.
+It's only the range of one feature that is split at each stage.
+Keep in mind that metal rods extend/shrink due to temperature changes.
+I often see that numeric values in machine learning is scaled to 0-1 range.
+Imagine that you have a problem of two attributes, temperature (Celsius) and length (mm).
+I mean that eg in training set I will have range of temperatures like 5-20 and MinMaxScaler will fit to these values, and then I will have 25 to predict.
+That problem requires the classification of the quality of long structural metal beams, based on the changes of their temperature and length during summer days.
+Keep in mind that different units in engineering problems need minmax scaling in general, to have features that contribute to the classification outcome in a fair fashion.
+Assume that you would like to cluster the hourly samples of length and temperature using K-means clustering.

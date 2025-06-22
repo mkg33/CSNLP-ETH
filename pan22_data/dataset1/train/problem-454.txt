@@ -1,0 +1,10 @@
+So internally, we use an nginx proxy that fronts our production sites. This nginx proxy provisions LetsEncrypt certs automatically for our sites.
+However, when we access our sites from our office, or anywhere when 2 or more computers access our sites, the 2nd computer will experience extremely slow response rates (> 30s for the port to open) for the HTTPS (443) sites.
+HTTP (port 80) sites work fine without any performance degradation.
+By slow, I mean if I do a telnet nubela.co 443 from the 2nd computer, it will take more than 30 seconds for the TCP connection to be accepted.
+However, if I do telnet nubela.co 80, it returns immediately (with a 302 status code to HTTPS)
+The Nth (where N >= 2) computer, refers to any computer that is active, while the 1st computer is also active. Computer 1 does not need to be actively browsing to our production sites for this issue to occur.
+To replicate this, you can try accessing https://nubela.co on 1 computer, then using another computer (from the same network) to access that site. The first computer will load it fast, the 2nd one will experience performance issues.
+I will like to add that this nginx deployment is deployed as a Docker instance via Ansible
+@Nubela I'd tested on same network with 2 different system (Mac Books Pro) and your website is loading as fast as the first system.
+Probably check your ISP or Local cache setup would help you to fix this issue.

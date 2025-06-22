@@ -1,0 +1,9 @@
+If you used autoindex instead, then nginx would generate a directory listing for that directory.
+will look for index.php in that corresponding directory, when given a URL ending in /.
+Instead, when the parameter ends with a  / the request is passed on to an index module, depending on whether you have specified the index, autoindex or random_index directives in your server or location blocks.
+The $uri/ in try_files does not exactly add a / to the end of the URL and try it.
+If you're passing nginx to a proxy, this does require a small work around to pass the correct URI to the backend e.g.
+Without seeing the rest of your config file it is not easy to see the exact effect of this, but it has caused me issues in the past.
+Nginx doesn't attempt to use the last parameter and check to see if it exists as a file or directory, instead it rewrites the request to match the last parameter, and then reprocesses the server block.
+"is the try_files sentence not doing that already?"
+You may be able to make a simple work around by doing:

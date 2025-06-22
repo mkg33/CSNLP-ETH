@@ -1,0 +1,7 @@
+-- by the way, to make this more searchable, you may want to tag this with the words stale, stuck, nfs, and mount. This phenomenon is not specific to your usage of ec2.
+Sometimes I have to shut down B and start a new instance (identical instance). After B is back up, trying to do anything inside the mounted directory on A (ls for example) just hangs.
+To reduce the likelihood of this occurring, you may want to look into automounter which won't mount the volume until it's needed / a resource on the server is requested, and automatically unmount it when it's no longer needed.
+You can fork, have the child enter the directory, and then exit the child. Have the parent monitor the existence of the child process with a timeout. If you've got a stale mount, the child won't be able to exit and will stick around for a long time, so the timeout will occur in the parent. Have the parent kill -9 the child and try an unmount. 
+Wrote this script which checks if the NFS host's ip is the ip currently used in the mount, if not, it unmounts and remounts. Might help someone in the future.
+The problem you may experience, though, is that if any other process is using a file that's on the broken mount, then you won't be able to unmount it without first killing those processes. You can (often) discover whether any processes are using unavailable resources on a stale mount with lsof or fuser. 
+I'd avoid auto-magically killing arbitrary processes though; send yourself a notification to investigate further manually.

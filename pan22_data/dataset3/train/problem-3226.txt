@@ -1,0 +1,12 @@
+I've googled this type of setup, but I'm not able find a solution.
+So, when you request http://app.foo.bar/dev, the request goes to http://appserver.foo.bar:7010/dev.
+Here is a portion of what I am wanting to do by using path, but getting 404 error.
+Here is the reverse proxy setup that is working, but I'd rather not use:
+I'm having issues getting my reverse proxy to work when using a path in nginx.
+So, we capture the part after /dev with regex to a variable, and then we add that variable to end of proxy_pass path.
+If you want all requests starting with http://app.foo.bar/dev to go to http://appserver.foo.bar:7010 such that all rest of the URI is added to the backend server URI, then you can use this configuration:
+What I am trying to do is have one address for an application, and dictate the environment with the path.
+When you have proxy_pass http://appserver.foo.bar:7010;, nginx appends the normalized URI to the request URL passed to backend.
+I'm able to get the reverse proxy working when using a direct link, but using a path is getting a 404 error.
+If your dev server doesn't have this path, then it will return 404, which nginx returns to the client.
+Depending on the path, it would point to a different server.

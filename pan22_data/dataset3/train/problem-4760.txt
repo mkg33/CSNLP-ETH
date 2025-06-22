@@ -1,0 +1,35 @@
+Needless to say, this stream-oriented design would be completely unworkable if every send established a new connection.
+It is possible that your friend was thinking of UDP, which does have messages, but is also connectionless.
+This answer gives some information, and it points you to the RFC for TCP.
+Like the client, it has the option of closing the socket at which point a fault-tolerant client wishing to send more data will have no choice but to open a new socket, leading to the same problem.
+Finally, as others have mentioned, TCP is stream-oriented.
+While there certainly are simple ways to do this, it's generally ill-advised as there are many protocols built on top of TCP to solve this problem.
+For further discussion, consult this: https://blog.stephencleary.com/2009/04/message-framing.html
+TCP inserts packet boundaries where it makes sense to do so, and not necessarily once per write() or send().
+If the client does not do this, but instead discards the old socket and opens a new socket every time it needs one, then it will indeed force a new connection which could cause resource issues on either the client or server if done frequently enough to exhaust either TCP stack's connection pool.
+Thus if you are sending multiple "messages" over raw TCP sockets, you have to provide your own framing protocol to delineate the different messages.
+So, the only way to establish a new connection is to close and reopen the connection manually.
+That said, it's ultimately up to the applications (both client and server) to determine if that capability is utilized.
+(In practice, most protocols built on top of TCP have something which resembles messages, such as HTTP requests and responses.
+browsers, will open multiple connections in order to simultaneously load things like elements of a web page.
+What may be confusing the situation is that some applications, e.g.
+It does not actually do anything at the networking level.
+But TCP does not know or care about the structures of such things.)
+Similarly, it combines successive packets together if you receive more than one between calls to read() or recv().
+In order to reuse the existing TCP connection (socket), the client application must keep that socket open and use it when it needs to write more data.
+I think your friend was talking about HTTP, not TCP.
+As others have pointed out, TCP absolutely allows a connection to stay open for any amount of time, exchanging any number of "messages" in either direction during that time.
+Nevertheless, you can manually keep track of which peers you are talking to under UDP.
+From the perspective of TCP, there is no client or server (client/server is an application concept that is off-topic here).
+Most socket implementations allow you to "connect" a UDP socket to a remote host, but this is just a convenient way to avoid having to repeatedly specify the IP address and port.
+Also, when a TCP connection is closed, the TCP port used in the connection is freed, and it is available to be used again.
+Just because one peer wrote the data a particular way (e.g.
+Likewise, the server must be smart enough to keep the socket open on its side and wait for more data.
+This is why we need cookies (or something similar) to implement sessions.
+If you want to re-establish a "connection" on every message, you could do that.
+TCP does not open a new connection for every segment it sends, but an application may open multiple TCP connections.
+But if you do that, then deciding what counts as a "connection" is your problem, not the OS's.
+1 1024 byte write call following by 2 256 byte write calls), that does not guarantee that the other peer will read it in the same size chunks (e.g.
+HTTP was originally a stateless protocol: each HTTP request would use a separate TCP connection.
+Of course, it does use packets at the IP layer, but to the application this is an implementation detail.
+TCP establishes a connection between peers, and both peers can send and receive on the connection until either peer closes it, or it times out from inactivity.

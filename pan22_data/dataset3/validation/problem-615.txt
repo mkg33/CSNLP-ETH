@@ -1,0 +1,11 @@
+hive-exec's "fat jar" format has been causing problems since at least 2011, but so far they haven't done much about it:
+When I run hive in command line, it tell me the error message below:
+At this point, it looks like our options are either:
+Hive ships its own incompatible version of Guava, not only in lib/guava-*.jar, but also within lib/hive-exec-*.jar, which repackages a ton of external libraries.
+Because the class conflict removes a thread, but there is another problem.
+Because Hive doesn't work without hive-exec, we can't just remove it and get the Guava JAR from Hadoop.
+It looks like this was triggered by Hadoop updating its Guava dependency in mid-2019: HADOOP-15960.
+They finally merged in a change to shade Guava (but not the other libraries?)
+java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava / lang / String; Ljava / lang / Object; )V
+in hive-exec as of HIVE-22126, but the fix version on that is 4.0.0, which isn't released yet.
+rm /home/hadoop/apache-hive-3.1.2-bin/lib/log4j-slf4j-impl-2.10.0.jar

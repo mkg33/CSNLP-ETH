@@ -1,0 +1,9 @@
+If you want to protect an application Apache runs which in turn calls a database, you could put  a WAF (Web Application Firewall) in front if it.
+If you use out-of-the-box software like wordpress, keep it up to date. If you develop yourself, use prepared statements whenever possible and never ever trust user input. 
+Fail2ban would be of very limited use as it scans log files for signs of brute force attempts. An SQL injection would often  not be visible in the logs, and even if the logs are extended so as to expose this information, they are unlikely to be of much use, as they will pick up the request after its been processed.
+Another approach would be to use mod_security in Apache with a ruleset that looks for SQL in the post/gets.
+CWE-89 categorizes SQL injection in detail. Note how mitigations like parameterization or using a decent persistence library are in the development phase. There's only so much a WAF style filter can do post deployment.
+MITRE ATT&ACK categorizes it as a public-facing app exploit and lists software updates and application isolation among mitigations. 
+If you really want to do some hardening, use .htaccess to forbid any URLs that contain a semicolon or two dashes. ( ; and -- ), That will catch... well, maybe 1/3 of the attacks? Don't rely on that though.
+That said, you can and should harden your server as much as you can, just keep in mind that some restrictions might affect legit traffic as well. Assuming you use PHP, check Suhosin.
+OWASP has practical resources for how to develop applications correctly avoiding SQL injection in the first place.

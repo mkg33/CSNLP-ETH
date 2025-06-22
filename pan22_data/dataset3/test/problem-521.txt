@@ -1,0 +1,34 @@
+This will be supported by the Kernel and you now have a LAN connection between the two.
+There are ways to get more but it get more complicated than needed.
+Before BurtyB told me to use NAT, I had gotten sidetracked trying to set up a bridge with brctl, which doesn't work between ethernet and wireless devices - so don't do that...
+Just use a Ethernet Cable and two USB-Ethernet Adapters.
+(This was due to a usb0 link-local entry which appeared in the Pi 3 routing table with higher priority than the wireless gateway) To give access to the Pi Zero, I configured a static IP for both ends of the USB device, and set up NAT on the Pi 3 to forward connections from the Zero.
+The Auto-MDI feature automatically detects if a normal cable or a cross over cable is needed and can do the cross over part automatically if needed.
+In the normal case you connect a host to a switch.
+I lack a keyboard/monitor that can connect to a Pi, so I followed gbaman's "quick route" instructions linked from the first Gist.
+It had been suggested earlier that I configure metric values in /etc/dhcpcd.conf to fix the routing priority table issue but the problem persisted, which was a mystery.
+They have a chip inside that tels both sides that this would be an USB Stick or something.
+The other protocols are more suitable to using one device as a slave.
+You asked for USB, but you may just connect the two directly RX to TX and TX to RX.
+basically it gives you a Console over USB on Pi, and a Serial on the other.
+Being able to ssh into the Zero was great, but not the end of the road.
+Once I followed them, I was able to run apt-get on the Zero and finish configuring it to my liking.
+At this point the Zero did not have network access, and in fact its presence as a USB network device caused the Pi 3 to lose outgoing wireless access.
+(Strangely, after I did these things I no longer had an issue with the routing table on the Pi 3.
+I could use ping and ssh to access the link-local name raspberrypi.local with no problem, I think this is thanks to avahi-daemon.
+The only thing that comes close is to access one Pi over the Serial Console using a FTDI USB
+There is a lot of support built into any Linux system to support this.
+There are 3 simple options (without any additional hardware); serial, SPI or I²C.
+If they both do not support it then you need a Cross-Over Cable.
+I also verified this using the command getent hosts -s mdns4_minimal raspberrypi.local which I had learned about from this serverfault question.
+Only issue is that at least one of the USB-Ethernet Adapters has to support Auto-MDI.
+As others have pointed out you can't do this via USB (at least without writing your own drivers).
+This was according to instructions from BurtyB on Freenode's #raspberrypi:
+These are the same used to programme Arduino 3.3v boards.
+You first have to define what you are trying to achieve.
+Serial is the time honoured solution; indeed once all UNIX machines did this, before IP was invented.
+These instructions could be easily adapted to give the Pi Zero network access via a laptop or other computer.
+However, when the Pi Zero was connected to my Arch Linux machine I did not have a working raspberrypi.local and so had to discover the IP of the connected device using arp-scan as described here.
+A cross over Cable is a special LAN cable that has a special pin layout so that two host can be connected with each other.
+I wanted to expand upon Chisight's helpful answer.
+So you will need a special software and that software for ARM to use it.

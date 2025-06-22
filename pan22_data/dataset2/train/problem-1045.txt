@@ -1,0 +1,12 @@
+If you don't feel comfortable uploading your data google undrop-for-innodb (DISCLAIMER: I'm the author) and use https://twindb.com/recover-corrupt-mysql-database/ as a guide.
+Once you copy all files try to start MySQL with innodb_force_recovery. Try all values from 1 to 6 until MySQL starts. If you are lucky and it starts, take mysqldump. MySQL may crash in the process. Try to dump individual tables.
+So as a last resort I tried to use an ubuntu live cd to get in and copy some files to another destination.
+Obviously this wouldn't be an issue if there was a backup, but this database started out as just a test. 
+At minimum you need to copy ibdata1, *.ibd and *.frm files. If simple cp doesn't succeed copy a files with dd ignoring errors.
+So before I write this off as a loss (and gain valuable experience with the need for backups) I figured I'd check here to see if there is any way to recover the MySQL data.
+Soon it started to be used for more important data and then I made a plan to move it to a production environment and set up some type of regular backups. 
+Percona's data recovery toolkit will also work (https://launchpad.net/percona-data-recovery-tool-for-innodb) (keep in mind stream_parser == page_parser, c_parser == constraints_parser). If you use Percona's toolkit make sure you use the latest revision from the trunk (bzr branch lp:percona-data-recovery-tool-for-innodb). Do not use version 0.5 available from downloads!
+"if there is any way to recover the MySQL data." - short answer to this question - it depends on how badly ibdata1 (and rest of important files) are corrupt.
+I noticed when I copy the files in the MySQL datadir, it can't copy the ibdata1 or ib_logfile1. I get the errors:
+Currently I have the prod environment set up and was planning on making the move today. But (as luck would have it) when I tried to get into the server where the DB lives I found I had no connectivity. I opened up a console and saw that there were disk errors. I tried to fix these with fsck but now, although it boots, I can't login and I see all types of errors during boot.
+If MySQL doesn't start - you can upload MySQL datadir in a zip/tar.gz archive on https://recovery.twindb.com/ (DISCLAIMER: I'm the author), it will try to recover the databases and will show you recovered data. (it will ask for a payment if you want to download a dump).

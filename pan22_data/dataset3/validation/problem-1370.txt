@@ -1,0 +1,11 @@
+The other alternatives you described in your question are either flawed or not possible.
+Further bacula assumes that your network connectivity is reliable -- it doesn't expect your connection to drop, and frankly that's a reasonable assumption on bacula's part.
+and you're not getting the connection 100% free of charge you're probably overpaying.
+Frankly if your network connection is as unreliable as you describe (disconnected every 24 hours!)
+Depending on your needs a USB hard drive may suffice for the extra disk.
+The major disadvantages to this solution are that you'll need (at least) an extra disk to back up to, and you'll have to manage the rsync job (which you can do with a RunAfterBackup script in Bacula).
+The PROPER solution to your problem is to change ISPs.
+You can then use a tool like rsync to copy the virtual tape files to another location.
+If you're not able to implement the proper solution, your best alternative is to run a local Storage Daemon at the client site and back up to disk there.
+Specifically, Bacula has no concept of "pausing" a backup, and splitting the backup into multiple jobs (the only way to break it up) just means you'll fail a sub-job rather than the entire thing -- you might still wind up with a backup that doesn't restore you to a good/consistent state if you do this, so you're not actually addressing the problem.
+Backups take an amount of time proportional to the data being backed up -- If you need to move 10G of data it's going to take some time (how much time being determined by the speed of your network link).

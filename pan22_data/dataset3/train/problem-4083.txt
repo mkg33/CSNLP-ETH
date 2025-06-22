@@ -1,0 +1,9 @@
+Executing DBCC OPENTRAN (tempdb) may show an open transaction with sort_init in the description.
+A suitable covering index that would avoid the need to sort in your query is:
+This open transaction can prevent tempdb log space being reused until the sort completes.
+In addition, the sort starts a system transaction in tempdb to ensure sort allocations are correctly undone in case the transaction aborts.
+You should also review the SQL Server product documentation and this article to determine how to configure your tempdb database optimally for your workload.
+The allocation of sort run space in tempdb is a logged operation, which directly contributes to tempdb log space usage.
+You can verify this is occurring by looking for a Sort or Top N Sort operator in the execution plan:
+When an explicit sort is needed, if SQL Server does not (or cannot) allocate sufficient memory to perform the sort entirely in memory, it will use tempdb.
+Without a suitable index, SQL Server has to perform a full sort of the data to satisfy your query.

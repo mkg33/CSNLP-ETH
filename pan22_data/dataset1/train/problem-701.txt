@@ -1,0 +1,6 @@
+MySQL recalculates table statistics for certain operations that access INFORMATION_SCHEMA tables (SHOW COLUMNS is just a convenient alias for querying INFORMATION_SCHEMA.COLUMNS).  Set innodb_stats_on_metadata to be false, which will prevent this recalculation from occurring when you ask for metadata from the table. 
+In this particular case, I think the INFORMATION_SCHEMA is a red herring. From my own tests of SHOW COLUMNS performance, the innodb_stats_on_metadata variable doesn't seem to make any difference on either MyISAM or InnoDB tables.
+This seems to have been removed from the manual as of MySQL 5.5, but still appears to apply in that version...
+The field information returned with a query result set contains the same information as returned by SHOW COLUMNS, so a SELECT * FROM my_table LIMIT 0 should achieve the same thing without creating an on-disk temporary table per query.
+A quick example to just grab the field names in PHP...
+Retrieving field info in this way is a little more awkward to decode. You'll have to consult the description of the underlying MYSQL_FIELD structure to pull out the data types and flags, but it runs about 7 times faster on my system.

@@ -1,0 +1,12 @@
+As for the use of TimerTask to update a the state of the game; when the game hits the performance wall you won't be simply dropping to a lower framerate, the game logic itself will slowdown.
+This would mean calling the equivalent of paintComponent yourself which would then make it unnecessary for these things to be JComponents.
+However, you will most likely want to control when this happens instead of letting Swing make that choice for you.
+The thread that controls the rendering could have its core logic look something like the following:
+Notably he has a Sprite class that gets extended by classes named things like Fireball, Enemy, and BulletBill.
+Notch actually made a Mario clone in Java and has the source code available for perusal.
+His Mario class is also a subclass of Sprite but whether that class is called Mario or Player probably won't help or hurt in the whole scheme of building this.
+What's worse is that the TimerTask schedules will stack up during this time so the player will experience a period of slowdown followed by a fast-forwarding of both the game logic and framerate.
+Passing the Graphics context to the classes that represent visible constructs so that they can draw themselves will work out nicely and is indeed what Notch has done.
+When a game drops frames we expect to miss out on things, not for the passage of time in the game world to be altered.
+It is common to separate the logic and graphics updates into multiple threads for precisely this reason.
+This will be noticeable even when the drop in framerate on its own would normally not be.

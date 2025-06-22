@@ -1,0 +1,11 @@
+Access to a resource is based on the user account attempting the access, not the computer from which the access attempt is being made. I suspect that there's a difference in permission on the server that isn't acting the same as the other two.
+I'm not sure what you mean when you say a "farm", but I suspect it's a run-of-the-mill permission issue.
+Check the permissions on the drive that the share is located.  Might have some inheriting permissions.
+The entry I found most strange was under key HCU/Software/Microsoft/Windows/CurrentVersion/Explorer/MountPoints2
+Pretty wild if you ask me but I knew it had to do with the workstation and not server configuration.
+If you would, use the "CACLS" command to dump the NTFS permissions on each of the server computers and post them here (sanitized as necessary). If the "C:\Foo" folder is shared, I'd be looking for the output of the command:
+The "share permissions" are also suspect, but there's no good way to dump those to a text file to post here. In "Computer Management" on each server, nagivate to "System Tools", "Shared Folders", and "Shares". Display the "Properties" for the shared folder in question, go to the "Share Permissions" tab, and examine the permissions.
+I started by looking for the UNC name in the registry (\servername) and since I don't really need any of the entries there for applications (I only connect to upload files and terminal services) I started deleting keys containing the value.  
+I've had this issue before. The server would accept the connection but fail when the creds were a lower then acceptable level.
+Get Account Lockout Tools from Microsoft.    LockoutStatus, will tell you if a user is locked out, and every DC in your domain.  If you are having AD replication errors, one controller may have you locked out.
+Perhaps it was left over from all the testing I have been doing lately I am not sure, but a possible candidate.

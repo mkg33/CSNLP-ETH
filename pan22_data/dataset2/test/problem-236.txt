@@ -1,0 +1,11 @@
+Note: I do not run Ubuntu (and haven't used Debian distros for a while). However I have done various distros recoveries in the past all following similar scenario.
+In general, I'd lean towards a reinstall (from the backups you are absolutely supposed to have).  But I'm feeling hackish, so here's another way (assuming that your system is mounted under /target):
+The easiest way, if you have access to the machine, is to mount the filesystem, take a backup of all your data (just as a precaution).
+If that would have happened to me, I would reinstall and restore from the daily backup. You have a daily backup - a disaster recovery plan - don't you?
+Then you can re-install ubuntu like a normal install; in principle all your data (home dir, etc and var) should still be there.
+generally this should return your files by "brute-reinstall" of everything you have. You can do bit more "clever" tricks and query for all packages that dropped binaries in /bin
+While your strategy may work (there are good chances for it, more if once you copy back the bin directory, you do an apt-get reinstall of all the packages in you system), it can yield problems in the future because you may get an unstable server.
+I would try creating a VM then copying the contents of /bin to your damaged machine. That should get you up and running. Then run 
+There is a way to reinstall all packages so that /bin is repopulated, but that's fairly complicated.
+Once you've got the system back on it's feet, you should make sure and run an apt-get --reinstall install <all the packages from step 1>, because (since you're running a pre-release, which Sysadmin Cat says is a no-no on production systems) the versions of the packages you just extracted are likely to be different from those that were on the system before, and you'll want to make sure the system knows exactly what's what.
+In case you didn't have a disaster recovery plan, I would suggest to backup all the config files and the data you want to preserve and go ahead with a reinstall. That way you'll be sure that you'll end with a stable server again.  

@@ -1,0 +1,10 @@
+Since over-writing /etc/hosts takes root privelages, I would like to do SUDO.  How can I put sudo inside that script?  
+You might find using a framework like fabric or a configuration management system like cfengine or puppet to be a better long term choice...
+The trouble here is that you are trying to copy a file to a remote server as a non-privileged user (using your login credentials with the scp command).
+You need to do the sudo on the remote host instead of locally. Obviously for this to work, your account on the remote host will need sudo permissions to run the relevant copy command. It would look something like this:
+This essentially logs you into the remote computer as a regular user, then issues the sudo command to copy the file from your local computer to the remote one.  The scp logic will look a little backwards, since it is being executed form the perspective of the remote host.
+What you probably want to do is turn on the suid bit on this file which should be owned by root.  Then whenever a non-privileged user runs the script it will be running as superuser
+In order to take advantage of sudo on the remote computer, you'd have to execute a command there to initiate the transfer.  It might look something like this:
+There are many examples of Paramiko being used for scp, and to run commands with sudo, available on the web.
+You might have to do some work to get ssh to accept passwords form your script, though.  Especially since you are logging into a remote computer and telling it to log back into your local computer.
+This is easily done using Paramiko (the native Python SSH client) rather than calling the ssh command.

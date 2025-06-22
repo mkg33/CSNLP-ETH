@@ -1,0 +1,8 @@
+I have MySQL a MySQL database that it is being replicated from our production environment to our development/test environment so that they get real-time updates for the DEV side of the web application.
+I set the variable on the slave, created the table on the master, filling it with values 1-4 on the master, which get replicated to the slave, but subsequent attempts to INSERT data on the slave, have it pick up where the master DB left off.
+It's one-way so and changes to DEV don't replicate back to prod, but this creates an issue where if they create new entries in the DEV database, they stay local to DEV but have to potential to have their AUTO_INCREMENT id numbers clash should the numbers be re-used in PROD (which won't see the same value for the next available index number since it's blind to what's going on in DEV).
+The problem is that DEV wouldn't really be DEV if they couldn't change stuff and submit it.
+I've searched online and can't really find anything.
+I thought I could resolve this clashing by setting auto_increment_offset at the GLOBAL level so that new database entries get ID's in the 30,000+ range whereas PROD stays below 30,000.
+Sorry for the wall of text, but I don't know what's relevant and what's not.
+It seems auto_increment_offset was probably created for this sort of situation but it doesn't seem to be having the effect I would anticipate (that the slave generates ID's that are a lot higher than what's in the Master).

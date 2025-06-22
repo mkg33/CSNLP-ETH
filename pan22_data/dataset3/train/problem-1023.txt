@@ -1,0 +1,22 @@
+There are usually some coincident retransmissions in passing TCP traffic, for example between client machines and the file servers.
+Often retransmissions at the same time are to phones connected to the same switch, but sometimes retransmissions occur together to phones at opposite ends of the network.
+By putting ports with endpoint in "port fast" they skip the waiting and go right to forwarding mode.
+This can lead to retries when responses don't come back within the inital timeout (often 3 seconds).
+They occur reasonably often late at night when most computers are turned off and traffic should be lowest.
+One thing I have not yet tried, but should have, is updating the firmware of all the switches.
+I have an irritating problem with a LAN of about 100 computers, 2 Windows domain servers, and 12 VoIP phones.
+I have been doing some Wireshark monitoring on the connection between the VoIP PBX and the rest of the network.
+Look for people using streaming media as that can soak up bandwith quickly.
+This increases congestion momentarily until congestion mitigation mechanisms kick in.
+Gathering traffic statistics for your switches may show you have periods where you are running at or near capacity.
+The Wireshark log shows about 2 clusters of retransmissions a day ranging from 5 packets to hundreds.
+Do you have any ideas that might help diagnose the cause of problems like this?
+You probably have solved this since it has been so long but essentially you need to enable "port fast" on the ports that have endpoints (voip phones,workstations, servers).
+The spikes in retransmissions and phone resets do not correlate well with when the network is heavily loaded.
+Wireshark picks up a clump of retransmitted TCP packets at the times when we record phone restarts.
+A phone can send PDUs so if that guy reboots it will cause an STP convergence to occur thus causing the FDB table to be flushed and all devices to go through the 4/5 step STP fun.
+They seem to occur slightly more during the day, but most in the evening, when traffic should be decreasing.
+Simultaneously there are often signs of temporary loss of connection on computers: freezes in explorer while accessing network shares, errors in our administration software due to loss of connection to the database server.
+You may be able to mitigate the problem for the phones by traffic shaping.
+Since their installation around a year ago, every week or so, we notice a VoIP phone resetting itself - occasionally in the middle of a call.
+Those in each cluster are mainly between the PBX and some set of the VoIP phones, but not always the same set.

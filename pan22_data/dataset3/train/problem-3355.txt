@@ -1,0 +1,10 @@
+If you use PHP to generate sttaic, cacheable files like images, JavaScript or CSS, or if your content is cacheable, you may notice a huge performance boost.
+Unless your PHP code is really awful, the answer is that any of those solutions should handle the load.
+I would personally recommend Apache using mpm_worker with FastCGI PHP, eAccelerator, and possibly disk caching via mod_disk_cache, depending on your PHP application.
+For performance testing, there's lots of great tools out there but I find that the apacvhe benchmark tool that comes with Apache is a fast and easy way to test for performance.
+I've used lighttpd before and it was pretty slick, but in my experience Apache can be tuned for extreme performance, and the mpm_worker module gives you the same basic threading concept that lighttpd is based on.
+You should go with whatever is most familiar to you and the easiest for you to configure and manage.
+We switched from Apache's mpm_prefork + mod_php to mpm_worker, FastCGI PHP and mod_disk_cache, and we saw dramatic improvements in speed.
+One reason is, we use PHP to minify JS and CSS files, and even just calling PHP to readfile() a cached minified JS file is far slower than letting Apache with mpm_worker serve that file from a disk cache.
+The specifics of how it should be used warrants a separate question :-)
+Many people tout lighttpd above Apache at all costs saying Apache is bloated and slow.

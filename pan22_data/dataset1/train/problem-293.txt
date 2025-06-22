@@ -1,0 +1,7 @@
+Yes, it is possible to wind up with a poor plan.  One common cause of this is called "parameter sniffing".  This is usually helpful, but if the stored procedure can be called with parameters that cause widely varying result sets, then the procedure can be stuck on a 'poor plan' for many executions.  (But it might have been a fine plan for the execution that caused the plan to be created.)
+Using DBCC FREEPROCCACHE is quite a heavy gun, since it frees up all the plans in the server, which means that each one has to recompile the next time it is used.
+If you need to force a recompile, you can use sp_recompile to do so for a particular procedure, table, etc.
+If a stored procedure is likely to be widely varying in results you might find it useful to offer the OPTION (OPTIMIZE FOR UNKNOWN) hint.  This will still optimize for your database statistics, but it will not optimize for a particular parameter.
+Benjamin Nevarez posted a useful explanation at: http://www.benjaminnevarez.com/2010/06/how-optimize-for-unknown-works/
+When investigating a performance issue, a workmate suggested running DBCC FREEPROCCACHE to clear the plan cache. He came to this conclusion after noticing performance improved after a reboot. 
+This feels like a rather quick and dirty approach - is there a more conclusive, definite way of ascertaining whether clearing the plan cache is the best approach? Making a mistake with this decision could result in a performance issue.  

@@ -1,0 +1,12 @@
+rolled back) during normal restore process when using sql back up files.
+Lastly, to cover your question, it's a bad idea to not backup the transaction log.
+If you've got multiple DBs for multiple apps, can your backup solution only restore ONE database (both the MDF and LDF) or will you have to restore all the DBs?
+Not having the Trans Log when you restore one of these will make getting the DB back online and functional a much more difficult task.
+The problem that you back up mdf files only (while allowing ldf files recreated during full restore) is that you may have "dirty" transaction data in your mdf files.
+Even in Simple Recovery, you can have "in flight" transactions that haven't gotten to the point of being written into the MDF yet.
+Frankly, I'd take the safe way out, turn off the VSS snapshots of your SQL data and log drives, set up a backup process using the native SQL backup command on a set schedule to a location that is covered by the VSS.
+Do you have more than one database per-SQL instance?
+More work for you, a bit more work for whoever's in charge of the VSS snapshots, but you'll be much happier if / when you have to restore a database down the road.
+Quick answer would be that you'd better do full backup + differential backup.
+These "dirty" data usually can be cleaned out (i.e.
+As Kris G pointed out, how do you KNOW your VSS snapshots are restorable to a working SQL DB?

@@ -1,0 +1,12 @@
+I would suggest using an externally-immutable class with fields for "originalNumerator", "originalDenominator", "reducedNumerator", and "reducedDenominator"; the latter two would be initially zero, but could be lazily computed from the first two when required.
+I do not recommend overwriting the original numerator and denominator, since immutable classes are generally expected to be thread-safe; if the object had held 3/12 before simplify was called, and another thread examined it at that moment, it might erroneously see 3/4 or 1/12 depending upon whether the numerator or denominator was updated first.
+An advantage of using a class object over a structure is that if repeatedly performs operations on a non-reduced structure, the code performing each operation would likely receive a copy of the non-reduced structure, reduce it, act upon it, and then discard the reduced copy.
+If the first sum is simplified to 1/6, it will have to be converted back to 2/12 before the next addition.
+If that's simplified 1/4, it will have to be converted back to 3/12 before the last addition.
+By contrast, if each operation is performed on a class object, the first operation would perform the reduction and subsequent operations would then be able to use the reduced form.
+Suppose, for example, that one wants to add together the fractions (1/12)+(1/12)+(1/12)+(1/12) and output the result.
+Although this will entail some object-creation overhead when performing math on rational numbers, it will allow the code to avoid having to call Simplify after every operation.
+Although it will be necessary to simplify the result before it can be displayed, simplifying the partial sums will be not only useless but counterproductive.
+I would suggest using an immutable class rather than a structure or, if you'd like something whose default value is Rational.Undefined rather than null, use a structure which wraps a reference to an immutable class object (and say that it's undefined if the reference is null).
+Since all the denominators match, adding all the above numbers should require three additions and zero multiplications or divisions to yield 4/12.
+Having separate fields for the reduced value would mean that if a thread which sees either field as zero (when originalNumerator and originalDenominator aren't) calls simplify, then two threads which examine the same non-reduced value might call simplify simutaneously and end up doing redundant work, but everything would still behave correctly.

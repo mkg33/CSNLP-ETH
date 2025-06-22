@@ -1,0 +1,22 @@
+Only 'Problem' with this is, that your EntityManager itself doesn't know, what Component type is inside each ComponentContainer.
+Now inside the EntityManager, you can maintain an unordered_map of your component pools based on their component types quite simply.
+The way I approached this was to use a constexpr string-hash which I apply to my components at compile-time to assign each of them a unique id.
+Additionally i made a buffer class, saving components in an contiguous memory block until full, then opening another contiguous memory block and delete them when empty and so on.
+Next I design my component pools using a base class and a templated derived class where I actually manage the storage for each specific component-type:
+The first is that how you store the components it abstracted away from the EntityManager.
+But for a simple approach, something like this will always work:
+The most important thing the above macro exposes is:
+As you can see I've exposed a ComponentIterator<T> class type allowing me to expose the ComponentPool<T> as a specialized iterator class where I can easily iterate all components in the underlying pool without concern of the storage itself.
+        virtual void* createComponent(unsigned int ID) = 0;
+In your Entity manager, you can now have Array/Map/whatever[ComponentBase] oder [ComponentBase*], which hold your ComponentContainers.
+In my system that is not a problem, since every other manager registers the components it needs in the EntityManager and when needed asks the EntityManager for a ComponentBase and casts it to the ComponentContainer with the needed TComponent.
+Secondly the component pool does store the components in contiguous memory; however you do need to take care here because of the vector implementation and the fact memory addresses could become invalidated after a new component is inserted.
+Should you need some type of reliable pointer mechanism, you can add another layer of indirection to this solution where you have something like a uint32 or uint64 value that maintains several key pieces of information encoded into the value
+I essentially do this with the use of a macro where I provide a generated UUID string that gets hashed and a name to my macro.
+Should you decide to change the implementation, the EntityManager is none the wiser as it is based on whatever exposed API the pool provides, as it should be from a SRP perspective.
+The solution they gave me was to have arrays (or vectors) of base classes like this: class ComponentBase {
+I had almost the same problem you have right now, except i tried to use pointer for the to my Buffers createComponent-method and call those.
+Under the hood, this macro adds some static methods allowing me to fetch the the class name and its associated string-hash value of the UUID so that I have some basic RTTI data about this class.
+The sparse array inside the component pool is meant to be a lookup-table that the pool maintains when components get shifted around so that you effectively can translate a Handle -> index in the vector.
+    class ComponentContainer : public Buffer<TComponent>, public ComponentBase
+        virtual void deleteComponent(unsigned int ID) = 0;

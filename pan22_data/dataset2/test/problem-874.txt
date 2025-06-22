@@ -1,0 +1,8 @@
+The managed instance group comes with a feature called autohealing which recreates the unhealthy instances.You can see the document here
+The other thing you can do is configure a Stackdriver Monitoring metric and write a program that uses the Stackdriver Monitoring API, such that a web hook will further take some action like notify someone or maybe even restart the system using some kind of a configuration management tool.
+Even though bash is also a good option, the GCP console gives you an interactive interface to change the specifications at any time you wish. You don't have to get in the hassle of rewriting your scripts again in case your use case changes and you want to monitor more of that instance.
+I'd start with a monitoring system like nagios so you can have some idea what is happening.  Then have someone manually restart it until you see patterns worth automating.  You can hook nagios up to PagerDuty to make sure someone gets notified.
+This way every time your health check fails, your instance would restart. Make sure you configure proper firewall rules for the health check to work.
+To monitor periodic health of your instance you can create a health check which will send periodic probes on a specific port to check VMs health. The health check will not restart your instance if it is unhealthy. To recreate unhealthy instance you can create a managed instance group and put your instance into the group and create health check. Find the document for managed instance group here
+Beyond your internal monitoring it might be good to have an external service like hund.io or pingdom keep an eye on your site.
+Creating a health check that listens to port 80 would do your job but a health check alone wouldn't work. You will have to: 

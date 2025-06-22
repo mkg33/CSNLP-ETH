@@ -1,0 +1,18 @@
+I'm trying to make a game which behaves somewhat like The Powder Toy.
+That way you can mark chunks as dirty and only update them as needed.
+It'll look as it's single pixel but it'll run (scale * scale) times faster.
+Although these approaches work, I'd be interested in hearing about other, possibly more efficient ways to render the particles.
+It seems that any 'optimizations' of this approach would do best to focus on the population of the vertex array.
+I've tried a few different approaches of drawing particles to the screen:
+Then I draw to the FrameBuffer with 1-pixel sprites or ShapeRenderer.
+I've also had the same problem recently and the way I did it, is similar to what you've already listed there.
+This page provided further information about drawing primitive shapes using meshes.
+I've had good luck with using one FrameBuffer per chunk.
+Even for 1,000,000 points, my mid-range graphics card can chug them out in under 16 ms, but the CPU struggles mightily to populate an array of 5,000,000 floats in a short (under 16 ms) amount of time.
+By combining what I had learned from the two above sources, I was able to draw the points much more efficiently using GL_POINT to draw the mesh.
+When using this method and changing vertex locations each frame, I've found the majority consumer of time per-render to be the population of the vertex array which is sent to the GPU for rendering.
+The world is square and can be filled with particles.
+Here's a file that you might copy to test this out and understand the approach:
+After pilfering through some of the information on the LIBGDX documentation pages, I stumbled across something called a mesh, which looked promising.
+Particles are drawn as small squares, constrained to integer positions, and stored in a 2D array, similar to the GOL.
+What this does is it keeps the pixel type of rendering but keeps it lightweight because of the scale.

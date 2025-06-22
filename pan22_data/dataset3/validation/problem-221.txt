@@ -1,0 +1,14 @@
+If the above seems too complicated to you, then it is fine to start a new instance with a new keypair specified.
+Make sure you add the public ssh key to the authorized_keys file, not the private ssh key!
+If you want to prevent the initial keypair from having access to a running instance, simply edit the .ssh/authorized_keys file, remove that public ssh key entry, and add the public ssh key you want to have access.
+Make sure you test ssh with the new key in a separate terminal before you terminate your existing ssh session that was used to edit the file!
+Note: The above described behavior is not enforced by EC2, but is simply a de facto standard implemented by most popular public AMIs.
+In a related topic, I recommend using your own ssh keys instead of having Amazon generate keypairs for you.
+Some common user accounts include root, ec2-user, and ubuntu, so the default file might be one of:
+When you specify a keypair on running an instance, most public AMIs will copy the public ssh key for that keypair into a .ssh/authorized_keys file in the primary user account's home directory.
+This is standard ssh key management, not specific to EC2.
+The user account varies depending on the Linux distro and the AMI publisher.
+This is the key to your server's security so it is important to understand what you are doing.
+If you saved your private ssh key to, say, KEYPAIR.pem, then here's a command that will output the corresponding public key:
+If you break the authorized_keys file you risk not being able to connect to the instance.
+You should always have a procedure in place to be able to start replacement instances anyway as your existing instance could fail at any time.

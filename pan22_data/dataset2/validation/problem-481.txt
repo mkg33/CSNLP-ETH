@@ -1,0 +1,21 @@
+The main one I think you should consider abstracting out of IrcMember, is the idea of a Connection.  Make a separate class for connections, that manages the socket, stores the (list of?) room(s) you're in, etc.  This way, IrcMember can just represent the user, i.e. a real name, ident, nickname (unless that is per-server).
+The leave_server function also doesn't seem to support QUIT messages, not the end of the world - but easily implemented.
+Secondly, as I'm sure you're aware (As would be anyone having run the code), a command-line interface for something interactive like IRC isn't the best way, particularly without ncurses, etc.
+Perhaps not a game-changer (depending on what you want/need to do in your client), but your script has no method to allow for the sending of an IRC MODE command (either for the user or for a channel).
+If not, I'd suggest adding some logic for room lists (most likely associated with the Connection instance for that server).
+Some (not all) networks use user-modes to handle name registration, etc - but if your not concerned about that then leave it out as it is.
+I'll try to "dig into how [you] design and implement the IRC client as a whole", particularly with regards to the spec (Which I have actually (somewhat, as much as is possible with things like RFC's) read!).
+As raw_input blocks, you're unable to check for new messages (or server PING's) - which will eventually (5 - 20 minutes depending on which network) timeout your socket as idle on the server-side.  Of course, if you're chatting actively you should have something to say at least every 5 minutes, so this isn't a a huge deal.  But it does mean your client won't be capable of idling online (not 100% sure of your use-case for it here).
+Part of me just feels that (as you say) there is just a tad too much repetition in that architecture.  (Perhaps some more abstract encapsulation of a server command and arguments?)
+Along the same lines as above, the channel functionality is somewhat limited without the NAMES command.  At present, the client can join a room and send it a message - but not know if there's anybody else there or not or who they are!
+NAMES tells the server to send you a list of what nicknames are registered (joined) on a channel (usually, a channel that you have also joined).
+Okay, since bounties are worth giving people a run for their money, and I love Python, and I miss my days of making IRC bots... I'll give this a go..
+There (mostly) seems to be a one-to-one mapping of a lot of your functions to IRC command verbs.  For example, leave_server -> QUIT, join_channel -> JOIN, send_private_message -> PRIVMSG, etc.
+IRC supports invitation-only chat rooms, so if you plan on joining/inviting people to them then you'll need the INVITE command.  Otherwise, it can (probably) be ignored.
+Just to finish up, a bit more on your coding... As you mentioned, "There is a fair bit of repetition that could probably be pulled out".  Particularly things like send_channel_message, which just ends up calling send_private_message anyway (I do understand why, because they both use PRIVMSG, and channel messages need some additional checks first).  But it just doesn't feel right reading through the code.
+This one was a bit more of a 'shocker' to me, to LIST support?  Is your user expected to know the exact name of the channel they desire?
+(Note that there are also extensions, both standard and non-standard, to allow channel names starting with % and probably other characters as well)
+Your client at present has no way to WHOIS or WHO anyone else, or to send anyone (person, i.e. a nickname) a message (PRIVMSG or NOTICE), and also cannot send NOTICE's to channels. (None of which are big deals, at all, so I just wrapped them all up here).
+Firstly, as you mentioned - you are doing too much in one class!  You're dealing with a domain where we have the benefit of some pretty well discretized concepts (read: classes).
+Was this going to be (one day, I'm sure) some sort of logic around eight the WHO or WHOIS commands to prevent nickname collision?
+The KICK and TOPIC commands, as well as the channel MODE 'b' (ban) are used for room administration (keeping out the rif-raf, setting the channel topic, etc).  If your client is just for chatting, then again don't worry about them - but they are needed in real life (unfortunately).

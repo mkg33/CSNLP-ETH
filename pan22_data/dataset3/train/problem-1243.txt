@@ -1,0 +1,22 @@
+Is there a way to allow sub-accounts access to IAM Policys of another account?
+Another Option would be to write a Lambda function that is triggered on account creation that creates the FunctionUserBoundary policy in each new account and change the iam:PermissionsBoundary value to arn:aws:iam::*:policy/FunctionUserBoundary but when I change the policy later I will end up with different policy Versions in different accounts.
+Create a SNS Topic OrganizationsCreateAccount with the Lambda Function as Subscriber
+Therefor a user can not reference it in a sub-account when creating a user.
+I also try to force a IAM Policy to that newly created user which denys any IAM access for the function user.
+I plan to implement the time limit by calling a lambda-Function once a day to deactivate access keys of all function users that are older than a given time.
+These Function Users should have no right to create users themselves nor set update any access keys.
+My problem is setting the Limit on the rights of the created users.
+It resides in the master Account of the organization.
+While setting up my Organization in AWS I stumbled upon a problem.
+Create a New Lambda Function InitiateAccounts with the following Code:
+With this Policy I try to force all created users to have a Tag with the creating user (to identify function users and allow that user to update access keys).
+Add this Policy to the AWSCloudFormationStackSetAdministrationRole creating it if it does not exist.
+I want some users to be able to create own IAM Users (Called "Function Users") for use for programmatic access.
+The idea is that if a employee leaves the company the created function user stays valid only for a limited time (If not found while deactivating the employee user).
+I created a CloudFormation StackSet that roles out all the policys and a custom lambda function that is called each time a new account is created to add it to the StackSet.
+Is there a way to implement my plan or is my plan fundamentally wrong?
+Additionally these Users (or their Access keys) should be valid only for a limited time.
+We plan to use AWS Organizations to separate different departments (Dev, Operations, IT, Projects) into different AWS Accounts and AWS SSO to Manage Cross-account access.
+I created a SSO Permissions set (Which is mapped to a Role in each account) that has the AWS managed policy "IAMReadOnlyAccess" attached.
+Create a new CloudFormation StackSet with the following Properties:
+Create a Cloudwatch Event Rule OrganizationsCreateAccount with the SNS Topic as Targets and the following Event pattern:

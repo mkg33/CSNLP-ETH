@@ -1,0 +1,20 @@
+Get-AppxPackage -Name Microsoft.Windows.Cortana | foreach {Add-AppxPackage -register "$($_.InstallLocation)\appxmanifest.xml" -DisableDevelopmentMode}
+As a side note, I use a domain-joined account, but I doubt that makes a difference because I'd deleted the local Admin account I'd created during initial setup, and created a brand new local account during troubleshooting. I then signed in with the new local account I'd just made, and the search function was still not working correctly. That told me this was a system issue, not a profile issue. 
+4-Turn off indexing for all file content in your main hard drive. This is done by right clicking on the drive in my computer, then unchecking the "allow files on this drive to...". Let it run for all subfiles and folders. Ignore all errors when the option is presented When completed, recheck the box and follow the same steps.
+8-Finally, add the index locations you want back in using the control panel index options. Be sure to add
+You may have to turn off the "get to know me" setting in privacy settings before this step will work.
+This fixed my cortana/search woes, and saved me a refresh install. I'd love to know if using only step 8 fixes the issue.
+Also, I must cite http://www.askvg.com/fix-we-are-getting-search-ready-problem-in-windows-10/ for some of the tips. I tried a few other things too, but this was the final method that worked. Hopefully none of the other tweaks were part of the final solution.
+5-Set the DWORD for HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Search\SetupCompletedSuccessfully to 0.
+Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like "*cortana*"} | Remove-AppxProvisionedPackage -Online
+So after the repair, I signed in with my domain account (and the local account), and search was STILL not working properly - no "Settings" results, and limited program, application, and control panel setting results. 
+Fortunately, there are dozen's of reports of this in the Windows feedback app, which increases the odds of a fix. To that end, I posted the following repro. It certainly seems related to account types. 
+Run Lpksetup /u and uninstall any possible duplicate language you find there, restart Windows and wait a few minutes.
+Hope this helps someone out there, I spent all day on this bashing my head against the wall and I don't even feel relieved given how stupid the fix was for me.
+But then...I went through and actually finished the Cortana setup by signing in with my personal Microsoft account, and poof everything worked flawlessly. Instantly.
+I had broken this because I mucked about in the cortana and indexing settings to try and make my computer run a bit quicker. Reindexing, modifying registry keys, exporting a working search registry key and reimporting, reinstalling cortana, rebuilding index, erasing all index entries... None of these worked for me by themselves. So I tried a shotgun approach and did everything - and it worked. 
+Delete %LOCALAPPDATA%\Packages\Microsoft.Windows.Cortana_cw5n1h2txyewy folder. Don't forget to go to the folder of that user account!
+I spent much time trying to solve this issue. Like @Edward Brey I had search functions working for some things, but not for others and especially not for any settings.
+Before going through my process, I would suggest attempting only the last step and seeing what happens. I suspect it may work alone. 
+Old thread, no idea if this will help anyone, but I tried every solution out there, but finally got this fixed. I had tried the following...
+1-Turn of windows search service. First, run services.msc and find Windows Search and set to disabled. End the windows search process.

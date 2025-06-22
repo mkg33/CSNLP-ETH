@@ -1,0 +1,14 @@
+Levels 1-4 are pretty safe as most data is preserved.
+It worked and mysql started again and when I use "Show tables" it shows all tables of my database but when I run the
+and add beow line in your mysql configuration file
+I had problem starting innodb and read somewhere that deleting ib_logfile0,ib_logfile1 files works.
+Setting the level to 5 or 6 gets a bit more risky as you could lose some data.
+Basically the files ib_logfile0,ib_logfile1 contains the databse table structure and responsible for identifying the path for database connection.
+Other way is backup your all databases and try to recover it with force recovery.
+Good to know for next try - you should validate anything from the Internet with documentation of your software to avoid running destructive opperation and keep your data safe.
+Therefore you have to recover table structure from .frm files with MySQL Utilities
+Your database left with structure files (so it know about databases and tables) but your data are gone.
+You will be able to find all the databases in /var/lib/mysql but all the tables using innoDB database engine are corrupted and will show the database connection error, because of removal of ib_logfile0,ib_logfile1.
+MySQL has structure of DBs and data in separated files.
+https://www.percona.com/blog/2014/01/02/recover-table-structure-frm-files-mysql-
+Under the mysqld section of the config file you can add innodb_force_recovery = 0 – 6.

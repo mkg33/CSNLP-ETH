@@ -1,0 +1,7 @@
+then check if there is anything open after port 6000 (for example 6011). If, for any reason the DISPLAY is set wrong (maybe to your colleague machine?) then try to do:
+Also, when you do "ssh -Y", on the server the X server should listen to a TCP port 6000+n where n is the display number assigned to your trusted connection. You can check by doing:
+ssh -v will tell you if the server declines to allow X forwarding; you can also look at the sshd_config to see if it disallows X forwarding.
+David pretty much nailed one half of the equation -- the ssh mechanism automatically takes care of setting up the xauth authentication and defining your display, so don't override that manually by setting the DISPLAY variable yourself.
+When you modify the DISPLAY you tell the program to connect directly to your laptop (without encryption). In order that to work you should allow it on your laptop (do something like "xhost +myclient.mydomain.com).
+The other issue is that some ssh daemons on the destination side of things are configured to deny X forwarding even if you ask politely.
+Probably you will get something like "localhost:11.0". This means ssh will automatically forward any connection going to localhost display 11 to your X11 server on the laptop. So, just start your program.

@@ -1,0 +1,9 @@
+I am developing a client application and I want to find out if I missed any sections in my program where a lot of small queries are executed in bulk that could possibly be done in one big query to speed up queries from very far away clients (signal propagation delay).
+Also if anyone knows if there is a way to get the actual network read/write statitic that would help as well. (not in packages or traffic, but in "recieved: query, sent: 1000 rows, received: next read request, sent: (last) 20 rows -> 2 operations recorded", so basically I can derive with a ping of 150ms the total time needed would be 600ms minimum, which could be reduced to 300ms by increasing the fetch size)
+However the first statement does not seem to update propery, or not display "select" statements at all as it is sometimes showing 0, which is impossible because it should at least show 1 even on an idle server due to the poll-query.
+There aren't any network I/O statistics kept by PostgreSQL yet. There's someone working on it for 9.4, though I don't know if it'll get accepted into 9.4.
+If you have any ideas as to how to test this with a different approach I am also open to suggestions.
+I'm sorry for not exactly answering your question but why did you choose row count as a database load testing tool?
+This will be some real data, not some assumptions about tuples fetched (while they can be cached or your poison is actually some little query that can be optimized just by growing one index to exempt another sorting pass).
+I have been searching a while to find a way to retrieve the amount of queries my postgres database is processing and responding to. I found various statistics about disk I/O, insert/update statistics but nothing specifically reflecting queries.
+You'll want to use the built-in extension pg_stat_statements, or the external pg_stat_plans enhanced approach.

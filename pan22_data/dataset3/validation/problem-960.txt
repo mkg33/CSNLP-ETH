@@ -1,0 +1,14 @@
+If I can get a resolution (or steps) of 4 decimals (0.0000) I would probably get very nice results, a resolution of 5 would be even nicer, but I am not sure if the is possible performance-wise.
+I can play around with the values but I don't really understand the underlying logic and what I am doing..
+For various reasons this limits the pulse width step resolution to 1µs and in practice to a minimum of 2µs steps.
+If you need higher resolution (doubtful) you could use the Pi's hardware PWM for two of the servos/ESCs (there are only two channels).
+Can anyone assist me on getting the desired resolution?
+By default I think servoblaster and pi-blaster use 10µs steps and (my) pigpio 5µs steps.
+By watching and listening (to RPM difference), I came to the conclusion that the RPM of the engines only change when the values for example go from 0.128 to 0.129; when the PID gives 0.12812 for example, nothing seem to change.
+For a comparison the PCA9685 hardware PWM module uses about 4.5µs steps.
+And this is most likely the main reason it can't get accurate stabilisation.
+This means if a servo/ESC accepts values in the range 1000 to 2000 µs you could send 1000, 1002, 1004, ..., 1996, 1998, 2000.
+pi-blaster, like servoblaster (its parent), pigpio, and RPIO.GPIO, and doubtless others, use DMA to time the  PWM pulses.
+Currently I am building a tricopter which runs on nodejs and uses pi-blaster(https://github.com/sarfata/pi-blaster) I've got everything working nicely except my custom PID can't stop small oscillations.
+So I went on to investigate it more and discovered that indeed the (pi-blaster) resolution is currently limited to 3 decimals (0.000)..
+I know you can configure servoblaster to use 1 or 2µs steps as can pigpio.

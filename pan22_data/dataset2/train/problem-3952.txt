@@ -1,0 +1,7 @@
+When used this way, VarChar only uses the number of bytes + 1 to store your text, so you might as well set it to 255, unless you want a hard limit (like 50) on the number of characters in the field.
+Also please make sure that data in MySQL server is really stored as latin1, this can be accomplished with:
+Also, don't forget that 233 limit is not character limit, and as some character might need more han 1 byte to be stored, you might see less than 233 characters.
+MySQL is not cutting it at 233. The problem is likely in your save method which cuts it to 233 before the data even reaches MySQL.
+I assume that either your MySQL version is different or your front end is displaying only 233 characters. 
+255 is used because it's the largest number of characters that can be counted with an 8-bit number. It maximizes the use of the 8-bit count, without frivolously requiring another whole byte to count the characters above 255.
+After that I execute your alter query and after successfully execution of query I added two records with more than 255 character.

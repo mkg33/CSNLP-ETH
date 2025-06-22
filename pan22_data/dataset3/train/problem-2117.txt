@@ -1,0 +1,18 @@
+It saves you the effort of having to mess with iptables, and also lets you add or remove subnets from the rule blocking LAN access without even touching iptables.
+You also can't filter based on destination MAC address, because this happens after iptables has finished filtering/routing/mangling/etc.
+I have a corporate "web appliance" which allows handheld devices to connect to it over wifi.
+See the man pages for ipset and iptables-extensions for more info.
+The problem is, there are many different subnets on my LAN and I don't want to have to manage egress rules for every subnet on the LAN.
+Is there a way to tell Netfilter to allow port 80/443 heading for the internet gateway even though the egress would run off the same interface as the LAN?
+That Linux box has two Ethernet interfaces, one going to the LAN, and one going directly to the WiFi appliance.
+I'm trying to figure out how to allow the appliance access to the internet (so it can download vendor updates) without allowing it access to resources on the LAN.
+On some distros ipset is not included, but you should be able to get it from your distro's repositories.
+This is a netfilter feature that lets you define a series of IP addresses, or ranges, and then match them all with a single iptables rule.
+It may not be the most ideal situation, but you may want to look into IP sets.
+The packet is sent to that MAC address but its actual destination IP does not change within the LAN.
+I have the appliance plugged into a Linux box so I can use iptables to filter traffic on eth1 (see pic here: http://i.imgur.com/qudqnOS.png).
+Normally, I would have a third interface on the firewall which would allow me to filter egress via outbound interfaces, however this time I cannot.
+Your router is doing the work of NAT; taking the source IP of say 10.0.0.1 and converting it into the public facing IP, and vice-versa.
+If I'm understanding your situation correctly, you have a Linux box connected to your LAN, which is NOT serving as the router.
+That happens immediately before packet egress and happens at the data-link layer (Ethernet) which is lower than the network layer (the raw IP protocol).
+You can't really filter on the "gateway IP" because in typical cases, the only thing the gateway IP gets used for is to resolve via ARP what the MAC address of the gateway is.

@@ -1,0 +1,6 @@
+How are you measuring the size of /home/virtfs? It is indeed created for jailed shell logins, but those include SFTP logins. It contains a number of bind mounts, and so likely the disk usage you're seeing is logically elsewhere in the filesystem as well. In other words, that 10GB is probably real user data. The cPanel docs go into detail about VirtFS.
+I read that using jailed shell accounts could be responsible for large virtfs file. Most of the user accounts have SFTP access using SSH identity key, but shell access is denied to all account (except root).
+According to cpanel documentation, we can not delete virtfs since if we enforce such commands like rm it will make user data deleted as well.
+Even if you are not using jailed shell, you (or some user) are PROBABLY using the CPanel's "Cron Jobs" option. If so, this option is responsible for generating the symlinks in /home/virtfs. 
+The main part of the question is its not taking your storage when it comes to storage number. It only creates hard links and storage numbers are false positive in this case.
+That said, I agree with @viniciusmunich the virtfs folder "used" space is counted twice, because these are symlinks of files already counted. 

@@ -1,0 +1,6 @@
+so, you would have to configure the .bashrc on the server to check an existing PS1 (or whatever variable) and only set PS1 if it is not set already.
+you can specify environment variables on the client side and if the ssh-server allows it (check man sshd-config), these variables are copied to the session when you log into the machine.
+You could do stuff like mounting your home over sshfs/nfs, but the easiest solution is to scp your bashrc across to the new machine. This also brings aliases and stuff.
+ssh -t srvname ' cp ~/.bashrc ~/.bashrc.n &>/dev/null ; echo "LS_COLORS=\"no=00:fi=00:ETC:ETC:ETC\";" >> ~/.bashrc.n ; echo "export LS_COLORS" >> ~/.bashrc.n ; echo "alias ls=\"ls --color=auto\";" >> ~/.bashrc.n ; exec bash --rcfile ~/.bashrc.n'
+Put your PS1 prompt in ~/.ssh/environment and ssh session will carry it to every host you login. It works for me with openssh 4.3p2 .
+or, which make things simpler, you bundle your settings into a function .. and deploy that function either as a special file your source on demand (source joes_bashrc) or directly to the .bashrc. having your own file seems a bit more robust. the other folks might use your settings but are not forced to do so.

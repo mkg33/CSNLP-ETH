@@ -1,0 +1,24 @@
+For what it's worth, this does appear to be a fault in Windows 7.
+2/ Set Scope Options in DHCP to list put new IP address as first DNS entry (the entries will be SBS secondary IP, SBS Primary and then Router IP),
+If you want to do that, there's a much more efficient solution.
+I'm assuming that when connected to the VPN from Windows 7 that you're unable to resolve internal resources because of the order that the DNS servers are listed.
+However, for this example, I'm going to assume you want to continue to use a DNS forwarder, for whatever reasons, and that your DNS server is also a Windows 2003 machine (credit to http://www.petri.co.il/install_and_configure_windows_2003_dns_server.htm):
+This way you only need to have a single DNS entry for the PPTP connections, but the end result is the same.
+The DNS server should be configured to use itself for DNS and the DNS service should be configured to use root hints (or forwarders if you choose) for external (non-authoritative) resolution.
+I set up systems with the DNS of a SBS Server first and a fallback to the Internet Router for DNS if the SBS box goes offline, this works fine locally but when a VPN connection comes in the order is reversed and causes these issues, so I came up with a working solution that does not require any Registry hacking:
+Again, this prevents the machine functioning on the VPN as the first DNS entry (default gateway) is rejecting local addresses.
+Now the DHCP will offer the SBS DNS server as the first two IP addresses with the Router DNS as the last for LAN DHCP leases, and for a VPN connection the DHCP list becomes SBS, Router, SBS so local DNS lookups now work correctly despite this bug.
+1/ Create additional (secondary) IP address on DNS server
+I'm now seeing the same thing on a Windows 7 laptop connecting to a ZyXEL VPN (P-661HW-D1 connecting to a ZyWALL 5), where the VPN-specific DNS IP address is being listed second.
+To fix this issue with Windows 7 VPN clients do the following:
+If you want to query these only if a request to 192.168.8.3 does not resolve to anything, then you can do this with a DNS Forwarder, but even better is to skip it alltogether an use Root Hints in your DNS server (so that it gets its own DNS records, rather than proxying them through another DNS).
+208.67.x.x - I assume these are your ISP's DNS severs?
+My suggestion would be to verify the DNS servers configured on the VPN server and in the DHCP scope and make sure they're correct.
+Also, in addition to what Farseeker has posted I would also recommend using root hints instead of forwarders on your internal DNS server.
+I've seen the exact same problem with a Windows SBS 2003 server -- the only Windows 7 machine connected to it via PPTP, was assigning itself the DNS servers in reverse order, meaning that the machine could not find any resources on the remote network, as the ISP's DNS servers were being asked first, and they were rejecting .local addresses.
+The way DNS server settings are applied to a VPN client are as follows: If the VPN server is configured to allocate ip addresses to the VPN client from an internal DHCP server then the client will receive the DNS servers that are configured in the DHCP scope that the VPN client gets it's ip address from.
+All of your internal hosts (including the DNS server) should be configured to use the internal DNS server only.
+I can't say whether or not Vista was affected, but certainly something is wrong with the way Windows 7 does DNS as this fault did not occur in XP.
+If the VPN server is configured to allocate ip addresses to the VPN client from a static pool then the VPN client will receive the DNS servers that the VPN server is configured to use (from the TCP\IP properties of the VPN server itself).
+This solution also assumes you are using DHCP Relay for the LAN and Localhost in the RRAS settings.
+Multiple DNS servers are usually provided for the case of redundancy, not for "chaining" requests.

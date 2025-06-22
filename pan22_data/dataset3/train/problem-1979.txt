@@ -1,0 +1,14 @@
+has died, and I tried to migrate to a more modern UEFI-oriented hardware, the RAID controller cannot initialize even in legacy (BIOS) mode — it hangs when scanning disks, i. e. its firmware receives the control from UEFI/BIOS and prints welcoming messages on screen, but makes no progress in identifying connected SATA drives.
+I also had an idea that GRUB may be of any help here, i. e. booting from SeaBIOS into GRUB (on a small separate disk) and then chain-loading to Windows.
+But I just got curious with this specific technology, as virtual machines seemed more versatile and future-proof method of prolonging the life of legacy systems.
+However I was not very successful at configuring it, since Linux environments do not see the array due to the lack of drivers and thus cannot assist with menu creation, yet GRUB itself is not too friendly nor verbose — I could not even understand whether it actually sees the array as a disk drive, or needs some drivers to be loaded beforehand, or any other prerequisites.
+The ultimate goal is to get the server back by any means available, including by acquiring another compatible old hardware.
+The problem, however, is that SeaBIOS does not list the RAID controller as a bootable device, despite being able to communicate with it successfully.
+For reference, I experimented with Xen 4.7.2 using upstream Qemu 2.6.2 with SeaBIOS 1.9.1, on top of openSUSE 42.2 with Linux 4.4.62.
+Forums and mailing lists indicate that booting from PCI RAID was already possible in much older versions, for over a decade, so I assume that it is my particular setup to blame.
+Therefore I thought I may have better luck running Windows inside a virtual machine with PCI card passed through to it, the more so that NT 5.2 is unlikely to be compatible with modern chipsets, while Qemu provides totally comfortable emulated environment in classic BIOS mode.
+But I cannot understand, is SeaBIOS indeed capable of booting from my RAID controller?
+Rescue kits like RescaTux or PartedMagic are not helpful either, since they are focused on repairing existing GRUB installations — not setting up new ones.
+In other words, the array seems totally operational inside the VM environment, but for some season not recognized by SeaBIOS as a bootable device, although the later does support PCI devices for Boot ROM option, as is evident with iPXE network boot ROM built into SeaBIOS itself.
+As it turns out, however, that controller is only hardware-assisted, with higher level logic carried out by x86 firmware running on host processor.
+I had a server running Windows 2003 that resided on a RAID5 array formed by Promise FastTrak SX4100, which I thought was hardware-based because of its dedicated processor and buffer memory and its ability to boot DOS and Windows.

@@ -1,0 +1,10 @@
+You still have a value you can tune to get the desired level of softness, but now you should get consistent results regardless of camera position.
+Here I used a clamped linear ramp  for a soft threshold function, but you could also use smoothstep or something else.
+If it's too small, you'll get aliasing again, and if it's too large the edge will be overly blurry.
+Anyway, the point is that this function smoothly changes from outsideColor to insideColor over some range of distances, so if you pick thresholdWidth appropriately you'll get an antialiased-looking edge.
+The + 0.5 is to center the ramp on the mathematical location of the edge.
+A simple way to antialias the circle would be to turn that into a soft threshold, like:
+By calculating the length of the gradient of dist you can get an idea how rapidly it's changing in screen space and use that to estimate the thresholdWidth, like:
+Here's where the screen-space derivatives come in (yes, they're the ddx and ddy functions as you guessed).
+Taking your example, you have a step function of the distance, which produces a perfectly hard (aliased) edge.
+Moreover, it'll generally depend on camera position: if dist is measured in world-space or texture-space units, then a thresholdWidth that works for one camera position will be wrong for another.

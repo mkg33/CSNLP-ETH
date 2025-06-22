@@ -1,0 +1,13 @@
+So you could have the server on the Internet network as far as the ASA is concerned.
+A traditional DMZ would have a firewall between the DMZ and the internet, and one between the DMZ and the inside network.
+You can do this all on an ASA, but it depends on the model and licensing.
+This is probably the closest to what your Sonicwall was doing.
+You could make that first firewall a software one, running on the spam-filter server.
+If you have spare ports on your ASA you could just assign one to the outside network (so you have two) and connect your spam server to that.
+Then create a firewall rule allowing traffic from the spam-filter server into your inside network as required.
+Then I have a static NAT rule on the outside interface for the source 192.x.x.x (inside ip of your server) for service smtp with the address x.x.x.x (outside ip of your server)
+Would the solution be to put a switch after the modem and connect both the ASA and the spam filter to the switch then put a ACL to allow data from the filter to the internal network?
+I am not sure if this will work for you - but I have a cloud spam filter that can talk to my internal exchange server so it seems like a similar situation.
+I have an incoming access rule that permits the source 24.172.x.132 to talk to the destination x.x.x.x (outside ip of your server) for the service smtp.
+If you don't have a spare port, you will need a switch before the ASA.
+You could get more fancy using a DMZ vlan on the ASA itself, and use the ASA to firewall the spam-filter, and the inside network.

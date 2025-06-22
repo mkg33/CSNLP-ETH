@@ -1,0 +1,36 @@
+It's available in PDF (instant download) as well as in dead tree format.
+Your hardware looks fine for now, you first have to find the source of the problems.
+Currently, our thought is to throw more hardware at it.
+If we do this, would the best option be something like Option A below or Option B?
+But, when executing very complex queries, or using a bad database schema, lack of indexes, etc.
+I would suggest installing htop and checking what percentage of your CPU wait time is attributed to iowait.
+Start logging the queries, use EXPLAIN to see the queryplan, take a look at VACUUM and you might need a REINDEX as well.
+Option B: 4 x Intel® Xeon® 7500 series Processors each with 8 Cores
+There have been some massive performance improvements since 8.0, and the current stable version (9.0.x at the time of writing) offers more information when EXPLAIN VERBOSE ANALYZEing queries.
+Version 8.0.9 is serious problem, 8.0 is EOL as of october 2010 and the lastest fix is version 8.0.26 (4 years of bugfixes after 8.0.9).
+I'm no Postgresql expert, but I'll tell you what I've learned about hardware and Postgresql.
+We are using PostgreSQL 8.0.9 and when our JEE web application (in JBoss) is used in certain load increase conditions, top shows a slow increase in processes for PostgreSQL.
+I think you'll benefit from the book PostgreSQL 9.0 High Performance.
+The use of a hardware RAID card with battery-backed cache will give you the best performance.
+Kernel and CPU: Linux 2.6.18-194.26.1.el5 on x86_64
+Is it correct to assume that CentOS Linux 5.5 with PostgreSQL 8.0.9 will scale proportionately with the addition of this many processors and cores (Ex.
+Option A: 4 x AMD Opteron™ 6100 Series Processors each with 12 Cores
+I am trying to fix a high PostgreSQL CPU use problem.
+There are chapters that specifically address each of your questions.
+Consider to hire a PostgreSQL dba for a couple of days.
+You're talking about 12-15 connections, that's next to nothing.
+Is there something else I should consider in terms of throwing more hardware at it?
+My initial gut feeling however is that your disks can not keep up.
+You should at least update to this version, to fix many bugs in 8.0.
+Our new database box blows the old one away, and we didn't have to spend a ton of money doing it.
+Generally speaking (and all other conditions being equal), PostgreSQL scales really well as you add cores (each additional core adds approximately a 96% gain in performance (out of a theoretical 100% performance gain possible per additional core)).
+There are answers, but better yet, there are also methods (how do you measure your hardware to know how fast it is?)
+I would suggest enabling the slow query logging features in postmaster.conf and checking for queries that take longer than they should.
+The question is impossible to answer, we have no idea what is going on.
+We've just rebuilt our database using the advice in this book.
+Aside from that, I would highly encourage upgrading to the latest version.
+Processor information: 2 x Intel(R) Xeon(R) CPU E5420 @ 2.50GHz, 8 cores
+If you're showing high CPU usage, it could be due to slow queries.
+When the problem occurs, there are approximately 12-15 PostgreSQL processes all showing SELECT on the far right of the process information and approximately 6-7% CPU usage each and then the app slows down a lot.
+In general, for the databases I've had experience with, what matters more than number and speed of CPUs is:
+There's also the possibility that you are I/O bound, as slow disks can easily cause queries to start backing up.

@@ -1,0 +1,8 @@
+Of course, I set a start_date equal to 2000-01-01 because I know that no areas merged before 2000. I can then consider that the origin of my areas story is year 2000. The other thing is about end_date that I set to 2100-01-01 to avoid using infinity. 
+This is certainly not the best option (sorry @Evan Carroll!) but it does the job perfectly for me and I don't have enough time to deeply re-organize my data (unfortunately...).
+Here is a solution I finally adopted and that prove to be right enough for my needs and that avoid using infinity date statement.
+Now, I see two solutions. First, keep the schemas as is and whenever an area is deprecated, add a new row as it was a new area and just states it is deprecated, e.g.
+As another option for non-deprecated areas, you can set them as 'infinity' instead of NULL, so the query does not need the deprecated IS NULL condition, as 'infinity' will always be higher or equal than any other non-null value.
+The problem is that when an area is merged and its code is reused, you have that information, but when an area is merged and its code is deprecated, you don't have it. In other words, you don't have the information that an area is deprecated.
+A second, and possible best option, is to have a new column that states when (and if) an area was deprecated:
+I added a parent column to store the codes of former areas that merged to produce the new area. I also use a start_date and end_date columns.

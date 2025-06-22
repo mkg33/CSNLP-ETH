@@ -1,0 +1,18 @@
+As @michael-sqlbot mentioned, replication options have a lot of caveats.
+When these aren't used, everything is replicated, and I would contend that replicating everything the most reliable configuration.
+This will discard all of the data in those tables on the slave and convert them to the blackhole storage engine, which accepts inserts (but doesn't store them), returns empty result-sets from selects, and has "0 rows affected" on updates and deletes... so your schemata are still fully compatible but you're not actually storing anything in the tables you're not interested in.
+Consider using mysqldump and scripting something up using shell scripts and your server's crontab.
+All of the data will still be "replicated to" the slave, but not "saved on" the slave... the data written to these tables will not be stored.
+More about zabbix, http://puppetlinux.blogspot.com.es/search/label/zabbix
+If you don't want to replicate the historical data, I would start by setting up a full, standard master/slave replication setup...
+Writing rows to a blackhole table is a very resource-friendly operation -- I've seen my servers handle 40,000+ queries per second when replicating "into" blackhole tables.
+If you can afford to lose up to a few hours of configuration data, and the configuration part of the database isn't big, maybe replication isn't quite the right answer for you.
+If you're concerned about the fact that the data is still transferred to the replica... or, really, even if you're not, just turn on slave_compressed_protocol on the slave and don't think about it -- consider it the cost of a cleaner replication setup.
+@RolandoMySQLDBA's answer is accurate, but I would advise against using the replicate-*-table and replicate-*-db options because of the complexity of how MySQL evaluates replication rules.
+If you're using mysqldump to initially set up the replica, you can also manually edit the dump files and change the table engine on those tables' declarations.
+For zabbix you need replicate all tables, but you don't replicate the history*, the trends* and the events tables.
+While it's less elegant than using replication, it's arguably simpler to maintain.
+You'd also want to put something in place to ensure that you're notified if the process stops working.
+(If you want the data for most of your tables, you could consider the --ignore-table option)
+When the slave connects to the master, it will negotiate a connection using the MySQL compressed client protocol, substantially reducing the actual bytes of data transferred on the wire between the machines, but still sending everything.
+...identify the tables you don't care about on the replica and for each such table, on the slave:

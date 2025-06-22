@@ -1,0 +1,38 @@
+I set up daily backups for all the databases but i think that might not be enough.
+All this is "the same" from a technical point of view - every recommendation depends on the business case, which you say nothing about.
+By backing up the transaction logs, you can use them in combination with "regular" database backups to roll forward to recently performed transactions when recovering the database.
+These are not "dba level" decisions, they are business decisions.
+If it's every 24 hours, and you lose the database 1 hour before the backup, then you've lost 23 hours worth of data.
+Expecting people here to copy / paste the EXTREMELY detailed information from BOOKS ONLINE - the SQL Server documentation - is not good behavior.
+I know companies doing transaction log backups every 5 minutes, shipping them over to a seaprate server (check: Log File Shipping).
+MEans that if you take a backup of the tx log afte 16 hours, the server dies, on the new server you restore the daily backup, then process the transaction log and are back to the last commited transaction after 16 hours ;) If you ask me - a business not doing that deserves the damage they get from not doing that.
+As a normal scenario I would suggest regular full backups (weekly, during off time like sunday), daily differential bakups (a lot smaller than the full one) and then a log backup every x hours (1, 6, 12 - depends on your business case).
+I'm going to give you some generic answers to your questions, but note that the actual answers will depend on your business needs.
+Ok, you really need to head over to the documentation and read it - become a small dba.
+You can perform the log backups with whatever frequency is necessary for your application.
+The log backups will be performed by a SQL Maintenance Plan that you create.
+You perform these backups to clear the transaction log, and record the transactions in case you need to recover them.
+A differential backup backs up all changes since the last full backup, an incremental backup backs up all changes since the last full or differential/incremental/full backup.
+When a database is in Simple recovery mode, this log is cleared after every Checkpoint on the DB.
+The transaction log actually is the HUGH advantage you have in something like SQL Server compared to classical file level backups.
+The primary tradeoffs there are obviously complexity of management and disk space required.
+This log records every transaction performed on the database.
+We have only one database that is 3gb (the others are less than 100mb).
+This is not necessary if you are not wanting to undo things that have happened.
+I know others not relying on backups for desaster issues, but using replication and / or mirroring, with daily full backups and hourly log backups, so that if a server dies, they dont get any downtime.
+You could do something like adding a differential backup in the middle of your full backup, or use incremental backups throughout the day...
+The 3gb database is write-heavy, and has very important data.
+My standard is weekly Full plus daily Differential, and then log backups every 15 to 30 minutes for Full recovery databases, or on another schedule if required.
+For example, if it's unacceptable to ever lose more than 5 minutes of transactions, you'd perform log backups every five minutes, in combination with your regular full and differential database backups.
+I'm not an expert, but my understanding is that with transaction log backups you can rollback transactions that occur.
+There is no one answer to this question, but in general I tend to do a weekly Full backup, combined with daily Differential backups.
+That said, you also areon  the wrong site - this is so absolutely NOT a programming issue.
+There is a sister site (serverfault.com) for server operational issues, which backups belong to.
+I know other businesses doing daily, sometimes even weekly backups (small shop, intranet site).
+When the database is in Full mode, these logs continue to fill with transactions until backed up or manually truncated.
+Transaction log backups backup the transaction log.
+Please note that if you don't intend to use transaction log backups, you should change your database to Simple recovery mode to avoid issues will full logs or full disks, as the transactions will not auto-clear from the log when in Full recovery mode.
+The transaction log records all changes done to the Database.
+Depending on your setup, one of these might be useful for you.
+THis means you take a full backup, then the tx log can be used to roll that forward up to THE LAST TRANSACTION BACKED UP IN THE LOG.
+Another decision you'll need to make is how long to retain your backups for purposes of recovery.

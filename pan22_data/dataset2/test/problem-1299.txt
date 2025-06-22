@@ -1,0 +1,9 @@
+So, conforming implementations of SPF will completely ignore everything after the first ~all. This doesn't mean, however, that every implementation conforms to the spec. In particular, this was probably thought worthy of clarification precisely because one or more implementations did not conform.
+What I'm wondering is, would this "~all" directly after the include for Google Apps (_spf.google.com) cause parsing to stop and not recognize the remaining pieces of the SPF record? Would passing vs. soft-failing depend on who is parsing it and their specific implementation of how they process SPF records? Is there any reason to have an "all" mechanism that is not at the end of an SPF record?
+The RFC it obsoleted, RFC 4408, said much the same thing; the newer version of the RFC simply clarifies the intention.
+So, they don't say "all" HAS to go at the end of the SPF record, but that it USUALLY goes at the end.
+And yes, I know we could just change our SPF record. This question is more about clarifying how this all works and not necessarily about resolving our specific situation.
+A properly implemented SPF checker will short-circuit on a mechanism match and the check_host() function will return the qualifier value as the result.  I don't have any "real world" data to provide to you regarding whether or not most email servers follow the RFC or not.
+At our company, lately we've been seeing some soft fails in emails sent from servers listed in our SPF record, yet our SPF record passes all validation tools I've found so far.
+It's not at all clear why an online validation tool would not catch this misconfiguration, but if you intend for anything after the first all to be used, you should correct the record, as proper implementations will ignore it.
+So we have an "~all" in the middle of our SPF record. On the openspf.com website, they say this regarding the "all" mechanism:

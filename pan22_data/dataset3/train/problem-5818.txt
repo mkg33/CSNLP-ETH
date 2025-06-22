@@ -1,0 +1,33 @@
+dx can be zero which will lead to it returning a NaN when you divide by 0.
+So instead of looking for x*x == 2.0 one is happy enough to solve fabs(x*x - 2.0) < 0.0000001.
+Anyway it is almost always wrong to check for equality of two floating point numbers, as already said.
+I understand you are asking for a function to check if a point is on a line.
+Furthermore, none of the arguments are altered, so they should also be const.
+As for the code you found, it doesn't appear to me to be doing the same thing.
+there is a division by zero when the lines are vertical.
+The question itself is ill-posed: because the representation of points and lines on a computer is only approximate and if you approximate a point on a line you probably get a point which is no longer on the line.
+If that happens, then the comparison in IsIntersectable() will fail, even if both lines have no slope.
+The function GetSlope and IsIntersectable are not used.
+So my suggestion is to implement a function which computes the distance from point to line https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line and use it to check if the distance is small enough.
+But here are some thoughts on both pieces of code.
+A typical example is to check if the number x satisfies the equation x*x == 2.0.
+You should moltiply both sides of equation by the denumerators to avoid this and to have a more stable condition.
+The naming is confusing - apparently a line consists of points p1 and q1 and another line is p2 and q2.
+The function IsIntersectable also has the problem above (checking for equality of two floating point numbers).
+In this cases what you are looking for is an appropriate approximation.
+You also have a potential error in your GetSlope() method.
+It's basically just C code that uses std::cout instead of printf().
+It makes no use of classes, which would be useful in this case for points and lines.
+It seems to be figuring out if a point lies on a polygon.
+And due to the problem of GetSlope it will not work if one of the two lines is vertical.
+Hence it is almost always wrong to check for equality of two floating point numbers.
+The definition of INF as 10000 also strikes me as a potential source of bugs in the future, but maybe it's a non-issue for polygons that typically all fit on a screen?
+Each of your methods calculates values without changing any member variables (it appears).
+Also, IsIntersectable() can be simplified (at least until you try to deal with the NaN issue):
+Your code seems pretty straightforward and clear to read and understand.
+The small value epsilon = 0.0000001 is somewhat arbitrary, and can depend on the problem you want to solve.
+For C++ code, it doesn't appear to use most of the useful features of C++.
+Anyway note that vertical lines have no slope defined.
+Even if we expect to find a solution to this equation (because we use the real numbers as mental representation) there is no floating point number which solves such equation.
+I would make the following changes, including fixing one bug:
+There are many other factual problems with your code.

@@ -1,0 +1,24 @@
+Then in your update method (possibly the Screen.render method or where ever you handle what you need to do in your game loop), you read the flag and destroy the player then.
+An object named 'b2Contact' has information of the list of colissions occuring.
+Also, these kinds of collisions and lists state the collisions with the AABBs meeting.
+I don't know what you're doing in the destroy method, but you shouldn't destroy any Box2D bodies of fixtures in there, as they might be needed for other preSolve calls.
+When fixtures are overlapping, Box2D's default behavior is to apply an impulse to each of them to push them apart, but this does not always succeed in a single time step.
+Try to be a little more informative or precise in the future.
+If one of the body has two (or more) fixtures, then the touch event will occur several times.
+If you are using the contact listener method, the PreSolve and PostSolve functions of your listener will be repeatedly called in every time step while the fixtures are overlapping, giving you a chance to alter the contact before it is processed by the collision response (PreSolve) and to find out what impulses were caused by the collision response after it has been applied (PostSolve).
+Excerpt from the from the greatest source of Box2d knowledge know to mankind to explain why.
+During this time we can step in and customize this behavior if we want to.
+What you could do is instead of immediately destroying the player when the Contact is solved, set a pending destruction flag on the player (in your case the isHit member might work for you;
+Destroying Box2D bodies in callbacks like preSolve is likely to cause Box2D to crash.
+This is why you're getting multiple calls to your player.destroy().
+I was searching for an answer because I had the exact same problem, and I thought of a great and light workaround.
+And if you wish to know if the fixtures itself are meeting, you can use IsTouching() method.
+When you create your method of what happens to your B2D Body after the collision, just create an object and assign it to the obects' .getUserData.
+Anyways use one of the below, most likely BeginContact.
+Then when the collision is called again, you can "save yourself" with an "if statement".Example:
+To make this clearer, here is the output obtained for this example collision by putting a simple printf statement in the main Step function and each of the contact listener functions:
+For many collisions, there will be several contacts to resolve.
+As shown here, for this particular example the two fixtures will be overlapping for three time steps before the 'bounce' is complete and they separate again.
+When two bodies collide in Box2D there are numerous collisions.
+Collisions can happen in all kinds of ways so they have a lot of information that can be used in the game logic.
+Collisions in Box2D are really the fixtures which are used to detect when a collision occurs.

@@ -1,0 +1,13 @@
+Add an On Error Goto 0 statement in there somewhere otherwise you might hide some coding error that is relatively easy to fix and you could be hiding an error that gives you false data. 
+Whenever setting up a range of conditions, have a thought towards all the possibilities of the conditions. That may allow you to find inconsistent data, potential new uses for your code, or possible errors or exceptions that you can trap and fix early. 
+This code is much easier to read and understand than the last version. This is a massive leap in attaining clean code in a short amount of time. 
+If the object in '()' is an object, then the evaluation will try to get the default value (e.g. for a Range object, it would pass the Range.Value because it is the implicit default). This, of course means that the function could get something it is not expecting thus causing errors!
+For me, an If without and Else is a sign that I must carefully review what I have done. A simple variable assignment (If X then Y=Z) is easily explained, but checking conditions for larger blocks of code means something more complex is happening.
+Well done on removing the error trap as early as possible. You don't need the second On Error Resume Next because the first has already set the relevant conditions. 
+Related - At one stage, Microsoft deprecated the Call keyword as it is a hangover from very early days of BASIC. But this is currently a matter of hot debate: https://stackoverflow.com/questions/56504639/call-statement-deprecated-or-not
+However, within the blocks of code, you check the status of companySheet. In one block you check to see if it is Nothing and in the other you check to see if is Not Nothing.
+Mathieu Guindon (@MathieuGuindon) can explain this much better than I. Using the following code line as an example:
+You have If firstColumnContainsNoVisibleCells Then and then do a block of code. IF this is not true, you then do a different block of code. Which is good.
+In this case, companyName is a String, and the string evaluates to a string without any real issues. But develop good habits from the start.
+The '()' forces an evaluation with some side effects. It creates a value item that is passed by value (ByVal) to the routine/function. This could also bypass the intended passing by reference.
+The potential issue comes if that conditional fails - what does it mean? From a coding sense, you just do nothing and that could be fine. But from a business sense, does it meant that your input is malformed. Could these blocks of code benefit from having an Else statement?

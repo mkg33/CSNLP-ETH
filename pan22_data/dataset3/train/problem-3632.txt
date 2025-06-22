@@ -1,0 +1,33 @@
+Hotwire is what we use (developed internally, but is open-source), and have done so for the last few years.
+It's also a great way to be certain that a box that's been down for maintenance has the correct configuration before you return it to live service.
+The configuration and all files pushed out by cfengine to the servers are also kept in a SCM, and using post-commit hooks, where possible, we check the syntax and if that fails, then the commit is rejected.
+Make sure your Puppet manifests are versioned, too; nothing's better than being easily able to roll back to a known-good configuration without having to remember what to adjust.
+command does the (in our case) Xen magic to get the installation started -- on the dom0 I just type:
+Once our systems are built with Cobbler Puppet takes over to configure the applications, system daemons, register the box with RHN, etc.
+You don't need to get every aspect of your configuration under its control -- start off by having it manage something simple that you need to configure on every box (sudoers is the canonical example) and take it from there.
+This is easy for nice applications such as Apache, but not so easy for most enterprise applications.
+Also all files replaced have a header that makes any person editing it know that it will be replaced the next time it runs (it is run via cron hourly).
+For a longer list of options and a comparison chart, see the Wikipedia article, Comparison of open source configuration management software.
+I'm having a lot of success with Puppet, but you do have to write a lot of config.
+It firstly inventories the systems that are going to be built, which means inventorying the data-center, rack, hardware, operating system, network, etc, and secondly perform the rapid build & deploy.
+For example, by policy, we don't "modify" files, we either replace them, or we don't.
+The bonus points are that it is combines the inventory and build process into one, so there's less to manage, and the live-inventory feature is great as we know if something is not quite right.
+Once the system is built, hotwire's auto-inventory keeps the inventory in-sync, while cfengine maintains them.
+This includes mostly HP Proliants, followed by IBM 3850s, some IBM blades, VMware ESX, and some KVM for our internal management servers.
+We looked at cobbler but the problem there was that cobbler is very RHEL/Red Hat specific.
+Cobbler ties together DHCP, PXE boot and Kickstart to make deployment nothing more than adding a machine profile and hitting the power button.
+An aside: other interesting uses for Cobbler include running memtest ISOs and HP firmware updates.
+We use Cobbler and Puppet for build and configuration automation of both real and virtual machines.
+then virsh console to watch a VPS building without any interaction.
+For the configuration management on top of that I'd suggest using puppet.
+Where I am working at the moment, we have to manage the Linux portion of our server farm which is just over 300 Linux servers.
+Hotwire knows about the server hardware by talking to the SMBIOS/DMI data in the Bios via python-dmidecode.
+Cobbler supports Debian and Ubuntu breeds but I've never tried it.
+We need to support RHEL and SLES at the least, and Ubuntu is next.
+We use RHEL and have a bunch of profile set up to partition disks, configure networking and install base packages for different server classes.
+We use cfengine because other than it, and puppet, there is nothing else.
+We did consider puppet, however later decided against it as it depends on Ruby, which means that an upgrade of Ruby, could potentially break our management system.
+The disadvantages are that the user-interface still needs polishing, and there are bugs here and there, but development is still hot, and bugs reported are fixed relatively fast.
+Puppet runs as a daemon which periodically checks that the systems's configuration matches the defined manifests -- you know your updates have gone to all servers.
+It actually is a good tool, but "good" only as a function of how good your policies are - if you set dangerous policies, then a small mistake can cause alot of damage.
+For automating installation depending on the target system:

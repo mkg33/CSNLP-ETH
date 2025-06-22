@@ -1,0 +1,10 @@
+Here an exemple with autologin and ps on remote device.
+-o StrictHostKeyChecking=no only works if host isn't already present in known_hosts file.
+As others have noted, it's probably better to address the underlying issue.
+ssh -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null user@host
+To completely ignore your known hosts file in a POSIX environment, set the GlobalKnownHostsFile and UserKnownHostsFile options to /dev/null:
+You could consider SSH certificate authentication to verify hosts, for example.
+I think it is cleaner (no warnings), if you expect hosts key to change maybe due to vm cloning, to enforce ignoring of those kind of hosts like this:
+You need to disable StrictHostKeyChecking=no, this is right, but also reset known hosts file to /dev/null.
+Some people say its not right, you don't shold do this and so on, but i need this also to test couple of embedded devices over and over again.
+Setting the StrictHostKeyChecking=no option will allow you to connect but SSH will still show a warning:

@@ -1,0 +1,13 @@
+Enumerating something using an extension is not supposed to cause side effects.
+Obviously a contrived example but the point is that using chains with side effects can be a pattern which hide the code's meaning.
+If you make an extension that is intended to cause side effects, it can easily come back and bite you.
+As you are not consuming the result, there is nothing that pulls the iteration, so it won't iterate anything at all.
+That said, the idea of what you're doing is sound; the idea of representing a sequence of side-effecting operations in a lazily-evaluated object is how side effects are represented in Haskell.
+As the enumeration uses deterred execution, something like this would have no effect:
+Anything you write into your action you could also write into a .Select() lambda.
+Extension methods are great when they don't cause side effects but this would violate the standard functional approach taken with LINQ.
+I don't think this really provides a lot of value beyond the existing .Select() projection.
+Also, I wouldn't appropriate the ForEach name here.
+Because the List<T> already defines ForEach() as a void method, I would not want to get that mixed up with a "ForEach()" that is also a Select().
+But if that's what you want to do, then actually build yourself a real monad that clearly and unambiguosly represents the semantics of "I'm building an object that represents a sequence of side effects in the future".
+It will just create code that is capable of iterating, and throw it away.

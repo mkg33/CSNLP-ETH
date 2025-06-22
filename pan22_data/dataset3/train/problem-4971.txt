@@ -1,0 +1,16 @@
+With Connection Pooling, when the client process closes the connection, the connection is not actually closed: the object in the application representing the connection is invalidated and cannot be re-used, but the actual connection to the DB is preserved.
+If you try the SSMS experiment above and the error matches exceptions thrown by the client then this is likely what is happening.
+The invalidation by the server would be logged by the server.
+One way to deal with this is by clearing the Connection Pool.
+One way to recreate the error is to use SSMS to open a query against a server (could be localhost).
+Re-using it will come up with an error tat mentions something about 'transport-layer level exceptions'.
+When the process tries to open a new connection to the DB, the pooled connections associated with the process are searched for one with the same connection string; if found that connection is re-used avoiding the overhead of creating a new one.
+If during a query the network burps the actual underlying connection in the pool can be invalidated by the server, but the client end remains in the Pool.
+Opening a connection is an expensive operation, so Connection Pooling was invented.
+Here is some code I used in an EF Azure-based app (where transient network errors should be catered for):
+Stop and restart the SQLServer service and re-run the query.
+This Try method was called before every EF access.
+If one isn't found then a new one is created from scratch.
+A client process will open a connection to the server, query and then typically close the connection.
+I've never looked at what it logs having always come across these from the client end.
+Another way is by stopping and restarting the client application (which effectively clears the pool because the app is now running in a different process).

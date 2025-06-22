@@ -1,0 +1,11 @@
+I tried manually seeding them using a recent backup and applying the latest log file backups, which worked for most of the databases but a few of them are stuck in Initializing / In Recovery on startup in SSMS.
+The "Lock request time out" error message also made me think that something had gone wrong in the seeding, but it was just a poorly worded message indicating the database was already part of the Availability Group.
+I tried resuming data movement, but it was too far behind.
+Here are the steps I have tried and the resulting errors:
+Even stopping and restarting the sql service did not help, as it comes back in the same stuck state.
+So instead I had to remove it from the availability group and manually apply log files so it could start replicating again.
+This means it was added but the data movement has stopped.
+I should have noticed it was added, but the AG has over 300 DBs and was still in the process of seeding so it was missed among the noise.
+Well, when I saw the error messages I figured the database was not added to the Availability group, but after checking the Availability Databases in SSMS on the new replica it was there with a pause symbol next to it.
+While setting up a new replica in an Availability Group on our reporting cluster a few of the databases were not seeded correctly.
+Even restarting the SQL Server service didn't help.

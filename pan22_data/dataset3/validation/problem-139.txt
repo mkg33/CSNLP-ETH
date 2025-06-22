@@ -1,0 +1,20 @@
+You would execute this command on ALL Slaves which will have them stop at exact same position.
+You can use Percona Monitoring Tools's pmp-check-mysql-replication-delay / pmp-check-mysql-replication-running.
+If you miss the position of a binlog to purge you could affect all your slaves.
+If you cannot afford more space, another option is to use : START SLAVE .... UNTIL
+But few of them are keep disconnecting due to network issue.
+If  you are to avoid disconnects due to transient network issues, depending on which MySQL you're on you may want to set combination of master-retry-count / slave-net-timeout / master-connect-retry.
+I would also set up pt-heartbeat to monitor Mysql slave delay.
+If you are running out of space, because your binlog are too large, I would check if you can use SQL Statement binlog format or mixed.
+Btw, 7 days worth binary logs (with backups) are sufficient but again depends on policies!
+The first thing I would do is fix the network issue.
+You may simply write a shell script to look at io_thread and sql_thread values and alert if they're NO.
+1) You could just stop purging if any of the slaves are unreachable(ssh or mysql) from the server where you are running this purging script
+You would then check all slave to make sure they all stopped at same position.
+You should rather monitor your slaves for replication lag or if it's actually catching-up / connected with master or not!
+2) If the connectivity issue is only with MySQL and not SSH, you could get the positions from master.info files of the slaves
+PURGE BINARY LOGS BEFORE '2015-08-27 00:00:00';  (easier to use, don't need to find out position)
+You may google for setup instructions to setup with Nagios or setup with Zabbix or this.
+Master is the driver of all your transactions, you want to make sure it is healthy and have room to grow.
+There are already many scripts available for reference.
+Is there any way that i can make sure before setting up the bin log purging script on master that all the slave have read upto certain bin logs which we can purge?

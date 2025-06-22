@@ -1,0 +1,10 @@
+Set up your networking so that the default routing table puts traffic via eth1. Then add a rule that traffic originating from eth0 ip address uses the routing table for eth0. Then use the wget option --bind-address to bind to the eth0 ip address.
+You can do this with IPTables.  You need to specify a prerouting (or was it forwarding) rule which says anything which is on port 80 should be routed to eth0, and then in the regular routing rules default to eth1.
+I dare say the solution might have something to do with iptables but I've no experience with it so would appreciate all help.
+First, learn about routing tables and multiple default routes: http://lartc.org/howto/lartc.rpdb.multiple-links.html
+I need to limit it so that any outgoing http requests it makes (ie through wget) only go through eth0 and all other traffic goes through eth1.
+Look at shorewall.  Documentation for the masq file seems to cover what you want.  You will need to ensure that you don't route between the two interfaces. 
+Look in /etc/apache2/sites-enabled/xxx and check for the Listen Directive. I'm afraid I don't use Ubunutu, so take a look at
+If you're not using wget which can specify the binding address, an alternative is to set up a www proxy and bind that (only) to the eth0 address, then use that proxy.
+I've got two network interfaces on an Ubuntu machine which go out to two different networks but both have internet gateways. 
+I would say edit Apache, to "listen" to a specific IP address. By Default, Apache listens to all IP addresses that your machine may have.

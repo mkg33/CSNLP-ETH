@@ -1,0 +1,14 @@
+The SAN network is also identified as Unidentified public.
+Adding a Windows 2012 Hyper-V server to the network.
+NOTE: the only values defined on the SAN network cards are static IP addresses.
+You can change this on  each interface via PowerShell.
+See this tutorial on how to do this via powershell: http://www.1337admin.org/windows-server/windows-server-2012-r2/change-network-location-using-powershell-in-windows/
+Each NIC in the machine receives it's own Index number that you can manually change using PowerShell in  which you can then specify the Type of Network.
+Hopefully this can resolve the issue for others who have multiple NICs, only some of which are used for a LAN connection.
+When the SAN1-4 network cards are disabled, Windows identifies the LAN network correctly as a domain network on boot.
+When the SAN1-4 network cards are enabled, Windows identifies the LAN network as a public network and bang - firewall gets in the way.
+Disable the network cards live and network changes from public to domain.
+I recently experienced this issue where my network would show up as Public rather than Domain, and it was because of NLA kept trying to authenticate on the non-LAN network cards first.
+It can also be resolved by restarting the adapter after the machine boots, but that doesn't seem as efficient.
+I resolved it by going into my Windows Services and setting the Network Location Awareness service to Automatic (Delayed Start) from Automatic.
+One is for the LAN and the other four are a private SAN network for MPIO.

@@ -1,0 +1,25 @@
+For example, suppose I have widgets which users can rate (see schema below).
+(unless, it takes a couple of minutes to calculate that having had stale data in the first place isn't a big deal ... and my boss tells me to just generate the thing from cron every hour, so he doesn't have to wait when he wants to look at it.)
+This question is also strongly database (and database-version) specific, so I recommend performance testing of the aggregate (with appropriate indexes) against a normal-sized data set and the materialized view.
+However, in this instance, I recommend using a Materialized View (a view, written to disk, linked by trigger to the parent tables).
+If you are frequently accessing a derived value, pre-calculation is a valid de-normalization step.
+Are there any guidelines or rules of thumb to determine when to store aggregate values and when to calculate them on the fly?
+The downside of this is that it is not an acid transaction, so you might end with an outdated rating.
+The other problem is that the database is not normalized anymore, but don't be afraid to denormalize data in exchange to performance.
+Pre-calculating aggregate values places a larger load on writes, deriving them makes reads more difficult
+This would save me from having to calculate the rating every time I display the widget, but then I'd have to recalculate the average rating each time a user rated a widget.
+The materialized view is designed to store frequently asked but tedious-to-derive data, and is useful for high numbers of writes and low numbers of reads.
+In no circumstances, should you treat the derived column like a "normal" column: make sure the data presented in the Widgets "view" is present elsewhere in the table, such that the entire tuple can be derived by whatever processes you emplace.
+Use other thread (asynchronous) task  that can recalculate these values.
+Instead you can have an other field that contains the total of the reviews, thus each time you add a rating you calculate the new average using (avg_rating×total+new_rating)/total, this is much faster than aggregate and reduces disk readings since you don't have to access to all the rating values.
+Each time I display a widget I could calculate the average user rating from the Ratings table.
+If you have a tool to go and look at stats, where the stats are changing by the second, but you only three people have access, and they only look at it a couple of times a day, I'd be more likely to calculate it on the fly.
+So, if you have a website with 10k daily hits that's displaying a value that's only going to change once an hour, I'd calculate it when the underlying values change (could be a database trigger, whatever).
+Use StaleWidgets table as a queue of "invalid" (to be recalculated) widgets.
+Period or moment of recalculations depends on system requirements:
+This will present a "good enough" average while preserving write and read performance.
+Alternatively I could store the average rating on the Widget table.
+In a high-write, high-read scenario, consider having a task in the background which mimics the effects of a materialized view, but in less than real-time.
+For the case in particular there is a diferent solution where you don't have to add all the ratings and divide it by the total to find the average.
+But still you can solve that by using triggers in the database.
+How often you need to calculate/display the values relative to how often the underlying numbers are changed/updated.

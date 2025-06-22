@@ -1,0 +1,14 @@
+I'll remain in original Java-7 style here, but some of the items might be expressed definitely better in functional Java-8 style.
+In declarations, replace collection implementation types with interfaces:
+It's just a cleaner practice: prefer interfaces over implementations.
+The old java.util.Date are compared with equals(), which will lead to unpredictable behavior, because they are compared up to milliseconds. So two Dates created within even a short delay will not be equal. Just try this simple test:
+In the current code this looks like a bug: there is a high risk that multiple ProcessAmount(date, 0, s) are created for same date and dateFound is hard to ever become true in the loop.
+"Java <= 7" solutions: 1) compare them through string representations, using formatted date output with pattern up to the searched granularity ("yyyy-MM-dd"); 2) compare year-month-day values; 3) ... other multiple inventive ways found on SO.
+Recommended solution: throw java.util.Date away and use LocalDate from Java 8 or Joda-Time.
+looks heavy. In the original code s looks like it should not be nullable, so
+Three nested for loops and conditionals create too much complexity. Really, too much.
+1) Create a Map that associates a process name with its date. It will help us to know that the process having this name is associated with this date and that it needs to be associated with all the other known dates.
+2) Iterate on the entries of the map. For each entry, create a collection of all unique dates and remove from it the date of the entry. Create a new ProcessAmount for all those dates and add it to the target list.
+Here is how the whole solution might look like. Date is replaced with LocalDate:
+I have a list of objects. These objects have a processname, amount and a date. I need every object to have all dates (if it doesnt exist add a new one with amount 0). So if I have 2 processnames: 'Inflate' and 'Deflate' and they have different dates: 'Inflate':12-01-2017 and 'Deflate': 13-01-2017. I need them to have the other object's dates.
+It might be a bit unclear for some people so if you don't understand I will try to explain it another way.

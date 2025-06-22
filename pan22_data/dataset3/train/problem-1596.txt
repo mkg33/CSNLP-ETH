@@ -1,0 +1,27 @@
+Since running all of these browsers stand-alone is nearly imposible and applications such as IETester do not work flawlessly and cannot run on Windows 7, it would be nice to be able to run Virtual Machines for these browsers in order to have a "native" experience.
+Currently, I am trying this using a Virtual Windows XP running IE7.
+This is a theoretical rather than a practical answer, though, as I don't have Windows 7 available to try it with.
+I would also avoid using pc names with localhost in it, you can use no suffix at all or smth like mypc.local
+During our webdevelopment process, we often need to test the layout of our applications and websites in several browsers.
+You only have to change it at the usual location, %systemroot%\System32\Drivers\Etc\hosts, on your host system.
+If all that is done, you should be able to work with the same hosts file on your host system and all guest systems.
+I would just put squid or another proxy on the host machine and have all the guests use that as the proxy so localhost would be the localhost of the host and the host's hosts file would be honored.
+You can use that on all your Windows VMs, and analogous scripts with smbclient and /etc/rc.local on most Unix systems for multiplatform testing.
+The primary LMHOSTS file  is always located in the %systemroot%\System32\Drivers\Etc directory.
+Make sure the web server listens on that IP address.
+Change the hosts file, %systemroot%\System32\Drivers\Etc\hosts, on your host system so that it uses the IP address of the VMware NAT adapter instead of 127.0.0.1 for the local web sites.
+Note down the IP address for the VMware NAT interface
+Most of our websites and applications are developed on locally using mappings in the Windows hosts file.
+When navigating to http://mywebsite.localhost from within a Virtual Machine, the Virtual Machine's host file is queried instead of the actual OS on top of the Virtual Machine.
+The hosts file on the guest systems will get updated on every reboot.
+Since you have access to the Windows 7 filesystem from within the virtual machine, it seems like you could set up the VM so that it copies the Windows 7 hosts file to the VM's host file during startup.
+Make sure there is no sensitive information in that path.
+With Microsoft TCP/IP, you can include other LMHOSTS files from local and remote computers.
+I use the term host system for the operating system installation running VMware and guest system for the system running inside VMware, as per the usual VMware parlance.
+Also, when the exact same mapping is added, the browser (obviously) still navigates to the "virtual localhost".
+Make a batch file, c:\hostsfile\vm_hosts_copy.bat on the guest system, with these contents:
+You should somehow arrange for your VMs to "see" each other via DNS or lmhosts feature.
+Users can import the LMHOSTS file from remote computers on the network by
+I assume you use VMware, and your VM [the usual abbreviation for Virtual Machine] in NAT networking mode.
+Please read the whole instructions below before beginning them, and check what you would have to do to undo following them.
+Part I: Find the IP address of the host system on the NAT network that VMware simulates (normally, network 8):

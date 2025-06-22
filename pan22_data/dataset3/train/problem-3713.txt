@@ -1,0 +1,17 @@
+The most obvious approach is to split the MAC source-address table, so that each VLAN has its own table (or use the VLAN ID as extension to each MAC in a global table).
+One of the most important things a switch does is decied to throw some frames away if they don't have anywhere they need to go.
+As they are unchanged Ethernet frames sent by hosts on these VLANs until they are tagged by a trunk port, how does a switch differentiate them internally?
+The switch works by "store-and-forward": it accepts all the incoming frames, decides what to do with them, then forwards them out of the appropriate ports.
+Within the switch, a frame needs to keep its VLAN association (likely as an expansion of the destination MAC field) and must not be forwarded to any other VLAN.
+Frames arriving on access ports get tagged with the VLAN they were configured with; frames arriving on trunk ports get the VLAN of their tag, or default if they were untagged.
+Also, the switch has to filter for broadcasts, so that they are only flooded to the VLAN members.
+The only exception to the "not forward to any other VLAN" is when an encapsulated packet is routed on a layer-3 switch.
+The switch assumes or defaults the VLAN membership of untagged packets based on how that port is configured.
+The tag is a four byte field inserted into the packet:
+But then again, routing requires to strip the encapsulating L2 frame anyway and to reencapsulate for the destination segment, so the new VLAN ID is just another part to generate.
+There may be several different implementation methods.
+Obviously, frames received without a tag need to be associated with their VLAN immediately on ingress.
+The two ports are configured for different native VLANs.
+In a simple topology of a single switch with two Access ports configured, for example fa0/1 on VLAN 10 and fa0/2 on VLAN 20, how does a switch know not to send broadcasts between these vlans if they are access ports and thus untagged.
+You can do this during the process that generates the copies of the original broadcast frame or (simpler) copy a broadcast to all ports and on each port you tag and filter as required by the port's config.
+Essentially every frame will be marked with its VLANs as it is stored in the switch.

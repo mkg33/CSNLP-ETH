@@ -1,0 +1,20 @@
+This can happen if you have a user whose username is the same in two domains (but the password differs), and they try to connect from a machine in one domain to a machine in the other.
+You are most likely having a problem with the difference between NTLM and NTLMv2.  Windows 2000 and Samba default to NTLM which appears to a Windows 2003 and Windows 2008 server as a valid password attempt, but can't interpret the password correctly while expecting NTLMv2.  
+Now, it's typical to see login failures whenever you browse a share; that's because Windows tries to authenticate using the logged-on user account first. So don't be surprised to see, even between the "modern" OS families (2k3, Vista, 2k8), logon failures.
+What we are looking for here is SMB data, so the first way to prune out everything unrelated is to apply a simple Display filter in the Filter: field in the toolbars:
+I'm not sure what your level of familiarity is with Wireshark, so my apologies if this is too verbose or terse. ;-)
+When connecting to shares on them, using the UNC path from Windows 2000 pro, or Samba (under  linux), if I make a mistake typing the password, these servers will lock the account on first attempt.
+The policy set is to lock account on 10 failures, and it behaves correctly when the connection attempt is done from W2008 or W2003 - i.e. even if the first attempt fails, the next one will succeed.
+So what you're actually looking for, then, are lines that say STATUS_LOGON_FAILURE. Then, look one line above that to see which user failed to authenticate.
+Keep in mind that these logon failures might not have any impact, as typically the account won't exist on the remote machine (so there is no "negative accounting", so to speak, to be done for it).
+Edit: You might want to pause for a few seconds when it prompts for alternate credentials, so that you have a clear idea of which authentication failures belong to the "automated" attempts, and which belong to you deliberately mistyping the credentials.
+On all the connecting machines, it'll report auth failure, and will ask for credentials again. But from Windows 2000 and Samba it'll continue to fail on the second attempt even if the password is correct. Trying to log to these machines will report account locked.
+I've done the experiment to unlock the account, the from W2000 box I intentionally try to log with bad password, and even without second attempt I can see that the account is locked.
+When I ran this test earlier, I saw three logon failures with LOCALCOMPUTER\localuser before it even tried to use REMOTECOMPUTER\remoteuser (which, in my case, succeeded on the first try). And when I tried it against a machine on another domain, I got ten logon failures! That's before it even prompted me for alternate credentials.
+You may want to disable authentication methods which you aren't using either way, for that matter. :)
+I might suggest that you do this twice from each location; first, with a correct username and password; and second, with an invalid username and/or password. In between each attempt, be sure to disconnect from the remote share (so that it will re-request authentication), by doing:
+Essentially you'd want to install and start Wireshark on either end – it shouldn't matter which – and begin capturing on the appropriate interface:
+Tree Connect AndX Request/ResponseThis is the client asking to connect to a particular location on the server; you'll typically see accesses to IPC$ as well as the share you really want.
+Another strategy you might try is to downgrade the NTLM version on your Windows 2003/2008 servers to see if you still have the problems.  I wouldn't leave it at NTLM, since NTLMv2 is much safer.
+This could also be due to several sequential authentication challenges per connection attempt.  There's a KB article and a Win2K fix at http://support.microsoft.com/kb/264678
+Any idea what I may change, so I avoid this problem? It usually happens when I'm in a hurry (of course :) ), so dealing with logging on the machines to unlock the account is really frustrating.

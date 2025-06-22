@@ -1,0 +1,11 @@
+You should authorize them somehow but beyond that, it shouldn't be too much of an issue.
+You can do this before you complete the handshaking for the new connection that puts the player into the game proper.
+Generally, you'd simply boot the older connections when a newer connection came in.
+FWIW I've never used JWT on any MMO or online game I've worked on, nor have I seen it used for such.
+It makes for a better user experience (you can specifically say on the disconnected client that it was "disconnected because you connected elsewhere"), and it minimizes the amount of time the account is connected from two locations.
+You generally do not want to take an approach where you deny subsequent connections until the first connection goes away (the inverse of the above).
+This annoys players who accidentally leave their client running at home, go on vacation, and then can't play from their laptop until they go home again to disconnect the old session (or wait for it to time out or hope for the power to go out or whatever).
+It's probably better to do this proactively, rather than (say) invalidating the "token" used for the earlier sessions and waiting for them to disconnect as a result of trying to send data across an unauthenticated connection.
+Because of the issues you note in your question, it doesn't sound like the right tool for the job (or at least, it isn't the right tool on its own).
+The method you use to authorize the connections doesn't really matter.
+In your server logic when you detect a new, valid connection from an account you simply disconnect any existing connections from that account elsewhere.

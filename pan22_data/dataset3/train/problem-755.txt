@@ -1,0 +1,11 @@
+So rather than storing for example demographic data  about a person in several tables and relating them to each other and requiring transactions, you could have a single JSON document that stores everything you know about that person in a single field.
+If the database server turns off during the fake transaction, some but not all of the effects will remain.
+If strict transaction concurrency is causing blocking there are lots of solutions, even ones that reduce the protection level... these are the correct way to solve the problem.
+The fake transaction strategy is dangerous because it allows concurrency issues that transactions specifically prevent.
+This strategy might work with inserts, but definitely would not work with updates or deletes (no time-machine SQL statements).
+Of course working out far that domain stretches is a another design challenge, best done by developers not DBAs
+Your DBA is offering a solution that might work OK if there was only one user of the database, but is absolutely unfit for any kind of serious usage.
+There is a way around using transactions to a limited extent and that is by changing your data model to be more object oriented.
+The fake transaction deletes are not GUARANTEED to run or succeed.
+Consider that in the second example any of the data might be changed between statements.
+They are also not guaranteed to succeed in the say way a transaction rollback is.

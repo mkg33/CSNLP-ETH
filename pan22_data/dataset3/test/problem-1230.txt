@@ -1,0 +1,21 @@
+A simple solution might be to use something like disk2vhd.
+VHD files can also be converted so you could boot into a VM compatible with Vmware hypervisors, Virtual box and other popular visualization tools.
+I already have multiple backups of the server on disk from the past but they are through Simpana Commvault.
+It will use VSS, but you should stop most services for the best results.
+One mildly crazy-seeming option would be to boot up a Linux live disk and use dd to make a bit-for-bit copy of the entire drive.
+I know the built-in Windows backup is great, I just don't feel like running it for a restore job on this.
+Run it as an administrator and it will create a partition level or disk level backup, either to a disk image file or another partition or disk, and skips empty space.
+I believe I can use robocopy just fine, but I'm not sure if it will grab the Windows directory, system files, and full user profiles correctly even with the /ZB option.
+Is Robocopy /E /ZB /COPYALL /DCOPY:DAT /MT:32 /R:5 /W:5 /LOG:copylog.log the way to go here?
+I'd like a backup that will simply copy the file structure, ACLs, timestamps, etc.
+I'd like an option where in the future it won't require a program to run a restore.
+It's small, simple, free, and in my experience very very useful.
+If you are using this, you may need to use something else.
+This way if someone says "I need x file on the server you decommed" I can search the external drive real quick instead of firing up Commvault, cataloging, restore, etc.
+This will create a VHD file, which a drive image format that is compatible with Hyper-V, and can also be directly mounted on Windows 7/2008 R2 and above.
+This is not the fastest method, since it doesn't know to skip over unused blocks, but it is guaranteed to get everything.
+I have a Windows SBS server with about 500GB of data that I'm decommissioning but I'd like to take a final backup of the server and place it on an external USB drive.
+The one issue I have found is that disk2vhd does have some issues with the Windows software RAID.
+I'm a big fan of SelfImage even though the homepage is dead and you have to download it elsewhere.
+As with all backups verify it by attach to it on another system.
+It works without Linux, without a reboot, without nagging about open files.

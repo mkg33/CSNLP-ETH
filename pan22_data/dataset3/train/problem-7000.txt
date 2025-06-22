@@ -1,0 +1,23 @@
+I would look at external services that these apache processes connect to.
+Any other reason that CPU is consumed that doesn't show up on top ?
+It seems that those are my normal traffic but for some reason are delayed.
+No crons running, and I get the same overload issue every hour like a clock.
+My best guess is that something is overloading the system and http queries are delayed.
+Every hour, for some minutes, the same every time (26-30) the server is un-accessible by web.
+/var/log/messages has NOTHING, apache error logs have nothing.
+If it's that tightly scheduled, other than cross referencing all the logs for that period of time, you might consider attaching strace to the httpd PID for a more in depth look or running apache in debug mode in the foreground just before it usually occurs.
+The load is increasing a lot and a lot of httpd (apache) processes are opened.
+Anyone has any ideas on how to pinpoint the issue ?
+I stopped crond and waited for the next cycle, the same happened.
+HTTPd has the -X option for that, though performance will obviously suffer so I would try to get as close to the event as possible.
+nginx runs on port 80 and httpd on port 8000 and I check both, 8000 has connections only from my ip and port 80 no ip stands out.
+I have done a very thorough analysis of the mod_status output, and I found nothing strange (I grouped ips with open connections).
+I found the following issue really interesting, I think you will too.
+I have also monitored port 80 with netstats grouping ips with open connections.
+A lot (900 httpd processes are opened) but I haven't found any malicious ips that do a lot of requests.
+Overall it doesn't sound like a problem on the apache server itself.
+top gives me nothing out of the ordinary, only the load is very increased, but no process stands out.
+Maybe you have a DB backup scheduled hourly at that time and maybe that locks all of the tables.
+Only one worker will be started and the server will not detach from the console."
+I have a linux server that I use for hosting some websites.
+The websites have decent traffic, its a busy box, but I had never had instability issues.

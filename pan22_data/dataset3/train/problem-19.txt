@@ -1,0 +1,13 @@
+it should warn you what services have a dependency on it.
+Procexplorer, netstat, tasklist, etc... tend to be shy on details as System obfuscates underlying info.
+Use that output to go through a process of elimination... hopefully you find the culprit.
+For example, I've seen that when I listen to some ports for HTTP requests in my app, then the PID that is shown using that port number is 4 (System process).
+So it doesn't appear to be reserved, but it's in use.
+Either it's being used by Windows itself (which would be odd, for the System process to just start using a new port), or some other program is using the System process as some sort of proxy.
+The exception in question when we try listening on that port is:
+In the past few days with the recent Windows updates, some of my users' software has stopped working due to this port now being in use by the System process (PID: 4).
+I have tried running the command netsh http show urlacl to see all of the HTTP port reservations, but my port doesn't show up in this list.
+I would try running tcpview from SysInternals, it has always helped in scenarios like this.
+I am not sure how to determine which program is using this port?
+As a side note, I know Dell SupportAssist uses port 5700, but that shouldn't run as System.
+This is more or less confirmed here: https://github.com/dotnet/corefx/issues/428

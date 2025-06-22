@@ -1,0 +1,12 @@
+I've seen some issues on some log messages where the host_header field is truncated for no specific reason.
+Without those examples the best I can think of is to try setting the length of those header field manually with something like:
+The headers are truncated to the length that was requested.
+I've got an HAProxy instance configured to log to a special home-grown daemon that chucks the log files into a database.
+Since these have the exact same time stamps and timings, I am guessing you are not including actual examples.
+This is throwing a few spanners in the works of trying to farm through these logs, so is there any reason why this is happening?
+I never followed through with increasing this but if you want to try here is my correspondence with the HAProxy author:
+HAProxy version is 1.4.18-0ubuntu1 running on Ubuntu 12.04.
+For this reason, if you're certain that you're seeing this behaviour on requests for a same host passing through the same frontend, the only possibility I can think of is that you sometimes have two header fields, one with the shortened value and another one with the normal one, and that haproxy only logs the first one while the server uses the last one.
+Also note that since syslog traffic is UDP a certain amount of corruption is to be expected (although this sounds more specific than that).
+Note the host_header has been truncated from application.example.com to application.examp.
+From what I'm seeing in the code, this should not be possible at all (check capture_headers() in proto_http.c).

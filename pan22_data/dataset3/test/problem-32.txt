@@ -1,0 +1,17 @@
+Post back with some results if you can I will be more then happy to review them.
+The -d parameter refer's the the drive letter, in this case E:
+The problem is the wait times you mentioned, to me, that's a dead give away of disk contention.
+You can use SQLIO to create the file for a battery of testing and then execute the following against it:
+If the disks are actually dedicated, and since you're pushing through your cache, the resulting IO's, MB's and latency should be pretty close (1-5% variation).
+Another thing, be sure to note the date and times of your testing and against which drives you tested against.
+Being that your Symmetrix has an 8GB cache, I would test with a 16GB or larger test file to push through the cache to ensure the variation isn't so much the cache but rather what the underlying disks are actually putting out.
+You should be able to request this information to help gauge your Symmterix's performance since this is a SAN shared with other hosts.
+Write the batch to execute the above or something similar repeatedly for a period of time and review the results.
+This test performs a set of sequential writes over a 2 minute (-s120) period and you could wrap in up in a simple batch file with timestamps to help you track the time of day and pipe the results to a log file for review.
+With the exception of SAN fabric saturation cause by far too many VM's, my experience is that the disks (when not SSD's) are always the biggest bottle neck.
+sqlio -kW -t2 -s120 -dE -o4 -fsequential -b64 -BH -LS Testfile.dat
+A number of tools out there such as SQLIOSim and SQLIO, depending on how they are configured, can cause you're disk queue length to reach high levels, but that's ok since it's part of the test.
+If it goes beyond that to more like 15% or higher then you probably have disk contention.
+That having been said, they should not typically result in wait states unless they are shared with another host that is actively utilizing them.
+All SAN's have some sort of logging for profiling the following:
+In these situations I suggest using SQLIO from MS (that is if this isn't what you're already using).

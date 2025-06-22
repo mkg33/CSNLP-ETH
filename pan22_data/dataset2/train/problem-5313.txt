@@ -1,0 +1,7 @@
+You can check that /var/log/fail2ban.log will contain a warning about the name being too long, and thus creating an error during iptables rule creation.
+but, just to be on the safe side, and because I was only using iptables-allports.conf, I simply replaced all occurances of  with /sbin/iptables in that file.
+The others it has listed as missing are not important to fail2ban because they do not provided <HOST> or <IP> which fail2ban needs to enable banning of the client. So fail2ban is set up correctly for ssh so if all your definitions match your system set-up then it should be banning, remember you have to trigger the 'findtime' and 'maxretry' values to get banned. Don't forget to '$ fail2ban-client reload' after any changes.
+When I ran across this problem it was because the "iptables" command was not working.  I believe I could have fixed this by changing the line
+This will allow fail2ban to detect and ban, however wont actually ban because the rule does not exists in the iptables config (iptables -v -x -n -L
+I don't know what log your using /var/log/secure or /var/log/auth.log but whatever one it is you need to tell fail2ban which one it should read from, also as mentioned if you have changed the default port for ssh(22) then again you need to tell fail2ban and open it in your firewall(iptables etc).
+Check that you was enable IPTABLES jail and SSH filter. Also check f2b logs - is f2b trying to ban someone?

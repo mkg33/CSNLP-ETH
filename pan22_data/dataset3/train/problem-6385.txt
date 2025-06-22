@@ -1,0 +1,13 @@
+On my system, python was symlinked to python3.5, even though sys-apps/portage (which provides the portage Python package) didn't yet have a target for Python 3.5.
+As for the Prefix bootstrap…it seems that if you just run the script interactively again, it'll start allll over again, right from the beginning.
+At this point, you won't be able to rebuild portage with different targets (because emerge is broken), so check all of the installed Python versions (or dig around in $EPREFIX/usr/lib/python*/site-packages) until you find one with a portage package.
+If you have a working eselect (I did), you can use it (see eselect python help); else, you can probably get away with just manually changing the symlink.
+Perhaps something in the script's internals is mistakenly resetting or ignoring $PATH?
+I'm currently trying to get a Gentoo Prefix set up.
+And invoking the prefixed python2 directly with -c 'import portage' works just fine (trying that with the host system's Python gives that ImportError).
+I grabbed the bootstrap script and ran it, and it got partway through stage three and finished installing the kernel headers before Portage broke.
+I'm really not sure why this method is recommended against, given that the bootstrapping script does all the work, just like in the recommended method.
+Oddly enough, there is, in fact, a directory at $EPREFIX/usr/lib/python2.7/site-packages/portage, complete with __init__.py and at least a couple dozen modules.
+As far as I can tell, though, things should be using the prefixed Python; the prefixed bins are at the front of $PATH.
+It looks like the script went on to try to install some more packages, but any attempt to invoke emerge just result in an ImportError:
+I didn't want to start over, so I switched to the “manual” bootstrapping process and picked up at stage three, where the script had failed.

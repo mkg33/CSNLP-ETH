@@ -1,0 +1,14 @@
+I like the rowversion for this demo-code since it operates similarly to an IDENTITY() without looking suspiciously similar to a surrogate key.
+I realize this goes against the design objective of the question, but that does not change the facts.
+Your trigger can then update the PKEY2 column on the Parent table as part of the updates made after the child table:
+There is no guarantee of row order in the inserted or deleted pseudo-tables.
+The standard workaround for the lack of an exposed unique row identifier to correlate updated rows (or an updated pseudo-table, or per-row triggers...etc.)
+I realize IDENTITY() and surrogate keys are two completely separate concepts, however IDENTITY() is very commonly used as the default value for a surrogate primary key.
+A rowversion column would work as well, but that is 8 bytes and rather a misuse.
+I've always found it to be much more troublesome than it's worth.
+Since the database-wide rowversion number is updated every time a DML statement is executed, there should be virtually no additional overhead associated with adding that column to the table, aside from storage space, which I'm happy with for this demo.
+You have to deal with the extra column, but it should perform well with proper indexing in place.
+Since you're already customizing a solution, I think the easiest approach would be adding a second PKEY column that you can reference in the deleted and inserted tables within the trigger.
+You may observe it "working", but you will be relying on undocumented behaviour.
+is to add an immutable alternate key, such as a column with the IDENTITY property.
+I've added a rowversion column to my Parent table, and replaced the ROW_NUMBER() functionality in the trigger with that column.

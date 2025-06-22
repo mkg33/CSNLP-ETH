@@ -1,0 +1,39 @@
+Are you going to define uptime by ping reachability, HTTP answers, how?
+So even a 4h contract will grant you only one downtime (2 if it is indeed fixed within 4hours - but that's not exactly cheap to get).
+99.9% uptime means you're accepting a downtime of 8 hours, 45 minutes, 35 seconds within a one year period.
+Make sure that you have solid recovery processes, so that any failures that you do experience can be resolved quickly.
+You can get some cheap server nearly everywhere, but you probably need more of them to rule out hardware breakage, or get some decent hardware with HP, Dell, IBM with higher initial cost but a much lower probability of hardware breakage and thus will have a lower running cost.
+I don't quite feel like this is quite there due to the DB availability, but it'll cost you around $80x3 + disk space + DNS = $250/mo.
+If you don't count maintenance windows, that isn't a particularly demanding standard for a mainstream hosting company.
+As far as cheap goes, I don't know if by cheap you mean initial costs or running costs.
+Let's assume at least 2 application servers for $80/mo plus a DB server will support most people's applications for a while - and we just want to achieve good reliability (at least 3 nines).
+How far in advance will you announce the maintenance windows?
+How can one achieve the cheapest yet very reliable web application configuration?
+If that worries you, your best bet is to contract for hosting of the database itself rather than using a VPS and managing your own database server.
+This supports dynamically modifying DNS entries if necessary as well, which is handy if you're not planning on being able to update them manually during a crisis.
+- You can easily solve that by defining in advance what you consider "up" (or if that is easier what you consider "down" - but that would be badness enumeration)
+EDIT: To be clear when I say 2 Machines I mean redundant Machines per Use case (redundant DB, redundant Web, redundant DNS, redundant $whatever
+"Three Nines" availability equates to roughly 8 hours of downtime in a year.
+If it takes you three days to get it working, that additional three days is not their problem.
+Three nines including announced maintenance windows or excluding?
+One example (from Google, not a recommendation) can be found here; it isn't particularly expensive.
+Remember, as far as the host is concerned, once they give you a working server, you are back up.
+EC2 with georedundant locations (EU and US) could also be very interesting
+Other than that... pretty much any popular hosting provider out there has decent (read: published) uptimes.
+I'm not sure how best to configure these 3 machines - the best would be to put the two app servers on different providers (best with different network connections) and use HAProxy to keep an eye on each other.
+Most decent hosting companies hit that fairly easily.
+Depending on your exact traffic and needs and requirements, I've hosted many smaller web apps over on 1&1 without much trouble at all.
+I don't know much about making a DB server redundant other than that it is really hard for small systems.
+I like the fact that you can get a free sandbox server, and I can't remember any downtime I've seen.
+If one fails, it will update the DNS to remove it from the pool of IP addresses for your application.
+Backups should be done to an external source (S3 or FTP site) at least once per day - again a minimal each month.
+One can rent a pretty good VPS solution for around $80/mo right now from any reasonable provider (Amazon EC2, Slicehost, etc.).
+I am skeptical that you have seen worse on two well regarded hosting services.
+If you have a failure, and 90 minutes later they have given you another server, your downtime is 90 minutes.
+You need an automated deploy and restore script in order to get past 3 nines I think from your backup as well.
+Just calculate over lifetime which one is going to be cheaper.
+I have had issues with DNS in the past, but this can be handled by an external dedicated provider like DNS Made Easy for very cheap ($15/year).
+The database server is clearly a single point of failure .. you have to determine your tolerance for that risk and the cost for mitigating it.
+You never know when it will break and three nines means only about 9h downtime per year.
+I agree that you are doing pretty well where you are.
+However, none of these VPS hosting solutions are perfect, and I've experienced more than 99.9% downtime with each of them.

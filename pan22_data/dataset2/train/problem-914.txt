@@ -1,0 +1,9 @@
+I took a look here ( paragraph 4.1.4.1 ) and then checked the XML request but I couldn't find any "SubjectConfirmations" tag which is good according to what is specified by the standard.
+Ideally you should configure RPIdentifier app to send signed requests and then configure the RP trust with details of the certificate used by RPIdentifier to sign requests.
+P.S. Your AD FS service account should not be privileged and need not be. Just a normal user account in AD will suffice. No need to be a member of any group other than domain users.
+Encryption: The self-signed certificate used for ADFS is imported in the IIS Manager and is used by the service provider to submit the SAML request
+It looks like signedsamlrequests=true is configured but you are not sending a signed SAML request to AD FS.
+If your app expects AD FS to send assertions encrypted then the RPIdentifier needs to supply a cert to be used for encryption. This will be configured on the RP trust at the AD FS side. Note the cert is provided by RPIdentifier.
+MSIS7075: SAML authentication request for the WebSSO profile must not specify any SubjectConfirmations
+The login page appears but as soon as the correct credentials are inserted and submitted an error page appears containing the text:
+Your RP identifier only really needs to know about the token signing certificate used by AD FS. I am not sure what you meant by "Encryption". If the token signing cert is changed (by auto cert rollover or otherwise) you need to update RP identifier side with details of the new token signing cert from AD FS. Similarly if the RPIdentifier side certs change, the RP trust on AD FS must be updated.

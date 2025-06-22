@@ -1,0 +1,6 @@
+The easiest way to diagnose this is with a debugging instance of the SSH server. On the server, run:
+I would then instead use SSH overs rsync to make sure only a rsync command would be launched. This provides basically the same service as scp but your key then can be tagged with a force command which may be safer.
+I used inotify to implement the method  John Gardeniers suggested. It was easy and it now works fine.  I just wrote a C++ application that does the scp when a file in the directory is modified as can be done from the PHP code.  Works fine.
+To John's security concerns: if you decide to continue using the www-data account, you can limit its key to only certain actions (such as transferring certain files) using a "forced command" option in authorized_keys.
+Anyway, you should make sure your connection is restricted to this specific command. I am not sure SCP provide ways to restrict command (such as forced command with SSH).
+Having read the link you gave: make sure you use authorized_keys, not authorized_keys2. The latter has been deprecated for years and did not work at all in some versions of OpenSSH.

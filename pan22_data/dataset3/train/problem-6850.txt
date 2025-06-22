@@ -1,0 +1,28 @@
+With regard to the List data type it is worth noting that you can get a considerable faster sort by violating the list invariances of doubly linked lists, sorting only the forward pointing list in O(n lg n) operations and then do a single pass through the result in order to reconstitute the backward list.
+If you take a list of typical recursive mergesort implementations, it is worth noting that they tend to skip half of the given list in order to arrive at the second sublist.
+It takes more effort for the reader to understand these names as they're used.
+Your temp array is static, this immediately makes your function not thread-safe and non-reentrant.
+It would go horribly wrong if you forgot to add braces since the next else would not be tied to its original if anymore.
+I consider it a mistake to not consider this a part of the quality assesment of code.
+Instead you could use something like Object[] objArr, ListIterator<T> listIter, int low, int high, etc.
+You are sorting in a,  then copying to temp, then merging back into a.
+so that in addition to the assigment, something like this is also done (e.g.
+The first thing to note is that a mergesort is fundamentally a list sorting operation not requiring any copying.
+This makes that code easier to read and extend and most of all less error prone.
+That, in turn, only makes sense when you do not use indirection when sorting but rather swap the underlying data directly.
+I seem to remember that the Linux kernel source has a pretty good list mergesort implementation (of course in C rather than C++) that basically only suffers from not hardcoding small lists which would save some O(n) amount from the overall O(n lg n) complexity.
+I would definitely avoid naming anything just i, because i, j, k are almost always used in loops (as you've done yourself!
+So there are a lot of ifs and buts that mean it is easier to just work on lists directly.
+In addition to the great answers you already got, I'd suggest using braces in the if-cascade, so you have a clear separation of tested conditions and their respective statements.
+Since skipping half of the given list is done anyway when sorting the first sublist, by letting the sort return the head of the second sublist one saves this only-skipping pass as well.
+Try to replace Object by T, or by Comparable to avoid the need for casting.
+However, that means that your sorting is better done as part of the List implementation than as something using List as a blackbox.
+Copying to an array at all makes only sense when you hope to exploit the better memory locality of array access.
+), so using i to name a ListIterator<T> is not a good idea, primarily because it's misleading due to the conventional uses of i.
+Conventions in boudaries is that the low bound is inclusive and the upper bound is exclusive (in your code both are inclusive.)
+For comparatively small lists, this can make a noticeable difference.
+Suppose you want to add another conditional action in your merge method, right next to the
+Note that I am not at all talking about your C++ style: this critique is exclusively about the running time and memory requirements of the compiled code.
+It seems that you're trying to shorten your variables too much: Object[] a, ListIterator<T> i, int lo, int hi, etc.
+I don't quite like private constructors to prevent instanciation.
+The Linux kernel version also sorts sublists generally of size 2^k which has the advantage that one does not need to know the list length in advance (which is needed for splitting some n into almost equally sized parts), at the cost of about O(n) extra comparisons in the worst case.

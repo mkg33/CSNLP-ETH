@@ -1,0 +1,25 @@
+Of course it actually depends on what your system looks like.
+That way you can leave things on the server "read" once they've been acted on.
+You would probably want to write a small script that accepted the email on stdin and inserted it into your database.
+(You might consider using IMAP for a multiple consumer architecture, but that's just me blowing smoke w/o thinking it thru.)
+You might be able to use the same ActiveRecord code to do this.
+It's hard to say without actually knowing application.
+On the other hand, you'd probably better ask this on http://stackoverflow.com
+Instead of POP (if you go that route), use IMAP(S).
+If you need a little more performance, you can rewrite your script to be a daemon that accepts the email via LTMP, which will save the inefficiency of starting a process for every mail.
+server from the mail server, and allows you to let the mail server concentrate on what it does well and freeing the client from the queuing / storage duties for the messages.
+I'd rather have a scaling problem on a mail server, though, than a scaling problem on custom SMTP server code.
+I'm not so sure that POP3 access is going to be all that slow.
+POP3 gives you a nice method to atomically access items in the mailbox.
+Having multiple consumers running on the same POP3 mailbox at the same time would probably be problematic (if you're trying to scale out to handle more message traffic).
+I've seen apps do this with POP3 (Spiceworks is one example I can think of).
+You're adding more layers and potential bottlenecks, certainly, than just accepting SMTP directly into your code, but you're leveraging all the work that the mail server authors have already done.
+If you can run it over SSL (mail server dependent), you can mitigate that concern.
+By event basis I mean something like: You have a website that lists the emails retrieved.
+Whenever this site is loaded a background task is fired off that fetches unseen mails from the mailbox.
+Then you just need to set up your MTA to deliver the mail by piping it to your script.
+I'd either simply create a tool that regularly fetches all mails in the defined POP3 accounts, or even better yet (IMHO) fetch it on an event basis.
+An issue with POP3 that springs to mind is the default use of cleartext credentials.
+I'd be wary of doing the integration at the filesystem level, because you may have contention and locking issues (ugh-- think about mounting maildirs over NFS as an example of fun filesystem contention issues) as new mail comes in.
+For that, you might want to script something on the mail server side to round-robin distribute incoming messages into a group of mailboxes, and tie each consumer to a given mailbox.
+The article also has links to previous posts on setting up RailsCron.

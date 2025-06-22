@@ -1,0 +1,25 @@
+Have a VBO (+index buffer) for each mesh in the scene (a mesh is just the collection of vertices and indices).
+Even when you have hundreds of objects to draw, typically those are many copies of the same object.
+Should you have 1 vbo for example and replace the data in the buffer each time you need to draw a new object?
+So I understand how to deal with vertex buffers and vertex array buffers, etc.
+A game for instance will carefully control how many assets are needed at any given time; you won't see one of every enemy on screen at once, for example.
+The good version would sort objects by material/buffer and possibly using instanced drawing rather than setting a uniform and making a draw call for each individual object, but the gist is pretty much the same.
+You can't expect to have more data than the machine can handle and expect a magic trick to make it work.
+If you have still more objects than can possibly fit in the limitations of your GPUs memory... have less objects.
+Rendering is (in the naive, simple case with bad perf) something like:
+By my understanding was that you were limited in the number of buffers you could create (using getBuffer()).
+Many games need to implement sophisticated streaming technologies in order to allow large open worlds or exceptionally long/detailed linear levels and then still have to put constraints on designers to keep distinct objects and level features spread out and not over-concentrated in one area.
+Cutting down on buffers has speed advantages in that you no longer need to swap buffer bindings when drawing any of the objects that share that buffer, of course; do the same with texture atlasing (or array textures) and you can get very high draw-call rates.
+I am reading books on OpenGL4 but in most examples they generally render only objects.
+This way you won't even have to do a draw call for each object separately.
+For example, the goblin might use indices 0-10,000 and a tree might be at indices 10,001-12,400 and a crate could be 12,400-12,423.
+If you have a lot of unique objects, you may indeed need many different Mesh objects.
+but my question is does it work when you have say hundred of objects to draw?
+From there you can have multiple objects referencing the same mesh with different transformations which is memory efficient and you can sort your drawing to bind each mesh's VBO once while drawing.
+A bit more advanced technique would be geometry instancing which could be done as the next step.
+This is important: it allows you to put multiple models into a single VBO/IBO!
+Have your objects separately hold a reference to their meshes and store their transformation.
+This reduces the number of buffers you need but not the number of vertices you need, of course.
+E.g., you might a stack of 10 crates, or two goblins, or a hundred trees.
+You'd then be able to have many MeshInstance objects for each Mesh object.
+Note in the above definition that there are both startIndex and numIndices.

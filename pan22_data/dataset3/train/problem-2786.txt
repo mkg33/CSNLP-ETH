@@ -1,0 +1,19 @@
+Add the IP address to the DNS for the domain I'm switching
+If it is the A record for production.example.com then your TTL will come into play.
+If it isn't the production.example.com address, then this new A record isn't doing anything to facilitate routing traffic to your new IP.
+As to your question "If nothing is listening on the other side of the new IP address, do most things just change over to the other IP address?
+Let's assume your production web server is production.example.com.
+What one should strive for is minimal downtime which can be achieved by having a solid process by which you're going to migrate the website, whether it be changing an IP address or moving it to a different server or upgrading an underlying database.
+Once you do this and restart your webserver any current TCP sessions will break which implies any inflight HTTP(s) requests will fail.
+I need to change the IP address of a production web server.
+The key phrase in your question is "without downtime" and the answer for your apparent configuration is "no."
+Refine the process to achieve the downtime metrics you're after, and test it again.
+I typically set mine to 300 (5 minutes) but that doesn't mean you have 5 minutes to execute step 3.
+", yes, if there is no HTTP activity then you're okay.
+I was wondering if that is possible to do without downtime.
+What is the FQDN that you're adding at this point?
+If nothing is listening on the other side of the new IP address, do most things just change over to the other IP address?
+In my experience, the "no downtime" requirement is hard to meet, and by hard I mean complex and expensive.
+Once that new address begins propagating to your clients they will begin trying to land HTTP requests on the new IP.
+Once you've developed the process, test it to see how your traffic behaves and where your assumptions are confirmed or denied.
+Deploy the kubernetes config that uses the new static IP

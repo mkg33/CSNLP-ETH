@@ -1,0 +1,9 @@
+NOT EXISTS requires a table scan (if not indexed) and an index scan (if indexed).
+One thing you need to be wary of is that in your first statement you had IF @b > 0.
+I'm pretty sure SQL server would calculate the Select * from t1 ... first, and only then check to see whether the result exists or not.
+One thing you could do to compare these two versions is to rename one of them to f_old and execute them both inside the same batch, while including the actual execution plan and IO statistics.
+Finally, I imagine you will find that your thoughts regarding NOT EXISTS vs.
+From there, it is a simple matter of comparing the plans and IO stats of each.
+If that's true, then both versions should be essentially identical speedwise.
+I wonder if you could test this by running these functions on two large tables, and see if there is a consistent different in the time it takes for the functions to return?
+On a small table, you will not see a huge performance gain, but it is always best to design your logic around EXISTS, as opposed to NOT EXISTS.

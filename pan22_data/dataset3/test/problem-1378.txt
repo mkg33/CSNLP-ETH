@@ -1,0 +1,13 @@
+Ultimately I'm not sure if this will actually fix your SharePoint performance issue - but it should free up some space for you on the server.
+You could also fix the problem "for good" by taking the database offline so you can commit the transaction logs to the database and then delete them from disk, and (from the sounds of things) run a database defragmentation.
+I'd probably recommend you first do a full database backup, then do a transaction log backup.
+(Either by moving the database file, or actually extracting the data).
+The time it takes to do so would probably be a few hours at a minimum (varying greatly based on the size of the database), but worst case scenario, you could leave the database operations running all day/overnight and extract the data tomorrow.
+truncated) and you can resize it if you need to with DBCC SHRINKFILE.
+If the log is full then you should be able to force it to truncate by performing a log backup.
+SharePoint is actually a database (hence the transaction logs), so the quickest way I can think of to access the site temporarily for data transfer is to open MSSQL Management Studio, open the SharePoint database as a database, and dump the data you need out that way.
+If you haven't already you can run DBCC SQLPERF (LOGSPACE) in management studio which will show you if the log is actually full or just big.
+After that then the log shouldn't be full anymore (i.e.
+Also just because the log file is large it doesn't mean it is full.
+Those two things should make Sharepoint run a lot faster, so it's not painfully slow accessing the site.
+Unless your server is out of disk space having a large transaction log file won't necessarily make the server slow.

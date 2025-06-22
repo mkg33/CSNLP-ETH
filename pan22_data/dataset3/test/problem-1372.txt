@@ -1,0 +1,16 @@
+BUT: Apache exposes the PHP_AUTH_USER (=REMOTE_USER) and PHP_AUTH_PW variables to any application inside PHP.
+Presumably the same information is available to Python and Ruby (all three are currently in use; PHP is being phased out).
+Post #8 suggest to use auto_prepend_file to run a script that unset the variable
+This means it's possible for the app to harvest usernames and passwords.
+[2]: http://code.google.com/p/modmellon/ mod_mellon
+After further research I realised that this is basically a text-book scenario for an identity assertion: A trusted identity provider "proves" the user's identity to the client application.
+(PHP_AUTH_PW contains the plaintext password the user entered.)
+In our office environment we have lots of internal applications working like this over SSL, all quite secure.
+One idea is to use Kerberos Negotiate authentication (which does not expose the password and has the benefit of being SSO), but that automatically falls back to Basic for some browsers (Chrome and in some cases Firefox), causing the password to be exposed again.
+When using basic authentication (specifically via LDAP, but htpasswd also) with Apache, it makes the REMOTE_USER variable available to the PHP / Ruby / Python code underneath -- this is very useful for offloading authentication to the webserver.
+[1]: http://rnd.feide.no/simplesamlphp simpleSAMLphp
+Seems not possible but see http://bytes.com/topic/php/answers/798619-prevent-setting-php_auth_pw
+It's a workaround not a clean solution but it exist...
+I was hoping to get away without more infrastructure layers, but I'm going to go with simpleSAMLphp[1] for the IDP and mod_mellon[2] for the Apache side.
+This doesn't solve the password problem, but moves it to where it can be controlled.
+Aside: Sun's OpenSSO is quite beefy but Oracle killed it and the related OpenAM project's future is still not clear.

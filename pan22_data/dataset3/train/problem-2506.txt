@@ -1,0 +1,18 @@
+Commenting these 2 lines in my .ovpn file fixed the problem, without having to use a post-disconnect.sh.
+Apparently the reason is due to setting the following in my .ovpn file
+There might be an issue with how the OpenVPN server/client is configured which is leaving this (and I'd be interested in finding out what that is), but I installed a Tunnelblick post-disconnect script that automates this route deletion.
+When I'd connect to my work network I couldn't connect to the internet at all, and run into the same issue as OP
+If the VPN is disconnected then just take your network interface down and then bring it back up with ifconfig.
+Initially I put the "route -n delete" in a post-disconnect.sh script, but that was a little messy so instead I found this link
+For completeness, when I connect to my VPN at home and running the following command, it'd show the default gateway as below
+I was running into this issue while using a home OpenVPN server and connecting to it using the Tunnelblick application on Mac.
+What was happening on my end is that a route with my home IP as the destination and an incorrect gateway was getting leftover after disconnecting from the VPN.
+I connect to my home OpenVPN server with Tunnelblick.
+https://code.google.com/p/tunnelblick/issues/detail?id=177
+And when I disconnected, the [home-ip] gateway would still be there.
+First you need a route for your network interface.
+Which means the route is set up as root, but when the connection is taken down the user is no longer root, so the route can't be deleted.
+Then use the route commnand to build in your default gw.
+I was running into the same issue as @Sean (I'm also running OS X), in that when I switched between home and work networks the default route was not getting deleted.
+Example: I am at school and after a fresh computer boot, I connect to a wireless network.
+I can't under any circumstances connect to my home network (VPN, ping, anything) after this happens.

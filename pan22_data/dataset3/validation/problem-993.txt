@@ -1,0 +1,18 @@
+When you use chrome and access Github over HTTPS, you are just verifying Github's certificate chain against built-in root certs in your browser and in Windows.
+Finally, consult msysgit certificate addition procedure if you need to add the certificate.
+Can I cause GitExtensions to use our certificate to allow access?
+If I try to access the same url using GitExtensions, I get this error:
+Check if there is an older version of msysgit or mingw tools installed on your machine.
+Search for this string in the file bin/curl-ca-bundle.crt
+msysgit does include DigiCert High Assurance EV Root CA in its CA bundle and it has been there for a number of years.
+Behind a firewall, using chrome, I am able to access a github repository like so:
+These apparently do not use Windows trust certificates when building the certificate chain.
+This may just be due to Gitextensions bundling an older version of msysgit or curl.
+The error that I get, SSL certificate problem: self signed certificate in certificate chain,  indicates that the root certificate used by Git/Github is not present in the built-in certificate authority (CA) root bundle.
+And received the same SSL certificate problem error.
+It gives the appearance that Git is not using this certificate, thus I tried configuring Git like so:
+Under the covers, Gitextensions uses msysgit, which does not consult Windows trust certificates when building the certificate chain.
+To verify that the problem is with Git, not GitExtensions, I did this on the command line:
+As @Akber Choudhry has pointed out, the CA certificate that is the root of the chain of the certs served by Github SSL server is  DigiCert High Assurance EV Root CA and I do see that CA in C:\Program Files (x86)\Git\bin\curl-ca-bundle.crt.
+On my machine, I don’t see mysysGit, but I do see mingw/curl, so I assume Git is using these.
+From the error, it appears that the root certificate used by Github is not present in the built-in certificate authority (CA) root bundle.

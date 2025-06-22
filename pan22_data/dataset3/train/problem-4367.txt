@@ -1,0 +1,29 @@
+In the wake of that - what ciphers would offer me the features I'm looking for above, with the greatest speed?
+The ciphers gets mainly used after the negotiation is done and has only a small performance impact.
+I think you should probably understand the reason for these warnings instead of just trying to ignore them as best as possible.
+Backstory: I have a public-facing web server that receives a giant quantity of POST traffic from thousands of remote clients, with each POST being rather small.
+All DHE-* ciphers have a large performance impact, but have the advantage of providing forward secrecy.
+You therefore may want to cap it by setting using !HIGH, but be sure to thoroughly test this.
+Depending on your urgency you could wait for adoption of "Salsa20" and "ChaCha" in particular that is intended to be direct replacement for RC4 in terms of performance.
+While RC4-SHA is fast it is considered insecure and more and more clients disable it.
+The server takes on thousands of these connections per minute, so the overhead of SSL negotiation adds up.
+If content on a secure site is included from a insecure site it might affect the security of the original site.
+Using ciphers like AES128-GCM-SHA256 should be a good choice both in terms of performance and in terms of security.
+These can only be reduced if you support the reuse of sessions, so that a full handshake is only needed  for the first request and the next time the same client connects a less expensive session resume can be done.
+You will at least need to keep in LOW as I believe most browsers would refuse to use the null and md5 ciphers at all.
+To include eNull in ssl_ciphers, try "aNULL:eNULL:MD5:LOW:HIGH" for you cipher string.
+Typically, however you are going to negotiate the highest supported cipher.
+Some part of the cipher is relevant for the handshake (the key exchange) but unless you choose a very slow key exchange (see below) the main performance impact comes from the multiple round-trips inside needed for the negotiation.
+Again, the security of the data in this connection is not important at all, even if the "parent" site is SSL secured for whatever reason.
+A fast cipher will usually not reduce the overhead of the SSL negotiation significantly.
+Thus you might and with a fast server nobody can use because browsers disabled insecure ciphers.
+However, right now only google Chrome and latest releases of Android OS support it on the client side and it is not in OpenSSL yet, so no servers support yet.
+I have a use case that is the inverse of most: I'd like to implement very weak SSL ciphers in the name of performance, with the option to fall back to stronger ciphers if the client requests it.
+A few years ago, some variant of RC4 would have fit the bill, but since that is universally panned as insecure today, I'm concerned that browser compatibility may become an issue.
+I'd also like to offer the option to increase security to full ECDHE if requested, merely to satisfy more security-conscious clients, but definitely as a secondary option.
+The data in question does NOT need to be secure; the reason for using HTTPS at all is because the traffic originates from a JavaScript tag on a given website, and if said site is using HTTPS, then our supplementary traffic must use HTTPS as well to prevent warning about mixing secure and insecure content.
+You get the same advantage with ECDHE ciphers without having too much of a performance impact on today's hardware, but an overhead is still there.
+Of course both these optimization work only if you actually have multiple requests from the same client.
+There are some ciphers with very slow key exchange, which you probably don't want to use in your case.
+At the end the choice of cipher depends also on the clients you use.
+Because of this, it makes sense to me to present the weakest possible cipher to clients while maintaining full compatibility with browsers.

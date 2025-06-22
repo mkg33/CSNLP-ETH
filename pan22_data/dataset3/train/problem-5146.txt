@@ -1,0 +1,17 @@
+Before you run dpkg-buildpackage, run dch -lxslt in the source directory to increase the version number and add a changelog entry.
+This all seemed to work nicely, but now when I do an apt-get dist-upgrade it tries to install the nginx binary again.
+To stop this, increase the epoch of the package by prepending 1: to the version number in debian/control, which will stop apt from upgrading the package, including security fixes, until/unless you downgrade to the version from the Debian repository.
+This will stop apt from upgrading it, although if a new version comes out (eg security) it will be upgraded again.
+I recall sucessfully mastering that for Debian kernel packages some 7 years ago, but have forgotten about details right now.
+When it comes time to upgrade to the next major release you will probably need to remove this hold.
+When a package is held apt will not attempt to upgrade or change it any way.
+The way you are looking for is probably appending a suffix to the package version.
+You will probably want to make note that you did this.
+I think you are looking for is the ability to hold a package.
+Some time ago I apt-get install’d the nginx package on my debian/squeeze server.
+So if you do this, you'll need to watch out for security versions and rebuild manually.
+To install nginx with this option I did the following:
+My requirements have now changed and I needed to install nginx --with-http_xslt_module.
+If you want to ensure that your build of the package stays installed, and isn't upgraded to the standard version, then you want to use package pinning, as described in the apt_preferences man page.
+I don't really understand what you want -- you don't want to install nginx, but you also don't want to remove it?
+A little bit of information is on Ubuntu packaging guide here  and in Recipes/PackageUpdate.

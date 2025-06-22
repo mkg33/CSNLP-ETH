@@ -1,0 +1,8 @@
+If your "evaluating Infobright" includes loading a Brighthouse data engine table with representative data and running representative queries against it, you should discover for yourself if it is a good fit. If you have a problem developing such a pilot and you contact me I would be happy to try and help.
+I mentioned the straight-forward way of completely summarizing "yesterday".  There are many other flavors.  One is "as needed", with the aid of INSERT ... ON DUPLICATE KEY UPDATE.
+We need to be able to aggregate counts of this data (cube) vis a vi ad-hoc queries. We are currently sending the data to CouchDB. This is very fast, once a view has mapped completely, but our database size is only 31GB and CouchDB is taking FOREVER to map a new view ( 2+hours ). Retrieving JSON formatted data has worked well for us. But we dread creating new view documents. I'm thinking all Map-Reduce systems may have this problem.
+We are a MySQL front-end shop and have a system currently logging event data in a highly structured format. Think apache traffic log.
+I think Infobright would be a good fit for the situation you describe. I have found that Infobright can often quickly report aggregates without the need for MOLAP.
+We are evaluating Infobright as they claim to provide superior aggregation performance for ad-hoc queries and are a MySQL fork. 
+Almost always (in my experience), the following is the solution to performance with large, log-like, data and semi ad hoc queries.
+I say "semi ad hoc" because you will find out that users don't really query on everything.  Even if they do, you can have summary table(s) that at least help.

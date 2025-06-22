@@ -1,0 +1,31 @@
+Furthermore, if you want to extend your movement to include pathfinding, you can have a pathfinder class that calculates the path (perhaps as a collection of 2D vectors) and use the Path Follow steering behaviour to add that into the mix too.
+You might also want to take obstacles into account as well.
+The disadvantage is that if your brakes have to ramp on or off, you'll never be exactly on the curve.
+Compute the second derivative of p(0), that will give you the acceleration to apply to your ship.
+These behaviors will also work when some other influences like an explosion changes the ships position temporarily.
+You can use a hand-tuned PID controller or actually record the braking distances for your ship in your physics system: in a testbed, brake the ship from max speed down to a stop, recording the distance travelled and speed every small timestep.
+Especially seek and arrival might be interesting for your needs.
+Set p0 and m0 to the position and velocities of your ship, p1 and m1 to your target position and speeds.
+As said before this situation is perfect for steering behaviours, but I'd just like to extend on it slightly.
+Velocity is in each frame sum of all forces (like gravity, explosions, user input etc) and can also have some kind of damp.
+Unfortunately, http://www.red3d.com/cwr/steer/ doesn't provide source code for the behaviours.
+However, with this it can be difficult to implement stopping on target.
+At run time, reconstruct the graph and plug in your current speed and target speed to get out a distance.
+gravity from planets), you will have to account for that when calculating the thrust from the acceleration.
+The Arrive behaviour would be perfect for this scenario.
+If your physics system is simple enough you can create the closed form for your motion and calculate when you need to start applying a braking force to stop at a point.
+You have two choices, although the specifics of each solution vary:
+This assumes you want the ship to follow one second after the target.
+If your braking force is a constant and you have no air resistence, this should decompose to a quadratic.
+Steering towards a position is not too difficult, but I personally struggled for a while with the problem of steering towards a position and reaching it at a specific speed, or following a path with speed constraints.
+The source code I've linked to also provides three different methods of combining these steering behaviours together as well.
+If you can't get the book you can always get the source code here: http://www.wordware.com/files/ai/
+However, Programming Game AI by Example does and explains the behaviours in easy to understand chunks.
+The advantage of this approach is that you can use it to brake exactly to any speed.
+Position is calculated from last position plus velocity * time_step.
+At this distance from your target point you need to be at full brake.
+You can make use of the Obstacle Avoidance behaviour here as well.
+I think your ship should have parameters like: position and velocity.
+Here is the code for the second derivative (in F#, I hope you can adapt it to your language of choice; sq() computes the square, single quotes not interpreted as quotes but as characters, they are part of the identifier):
+Note that if your ship is subject to external forces (e.g.
+Store the resultant distance/speed graph in a data directory.

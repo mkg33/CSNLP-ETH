@@ -1,0 +1,11 @@
+It's impossible to tell whether the KCC is doing a good job or not without knowing how your topology is defined; the KCC usually does a pretty good job, so there are good chances there's something wrong with your site links if there are no connections where there are supposed to be some.
+To do this, you can edit the 'options' attribute, and add the 1 to it (to specify it is automatically generated).
+The KCC creates replication connections based on your site topology, which you must define by creating sites and site links (and additionally by specifying site link costs); if f.e.
+One scenario for manual connections is to have control over specifying a bridgehead server, perhaps due to firewall or network issues.
+These can be spotted when the ms-DS-ReplicatesNCReason attribute contains an entry with the OSCILLATING_CONNECTION_TOPOLOGY bitflag.
+When manually generated connections exist, the KCC uses them wherever possible.
+If you cannot find a plausible explanation for the manual connection objects, and you want to use automatic connections, you can convert the existing manual connection into an automatic connection object.
+This may preserve the manual connection object and eliminates the need to delete them during cleanup.
+The KCC will then either keep the connection or remove it and create a new connection.
+In the case of network issues, it's possible that the KCC may repeatedly create a lot of what appear to be redundant connections.
+you have 5 sites but site A is only linked to site C, then the only replication connections for DCs in site A will be created to/from DCs in site C, and nowhere else; the KCC will not create connections between a DC in site A and a DC in site B, D or E (well, unless all DCs in site C are down and site link bridging is enabled, but let's save this for another day).

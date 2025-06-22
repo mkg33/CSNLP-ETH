@@ -1,0 +1,19 @@
+On the other hand, the "bookkeeping" costs associated with a single logical 4096-byte sector update would likely be a fraction of those that would be associated with eight independent 512-byte sector updates [indeed, they could be less than the costs associated with even a single 512-byte sector update, since the drive would only have to manage 1/8 as many total sectors.]
+The thing about 4k sectors is that a lot of drives are already using it, but they have firmware faking 512 sectors.
+If the amount of available space on the drive gets low, the drive will identify blocks which contain mostly "garbage", relocate anything on those blocks that isn't garbage, and then erase the blocks.
+Further, because there is a lifetime limit of the number of times each block can be used, files which haven't been touched for awhile but are sitting on blocks that haven't been used very much may get relocated so as to take advantage of the fact that the drive will then be able to repeatedly use and recycle the blocks they were sitting on.
+512 byte sectors started whenever we had really small media, like less than 300k floppy disks.
+It currently does not perform as well with 4k sectors compared to 512 byte sectors.
+Unlike a hard drive, where sectors may inherently be written independently, and writing to one sector 31 times per second for a year would pose no more wear than writing 31 different sectors per second for a year, a typical flash chip will be divided into large blocks, each containing many 528-byte pages, subject to the following restrictions:
+Because of these limitations, nearly all flash drives are designed so that writing a sector does not physically replace the contents of the page which previously held that sector's data, but instead stores a copy of the new data at some other location and then updates some sort of data structure to indicate that the data should be found in a new location, and that the previous copy should be considered "garbage".
+SSDs like I said use 4k sectors internally anyway, so it's much better to let the OS handle these raw than leave it up to the firmware to try to guess what the OS wants.
+In cases where the user of a drive would frequently alter individual sectors, the fact that each sector write only requires writing and recycling a single 528-byte page could be an advantage for the smaller sector size compared with having each write force the cycling of eight 528-byte pages.
+It's interesting that the linked article focused on hard drives, when the performance advantages of larger sector sizes with flash media can be even more significant.
+So manufacturers just figured to cut out the middle man and let the OS handle the 4k sectors in a way it knows how to(which ends up being better once we get full support for it)
+I believe 4k is the de-facto internal SSD standard.
+Depending upon access patterns, there would be some cases where a flash drive with 4K sectors would perform less well than one with 512-byte sectors, but there would be others where performance of the 4K drive could end up being noticeably better.
+Some OSs may not support 4k sectors at all(read: older) and most OSs and filesystems still are optimized for 512 byte sectors.
+It made sense then, it doesn't really make sense now.
+The transition is probably taking place now because of the large surge of SSDs.
+By default, the first partition is not aligned on a 4k boundary.
+I'm sure some old motherboards may have problems with such harddrives, but anything you bought recently(past 5 years) should definitely be compatible.

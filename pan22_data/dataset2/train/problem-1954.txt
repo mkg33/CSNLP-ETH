@@ -1,0 +1,7 @@
+By combining this with master connections (ControlMaster, ControlPath and ControlPersist) this technique does 95% of what I wanted in the first place and is very fast on repeated connections (the first one is always a bit slow if it has to go through the jump).
+This is my general purpose ssh wrapper. No option nor address is hardcoded. The only thing you may need to adjust is the path to your ssh executable in the line 3 (you can use executable=ssh, I chose the full path). You will find my full code down below.
+It turns out that something pretty simillar to this can be done fairly easily using ProxyCommand option in ssh config. In my use case I've skipped the requirement of connecting to 10.0.0.1 first and ended up with this:
+I'm looking for a SSH wrapper (or SSH option, if there was one), that can try connecting to several IP addresses sequentially until one of them succeeds.
+Let's say you saved it as sshmt ("ssh, multi target") where your $PATH points to, made executable with chmod. Then get familiar with the syntax:
+Note that connection may take a long time for example in case of the use of the proxyjump configuration. In fact, connection may occur after 2 timeouts.
+For example 10.0.0.1, then my_machine.example.com and finally my_machine.example.com -J me@other_machine.example.com.

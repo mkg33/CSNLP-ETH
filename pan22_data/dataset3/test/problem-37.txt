@@ -1,0 +1,12 @@
+I am trying to wrap my head around Bash, and think I have gotten pretty far.
+I can't really figure out how to check this when capturing the output into a variable.
+Try executing downloadApplication "$WEB_GROUP"; echo $?
+Even though the downloadApplication function fails (my expected result now), the script does NOT fail.
+If I don't put it back into a variable it works and fails as expected:
+By the way, you can check the return code and capture the output in a single statement:
+is the assignment to the variable, which is (nearly) guaranteed to succeed, either with the assignment of 0 or 1 to DOWNLOADED_ARTIFACT.
+The command DOWNLOADED_ARTIFACT=$(downloadApplication "$WEB_GROUP") will always suceed, because what matters for $?
+That means "if downloadApplication is not successful, then echo SomeErrorString" (so your DOWNLOADED_ARTIFACT will be set to SomeErrorString.
+In fact, with set -e the script exits on the execute-and-assign line because the result isn't checked.
+Are you sure that downloadApplication exits with the correct exit code?
+What I really don't understand yet is the error handling...

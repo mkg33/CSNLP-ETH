@@ -1,0 +1,21 @@
+Others have already noted how to add C:\Windows\System32 to the Path statement if it is missing, and so I'll not repeat that here.
+C:\Windows\System32 contains a large number of the executables and dynamic link libraries (DLLs) that allow Windows to function.
+Another thing to check, which was the culprit in my case: the PATHEXT environment variable.
+I had the user environment variable PATHEXT set to "*.LNK" in an attempt to get shortcut files picked up on the command line without typing the extension, but this was just shadowing the system environment variable PATHEXT=".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC", not adding to it.
+Now you will be able to run all the commands you expect to, like ipconfig.
+In my office laptop, unless the security level is set to "Off", it simply returns at the command prompt without any output.
+By default, Windows 7 does not allow the command prompt system access.
+Suffice it to say, pretty much any batch script would completely not function, and the abilities of your OS would be severely curtailed.
+An entry in the system Path settings tells the computer to look in that specified location for executables and files that programs are referencing.
+While it would seem that a good program would not rely on Path variables but should directly reference the location of any and every file it is dependent on, the Path statement allows multiple similar OSes to coexist on the same drive (Windows XP in the C:\WinXP\ folder, Windows 7 in C:\Win7\, etc, which would result in different and incompatible .\System32\ directories), and allows for more easy and flexible upgrading of framework files (look for the newest version of the .Net libraries in a versioned directory where they are installed rather than a central directory where they may overwrite each other in an undersireable way).
+If you look through that directory, you should see many files that you'll probably recognize as common scripting commands or functions critical to the OSes operation.
+But I would not be surprised, since this is the only function you've found to be not working, if there were something else wrong here.
+Try uninstalling and reinstalling your network card driver(s).
+I'd imagine if C:\Windows\System32 were missing from the path statement, ipconfig not running would be the least of your worries.
+Setting the user-level PATHEXT to the full list of extensions fixed it.
+I'm remembering now that I've seen this a long time ago in XP, and simply reinstalling the driver worked.
+I've never removed the C:\Windows\System32 entry from my path statement and I don't think I ever will (though I suppose testing this in a VM with rollback functionality shouldn't be too hard) and so I cannot say for certain what would happen if it were completely missing.
+So a program looking to use the functions of Windows XP's built in zip handling would call zipfldr.dll and the OS will return the functions of that executable stored in C:\Windows\System32\zipfldr.dll.
+Check the Security settings of your Anti-Virus or Firewall.
+From the Start menu, right-click on Command Prompt and select Run as administrator.
+You have to Run the command prompt as an administrator.

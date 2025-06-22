@@ -1,0 +1,12 @@
+I know the ultimate solution is to change to partitioning or adding a primary key and breaking the deletes into chunks and I'm also aware I can force the replication mode to statement for a session or even tell the sql statement not to write to the bin log and run an equivalent delete on the slave, but I'm right now just looking for a better way to understand and diagnose the problem.
+Only this delete does not use RAND() or LIMIT so it should not be nondeterministic.
+I have a couple of servers running in MIXED mode replication and I do maintenance regularly on them deleting a decent sized set of data.
+I could confirm this by running the delete inside and outside a script that uses temporary tables easily enough if I could see whether the statement was logged using row or statement based replication.
+This was working fine when we were using statement based replication everywhere on an older version of MySQL.
+When we delete old data out of this table it runs fast on either the slave or the master but when it's part of a script that runs over night it blocks and runs very slowly on the slave.
+In particular it looks a lot similar to this bug: http://bugs.mysql.com/bug.php?id=53375
+There is one table that had no primary key and is just used for logging.
+It might be because the script it is being run in is using temporary tables.
+Doing research I discovered that it is possible that this is because the system is switching over to row-based replication for this particular statement.
+If I can confirm when a particular statement is run whether it was written row or statement based I can quickly solve the problem.
+I would also like to know this in general so I can determine which if any statements we are using are being pushed via row based replication.

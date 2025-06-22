@@ -1,0 +1,21 @@
+We run Windows Server 2012 and our clients are Windows 7.
+by default, if a user is still logged on it won't shutdown the computer, in that case you would need to use -Force
+The computer shutdown is rather easy - as others have noted you might use the shutdown command for this.
+You could filter for a string like "Active" to determine if you can shut down safely.
+At 8PM we run a scheduled task with GPO to warn the logged-in user that the computer is going to shutdown.
+When no one is logged-in and the computer is still running, we would like to shutdown the computer.
+calling shutdownunused.bat pc1234 would test and shut down pc1234 if it is a) pingable and b) has no user logged on actively (it would shut down a host if the user is logged on, but disconnected or has his machine locked).
+The advantage of the latter approach is that it would be easier to keep logs and create statistics.
+If you have configured your machines' local firewalls to allow SMB and RPC from management hosts (e.g.
+a user would be given the opportunity to abort a shutdown request if desired)
+by enabling remote administration exceptions in group policies), you could trigger the shutdowns centrally for all machines in your domain using the /m \\computername parameter to your shutdown call:
+You could leverage the same Scheduled Task GPO you're mentioning to run a batch file on the computer with shutdown /f /t 0.
+Among other things, it allows for user interaction (i.e.
+A more flexible version of the shutdown command is offered by SysInternals as psshutdown.
+This can be scripted to your liking - either by using a local-only version as a scheduled task or centrally triggered from a management host through enumeration of all stations in your domain.
+I suggest /t 30 instead of /t 0 since it will give the end user a little warning before you force the shutdown.
+Now for determining if a user is logged on to a machine, you would have to test each of them, e.g.
+A few suggestions though: First, when creating the scheduled task, make sure you set under the "Conditions" Tab (In Create New Task) that it will not get triggered until the computer has been idle for xxx minutes - This will help prevent calls from users staying late having their computers "turn off by themselves" while they are working.
+Also, the use of a batch file - although fine - is unnecessary for a "one liner" like that, you can simply go to the "Action" Tab in create new task, under "Program/Script" simply type "Shutdown" and under arguments "/s /f /t 30"(or whatever number) it will run the entire line
+Group policy location: Computer Configuration, expand the Preferences folder, and then expand the Control Panel Settings, Right-click the Scheduled Tasks node, point to New
+Outside of what was mentioned about Windows Updates, AV scans and boot up time.

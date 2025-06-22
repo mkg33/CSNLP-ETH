@@ -1,0 +1,22 @@
+My second thing was about VICI interface of strongSwan.
+This is a common practice for this task to use RADIUS and strongSwan has plugin for it.
+iOS supports "VPN On Demand" only with certificated-based authentication.
+With some IKEv1 clients there are some issues in case of reauthentication, though (see issue #937 and related).
+But we got new requirement - setup several VPN servers with one users database and make accounting of the VPN usage.
+If eap-radius plugin is enabled with option accounting = yes, strongSwan will send RADIUS message to start accounting, even if eap-radius is not used in ipsec.conf file.
+If I want to reject access for some CN I can just reject RADIUS message from stronSwan and ipsec connection will be interrupted.
+But strongSwan with IKEv1/Xauth uses username/password for authenticating user on the backend RADIUS server.
+Also I would like to use strongSwan curl plugin for access to the certificate revocation list.
+EAP-TLS makes it possible to delegate the certificate authentication for IKEv2 clients to the AAA server, but this is unrelated to RADIUS Accounting.
+RADIUS Accounting in the eap-radius plugin does not require XAuth authentication.
+I supposed to get notifications about each new IPSec connection, but looks like VICI works different way.
+To provide "VPN On Demand" for iOS users of my office VPN server we are using next IPSec solution:
+Thanks to ecdsa, I've found several solutions of my problem.
+Most of my iOS clients use iOS 8 which supports IKEv2.
+It actually works with any kind of authentication, via RADIUS or not, as long as the client requests a virtual IP address (for IKEv2 even this requirement can be disabled).
+But I've found lack of documentation about this plugin.
+Or I am digging in the wrong direction with EAP-TLS?
+I can obtain certificate CN from message and it is enoght for me to make proper accounting.
+Can I use EAP-TLS to delegate RSA authentication check to RADIUS server?
+Do accounting and access check in the updown script instead of using RADIUS.
+With this function the VPN connection is made whenever the device tries to connect to certain domains or to the internet at all.

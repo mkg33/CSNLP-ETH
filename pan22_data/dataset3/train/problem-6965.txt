@@ -1,0 +1,21 @@
+Instead of using multiple columns for user id:s, create a "virtual user" and assign an id which will be used regardless of type.
+This design doesn't require creating a separate table for each entity.
+A generic table (meta) is used to track changes to all entities.
+Also, I'm going to need one meta-table per entity, which i really don't like.
+What I like about this approach is that some redundancy is removed.
+On the other hand I think this one might scale better.
+Perhaps there should be updatedDate in the entity table.
+In this scenario I've moved the "meta data" to a separate table.
+The primary advantage of this method is that it is straight forward fo find the updated field.
+Don't know how relevant history is in this case though.
+So at least new entity would created fast and update might be little slow as compared to it.
+I keep going back and forth between Option1, 2 and 3 (see below):
+I need some advice on how to store information about who created/updated an "entity".
+Also, if we want to track "reads" we could simply updated the "action" column.
+Option 1 is redundant, option 2 & 3 will much access the single table so it would slow the insert/update due to locking.
+Which is translated to: "The employee with id (E10) updated the order of ID (50) on 2015-05-05 at 2015-05-05 from the head office"
+What is good about this is that you can later add an extra field that describes the change, so you will have a tracking system :)
+Finding the actual user performing the update/insert is even more complicated than the other options.
+I think You can break the option 1 into 2 tables, one for insert and other for update.
+This design makes it harder to find the last updated record though.
+The downside is that this table might get used A LOT and makes querying for changes more cumbersome.

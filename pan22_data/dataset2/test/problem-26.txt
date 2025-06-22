@@ -1,0 +1,10 @@
+I have a "from source" installed gitlab version and I had to edit config/sidekiq_queues.yml and add :concurrency: X (where X is your desired number of processes.
+I was unable to get this to work by adding a sidekick.yml, sidekick_queues.yml, or to anything else in /etc and resorted to hacking the installed package source directly. 
+Then sudo systemctl restart gitlab-sidekiq and I finally got only 5 threads chewing through memory instead of 25.
+The sidekiq.yml is not used by gitlab. You can see that if you look at the running process and its -C option.
+For me it worked to just go to /home/git/gitlab/config. There was a sidekiq.yml.example file. I just ran:
+Edit the system file /usr/share/webapps/gitlab/config/sidekiq_queues.yml and add this line just after the opening --- YAML marker:
+Most of the proposed solutions to this problem both in this Q&A thread and elsewhere on line seem to be out of date, but the problem is still current, so here is my solution for Gitlab 9.5.3 on Archlinux using the community packages:
+Looking at htop output on my server I see 25 sidekiq processes spawned by Gitlab. I use Gitlab privately, so there is never going to be any load, so I doubt all of those processes are required, but I cannot see how to configure their number.
+I edited the Sidekiq startup arguments. In GitLab <7.0.0 it's under scripts/background_jobs but in >7.0.0 it's under bin/background_jobs
+Using vim sidekiq.yml you will see that there is a :concurrency: option. Set it to the number of sidekiq processes you wish, save the file, and run service gitlab restart.

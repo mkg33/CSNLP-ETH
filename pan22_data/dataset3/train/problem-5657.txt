@@ -1,0 +1,19 @@
+And also: https://www.myotherpcisacloud.com/post/2014/02/16/verifying-rpc-network-connectivity-like-a-boss.aspx
+Let me show you an example of querying the RPC Enpoint Mapper:
+Further reading: http://technet.microsoft.com/en-us/library/cc738291(v=WS.10).aspx
+It lists the ports used by various Windows services and is quite thorough.
+Although the article I linked to above lists the NetBIOS ports, those are legacy and are not required for RPC, assuming you can acquire name resolution through other means (DNS,) and assuming the remote service itself is not dependent on NetBIOS.
+In versions of Windows earlier than Vista/2008, NetBIOS was used for the "RPC Locator" service, which managed the RPC name service database.
+Wherever you heard that it "makes things better," is wrong.
+That high-numbered dynamic range is ports 1024-5000 on XP/2003 and below, and 49152-65535 on Vista/2008 and above.
+You will notice that if you perform that query on the local computer, you will find many more endpoints than if you perform the query from a remote computer.
+Basic MSRPC uses ports 135, and the high-numbered dynamic range.
+Ports 137, 138 and 139 are for NetBIOS, and are not required for the functionality of MSRPC.
+You can define a custom port range if you wish, like so:
+This TechNet article is fantastic, I recommend you bookmark it.
+Other applications, such as Remote Desktop Gateway, will use RPC over HTTP proxy and use port 443, etc.
+From this point on I am only going to talk about MSRPC on Vista/2008+.
+You can bind to that port on a remote computer, anonymously, and either enumerate all the services (endpoints) available on that computer, or you can request what port a specific service is running on if you know what you're looking for.
+But in Vista/2008 and beyond, the RPC Locator service is no longer necessary or useful.
+You can also call that port range ephemeral ports.
+That's because many RPC endpoints are not exposed remotely and are only used for local interprocess communication.

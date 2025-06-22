@@ -1,0 +1,23 @@
+Although you can get access to the constant buffers yourself with GetConstantBufferByName etc., you wouldn't normally do so.
+Internally, it's keeping track of the constant buffers and updating them as needed.
+As said above the Effects framework is an additional layer on top which gives you some higher level of abstraction.
+The Effects API gives you an interface where you don't need to worry about constant buffers yourself.
+Whether the API is actually easier could probably be a question of requirements.
+Depending on the internals, there might be additional overhead in memory use, extra bus traffic, and so on.
+The shaders still do have constant buffers, but the CPU side of your application doesn't need to know about them.
+you can detect the semantic and automatically send your camera transform.
+However, that does mean that you're incurring a function call and other overhead every single time you set a parameter.
+I'm having some trouble understanding the differences between using constant buffers or using the effect framework of DirectX11 for updating shader constants.
+You can instead work in terms of individual parameters and set their values one at a time.
+From what I understand they both do exactly the same thing, although from reading the documentation it appears as if using effects is meant to be 'easier'.
+If you know the layout, you can create a struct in C++ that matches, so setting the parameters is just setting the members of a struct and doing a couple of API calls for the whole thing.
+As the other answers mentioned, for a high-performance engine it might be preferable to just deal with constant buffers yourself.
+When you modify a variable it will mark it's parent buffer as "dirty" , and update accordingly (please note it only updates resource when you Apply Pass, not when you set a variable).
+However, if a more sophisticated engine is what you actually need then the Effect interface could probably even slow down the development and impose restrictions on some of the required optimizations.
+The biggest disadvantage of it, as mentioned above, is that it's really easy not to use declarative buffers at all and create unoptimized code if you're not careful (you can use separate buffers using effects framework and it's pretty recommended to do so).
+It's not deprecated in any way, it's only provided outside the DirectX core, and also in source code form (which means you can see what it does under the hood and tune it to fit your needs).
+Most probably the Effect interface simply abstracts away some of the problems in dealing with constant buffers but it also uses them under the hood.
+However they seem the same to me, one uses VSSetConstantBuffers and the other GetConstantBufferByName.
+So now when you do a lot of draw calls with plenty of different material shaders, it's true that it can introduce some performance hit (even tho in modern dx11 programming Instancing and using Buffers/StructuredBuffers is pretty much the way to go), for other parts like post processing the hit is generally very minimal.
+If you want to build a very simple application, the effect interface might prove itself useful.
+Effect interface has always been the highest level shader-related interface.

@@ -1,0 +1,6 @@
+As reference for people stumbling upon this with the same problem, this answer to a different, but similar question gives steps for doing the above. 
+Best option it seems, given stated constraints, is to draw the compressed texture to a quad then read it back out. (Same as suggested by "Simon F" in the question comment thread above.)
+Desktop OpenGL requires implementations to convert pixel data between the internal format of the image and the format you specify in the pixel transfer command.
+OpenGL ES does not. Indeed, it is so serious about not allowing this that it actually changes the meaning of the parameters to functions like glTexImage*d. In ES, you cannot use sized internal formats (well, outside of texture storage calls). Instead, the internal format is kinda there. What really defines the internal format is the pixel format and type parameters.
+That is, when you tell OpenGL ES that the pixel data you're providing looks like X, it requires the implementation to create a texture whose real internal format exactly matches that. And if you're using glTexSubImage*d or glGetTexImage, you must provide pixel transfer parameters that match those you provided to the glTexImage*d call.
+The commentary in this thread is correct. OpenGL ES does not have built in support for reading textures directly.

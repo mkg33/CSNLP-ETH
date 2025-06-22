@@ -1,0 +1,34 @@
+I suspect your underlying question might be "how can I set things up so that if my DNS server reboots or its hard disk dies, other people on the internet will still be able to see my webpages?"
+If you want to ensure redundancy of your DNS in the event your server goes offline, you should look into backup DNS service (like at dyndns.com) or create your own secondary NS.
+Caching done by others DNS server depend on TTL assigned to record.
+The easiest way to solve this problem is to sign up with a DNS service provider who will handle DNS for your domain - the price for this ranges from free to thousands (probably even tens or hundreds of thousands) of dollars per month, depending on the level of service you want.
+ns2.example.com might be another machine in your company/organization - ideally not on the same subnet and in the same server rack (or under the same guy's desk) as ns1.example.com.
+ns2.example.com will be configued as a "slave" server, that just copies whatever data you've set up on ns1.example.com - but the outside world doesn't care about the master/slave distinction, ns2.example.com will be considered just as "official" as ns1.example.com.
+When it gets that answer, if will ask those servers for an IP address for "www.example.com".
+Either way, if ns1.example.com is down because the hard disk died or you decided to reboot or whatever, then the other 3 machines will be available to answer the question instead, and your website will continue to be visible.
+Yes the old adage, "DNS changes may take 24-48 hours to propagate through the internet" would be more accurately "DNS changes may be cached on any DNS servers that have queried this record within the past 86400 seconds."
+So if you tell someone "hey, take a look at my cool website http://www.example.com", the other guy's computer will ask its local nameserver "hey, what's an IP address for www.example.com?"
+So, in your WHOIS data with your domain name registrar, you might configure four nameservers for your domain:
+When it gets that answer, it will ask those servers which servers handle lookups for "example.com".
+Once your domain registrar publishes the new NS records for your domain (which should be approximately instantaneously), then when someone out on the internet asks which domain name server handles "example.com", they'll get four answers -
+There is no guarantee that any server will pay any attention to the TTL - some nameservers may be configured to never remember the answers to lookups, and will always repeat the process even if asked several times per second.
+However you work that out, you get those machines configured as slaves, so that they pull the DNS information for example.com from ns1.example.com (your "master"), and they will serve that DNS information to any machine on the internet that asks for it.
+When someone (or some computer) out there on the Internet, so to speak, want to connect to one of your machines, they ask their local nameserver for an IP address matching the hostname they're interested in.
+When the server(s) for example.com respond with an IP address for www.example.com, they will also give the requesting nameserver a hint about how long it should remember the answer to this question.
+You can get reasonably reliable service for $30/yr or so.
+This is why your changes are reflected immediately, and why the service stops working as soon as you disconnect your nameservers.
+ns1.otherguy.com and ns2.otherguy.com are machines that are set up somewhere else - maybe you make an arrangement with a friend/colleague at another organization to run nameservers for each other, or maybe you get set up with dyndns.com or everydns.net or any of the other free or commercial DNS providers.
+The free services aren't awful and, hence, have a pretty good bang-for-the-buck ratio, but if you depend on your website to make money, you oughta be able to come up with $30 for a year's worth of DNS.
+Most of these nameservers will be set up as "slaves", which means they look to a "master" nameserver for their information, and then repeat that information to anyone who asks them for data.
+Could you give us more information about your DNS configuration ?
+ns1.example.com will be considered the "master" server, and when you want to change your DNS, you will make your changes on that machine.
+Depending on how the other guy's nameserver is set up, it might treat those four as a list and ask them one at a time how to reach "www.example.com" - or it might ask all four of them the same question at the same time, and just take the answer from whichever machine answers first.
+Also, if you are looking at your own DNS information using a site that's designed to research or debug DNS information, chances are that site isn't going to cache data for long, or at all, regardless of what your TTL suggestion is, because the site's goal is probably to provide information about what the DNS system says RIGHT NOW, not 5 or 50 or 500 seconds ago.
+The TTL is just a suggestion, not a requirement or a guarantee.
+That hint is called the "TTL", or "time to live", and it is measured in seconds.
+The literal answer to your question - why aren't your DNS records propagating out onto the internet - is that they aren't doing that because they're not supposed to.
+Assuming the local nameserver has never looked up the answer to that question before, it will ask the root nameservers to find out which server(s) handle lookups for ".com".
+Other nameservers may be configured to keep the answer for a long time, even if you have suggested that the data only be kept for a short time, perhaps because they want to minimize network traffic.
+ns1.example.com, ns2.example.com, ns1.otherguy.com, ns2.otherguy.com
+Then, follow the instructions from the DNS service provider to change the NS records at your domain name registrar, and you'll be all set.
+The answer to that question is to set up several nameservers for your domain, and to have them running on different machines - ideally, not just different physical computers, but with different network connections, perhaps even in different cities or states or countries or continents.

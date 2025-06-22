@@ -1,0 +1,25 @@
+You know this is not how Synchronized is meant to be used, but that's not all that obvious to Marvin the Maintenance programmer and Joe the Junior dev.
+At the moment, you require the writers and readers to share the same synchronisation object which might not always be feasible.
+But that often doesn't cause problems, so it's something Joe could have created after reading a poorly written blog post about enumerators.
+If you need a dictionary then you can safely add a ToDictionary call afterwards, or create a dictionary variant of this method.
+Stylistically, I'd say don't use regions but that's personal preference.
+It seems to me that a method that does just that - and only that - will be safer:
+About the only safe use-case, as far as I can tell, is directly taking a snapshot:
+Synchronized is called outside (and before) the somethingElse lock, so this appears to be safe, but it is not.
+Let's look at a few ways in which this method could be used incorrectly:
+The other downside is that all other readers and writers are blocked until the reader is finished (and they dispose the enumerator correctly).
+Concurrency is difficult enough, and the more complex your code is the more difficult it is to verify the correctness of your code.
+Writing a test program to check your code works as you expect is good but I would get in the habit of writing unit tests instead.
+Locks should be kept only as long as necessary, but this holds a lock until all work has been done.
+This will cause problems when combined with Synchronized: CustomIteration(items.Synchronized(items)) will never release its lock.
+It's better to use a collection that is designed for the job than to try synchronise over the top of another collection externally.
+This code is broken - it doesn't dispose the enumerator.
+Well, at least it fails, instead of obtaining a lock multiple times and potentially providing a different snapshot each time...
+And let's say Marvin needs to add another lock, which - if both locks are needed - must only be obtained after items:
+A well-designed API should be easy to use correctly, and difficult to use incorrectly.
+You have used ConcurrentQueue so I know you know about them ;) Their approach to GetEnumerator is to return a snapshot (copy) of the collection at that time.
+With the more simple lock variant, it's obvious where and how long a lock is being held.
+More verbose, but less susceptible to the problems shown above.
+You should be able to enumerate the same enumerable multiple times - it shouldn't result in a runtime exception.
+Now, as for the actual idea behind this code, I'd suggest you take a look at the concurrent collections available in System.Collections.Concurrent and use them instead.
+They are just as easy to run and have the added benefit of also listing your expected behaviours.

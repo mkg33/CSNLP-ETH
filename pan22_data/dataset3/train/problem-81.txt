@@ -1,0 +1,16 @@
+You'll have to add webstaging.ourdomain.com to the search suffix list either manually or through DHCP options to get the behavior that you desire.
+This would be true if webstaging.ourdomain.com was in the search suffix list.
+Set this to "Enabled" and restart your browser; it should fix the problem.
+Make sure that on your windows 7 box you have on your network connection (Local Area Network or whatever)->ipv4->advance TCP/IP settings->DNS you have check "Append this DNS suffixes (in order)" and that ourdomain.com is in that box.
+See this article for a complete explanation and the solution:
+Windows 7 has a rule change compared to Windows XP when it comes to how the DNS resolver treats multi-level names:  By default, Win7 will NOT append your DNS suffix to multi-level names, whereas Win XP did.
+Its complicated to explain why, but its the way MS implements DNS for resolution of unqualified names.
+What is the "node type" of the Windows IP Configuration?
+http://blogs.technet.com/b/networking/archive/2009/04/16/dns-client-name-resolution-behavior-in-windows-vista-vs-windows-xp.aspx
+To fix: open up group policy editor and browse to:
+Even if DHCP gives you an address it does not mean that it registers it in DNS also.
+You may want also to check "register this connection in DNS"
+This means that in Win7, FarmA.webstaging will not work, but webstaging by itself will work, as will FarmA.webstaging.yourcompany.com (i.e.
+If its Node Type . . . . . . . . . . . . : Peer-Peer then follow these steps:
+Unfortunately, the solution isn't as obvious as fixing the DNS suffix!
+Computer Configuration -> Administrative Templates -> Network -> DNS Client -> “Allow DNS Suffix Appending to Unqualified Multi-Label Name Queries”

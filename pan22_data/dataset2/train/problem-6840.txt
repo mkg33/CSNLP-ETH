@@ -1,0 +1,8 @@
+As @Ladadadada says, max_execution_time setting wont affect your server performance. Otherwise, if you don't want to set a too high value, I personnaly refer to the upload_max_filesize setting. 
+Knowing your server bandwith and by testing a few uploads, you'll be able to find an average upload rate (reduce that rate to take care of users who have a low bandwith). This would help to set a reasonnable max_execution_time value.
+While bandwidth (and latency!) has a big impact on the time taken to process the request, the PHP clock only starts when the PHP interpreter is invoked - this won't be until the webserver has received a complete request - i.e. the PHP execution time and hence the timeout should have nothing to do with how long it took for the webserver to process the request.
+I'm guessing from the path in the error message that this is a Unix/Linux system (MSWindows handles the timeout very differently).
+Now since on a Unix box, the max_execution clock only ticks when the PHP is executing, the problem is with PHP's performance / the performance of the PHP script.
+There is a timeout in PHP to determine how long it should spend receiving data from the webserver - max_input_time - and it has been reported that when this is exceeded it reports max_execution_time exceeded!. 
+Yes, you can increase the max execution time without it having a big impact elsewhere (although setting it via ini_set() / set_time_limit() on a script by script basis is neater than a global setting). But do make sure you're using an opcode cache, and if the php script is trying to parse the data, do beware of data / parser issues.
+Setting it to a high value will only affect performance if you have scripts that do one of the above two things.

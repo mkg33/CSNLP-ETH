@@ -1,0 +1,27 @@
+We made the AJP connector MaxThreads close to our Apache Thread limit to solve the issue.
+I suspect your problem is in tomcat not apache, from the logs you have shown anyway.
+I'd suggest caching the response you get from this service for two minutes to reduce the amount of concurrent connections you are driving to the external web service.
+If I had to guess, I would suspect that the vast majority of HTTP requests when the server is "choking" is blocked waiting for something to come back from tomcat.
+Oh, and you might need to also consider the possibility that its the external network services thats limiting the number of connections that it is doing to you down to 300, so it makes no difference how much manipulating of concurrency you are doing on your front side if practically every connection you make relies on an external web services response.
+I am not familiar with tomcat unfortunately, but is there a way to manipulate the concurrency settings of this instead?
+How many file handles Apache currently is allowed to have?
+Big iron is not the way to scale webserving you're just moving the bottlenecks around.
+it means you reuse the timewait early, guess what?
+It's also very odd to have such a high limit for connections but a very low limit for hysteresis (min/max spare servers).
+It would be helpful if you explained wht you mean by "the server chokes".
+Although the extract of errors you've provided doesn't show the telltale 'too many open files' I'd start by looking at the number of open file descriptors and the ulimit settings.
+For monitoring this, we looked for SYN_SENT netstat port status help with netstat command on our AJP port.
+There is a hard coded limit for ServerLimit Directive.
+This got down to 0 , which was always some big number before the MaxThread limit set on AJP Connector.
+When you get 'error 110' trying to connect back into tomcat it indicates you've got a queue of connections waiting to be served that no more can fit into the listening backlog setup for the listening socket in tomcat.
+http://httpd.apache.org/docs/2.2/mod/mpm_common.html#serverlimit you'll see that it is max 20000/200K.
+I bet if you attempted to fetch some static content thats directly served up by apache (rather than being proxied to tomcat) that this would work even when its normally 'choking'.
+This is more like a comment, but as can't as I have less reputation.
+I found a very good article explaining that but - it is french ;-)
+the server may talk to the wrong client under heavy load.
+But even with this much memory, I suspect that 50000 connections is pushing what the system is capable of particularly if:
+Perhaps the Apache user is running out of allowed file handles?
+http://vincent.bernat.im/fr/blog/2014-tcp-time-wait-state-linux.html
+Came across exactly similar problem as @john titus had.
+Apparently nodybo mentioned that setting those 2 to one is a very bad idea:
+In one of your comments you mentioned data goes stale after 2 minutes.

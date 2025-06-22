@@ -1,0 +1,10 @@
+You can use http://www.spambotsecurity.com/zbblock.php and http://sourceforge.net/projects/iosec/ These php scripts helped a lot for same problem on our forums.
+If it is a SYN flood, you could mitigate that with firewall rules that limit the number of connections a host can open.  This is easy to do using iptables with the connlimit module.
+You can find more information about WAFs in general in the excellent OWASP page: https://www.owasp.org/index.php/Web_Application_Firewall
+The answers above are for network level attacks mostly, I am assuming that you are talking application security. A nice drop-in solution is the following:
+You could consider using cloudflare or something like it, or your own reverse proxy, to take the load of processing obviously invalid requests off of your actual service.
+Use a WAF (Web Application Firewall). There are quite a few closed source/turnkey solution but  depending on your web server you can use:
+If the DoS is the result of an exploit in vBulletin, you should address that with the application vendor and patch.
+Depending on the "signature" of the attack, you can use fail2ban to help you out as well. For example if they keep trying to login, vbulletin's 5 login attemps protection is not enough as the server will still serve content. By using fail2ban you may configure it so if someone is calling the login script more than e.g. 5 times in within 5', it will add a -j DROP iptable rule for that IP.
+Lastly, it is wise to htaccess your admincp directory and always check if there are plugins/products intalled that don't "add up".
+Filtering normal traffic from hacks is difficult.  How to do it depends on why the traffic is consuming excessive load on your service.

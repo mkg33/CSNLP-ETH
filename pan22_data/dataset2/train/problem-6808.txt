@@ -1,0 +1,7 @@
+Since Nginx Version 1.9.0,NGINX support ngx_stream_core_module module, it should be enabled with the --with-stream. When stream module is enable they are possible to ssh protocol tcp proxy
+Maybe you can use nginScript to implement your own multiplexer? See here for an introduction: https://www.nginx.com/blog/introduction-nginscript/
+I know that nginx already supports raw TCP streams handling. So I was wondering if I could use that on port 443 too directly in nginx. The idea being that nginx could choose to use the http module if it recognizes HTTP(S) or stream for everything else.
+This morning, I figured out that the free wifi in a well-know cafe chain was blocking SSH (actually, they are blocking anything that's not on 80/443). But when I need SSH, I need it, so I looked for ways to share SSH and HTTPS on the same port.
+All of these seem pretty straight-forward but I don't really like the fact of adding layers and complexity and possibly slowing things down just in the unlikely event that I need to SSH on 443.
+Since nginx version 1.15.2 added new variable $ssl_preread_protocol. And in official blog added post about how to use this variable for multiplexing HTTPS and SSH on the same port 
+You could setup an iptables rule to forward connections from your well known cafe on port 443 to port 22. Alternatively bounce the traffic off a port relay elsewhere on the internet, changing the pirt number.

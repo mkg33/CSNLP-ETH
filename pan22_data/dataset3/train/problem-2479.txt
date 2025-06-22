@@ -1,0 +1,10 @@
+Among other very nice things like input prediction as well as surviving disconnects and even a changing IP on the client side, it also specifically improves the reaction time when using Ctrl-C (by only updating the terminal contents periodically instead of sending the whole stream).
+I tried setting the c0-change-interval and c0-change-trigger options as described above but they are no longer available.
+Here is the git change with the new attempted solution: https://github.com/tmux/tmux/commit/3f4ee98162cd5bb7000f93fec0e631e123b1281d
+Reverting to tmux 1.8 fixed the problem for me without having to set any options.
+Since tmux is inserting itself between the cat process and your terminal, it needs to read the output from cat, write it to the terminal , and at the same time read your input from the terminal (the ^C) and send it to the shell to interrupt the command.
+You can always issue kill-pane command from within the session.
+I'm not sure exactly what causes the delay, but it's something about how tmux buffers I/O between you and the shell that runs in tmux.
+If the terminal text looks like garbage renaming the window and/or issuing reset should fix it.
+Assuming you are using ssh over a low-latency connection, have you tried using mosh?
+You can use tmux within mosh without any problems.

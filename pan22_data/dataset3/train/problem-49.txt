@@ -1,0 +1,12 @@
+I want to load all assets from cache without communicating with the server if possible.
+What would be the required change in my nginx configuration?
+Remember, you can never control what requests any user agent will make you can only give it instructions and hope it listens.
+First thing, a 304 HTTP Status does not contain a message-body, rather it should not as described in specifications, there are some specific conditions based on cache validators also, check W3C documentation for more details.
+Like Martin pointed out, you give a "directive" and leave it to that, but the browser will check whether to use the cached copy or not.
+And lastly, if you trying to view the effect of all of this on page by a refresh, you might still get 304 responses due to requests initiated by browsers, which is something you cannot really control AFAIK.
+What you're looking for is expires max; This sets a far-future header which most browsers will take to mean don't even bother asking if the resource was modified.
+However when I use Google Chrome Developer Tools to observe network traffic, some of the assets are loaded from cache (200-from cache) while most of the assets are making a request to the server (304 Not Modified).
+Additionally, you can add a age and max-age headers keeping max-age higher than age to sometimes avoid even a 304.
+You should refer to HTTP specifications IMHO; and fully understand the mechanism behind caching and the meaning of 304, it doesn't transfer same data like a 200 response does.
+About enabling a caching setup on Nginx this is how I had setup caching
+I am running nginx, and have the following block for expiration:

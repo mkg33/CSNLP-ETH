@@ -1,0 +1,9 @@
+means log every facility at every level to /var/log/syslog, with authpriv being the only exception. Obviously this includes mail.
+You have to tell rsyslog to stop process the message after writing into the appropriate file. This can be done with & ~.
+but s/he said, "to see whether I could stop any postfix messages going into /var/log/syslog, but they continue to go there."
+You are also telling syslog to not sync the file immediately; this means that if you're not getting many email log lines, they may simply not get written immediately to the maillog files. The syslog file, however, will contain so many messages that it's likely to be written earlier.
+What does that line do? It looks to me like it should ADD mail messages to /var/log/syslog, yet we are trying to do the opposite here. Ah ha, does it expand to mail.none perhaps?  But then why did the OP's attempt at the following solution not work for him/her? That was:
+The only thing I can think of that might have caused your mail log files to be empty would be having the - in front of the file path which I think has to do with not writing the log immediately.
+Basically anything that's .debug level and above goes to mail.log, except for anything that's .err level and above which goes to the mail.err file.
+Also, you need to restart the log service after you've made changes to the file. Usually this is done by simply sending a HUP to the PID of the syslogd process. When you've done that, check /var/log/syslog for any messages about lines in syslogd.conf that couldn't be parsed.
+Above, TraceElements said the following was part of the solution, but the first line seems counter-intuitive to me, namely:

@@ -1,0 +1,10 @@
+I don't think that you should go with static class members (you didn't mention language but I assume some kind of OOP) because that just hides "singleton" in a different place.
+Switch things around so your Game holds a bunch (map, set, list, array, whatever) of these across-room global puzzles.  Make it so your rooms can ask the game about a puzzle it's interested in using some kind of identifier.
+So instead of the linear setup of EXE->singletonpuzzles->Game->Map->Rooms you end up with a broader game layer EXE->Game->[bunchofpuzzles+Map]->Rooms
+Pro: you can have multiple instances of the same puzzle class with different parameters
+Con: a little extra writing to create each puzzle and way to look them up by identifier
+You'll notice that this "bunch of puzzles" could very well be a singleton at global scope instead of buried inside of Game but, like you noted, there are common reasons why this wouldn't be an ideal design.
+I think you should keep things simple in this case. The three switch system is a challenge with a solution and this Puzzle has two states, currently solved correctly and currently unsolved (or solved and then reverted to unsolved for some reason [timer?]). So you have a Boolean value and you need to store it somewhere in your game so the door could get it and behave accordingly.
+One generic solution would be to make the Door an observer of the Puzzle. So the Door listens to the Puzzle and knows when to open up or close. This could be problematic however since that Door does not exist at all during the puzzle phase. This means the state of the Puzzle resolution needs to be stored somewhere and passed back to the Door somehow.
+This is why I would suggest a "delayed Event" system where you store a Hash aka Associative array and send a "message" through that Hash, for instance:
+I know this is similar to the obvious solution but if you design it in a way that is legible and maintainable it should work for you and save you the trouble of overthinking this. You simply need the state stored somwhere and retrieved from that place later.

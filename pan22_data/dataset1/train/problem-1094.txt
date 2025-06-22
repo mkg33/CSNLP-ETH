@@ -1,0 +1,9 @@
+We have migrated our SQL server 2012  infrastructure from on-premise to Azure cloud recently where in all the production VM's are build with pre-images of SQL 2012 enterprise edition.
+So,here is the question and issue that we are currently facing : 
+We want to upgrade SQL server from 2012 to 2016 and wanted to know if there is a way to perform in-place upgrade with pre-images installed without having to  actually migrate ? .
+What we heard from our infrastructure team is that we can't do an in-place 
+up-gradation if it comes as a pre-image and will need to spin of another VM and perform migration which would incur cost again.
+Any suggestions or workarounds without having to put migration efforts are much appreciated and thank you for all the help that you render to folks like me and to SQL community.
+Once the VMs are deployed, you can do anything you want to them. Apply service packs, cumulative updates, or go full blown in place upgrade. You are responsible for anything that happens inside of the VM once you deploy it.  However, if you have to redeploy the VM, you may be reverted back to the previous version of SQL as it is built off of that image. 
+Additionally, it is a best practice to migrate to the new version of SQL vs doing in an in place upgrade. It is less risky to migrate and provides you more ways to roll back in the event of a problem than to do in place. You also can test your application on the new version before you upgrade so you know how your application will behave on the new version. 
+I can say with certainty, you will run into behavior differences as the query engine and cardinality estimator of SQL Server 2016 was completely rewritten to be much more efficient. In most cases, your existing queries will run faster, but in some cases, your queries will run slower. You will want to know that ahead of time so you can mitigate those issues before the users experience them and are soured on the platform. 

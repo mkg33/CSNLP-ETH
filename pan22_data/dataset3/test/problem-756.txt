@@ -1,0 +1,27 @@
+Setting up a flow based on seeing a SYN packet or two is easy.
+Either of these types of firewalls can be implemented in an SDN fashion.
+The difference is typically in how you deploy them and manage them.
+The classic approach typically involves a physical machine whereas the SDN approach likely uses a virtual firewall spun up in a VM.
+All the above are reasonable replies, but if your deploying these in a carrier class network there is also the considerable issue of where you need to deploy them.
+NGFWs perform deeper inspection compared to stateful firewalls.
+A traditional firewall observes the FIN handshake (2x FIN, 2x ACK) as it happens and closes the firewall on seeing the last ACK packet.
+Removing a rule so your firewall is in synch with the two end hosts, not so easy using the SDN architecture.
+Therefore anything that monitors the state of a flow requires that state to be held by the controller.
+Of course YMMV depending on what you want your SDN packet-filter to do.
+Is there a major difference between stateful firewalls that exist in the traditional networks and those that exist in SDN environment?
+An attacker can then use the switches renewal of a time-out to keep the firewall open until the attacker is finished.
+In an enterprise environment then firewalls can often be virtualised/scaled at the boundary of the SDN network or before the access layer.
+One approach is to have an NFV micro instance ready to spin up at every node, but then they can rarely be stateful if the packet flow is dynamic.
+If you think about virtual machines, and a feature such as VMWare's VMotion in an SDN solution, not only would the virtual machine move but the virtual firewall on the vNIC would follow it (as you move it).
+The difference with SDN is that the firewall processing is done at the virtual NIC, whereas in traditional networking the firewall processing is done at the physical NIC(s) of the firewall(s).
+In terms of functionality they would be roughly equal.
+For the controller to close the hole, means the controller needs to see the FIN packets (increasing rules in the rule space, possibly buffering in the switch) and the two responding ACKs, but obviously without seeing every ACK in the flow and equally obviously allowing the flow to finish correctly.
+In other word, do we have some special firewall devices that only work in SDN-based network?
+This causes unacceptable workload for the controller and increases state held across (typically) multiple controllers.
+Another approach is to funnel all the traffic through a small number of points near the customer gateways to maintain state but at the cost of scaling.
+In traditional networking, there are stateful firewalls and next-generation firewalls.
+It also manages the firewall in a completely programmatic way.
+The architecture of SDN prevents stateful in-line processing of packet flows (ignoring using firewall hardware, NFV or experimental stateful switches).
+There are some technologies that relate to SDNish data centers, like VXLAN or NSH (Network Services Header) that you might find support for in a firewall focused on SDN while it might not be there, yet, in a classic firewall.
+Rather that deal with this state, an OpenFlow switch uses a time-out, meaning the firewall hole is left open.
+Consequently most SDN FW proposals are either static or dynamic packet-filters, for example using a rule checking algorithm before installing FW switch rules.

@@ -1,0 +1,16 @@
+This is necessary to identify files and folders which won't successfully archive to optical media, which continue to enforce 260-character path limits though NTFS now supports path lengths of up to 32,767 characters.
+I have been using a batch script which works by echoing each full path to a file, measuring the size of the file, and subtracting 2 to get the character count in the path.
+It necessarily involves ugly hacks like writing to a file.
+There is no built-in command for determining the length of a string in a batch file.
+findstr could do that, but unfortunetly the regex is very limited and it supports
+You could filter the DIR output by a program using regex.
+If both variables do not match, the path is assumed to be too long and printed.
+The following script grabs a 260 character substring and tests equality.
+Ideally, I would like something that works almost as fast as the 'dir' command itself.
+To check the length of an environment variable, you can do something similar to this:
+However, I am not sure if this also work under NT.
+However, it is relatively easy to check whether a string exceeds a fixed length such as the 260 character limit.
+Expression %a:~0,-12% returns all but the last 12 characters of variable a.
+This works well for low file counts, but takes a long time to finish for high file counts.
+If you don't mind using third party programs you could use grep instead.
+I would like to know if anyone has devised an efficient way in NT batch of computing path lengths in a given folder.

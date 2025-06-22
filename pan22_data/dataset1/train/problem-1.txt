@@ -1,0 +1,10 @@
+I use squid on RHEL6 and I want that authentication is via AD windows 2008, I already joined the server to the windows domain and all users is already seen by wbinfo -u wbinfo -g but wbmin -t show error below : 
+checking the trust secret for domain TELMA via RPC calls failed
+I followed this tuto https://www.dalemacartney.com/2012/0...nd-simple-way/ and all is fine and normally all user on domain doesn't require authentication but when I configured the browser to point to the proxy it's always requiring authentication and showing error below on /var/log/squid/cache.log : 
+2014/07/31 15:47:07| squid_kerb_auth: ERROR: gss_acquire_cred() failed: Unspecified GSS failure. Minor code may provide more information. Unknown error
+2014/07/31 15:47:07| squid_kerb_auth: INFO: User not authenticated
+2014/07/31 15:47:07| authenticateNegotiateHandleReply: Error validating user via Negotiate. Error returned 'BH gss_acquire_cred() failed: Unspecified GSS failure. Minor code may provide more information. Unknown error'
+kinit: Cannot determine realm for host (principal host/rhel6test@)
+auth_param negotiate program /usr/lib64/squid/squid_kerb_auth 
+Make sure reverse DNS lookup is properly configured for your domain as explained here. 
+If you run dig -x [domain_controler_ip] and you don't see your domain name in the "ANSWER SECTION" you will get Unspecified GSS failure.  

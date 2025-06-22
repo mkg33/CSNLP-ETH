@@ -1,0 +1,7 @@
+The server appears to be doing throttling which might affect you if you are testing from one IP:
+Often issues like this are related to poor DNS.  Exim does a lot of resolution during processing mail.  Check the DNS config on the Exim server.  Check the performance on the DNS server it is using.
+Is the server doing any DNSBL processing?  I'm often asked to look at servers exhibiting poor performance and it turns out they are using DNSBLs that have been retired, meaning lookups are timing out.
+Try running exim in debug on the server to see where the problem is.  The following will run an Exim daemon on port 26, staying attached to the console and printing lots of debug:
+Then telnet to tcp/26 instead of tcp/25 and test as you had been.
+Exim may be configured to do an ident lookup on incoming email. For a long time this defaulted to a 30 second timeout - I'm not sure if this is still the case. Delaying mail slightly helps a lot with spammers I've found (naive spammers will push the mail anyway, which then lets you trigger on protocol violation errors), so it's worth doing still IMO.
+rfc1413_hosts defaults to *, so if you want to disable it, try

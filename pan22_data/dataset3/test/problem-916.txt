@@ -1,0 +1,20 @@
+You will probably be represented with the DNS Root of your Registration or Provider.
+Use NSLOOKUP to query check whether one or more DNS servers for your domain resolve wrong.
+If the IP address tried to be contacted is correct everywhere, this can be ruled out.
+It may just be a routing flap, where you home AS or destination AS is dropping routes.
+I would suggest setting up a second service (monitis) to validate the results.
+If you have a nested setup of DNS Servers you might also need to repeat the last step until you get to the autorative name server for your domain.
+Apache is HTTP, not IP - basiaclly this is an error from the routing side, the request never reaches your server.
+Once the requesting computer has the IP for the name, DNS is out of the question.
+Set one of the nameservers you just received as server:
+If it is DNS related most probably one of the Nameservers on the recursive way to your domain delivers wrong data.
+Plus finding out which IP addresses are tried to be reached.
+Use the settings querytype=NS to query only NS entries, norecurse to disable recursive querying (we will do this by hand later) and set the Nameserver to a.root-servers.net
+If it is consistent AND CORRECT this is not a DNS issue at all.
+It sounds like some issue with routing or with DNS.
+Try mtr  and see where your packets cease to be routed correctly.
+With the above method you should be able to iterate through the possible nameserver paths and check whether or not they are delivering correct data.
+The fact that you aren't experiencing a 100% loss of resolution is a hint.
+Unless some of their DNS responses are answered with the wrong IP... this is not a DNS related error message.
+Maybe there is an issue at pingdom that makes them use the wrong IP sometimes.
+You will receive a list of Nameservers responsible for the TLD of your domain

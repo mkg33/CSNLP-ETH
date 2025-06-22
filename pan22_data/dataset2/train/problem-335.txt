@@ -1,0 +1,7 @@
+At layer 2 you have a flat network with all devices on the same switch.  At layer 3 you have two subnets, one with a default gateway of one router, and the other with a default gateway of the other router.
+In order for these two subnets to communicate they need a router between them.  You have three immediate options:
+2) Add a router to the network with an interface and IP address in each subnet.  As your layer 2 vlan is flat, you could do this with a single connection with two IP addresses on the link.  You'll need to add a routing entry to the existing routers to route to the new router for the "other" subnet.
+1) Change the switch to a layer 3 switch, and put each subnet into its own VLAN, then give the switch vlan virtual interface an IP in each subnet, and it will route between them.  You'll need policy based routing to ensure that each subnet routes out of the right internet connection.
+Ultimately, the network design is flawed.  Your layer 2 and layer 3 networks should be subnetted the same, so option 1 is ideal.
+You need the existing routers (default gateways for each subnet) to know about the local route to the other subnet (via this router C). Either by static configuration at each router or by allowing routing protocols so that C can advise the others of the route to the other subnet.
+3) Give each of the existing routers an IP address in the other subnet.  Each router will then route between the two subnets.

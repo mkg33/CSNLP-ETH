@@ -1,0 +1,23 @@
+In my cause, I mistakenly had SSLCertificateFile instead of SSLCertificateChainFile for my cert bundle.
+3) Generate the CSR with your password-less private key:
+Bad SSL Key: -rw-r----- 1 root 754974732 1.7K May 31  1987 /var/cpanel/ssl/installed/keys/c129e_4ed23_b7c0d7f821952179fc8006506ab06b72.key
+replace /etc/httpd/certs/server.key with the full path to your server's private key and if it's all good you'll see:
+Hope it helps someone and btw, my server was CentOS 7.6 with Apache/2.4.6
+And finally edit the Apache2 config (could be default-ssl.conf):
+You put your certificate signing request (CSR) file here by mistake.
+I know this post is old, but I figured I should add more to it since this is the first link on a google search about the error - "Init: Private key not found"
+You will get back either a *.crt file or a *.pem file.
+I've seen this happen before and it turned out to be a bad private key.
+I was spinning my wheels on this one for a bit but make sure you have a complete private key file.
+Install it as your cert and the passwordless key file as your key (the locations are valid for Ubuntu 14.04, they might be somewhere else on other systems, check the Apache2 docs):
+Turned out I had a couple of lines missing from mine.
+Once I removed it from the ssl directory and the httpd.conf, Apache restarted without an issue.
+I know someone has already answered this question, but I wanted to let others know what happened to me when I got this error.
+I used strace to track down the last private key apache tried to load.
+You should put there the private key file you used to generate the CSR instead.
+For the benefit of generations to come, here is a short summary of how to generate CSR-s with OpenSSL (a good tutorial is available from the Ubuntu documentation):
+Once you're done, you send the mydomain.org.csr file to your certificate authority.
+tl;dr: Find the bad private key that Apache is trying to load and backup it up and remove it from Apache's configuration file.
+This error kept appearing and was throwing me for a loop.
+That private key file should not be password-protected, otherwise you would need to type a password every time you (re-)start Apache.
+2) Making a password-less private key, enter the password you used above when prompted:

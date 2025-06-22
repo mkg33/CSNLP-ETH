@@ -1,0 +1,8 @@
+Since we are "user", and "user" is not the owner or the group, we are the other. Read permission is get for other, and thus, we can read this file.
+...this is typically incorrect. As another poster noted, since I have write access, I can overwrite firefox with anything I want - potentially even another program! Typically, things in /usr/bin are rwxr-xr-x, so that only root can read/write them. (There are a few exceptions.)
+The UID (what you are calling "process owner") is what counts when opening files - since you say Firefox is running as "user", that's the user we use when determining if the Firefox process has access to something.
+Anyone including root is able to open an html file having the unusual permissions "---rwxrwx root root"
+It should be able to read the file. You are probably neither root user nor root group, so your permissions are the "other" set, which is the last 3 characters. You have an 'r', so you can read.
+I believe that, if firefox the file is owned by root, but firefox the process is owned by "user", and your permissions are none for the owner, then firefox will work fine when running as root, since access restrictions don't count, but firefox won't be able to do much of anything running as "user". 
+More to the point: "everyone" will be able to do whatever they want to the file or the process, but the owner (if he's not root) won't be able to do anything at all.
+It is also important to mention the permissions on the directory in which the file resides. In order to be able to access the directory, the user should have an execute permission on it.

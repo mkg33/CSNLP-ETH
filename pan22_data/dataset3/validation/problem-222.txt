@@ -1,0 +1,19 @@
+You also mention hexacore, but the 950 part is a quad core.
+It might be interesting to plot the cpu load per number of virtualboxes and see if there is a sudden performance drop.
+As I have never heard of a 12x board for i7, I am assuming you mean you have 2 i7-970(which are hecacore) for a total of 12 cores and 12gb ram.
+If you do actually have what you describe (12 x i7-950) that is 48 real cores, in which case, the issues is ram ad i/o.
+You are running the OS + 10 VMs and each VM is allocated  4 cores.
+I ran once in problems during heavy parallelization on a VirtualBox vm, which actually used more threads than could be served by the host and configured vm.
+This could very well be caused by memory io as well, which has the same problems as disk io, albeit on a faster speed: The software might not all fit in the cache anymore, so it has to get its stuff from memory, which is shared by 12 other cpus.
+I don't have any specific virtualbox experience, but I do know vmWare and hardware.
+VM Attributes: http://mitchellh.github.com/virtualbox/VirtualBox/VM.html
+You don't mention what the underlying disk is like on these servers, but these type of performance issues are nearly always IO-related.
+What are the IO stats looking like when you're running multiple builds versus just one?
+However you didn't mention what checks you already performed for this.
+Reducing the count of virtual cpus helped me that time.
+That’s 40 virtual cores plus another 1, at least, for the OS on a box that has 12 physical cores (24 with hyperthreading).
+Additionally, you'd get much better performance out of your hardware by using something like Xen or VMware ESXi as opposed to VirtualBox.
+config.vm.customize: http://vagrantup.com/docs/vagrantfile.html
+did you ever try to modify the following vm.attributes?
+I would expect 2 VMs to work well on this configuration, and then to see serious degradation beyond that.
+Maybe with two or three you do get a linear performance increase, but as soon as you hit ten it drops.

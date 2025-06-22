@@ -1,0 +1,9 @@
+This tells SSH that it will pass authentication information from the current session to the next server. Therefore the user's private key is kept to himself, and he uses it to connect to the first server.
+On the other hand, keys are not specific to users. You just need to add a public key to whichever users '~/.ssh/authorized_keys' they intend to ssh in as. You can add the same key to root, ec2-user, 'joe', etc..
+Currently we have individual accounts in each servers (around 150-200 of them) and thankfully we keep the uid/gid/username same across most of these servers.It becomes difficult to add/remove users in each host when someone joins or leaves the firm. Generally, there is a software account for each team and members of the team ssh to the servers as a software account by entering the accounts password.
+Do you have a copy of all your user's public keys? It should be relatively trivial to write a script that runs ssh-copy-id for each user's credentials.
+For a more complete guide, look at https://developer.github.com/v3/guides/using-ssh-agent-forwarding/.
+I am working on standardizing different bits in our environment and as part of that would like to move towards ssh key based authentication.
+To ease our administration, I will be introducing puppet in the environment and want to use ssh_authorized_key puppet resource to update the software accounts authorized key file with the public key of the users. 
+Any pointers on how can I have that maintained? Please let me know if something isn't clear. Thanks in advance.
+So, how do I make sure this public key is same across all the servers for a particular user? For example, if the user 'Ram' tries to ssh to server 'hostA' from any server, the same public-private key pair should be used.

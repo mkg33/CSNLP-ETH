@@ -1,0 +1,15 @@
+Essentially, when the request is handed off to CF, the CF engine needs to have access to the .cfm files that are being executed which is why you need to have a copy of them available to the instance that's executing them.
+Is there any way to utilize an external CF server with the .cfm files residing on the web server?
+You might also try asking on the cf-talk mailing list at houseoffusion.com as there are some CF server wizards there that may not be looking here on serverfault.
+In testing, I found that I had to copy the .cfm files from my web server to the instance directories of the external server.
+2) use some sort of filesync service to synchronize the files across the servers
+I am not aware of a way to do this, though my experience with having CF on a different server than the web server is somewhat limited.
+I have an IIS server running a stand-alone install of ColdFusion9 with many customer sites.
+The nice thing about 1) is you could mount the filesystem as read-only as a security measure.... your CF server rarely if ever needs to have write privileges to your application files.
+That program can't run unless its DLLs are installed on the box it's running on.
+Likewise with CF, the engine/instance needs to have copies of the .cfm files in order to execute them.
+It would be like trying to execute a program over remote desktop except that DLLs needed by the program weren't installed on that remote system but on your own box.
+I believe the Web server connector just hands the CF service the filesystem path for the file to be executed along with the various Web server environment variables.
+1) keep all your CF files on a SAN volume or network share, and mount that volume on your CF servers, or
+This is going to be impossible to implement on my production sites.
+For high availability, I am trying to connect my web server to an external clustered multi-instance ColdFusion server.

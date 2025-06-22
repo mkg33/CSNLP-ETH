@@ -1,0 +1,8 @@
+ Applications often come with example configuration files.  Placing one of these in the configuration directory and editing may be a better approach.  This requires that you learn and understand the configuration options.  You may be able to use the online configuration script to assist your edits. 
+I have PHP running as a DSO. As such, my installer script (which writes to a config file) can't do any writing.
+You can write your config files under a temporary directory such as /tmp/config/. Then, you can execute a shell script to copy the config files from /tmp/config/ to the desired location.
+Change the permissions on the configuration file so that Apache can no longer write to it (chmod o-w configfile). 
+I would only do this on a development server in a secured environment.  Many PHP applications will generate the file to the screen so that it can be copied safely to the configuration directory.  
+To grant the needed permissions, you can add the user nobody to the sudoers file. The entry should look like:
+Or, better, if you can move to Mod_SuPHP and you don't have performance issues (as DSO is much faster), you will be able to run PHP as the user running cPanel.
+The quick (and insecure) way to do this is to execute chmod 777 . from the directory where the file should go.  Before doing this run ls -ld . to get the permissions you will be setting them back to.  In some cases the required directory will not exist, so you will need to create it first.  Immediately after the configuration file has been written, reset the directory to its original permissions.  The correct command is likely chmod 755 . or chmod 750 . run from the directory.  Verify with the ls command.

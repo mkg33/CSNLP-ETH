@@ -1,0 +1,18 @@
+Just to add a little to the consensus that is EBS faster...
+I've run MySQL instances on EBS volumes and have been pleased with their performance.
+Amazon has made vague claims that EBS will generally outperform the "local" scratch partition on an EC2 instance.
+The general vibe from my own research (have been reading about this for a few weeks) is that EBS is the faster option.
+I don't have any hard data on it either, but it performed just fine.
+It includes a table titled Comparison of EC2 data storage options (p. 41); here's a snippet of that table (in the book there are several other characteristics compared):
+For random (small) reads, we found "local" (EC2 instance) storage and EBS to have similar performance, but local storage has a better latency tail.
+An important point to understand here is that instance storage speed is unpredictable - Amazon makes no guarantees about it.
+By shifting I/O from EBS to the local disk, you'll reduce your AWS fees.
+We ran up roughly $1000 in AWS charges in a systematic exploration of this and related questions, and posted an extensive analysis.
+If you're after database performance in Amazon, you may find this article useful:
+If you're curious about performance in a particular use, your best bet is probably to set up a test instance.
+We didn't directly compare local vs. EBS on other instance types, but we did find that increasing instance size has much more effect on local-store performance than on EBS performance.
+This information comes from the book Cloud Application Architectures by George Reese (which seems pretty good from what I've skimmed it so far.)
+So, instance storage might outperform EBS in read access sometimes, but if you want constant high speed, you indeed need to go with EBS.
+For sequential (bulk) reads, EBS is faster on m1.small, but local is faster on m1.large.
+I know that I've experienced higher throughput on an EBS volume in my own use, but I had not bothered to measure latency.
+http://www.mysqlperformanceblog.com/2009/08/06/ec2ebs-single-and-raid-volumes-io-bencmark/

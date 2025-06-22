@@ -1,0 +1,17 @@
+Now, our penultimate action is committing the transaction.
+Process Monitor shows two writes to the transaction log file.
+My conclusion, from the evidence from Process Monitor is that SQL Server allocates in-memory, adds the record in memory, and commits the page to disk all without checking anything at the storage level.
+This seems wrong, since I could place my storage on the moon, which would cause some serious latency.
+If you disagree with my "proof", then please most definitely respond with a better one!
+We will now create an explicit transaction that will insert one and only one record into our table;but, before we do that, let us open Process Monitor and filter for our MDF and LDF file as well as the PID for the SQL Server process.
+I bet her that SQL Server, when allocating a new extent, always allocates from the buffer pool and never checks to see whether there is some place on disk where the allocation could be stored.
+Before we begin, let me divulge the version of SQL Server that I am using.
+I feel that she really wants SQL Server always to bring in a page from disk firstly and then perform the DML task(s).
+The database's recovery model will be set to SIMPLE and AUTO_CREATE_STATISTICS will be shut off, in order to minimize log record bloat.
+I expect a 512B log block flush to occur at this point.
+Essentially, she contests that SQL Server should check for available space on the LUN before allocating a page.
+I omit the bit map and PFS allocations and we can see that a page is allocated and one row is inserted as one would anticipate.
+So far, nothing has been committed to the data file only to the log file.
+This is expected, since we are in the SIMPLE recovery model.
+I suspect zero, since we have only created a "logical table", in our case an empty heap.
+Let us finish the "proof" with a checkpoint operation.

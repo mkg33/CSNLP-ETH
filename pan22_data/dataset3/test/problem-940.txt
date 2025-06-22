@@ -1,0 +1,12 @@
+The way I am planning to set this up, a client application will connect to EB via socket.io at which point the server instance it connected to will subscribe to that user's SNS topic.
+I believe it is important that the specific instance is subscribed rather than the web tier's external CNAME or ip, as the client application is connected to a specific instance and so only that instance can send messages over it's socket.
+Then when an interesting object changes, notifications will be posted to the associated user's topics, thus notifying the server instance that the client application has an open connection to, which can then send a message down the socket.
+Ok, so I have an elastic beanstalk application with a scalable web tier, served behind an ELB.
+I believe the question at the top is all I need, but I'm open to creative solutions if my reasoning seems flawed?
+My datamodel is made up of lots of objects many of which can have an attached set of users which may want to be able to observe those objects.
+This web tier in my application is responsible for handling the socket interface (using socket.io) for client applications.
+Subscribing the load balancer would be no good as the notification may be delivered to an instance that the user is not connected to.
+Is it safe for me to use a standard method to get the instance ip address (as detailed in python here How can I get the IP address of eth0 in Python?)
+Long story short, I need to be able to subscribe a specific instance within my web tier to an SNS topic.
+When a user is created in the system, so too is an SNS topic for the user, allowing notifications to be pushed to that user when an object it is interested in changes.
+and then simply subscribe to an SNS topic using that ip as an http subscriber?

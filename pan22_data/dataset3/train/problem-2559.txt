@@ -1,0 +1,11 @@
+So MATCH looks for your value (eg A1) in some other range (which can be 1 or more than 1 row or column, ie any size or shape you like) eg C1:E25, checks for an exact match (0).
+Alternative would be to simply use COUNTIF to count how many times an item occurs in the other range, and check if that is > 0
+I'm looking for a way to write a worksheet function (not VBA) that will allow me to tell, for each cell, if the value of the cell is contained in a column of strings in a second worksheet.
+Don't forget to put your $ in your formulas before you copy these from cell to cell, I have left them out of the examples for readability.
+VLOOKUP will work but I would always suggest using MATCH instead, it just seems cleaner to me, and works on ranges of more than one column.
+Again, this supports ranges of more then one row and column if you need it to.
+This returns a value if it is found, or #N/A if not, so ISNA picks up the ones not found, and NOT reverses that so that a result of "True" means "is in the range" and "False" means "is not found"
+For example, if on sheet1, in column A you have your strings - and you need to check which of these are present in column A on sheet2, then you would put in column B on sheet1 the following: =vlookup(A1,sheet2!A:A,1,false) - the result of this would either be the same string (if it's present) or #N/A if it's not - you can further use iserror function to check for this.
+Combining the two, you can write: =if(iserror(vlookup(A1,sheet2!A:A,1, false), false, true)) in cell B1 of sheet1 - it will show "true" or "false" depending on whether A1 is present in sheet2 column.
+Returns True if A1 is found in the range, False if not (don't be tempted to stick an IF round this where it is not needed, this is already a conditional formula).
+=NOT(ISNA(MATCH(LookupCell,ComparisonLookupRange,0)))

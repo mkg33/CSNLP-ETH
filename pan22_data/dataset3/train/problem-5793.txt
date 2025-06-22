@@ -1,0 +1,19 @@
+I do not know of a third party that solves this problem currently, and as a result I usually have a customer confirm their IP address.
+I know this is an old post, but did anyone try unchecking "Register this connection's address in DNS" under advanced TCP/IP options of the network adapter created by the VPN client?
+The best option may be to provide static IP addresses via dhcp to your SYSTEMX so that it always comes back on the same address.
+This is a common problem with remote access solutions.
+This can also happen in any environment where dynamic DNS updates are permitted, BTW.
+Pass through DHCP is supposed to take care of this problem, but it is often not used due to being less reliable than using the built in DHCP of a VPN product.
+So when you nslookup based on IP, you're getting one of the PTR records, which may not correspond to the correct computer name.
+As has been mentioned, if the DNS server is set to scavenge, eventually the old PTR records will clean up, though this takes time.
+Do test it however as some VPN setups aren't smart when requested DHCP leases.
+It should stop the other machines from using this IP too.
+The DNS entries will get cleaned up but it can take time for these changes to replicate depending on how complicated your topology.
+For instance, it could a few weeks in a default Windows Server 2003 DNS configuration (once scavenging is turned on).
+What's happening is the VPN solution is registered a new PTR record every time a new connection is granted.
+Many of these built in products do not tell appropriate DNS entries to be removed when a client disconnects.
+In cases where it didn't, we would ping the IP, verify it, then do an nbtstat -a IP address to see what Windows system was truly responding on that IP.
+To help with this some people have added ipconfig /registerdns to the end of their logon scripts that execute upon successful VPN connection, however this still does not remove an old bad entry.
+So when you query based on IP, there are multiple PTR records because, as has been pointed out, the old ones haven't been cleaned up.
+And like what has already been mentioned, we found that by doing DHCP reservations was the way to go in those cases where it truly mattered to us.
+In this scenario it would make sense to set up a reservation to ensure that your IP address for SYSTEMX is reserved for that machine only.

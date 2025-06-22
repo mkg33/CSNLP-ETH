@@ -1,0 +1,21 @@
+For example, this one imports GL11, GL15, GL20, and GL30 and uses functions from all of them.
+I've found C++ code samples that do this, but I'm not too familiar with C++, so it's difficult for me to translate.
+LWJGL prefaces all core functions and enumerators with the OpenGL version that those functions were introduced in.
+Of course, OpenGL core extensions kinda confound this notion.
+It's not really importing "a bunch of different OpenGL versions"; it's just using the version those functions/enumerators was introduced in as a "namespace" scope.
+Generally everything that uses fixed pipeline or the matrix stack.
+Nothing fishy here; I just an older function to do a newer thing, like the OpenGL docs tell me to.
+So, I'm trying to figure out LWJGL, and my goal is to use OpenGL 3.2 (because pretty shaders are pretty).
+But in every tutorial I can find for LWJGL, they import a bunch of different OpenGL versions and use them at the same time.
+That way, if you're writing to a specific OpenGL version, it's easier to prevent yourself from using functions that aren't available in that version.
+Later on I need to call glDrawBuffers which comes from GL20.
+Also, if possible, does anyone have an example of LWJGL written only using GL32?
+It's probably impossible to write a working application using only the GL32, or any one namespace for that matter (maybe apart from GL11).
+Is there a potential for errors and odd behavior to occur?
+So glBindBuffer, a function introduced in OpenGL version 1.5, is called GL15.glBindBuffer.
+As Nicol Bolas said, the version number corresponds directly to the version number were a symbol, function or constant was introduced.
+I'm using glFramebufferTexture2D which came with OpenGL30, but I need the constant GL11.GL_TEXTURE_2D.
+What you should worry about are deprecated functions, like these: glBegin, glEnd,    glVertex*, glNormal*, glTextCoord*, glTranslate*, glRotate*, glScale*, glLoadIdenity, glModelViewMatrix... etc.
+This seems intuitively like it would be messy and generally a bad idea.
+Besides the normal disadvantages of using deprecated functions, is there any particular reason not to do this?
+If you are worried if you are using deprecated functionality, you can force LWJGL to create a strictly core profile rendering context with an appropriate openGL version by passing an appropriate ContextAttribs to Display.create.

@@ -1,0 +1,28 @@
+All of the DB servers have virtual interfaces (eth0:1, eth0:2, eth0:3) which are not ifup'ed on boot.
+(wikipedia STONITH) The other ifs are for taking over the IPs of masters that may need to be failed over.
+If they aren't exactly in sync (depends how much data is being transferred, how busy the servers are, how good the network connection is, etc), then you might have to do more work than that.
+If one of the slaves needs to take over, you just ifup eth0:2 and it's the master.
+In this scenario, eth0 is the 'if' that we use to shell in and such.
+The replication broke almost every day until we did abandon this project.
+A) Do IP take over (if your servers are geographically separated this is not likely)
+I would not recommend to cross the oceans when using a MySQL replication.
+Of course it can work, but it tends to get more fragil the bigger the distance between the master and the slave are.
+Replication will automatically restart if possible.
+This will greatly affect how you replicate over a WAN.
+I would suggest that you ensure that you are replicating over SSL (i.e.
+The replication section of the MySQL documentation covers this in more detail.
+If the databases are exact mirrors, then you should never need to manually restart replication.
+If we need to change masterdb.internal to be some other server, in 5 seconds the change propigates.
+The initial thing I have in mind is Rails on MySQL.
+I tried once to replicate from a master in europe while the slave was in texas.
+You now have the option to do Row Based Replication or Mixed Based Replication.
+The apps connect on eth0:1 which will not be activated on boot if my script detects that the IP is taken.
+set the replication user to require a SSL connection).
+We use replication across datacenters in several European countries (so they aren't across the world from each other, but they are certainly not local) and it works without any problem.
+If you have three or more servers and the master disappears, then stop replication on the slaves, change them to use the new master, and start again.
+My organisation has been looking into how to spread our servers around geographically while keeping backups very up to date, and ideally spreading the load.
+You can avoid modifying the app code/configuration to change the masters.
+The write rate isn't too high (articles/comments being left at less than 1 per minute, though some have large media attachments).
+a database is present on the master and not the slave, and a query uses it), then it will require manual correction by default (but you can set it to ignore such errors).
+If you have two servers and the master disappears, then to turn the slave into the 'master', just stop replication and alter your code (to write to the new 'master').
+We use internal DNS with short caching and fake .internal domains.

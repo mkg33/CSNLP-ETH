@@ -1,0 +1,7 @@
+I found there are corresponding log entries in /var/log/mail.log that do contain the IP address of the attacker and can therefore be blocked with fail2ban (at least on Ubuntu 14.04). Try searching for "SASL LOGIN authentication failed".
+However, as far as i know, Sendmail DOES record the IP, and you could point fail2ban at that instead, by writing a rule for Sendmail, instead of using the provided saslauthd jail.
+this is a bit late, but im fairly certain that saslauthd does not log the IP address because of some limitation within the saslauthd library and its implementation.
+My linux sendmail server is being forced out of commission by a flood of invalid smtp saslauthd logins.
+If that doesn't work, you can use the tcpdump to find out who's connecting to your system.  If you run it like this:
+Sendmail logs to the LOG_MAIL facility, which is usually sent to something like /var/log/mail or /var/log/maillog, depending on your operating system.  Consult your local /etc/syslog.conf for details. You may find something useful there.
+There are a variety of mechanisms for either rate-limiting smtp connections per source address or blocking addresses with a high rate of authentication failures.  You can use iptables for the former or something like fail2ban for the latter.

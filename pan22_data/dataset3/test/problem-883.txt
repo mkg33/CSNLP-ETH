@@ -1,0 +1,10 @@
+I did not see the timeout value on the Apache log you pasted.
+You get 503 "Service Unavailable" because all the servers are considered dead by Apache, because they don't answer fast enough under load, because your timeout is too short.
+Take a thread dump at the time issue occurs, you will know which thread is getting blocked and henceforth blocking other threads too.
+Meanwhile all AJP ports get used and eventually Apache dies.
+We had the same problem and changing the timeout on Apache httpd.conf file from 300 to 1200 fixed it.
+But this issue has nothing to do with Apache settings.
+Generally speaking, NEVER configure a timeout under 5 seconds anywhere.
+It's way too short to process some requests (especially if you're doing load testing at 500 req/s).
+The timeout will consider servers to be dead if they don't answer within 1 second.
+Note that once a server goes down, the 2 servers left receive +50% requests and their response time will increase significantly, to the point they'll probably instantly timeout as well.

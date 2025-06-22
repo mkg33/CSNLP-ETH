@@ -1,0 +1,14 @@
+Say Palo Alto has external IP 1.1.1.1 and CP has 2.2.2.2.
+Some log output the CP admin talked about gave me the idea, that CPs use Strong Swan, and I have been able to replicate the above behaviour using my PA and Strong Swan on a Linux box.
+Pinging 2.2.2.2 from PA and watching the sniffer shows why: PA sends an unencrypted ICMP echo request, which is not answered.
+These are the IPs they use to communicate to each other, and these IPs can be seen on a sniffer attached to PA's external Interface.
+We have to specify it via crypto access list (or something equivalent)
+but what I know for sure is that we can't route traffic through the tunnel and expect it to be encrypted.
+IPSec Tunnel gets established, and if the CP has a second interface, everything works as expected.
+The solution I'm trying to deploy is, of course, junking these over-priced pieces of crap.
+Now I can test faster, but no idea remains how to make PA differentiate between encrypted and unencrypted packets in matters of routing.
+When instead the CP admin pings 1.1.1.1, sniffer shows an ESP packet comming from 2.2.2.2 to 1.1.1.1, then PA answers with an unencrypted ICMP echo reply.
+But some of these CPs have only one Interface, only one IP, and this IP should be reachable throug the tunnel, but it is not.
+How can I make my PA send all traffic through the tunnel, except IPSec traffic?
+I regret to inform you that you are now able to share in my frustration:
+There is a Palo Alto firwall (which I have to configure) and an industrial controller (they call it CP) which I don't control.

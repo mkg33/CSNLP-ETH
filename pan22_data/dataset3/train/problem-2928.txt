@@ -1,0 +1,23 @@
+Now, the question is: What do you really want to do?
+You have to be extremely careful programing these programs though, or you will create a big security hole.
+Because disabling the kill command isn't, I suspect, your actual goal.
+Can I somehow disable a built-in bash command permanently without using .bashrc (which is user-editable)?
+An example program that does this is the login command.
+If you want to limit and lock down the things people can do with bash, then change them to the rbash (restricted bash) shell.
+The bash shell apparently has the kill command built-in and so attempting the above will not work.
+So, if you really really want to have users not be able to send signals to process that they start, I think you would have to setuid root the program, and have it change both the real and effective user id right after it starts to a less privileged user, as only root can change the real user id.
+Furthermore, even if you succeeded, if your users can compile programs or move binaries onto the system, they can always bring in a kill binary of their own, and be able to issue kills anyway.
+... and successfully kill the app 'blah' running under the user's account.
+Whatever you use, the kill command, or the shell builtin, it is going to use the kill or related system call.
+Kill isn't just use to kill a process, but it is used to send a signal.
+Also, it could well break some chunk of your existing system.
+Following on Michael's answer, it would be very, very hard to prevent a user from sending signals (which is what kill does) to a process running in that user's protection domain (i.e.
+Likely, you would not really want to, since it would also prevent the user from terminating a runaway program, for example.
+Signals are only allowed under the following conditions:
+You're trying to prevent the users from doing something (presumably kill something they shouldn't), and there's probably a better way to do what you want.
+The correct way to do what ever you are trying to do is probably to manage your privileges correctly.
+Sending signals is a fundamental function of the Unix operating systems, so you don't want to disable it.
+Using .bashrc the enable command could be used to disable the built-in kill command each time a terminal is launched, but the .bashrc could then simply be edited by the user using a text editor launched via the GUI to re-enable the kill command.
+The answer is that short of compiling your own version of bash, you can't.
+Anyone any ideas how I can disable the built-in kill?
+As Michael said, you probably are trying to prevent a user from sending a signal to one or more specific processes, and the way to do that is to put those processes into a different protection domain, in other words run them under a different user id.

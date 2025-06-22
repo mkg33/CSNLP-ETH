@@ -1,0 +1,18 @@
+I don't recall having seen this encoding anywhere in the literature. It would not be surprising if indeed no such academic literature exists, though.
+First of all note that your trick to translate a binary quadratic programming problem to an integer programming one is pretty straight-forward. You can find a casual mentioning it on the web from 2005 here.
+But there is more to it. Solving the Quadratic Assignment Problem is known to be NP-complete already, and you reduce it to an NP-hard problem. So in theory, you don't gain anything.
+In practice, however, you might. But unless you have evidence that the ILP instances that you get are particularly easy to solve for modern solvers, I wouldn't use your encoding, and here is why: the efficiency from ILP solvers comes from the fact that they can use the convexity of the solution space to their advantage. This allows to perform a branch-and-bound search on the feasible solutions while using an LP solver to find not-quite-yet-valid candidate approximate solutions. But in your encoding, all values are binary! So the ILP solver can't really take advantage of it. 
+If we now have a look at state-of-the-art other methods to solve the problem, there seem to be both exact and heuristic methods (I found this page by following links from Wikipedia). One of the methods is reported to work well for problems with $n \leq 15$. For such instances, your encoding requires $15 \cdot 15$ variables of the type $x_{ij}$, and $15^4$ variables of the type $y_{ijkl}$. Even though we can reduce this number of variables by a factor of $16$ (I think), that is an awful lot of variables for an ILP problem where the ILP solver cannot really take advantage of the structure of the problem. So it is possible that the approach that you mention has been invented before but did not make it into any publication as it does not perform well.
+The Quadratic Assignment Problem formulated as an integer program:
+ \mbox{minimize}\quad & \sum_{i=1}^n\sum_{j=1}^nc_{ij} x_{ij} + \sum_{i=1}^n\sum_{j=1}^n\sum_{k=1}^n\sum_{l=1}^n c_{ijkl}x_{ij}x_{kl}\\ 
+ \mbox{subject to}\quad &\sum_{i=1}^n x_{ij} = 1 \quad \forall j=1,\ldots,n,\\ 
+&\sum_{j=1}^n x_{ij} = 1 \quad \forall i=1,\ldots,n,\\ 
+ \mbox{minimize}\quad & \sum_{i=1}^n\sum_{j=1}^nc_{ij} x_{ij} + \sum_{i=1}^n\sum_{j=1}^n\sum_{k=1}^n\sum_{l=1}^n c_{ijkl}y_{ijkl}\\ 
+ \mbox{subject to}\quad &\sum_{i=1}^n x_{ij} = 1 \quad \forall j=1,\ldots,n,\\ 
+&\sum_{j=1}^n x_{ij} = 1 \quad \forall i=1,\ldots,n,\\ 
+& y_{ijkl} \le x_{ij} \quad \forall i,j,k,l=1,\ldots,n,\\
+& x_{ij} + x_{kl} \le 1+y_{ijkl} \quad \forall i,j,k,l=1,\ldots,n,\\
+& y_{ijkl} = y_{klij} \quad \forall i,j,k,l=1,\ldots,n,\\
+&x_{ij},y_{ijkl}\in\{0,1\}\quad \forall i,j,k,l=1,\ldots,n. 
+My question is: Has this linearization already been considered in the literature?
+I did not see it in any papers (this one for example).

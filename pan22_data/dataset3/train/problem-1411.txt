@@ -1,0 +1,32 @@
+Does anyone have a feel for what percentage of traffic will switch within the defined TTL these days?
+In other words, 95% of the traffic moved within the 15-minute TTL that we defined.
+But some were still hitting the old IPs for weeks.
+When we did the swing over most customers started hitting the new IPs right away.
+Seems like, overall, TTL should be well-respected.
+Are there still many nameservers out there that ignore TTL?
+Eventually we went through the IIS logs on the old machine and called the customers telling them to flush DNS on there company or ISP DNS servers.
+Some years ago I had to do several DNS changes over the course of several weeks as I moved bits of equipment from one data center to the other.
+It was a small number of people that kept with the old IPs.
+We moved recently and had all sorts of problems with DNS.
+This was in about 2001, though, and we were using dinosaurs to transmit packets through the tubes.
+They have a captcha that made me "click on all squares with signs" 3 times, so it took 1-2 min before I could complete the flush.
+The same was reported by every friend I could ask to check, both via landline and mobile.
+Another 3% made it in the first hour, 1% in the first day, and a few stragglers took up to three days.
+Google and OpenDNS allow you manually flush their DNS cache for a particular domain.
+Before the experiments below I had previously changed my TTL from 14400 (seconds = 4 hours) to 300 (seconds = 5 minutes) but I did that 2 hours before the experiments and since the previous TTL was 4 hours I'm not sure my change would have gotten out if DNS servers didnt have their own minimum TTL.
+I recently moved DNS for a few domains that host my personal site and project sites from GoDaddy to in-house DNS (yeah, literally my house).
+I changed a name-to-IP translation (A record) in the authoritative server then checked:
+Old question, but new answers (2017, 6 years later):
+After 4 minutes, only 1 DNS server checked by those sites had the old IP address.
+Out of 20k customers, maybe 50 had issues after the first day.
+Cablevision/Optimum (at least in NJ) seems to be using Nominum CNS, which also respects TTLs.
+At the time that I did this, about 95% of the nameservers in the world seemed to respect the TTL value, and about 5% ignored ours and made up their own.
+However even without the Google flush, it appears propagation is in minutes, not hours or days.
+The only problem, ironically, were the main caching DNS servers at $University where I work, which seemed to totally disregard TTL for cached queries (and even disregard the TTL value they were assigning to the cached result).
+My guess is that today's nameservers are better-behaved, and there will be less of a problem with stragglers.
+I updated another A-record, and then immediately flushed Google's DNS cache.
+Overall, every site that I have remote access to respected the TTL and made the transition well.
+56% of servers authoritative for .com and .net domains are running BIND, which obviously plays well with the standards.
+(Yes, OK, I'm confusing percentage of traffic with percentage of nameservers.
+So clearing Google's DNS cache, and forcing it to re-query the authoritative server, appears to have sped up global DNS propagation, perhaps by triggering cache updates throughout the world's servers.
+After 5 minutes (300 seconds) about half of the global servers checked by those sites had been udpated.

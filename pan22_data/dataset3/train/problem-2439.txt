@@ -1,0 +1,14 @@
+Therefore, its strongly recommend that you back up the log immediately before switching, which allows you to recover the database up to that point.
+But is it not possible for you to take transaction log backup on some other drive.
+After switching, you need to take periodic data backups to protect your data and to truncate the inactive portion of the transaction lo
+I guess because you did not took transaction log backups.
+Please schedule proper transaction log backup for the database
+Is this database production database(which i feel it is)?
+Yes you can change the db recovery model while it's in use.
+Transaction log backups will truncate logs(if no long running transaction still requires it) and then you can shrink the log file.
+You must also note that shrinking logs also cause performance issue if you are doing it for just one time its ok.
+If you switch from the full or bulk-logged recovery model to the simple recovery model, you break the backup log chain.
+Why did log file grew out of proportion have you thought about it ?
+If database fails at this point in time you would loose point in time recovery and would loose data are you ok with it.
+if you don't require point in time recovery why not let database in simple recovery mode and you can still take full and differential backups.
+First thing is after changing recovery model from full to simple you loose point in time recovery.

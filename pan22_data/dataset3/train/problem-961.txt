@@ -1,0 +1,26 @@
+A related question is whether you should keep more than one backup chain.
+It is very prudent to do a test restore every so often.
+One reason to keep one is that you could restore from it if the current chain is corrupt, either because of hardware failure, OS failure, or a duplicity bug.
+Making a full backup always uploads a full copy of the data.
+Of course if the old chain is very old, restoring from it may be of limited value.
+Basically creating a new 'full' archive transferring new/changed data and merging existing unchanged data?
+What you are asking for is called a synthetic full backup, which refers to the process of getting a full backup by merging an incremental backup with a previous full backup on the destination side (ie: the backup server).
+I don't think duplicity specifically has a "check" command http://pad.lv/660895, but it would be nice if it did.
+Since duplicity increments forward, each incremental backup is relying on the previous increment, and all are relying heavily on the last full backup.
+Is it reasonable to want a full backup every so often?
+Unless you do a full backup from time to time the archive size and recovery time will continue to grow.
+I'm not familiar with Duplicity, but from their website it appears to not do synthetic full backups.
+I think it's reasonable to want a full backup every so often: most of my machines are configured to do one every few months.
+One interesting way to achieve synthetic fulls is to use rsync with the --link-dest=DIR option, or use rsnapshot.
+It will only store the differences between each incremental backup, but each one will appear to be full.
+A related question: Does Duplicity test the incremental backups for consistency?
+You must keep all of the incrementals back to the full on which they're based.
+It does this through the magic of hard links, so the diffs will be file-based (either the file has changed and is included in the diff, or not).
+Can/does it check file signatures and copy unchanged data from previous full backups/increments?
+Right now my concern is that running a full backup is needed, but the consistent large bandwidth use of full backups will make this unreasonable for some clients.
+I'm trying to work up a backup strategy for some clients, and am leaning towards duplicity for remote backup (already use rdiff-backup for internal/on location backups).
+There's nothing magic about that number: the right value is going to depend on how much data you have, how fast it changes, how likely you are to want to restore from anything other than the most recent snapshot, how much traffic and storage costs you, and how paranoid you are.
+If that is the case, you will probably want to force a full backup every so often, because:
+When you delete any of them, it will automatically merge the incrementals appropriately.
+Assuming I do want a full backup every so often, how efficiently does duplicity create that full backup?
+If the client concern is the fraction of bandwidth used, rather than traffic charges, you might want to run it under eg trickle.

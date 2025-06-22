@@ -1,0 +1,19 @@
+   # activate PATH_INFO urls in /admin/blog_pref.php
+http://yeti.selfip.net/cms/index.php/post/2013/10/26/Configure-PHP-with-Nginx-only-once-for-several-aliases
+I'm installing dotclear (a blogging software written in PHP) on my debian, and I have a hard time configuring nginx, php5-fpm and php so that :
+fastcgi_param  SCRIPT_FILENAME     $request_filename;
+Also in /etc/php5/fpm/pool.d/www.conf, I made sure to uncomment this
+- example.com/css/style.css are not passed to php and works
+One note, though: When configuring dotclear to use PATH_INFO, you still have index.php inside, just as in the URL above (which is hosted by dotclear).
+In your location / block you are saying, try to find the URI, which is just /, which is just the root directory, and it finds that.
+It is matched, just the first one is matched and not the second one.
+There may be a way around this with URL rewrites...
+My location = / { configuration here } is apparently never matched :(
+I put everything fastcgi related in a separate /etc/fastcgi_params_pathinfo config file
+- but when I go to example.com, the index.php is just downloaded, not interpreted.
+It seems that until now, I have to choose 2, that's why I'm asking for help here.
+            include         fastcgi_params_pathinfo ;
+Nginx will never find a file with the filename "index.php?start" on the hard drive.
+Remove the first location / block and the index index.php?start (because I think the latter will never work).
+- example.com/index.php and example.com/post/test are passed to the php interpretor and work
+It's not very elegant, but I don't have better to provide :(

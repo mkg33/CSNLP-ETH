@@ -1,0 +1,13 @@
+If you only call this code from the UI thread of a WPF app for example, you won't have any issues.
+Each of them is using a network drive that is connected and disconected dynamically by each one as required.
+(This is necessary because there've been issues with automatic reconnection when the server is rebooted.
+If you encounter this error some of the suggesting in the afformentioned SO question could help.
+I didn't want to think about mutexes each time I want to synchronize that access so I created this small helper encapsulating a named Mutex.
+The code breaks when used in a console app however.
+To address this problem I thought I use a named Mutex to prevent both services trying to use that network location at the same time.
+I used Task.Factory.StartNew here for test purposes (mutexes require different threads) but I'm not going to use it later when they will be running in two different processes anyway.
+This is only a problem if your SynchronizationContext doesn't guarantee async calls will return to the same thread (as I suspect is the case when running your tests).
+However, from time to time both services overrun and one of them fails to connect the drive because it's already connected by the other one.
+Is this solution acceptable or am I doing something terribly wrong?
+Unfortunately you are in fact doing something wrong, but maybe not terribly!
+Because you are accessing the Mutex either side of an await, there is no guarantee that the same thread will be accessing it each time.

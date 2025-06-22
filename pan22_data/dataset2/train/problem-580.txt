@@ -1,0 +1,11 @@
+That to me says the more programs you run the more chance you will hit the 2GB address space limit i.e. Program A uses 500MB, Program B uses 1GB, so you've only got 500MB of address space for the rest of your programs.
+The problem with this flag is that some programmers are unaware that a memory location can be above the 2 GB limit, which can cause some nasty bugs in the application. And let me explain why...
+Some programmers check for this by checking if the address is greater than null, thus they're forgetting about the possibility that addresses might be negative. Since a negative pointer is smaller than null, the system will think it's unassigned and thus re-assign a new value to it, losing it's current value and leaking memory.
+Here is his index page for this series of articles - very well worth a read if you're dealing with large memory support as a senior system admin or a developer.
+It's virtual address space per process, as per the MSDN article, and the superb series of articles on this written by Raymond Chen and archived at his blog.
+There is a tool available on the internet, LaaTIDO, that enables this bit.  I've used this tool to enable Large Address support for Tomcat & Sun's JDK running on windows.
+It was my understanding that it's per process, not the total processes.  But according to Large memory support is available in Windows Server 2003 and in Windows 2000 (KB283037):
+A pointer to an address in RAM is similar to a 32-bit signed integer in certain languages. Signed means that it can be positive or negative. Now, to check if a pointer is assigned or not, you check if it's equal to NULL/nil or not. If it's not null, it's assigned to something.
+However an MSDN article http://msdn.microsoft.com/en-us/library/ms189334.aspx refers to this as Process Address Space and to me implies that each application gets its own  address space, be it 2GB or 3GB, depending what switch is being used in the boot.ini.  
+Fortunately, most programmers learned to check if it's equal or not equal instead of greater-than null. In that case, the application would have no problem using up to 3 GB.
+It only increases the address space for programs that are compiled with a magic bit that can optionally look for this extra space.  

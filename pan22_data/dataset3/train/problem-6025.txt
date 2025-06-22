@@ -1,0 +1,20 @@
+Since this is only retrieving information and not changing anything, it should never report as "changed", so changed_when needs to be set as well.
+The file consists of a variable number of keys (entry1, entry2, entry3, and possibly later entry4, etc.
+I've also looked at using a template (but have not found an easy way to use it to manipulate an existing file).
+But this will of course add each key on every run.
+Of course I can write my own Python module, but there must be an easier way to do this?
+I want Ansible to be able to add new keys to the file, while preserving any of the existing local modifications.
+I am looking for a way to modify a configuration file while preserving local modifications.
+Now we can add only the missing entries by checking for rc.
+I can modify the existing entries with lineinfile and backref enabled:
+- it could go up to 100, and in the future maybe even up to 2000 or so) that should be set up by Ansible, followed by additional options that another program will add to the configuration file.
+The format of the configuration file is similar to this:
+grep will error out if the file does not exist, so first I am creating the file:
+The most natural fit seems lineinfile - but unfortunately it only gives me the option of either preserving the local modifications (using backref=yes), or adding new keys (backref=yes will not add new lines).
+The trick is to first use grep to find only the missing entries.
+When used in a loop, grep_output will contain an array called results, which contains one hash for each item from the loop.
+Grep will produce the output into the registered variable grep_output.
+Normally, a return code of 1 means failure to Ansible.
+Grep will return 0 if the entry already exists, or 1 when it doesn't.
+But this will clobber local modifications for entry1, entry2 and entry3.
+In that array, we find all the information we need: both the return code (called rc) and the original item from the loop (called item).

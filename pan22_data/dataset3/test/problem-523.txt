@@ -1,0 +1,28 @@
+I tried running the below commands, but they failed throwing the "directory service error", I just because there was no server added:
+- Installed WDS on the test server - it appeared under WDS.msc>Servers fine and I could configure it
+I rebooted the server, then uninstalled WDS, rebooted again and reinstalled it, rebooted once more.
+Also, after reinstalling WDS, the WDS service won't start at all now.
+- Moved the test server to the same OU as the equivalent one
+When I tried to add local computer I got the "A directory service error has occurred" error.
+It was reported multicasting stopped working on all of them.
+are pingable and the computer accounts have necessary privileges set in AD.
+- other issues that always co-occured with he main one included: RSOP.msc would not open, gpupdate would fail with the error saying there was no RSOP data for the user, I was prompted for credentials when accessing network shares on other servers from the affected server, I couldn't add any AD groups or users to local groups (e.g.
+- Uninstall all server roles (WDS, File Services and IIS)
+wdsutil /initialize-server /reminst:[PATH_TO_REMOTEINSTALL_DIRECTORY]
+- Configure WDS with multicast: https://keithga.wordpress.com/2014/04/23/multicasting-with-mdt/
+- Manually recreate the deployment shares under file services
+I made sure the multicast option was selected in the deployment shares' properties, but when I went to Windows Deployment Services in server manager, there were no servers showing there.
+- Found an equivalent W2008R2 server where the above issues did not occur
+- The issues didn't return after I moved the test server to the OU it was supposed to reside in.
+WDS appeared again, but there was still no server under the servers node and I still couldn't add any getting the same error.
+Remote Desktop Users), because they could not be found after I clicked "check name".
+I have three Windows 2008 R2 servers with MDT and WDS installed.
+However, moving the original affected server to the equivalent OU was not enough
+I replicated and fixed the fault in test evironment first:
+- set up a Windows Server 2008R2 VM (W2012 or 2012R2 were not affected)
+The WDS service was running, though, and I was able to restart it, but it didn't help.
+I still don't know the root cause of this issue, but it must have been something related to policies/GPO's, as the error implied.
+I found a similar thread here https://social.technet.microsoft.com/Forums/windows/en-US/265b4b53-63ac-491f-817c-6030daa39b81/cant-start-quotwindows-deployment-servicesquot-service?forum=itprovistadeployment, but the suggested solutions don't work for me, as explained above.
+I enabled tracing and when trying to start the WDS service I get a bunch of errors in WDSServer.log, but I believe they might be irrelevant, and all boil down to no server showing under the "Servers" node.
+I searched the internet high and low, but couldn't find any information on exactly such an issue, so any help will be greatly appreciated.
+It puzzles me that all three servers lost the WDS functionality, can it be something related to AD?

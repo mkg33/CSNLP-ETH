@@ -1,0 +1,13 @@
+The encryptor thumbprint is a SHA-1 hash of the certificate with which the key is encrypted."
+I looked at some of my backups which were both TDE encrypted and not TDE encrypted.
+Conversely, imagine that you start with an already-encrypted database, and:
+Is there a way to find from the SQL Server Backup file or MSDB tables if the backup is encrypted with TDE without trying to restore the backup file?
+Backing it up takes a while, and encrypting it takes a while.
+Extending Scott's Answer, here is the SQL Query that will tell you if a backup is encrypted or not.
+I up-voted Brent's answer, as his scenario could definitely muddy the water on whether the backup contained TDE data.
+However, if you've had TDE enabled for a while, it seems that RESTORE FILELISTONLY (Transact-SQL) might provide the information you're after.
+The backups of my TDE databases had the certificate thumbprint in that column and the backups that did not have TDE databases had null.
+There is a column on the result set called TDEThumbprint which "Shows the thumbprint of the Database Encryption Key.
+Imagine for a second that you've got a 1 terabyte database.
+What would you expect your query to return, given that as soon as you finish restoring the full backup, it's going to continue applying TDE, encrypting the rest of your database?
+These are example scenarios of why TDE encryption isn't one of the fields included in msdb.dbo.backupset.

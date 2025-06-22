@@ -1,0 +1,25 @@
+If you set up nagios to load directories of configuration files using "cfg_dir" you can simply add or remove a cfg-file when a node is added or removed, and restart nagios.
+With that many servers a config management tool like Puppet is practically a requirement.
+However, with Nagios being open source and all, I am confident that if you have the required knowledge you could code and implement a system of your own.
+While I have no experience with Zabbix, I'm pretty sure Nagios will not be able to do this for you without an admin intervention, let alone out of the box.
+The problem is that when you create a config file (to add a host) or edit/delete one, you need to restart Nagios.
+In fact, most of these automated configs are all in one, or perhaps a handful of files.
+I suspect that the machines that come up (or go down) are VM's, and that they already have NSClient or whatever agent you decide to use pre-installed.
+http://projects.puppetlabs.com/projects/puppet/wiki/Nagios_Patterns
+If they're compute nodes or similar and you know their configuration is stable & will "just work" when they get spun up monitoring the cloud itself (how many instances are running) may be just as good as tracking the individual machines, assuming your cloud provider lets you access such statistics easily.
+http://blog.gurski.org/index.php/2010/01/28/automatic-monitoring-with-puppet-and-nagios/
+the monitoring system), and when it gets shut down it needs to un-register with things that need to know it's going away.
+You could use a system to do the discovery for you, Nagios has plugins that do this I believe, but I've found that machine-generated cfg files are never as good as manually making them.
+Farmville, which claims to be adding hundreds of servers a week, uses Puppet, Nagios, and Munin to handle their scalable monitoring system.
+Upon restarting, it will take a couple minutes (depending on settings) to do the first check of the services on that hosts (checking if the host itself is up should only take a couple seconds).
+No suggestions, but your logic is sound: In dynamic environments like the one you describe when a host comes up it needs to register with anything that needs to know about its existence (e.g.
+Get the script to edit the hostname and ip of the host in question, and you're done!
+It's been a while since I played with Zenoss, but I think it might be what you're looking for.
+No real need for an API, it can be set up with a few small shell scripts and SSH with key files.
+If these machines get added or removed several times a day, I foresee this being your first problem.
+That means that if you can get a script to run whenever a machine comes up or goes down, you could create or delete a config file with the name .cfg or .cfg and then reload Nagios.
+The question I would ask is do you need to monitor your "workhorse" servers?
+A couple examples found via searching "puppet nagios":
+I have no experience with Zabbix but I can recommend Nagios since it is pretty easy to configure, run and customize.
+They probably use the Puppet facts to populate Nagios config files or to setup NRPE.
+That is, of course, if the first point I made is of no importance to you...

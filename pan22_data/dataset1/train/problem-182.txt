@@ -1,0 +1,10 @@
+BGP has a fixed set of criteria for selecting a path.  If the AS Path attribute does not select a single path, the path selection algorithm will next use the path origin type, preferring IGP over EGP.  
+Here is a full explanation of BGP path selection algorithm.
+By default, the aggregating router omits the ASN's from the aggregated networks. The idea is the aggregated route itself is initiated by the aggregating AS, so the ASN's of the original AS's are irrelevant.
+(I'll pause here to say it probably works differently with different vendors -- the above as accurate for Cisco though)
+When aggregating, however, you can use the keyword as-set which tells the aggregating router to also include the origin ASNs in the the AS-PATH attribute. The issue though, is what order should they be in?
+Instead of creating a complicated way of determining the order of the ASNs in the aggregated route, all of the ASN's are included in a construct known as an AS-SET. This way, any routers down the path that receive the aggregate route know which ASNs were involved. And, eBGP's loop prevention mechanism (If I see my ASN in a received advertisement, I ignore the advertisement) still functions.
+Seeing it visually helps... and it didn't click for me until I read Mike Pennington's answer to this question, which I would recommend reading as a follow up to your question. Either way, this is a part of his answer and his visual:
+When 65500 advertises the aggregate route to new AS's, it will include an AS-PATh of:  
+NETWORK: 10.1.0.0/23   AS-PATH: 65500 {65000, 65001}
+Indicating the 10.1.0.0/23 network came from ASN65500, then from an AS-SET consisting of {65000,65001}. This will count as an AS-PATH length of 2 -- the AS-SET counts as 1 regardless of how many ASN's are included.  And the AS-Path length can then be compared to other routes with longer or shorter AS-PATH length's to determine priority.

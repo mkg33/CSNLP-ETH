@@ -1,0 +1,6 @@
+We have over a dozen SQL servers, one of which hosts a couple of hundred sage databases, when i right-click on the Databases node in SSMS there is a long delay then i get the following error (and the restore dialogue box doesn’t load):
+I presume SSMS is loading backup history from msdb or something in the background and running out of space - does this imply i have excessive backup history in my system databases? If so, what is the best way to maintain it?
+I have maintenance plans cleaning up the trn and .bak files on disk but i dont think i maintain any of the logs in the system databases.
+From your reply to my question, then it does appear to be too much backup history. For a one off cleardown, something along these lines will do it:
+That example gets rid of everything over 30 days old, so you may need to change the -30 for a value appropriate for your needs. But remember that you'll then have to build up any restores for backups over 30 days old from hand (may or may not be a problem for you, but thought I'd better mention it).
+Going forward you can schedule that to run via a scheduled job  to keep you small.

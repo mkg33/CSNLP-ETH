@@ -1,0 +1,8 @@
+We use zabbix to monitor website availability and it uses cURL internally. This is monitoring up to the level of 'can I login to the site and get a correct welcome page'.
+One of the best ways to do it is by using a service such as http://www.watchmouse.com which I have used - this gives you checking from all over the globe.
+scripting is one option, such as the www::mechanize modules for perl and python. These work with ssl sites. 
+However, using check_http plugin to access a static page might not be enough. Your idea about login is a good one to make sure everything is working as expected.
+I usually use nagios plugins to check my services health. As Sirex suggested, you can use check_http plugin.
+You could also write a custom nagios module to do the checks. Depends what your current monitoring solution is.
+I think cURL is still the best way, but you need to check the cURL options to disregard the certificate check (and check your certificates in another way!!) or make sure cURL has access to the right root certificates.
+You can do it by creating a page (PHP/perl/jsp, etc.) that will automatically login using some parameters passed in the requested URL. When this page execution succeeded, you can print some recognizable message. This message can be checked by the check_http plugin. So, you will see a critical state when the output is different.

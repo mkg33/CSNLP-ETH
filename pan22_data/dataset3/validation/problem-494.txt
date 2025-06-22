@@ -1,0 +1,21 @@
+You may also need to add additional routes for the other RFC 1918 IP address ranges.
+You could maybe use a couple of batch files to automate the adding and removing of these settings.
+If you have access to the DHCP server on the local lan, try telling it not to issue you a default gateway, by removing the option altogether (not sure if this is possible on windows) or, as a horrible hack, make it issue the gateway address of your wireless interface.
+As you mentioned, putting these manual routes in will probably cause you problems if you move your machine around a lot.
+But I don't think this will work reliably as long as you keep using DHCP on both networks at the same time.
+If I disable the ethernet NIC and run ipconfig /renew then I can use the wireless network, but obviously not the wired.
+I have an environment where my work computer needs to be connected to two separate networks.
+There's no way to solve this, you have to set something manually, those DHCP servers are just giving you conflicting informations, and this just doesn't work.
+If I assign the IP address on the wired NIC manually then it works, however, the next time I plug in to a network anywhere else I will inevitably wonder what's wrong until I remember to change my settings, and then I will have to change them back again.
+Looks like you're connecting to two different networks, both of which use DHCP and both of which are handling you a default gateway.
+The lab network is just a single machine running Windows Server 2003, and is a domain controller w/ DHCP enabled.
+I imagine I need to play with the ROUTE command more but I see that route add requires a destination network, and I want something more along the lines of "route everything on subnet 10.1.x.x through interface A, everything else through interface B."
+My "lab" connection is via my ethernet NIC and I use wireless to connect to the outside world.
+(I have a separate machine for connecting to the corporate network.)
+Make sure the DHCP server does not defaults to the AD controller as a DNS server, remove the DNS server option altogether, or configure it to issue the DNS of your wireless interface too.
+You should be able to add a static route for the 10.x.x.x network pointing to your ethernet interface and another 0.0.0.0/0 route pointing to your wireless.
+It is also likely that DNS servers may cause problems.
+You can specify which default gateway to use with this command:
+With default settings I can hit web pages hosted on the wired network but not on the wireless.
+The wireless network consists of a basic wireless router connected to a cable modem.
+This configuration should allow things to route correctly though.

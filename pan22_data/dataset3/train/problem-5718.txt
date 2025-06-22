@@ -1,0 +1,14 @@
+Anyone know if there's a "quick and dirty" way to achive that?
+(2) If your Tomcat server has an APache httpd server in front of it, it's pretty easy to do this in Apache.
+I'm looking for a quick way to protect a Tomcat instance and all webapps running on it, so that accessing any page requires credentials  (simple username/passwd).
+I'd put Apache in front of Tomcat and have that handle the Authentication
+Quick and dirty (not recommended for Production) would be a MemoryRealm
+Define the Realm within the server.xml inside <Engine> or <Host> and it will apply to all web apps.
+We would prefer a way where you don't have to change the webapps themselves at all.
+The trick is to make sure that the user has been designated a role in the tomcat-users.xml that matches the role defined in the auth-constraint section of the web.xml:
+(1) If you can modify the web.xml of your webapps, just put in a few lines into the web.xml to require basic authentication.
+http://tomcat.apache.org/tomcat-3.3-doc/mod_jk-howto.html#s72
+I guess Realm is the "proper" way to do it, but that doesn't seem very simple to set up.
+In your configuration file, you'll just need to set up something like this:
+Once you have that set up you can use basic Apache Auth or the auth module of your choosing.
+Here are some instructions on how to do that using mod_jk

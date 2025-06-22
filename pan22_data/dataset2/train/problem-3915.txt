@@ -1,0 +1,11 @@
+Changing 'tbbscraper' to 'admin' allows a successful login: debug1: Authentication succeeded (publickey). appears instead of the "Connection closed" message.
+I got the same problem this morning but the server authenticates users against Active Directory.  Turns out the user's domain password had expired.
+... so none of the existing answers to similar questions would seem to apply.  The only other piece of evidence I've got is:
+On a VM I am initializing I am able to log in as one non-root user (admin) but not another (tbbscraper) over SSH with public key authentication.  The only error message I can find in any log file is 
+In my case I was renaming local CentOS 6 users, and forgot to rename them in /etc/shadow (who are password-less key-authenticated, didn't pop up in my mind), so the records for the new usernames were just absent in /etc/shadow. In /var/log/secure it was giving me unix_chkpwd error and Access denied by PAM:
+While it's probably not the real solution, because something is definitely wrong with my machine (yesterday it was working fine!), this one at least works.
+That's right, there are two colons after the exclamation point on the tbbscraper line.  That shoves all the fields over one and makes PAM think that the account expired on January 8, 1970.
+In my case it was junk hitting ''/etc/tcb/USER/shadow'' after ext4 rootfs corruption in "interesting" conditions; it looked pretty texty so wasn't spotted during initial examination (can't reinstall the node right now but will have to).
+I had the same issue and none of suggested options worked.  But I found in one of forums (https://ubuntuforums.org/showthread.php?t=1960510) a "workaround" which worked perfectly. 
+which suggests some larger-scale PAM issue, but I can't find anything obviously wrong with the stuff in /etc/pam.d.  Any ideas?
+After all that, it turns out to have been a one-character typo in /etc/shadow.  Spot the difference:

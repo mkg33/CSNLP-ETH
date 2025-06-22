@@ -1,0 +1,15 @@
+One is being written to by the scene graph thread, one is being read by the renderer, and a third is available for reading/writing as soon as one of those needs to swap.
+I haven't thought through the whole implications but I'm guessing you might gain a small bit of extra throughput at the cost of higher latency.
+It's quite simple really - imagine your renderer has to be able to render your game object.
+It used to ask the object what it looks like, but now it has to ask it what it looked like at a certain time.
+Given 2 positions you can interpolate to a position between them, and if you have a 3D animation system you can typically just request the pose at that precise point in time anyway.
+It just sounds like a recipe for added pain at this point.
+My update thread now fills one of three much smaller buffers of "RenderCommands", and the Renderer reads from the newest buffer that's not currently being written to, which prevents the threads from ever waiting on one another.
+Oh, and you may get some benefits from being able to use another core, but I dunno.
+In my setup, each RenderCommand has the 3d geometry/materials, a transformation matrix, and a list of lights that affect it (still doing forward rendering).
+My render thread no longer has to do any culling or light distance calculations, and this sped things up considerably on large scenes.
+Yes, thankfully the key here is "relevant to my renderer".
+I then realized I only need to keep three states of what was going to be rendered.
+You just need to store whatever information is necessary to answer that question.
+I started by having three copies of the game state of each node in my scene graph.
+This might be no more than adding an an old position and a timestamp for it into the mix.

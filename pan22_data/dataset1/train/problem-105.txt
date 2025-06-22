@@ -1,0 +1,17 @@
+What you've written does work, and you seem to understand all the concepts (e.g., "you can't partially specialize function templates"), and your coding style (indentation and whatnot) seems fine.
+Well, one coding-style improvement: You need those (void)input casts to shut up compiler warnings about unused parameters... in C. But in C++ you don't need those casts; what you do instead is, if you're not going to use a parameter, just don't give it a name.
+However, your code doesn't really match any common TMP patterns — which is probably just because you're noodling around, learning, instead of trying to solve a specific problem.
+If you just wanted to produce the same output with less code, you would do this:
+That is, your code is equivalent to providing two overloads of foo.bar, plus a couple of mutually exclusive templates (one for integral types and one for other types). The specific overloads for bool and std::string will take precedence over the templates.
+Alternatively, you could use tag dispatch, as follows. (But I don't recommend it in this case because it turns out to be surprisingly subtle. Replace the second instance of std::true_type with ... and watch that overload silently drop out. I'm not actually sure why.)
+Maybe the best approach would be to use two non-interacting levels of tag dispatch: first, is T integral? and second, what is T exactly?
+I'm trying to improve my C++ template metaprogramming skills. From my understanding, I can't partially specialize a function(either member function or not). So, I need to define another class that can be used as template class, which enables us partially specialize template argument.
+So, In order to check my understanding, I've wrote a simple code. It uses general template class and partially specialized template class to deal with various types. (I've tested this code using gcc 4.8 / clang 3.4 / MSVC 2015) It would give a result as follows:
+Am I doing write using class templates? I need a review for this. Any comment would be helpful.
+template <typename T, typename T1, typename T2, typename T3>
+struct bar_impl<T, std::false_type, std::true_type, std::false_type>
+        std::cout << "Specialization for integral type" << std::endl;
+struct bar_impl<T, std::false_type, std::true_type, std::true_type>
+        std::cout << "Specialization for bool" << std::endl;
+        std::cout << "Specialization for std::string" << std::endl;
+        typename std::is_same<T, std::string>::type,

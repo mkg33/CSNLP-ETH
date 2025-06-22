@@ -1,0 +1,13 @@
+On Mountain Lion all the /etc/paths and /etc/launchd.conf editing doesn't take any effect!
+Environment variables set with setenv in /etc/launchd.conf are shown by both sudo launchctl export and launchctl export.
+Settings in /etc/launchd.conf apply to both the root launchd process and per-user launchd processes.
+to set the PATH for the Terminal, this way the PATH is controlled from the same location, the ~/.conf.launchd file.
+So I directly edited the app's Info.plist (right click on "AppName.app" (in this case SourceTree) and then "Show package contents")
+For example I have changed the default PATH by adding this line to /etc/launchd.conf:
+The answer provided by @percival-ulysses works for me on 10.9 Mavericks with the following small change: edit /Users/Shared/conflaunchd.sh script right before exit 0 and add the lines
+PS: Of course you have to adjust the Path entry to your specific path needs.
+The answer provided by @flori works for me on Maverick provided I run the following commands in Terminal after changing the plist file
+now the App (in my case SourceTree) uses the given path and works with git 1.9.3 :-)
+After this the applications started from the Dock or from Spotlight will inherit the correct PATH.
+You can apply changes to /etc/launchd.conf by either restarting, or by running launchctl < /etc/launchd.conf; sudo launchctl < /etc/launchd.conf and terminating and relaunching processes.
+If you use Finder to start the PATH-critical applications, then killall Finder may be added too.

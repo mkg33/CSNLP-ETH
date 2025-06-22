@@ -1,0 +1,27 @@
+We use XWall as our spam filter (and XWall Filter for Outlook client integration) and it is also reporting "Connection closed for no reason" which could indicate that the Exchange server is having problems keeping up.
+Does this server have any other function than Exchange(that's a lot of CPU)?
+Also you could look into trying to block domains or IP ranges from which the spam is originating if you haven't already.
+It surprises me, actually, to hear that it's not answering for SMTP.
+We get a metric ton of spams and my guess is the box can't keep up.
+You should see too much trouble with just 25 users.
+The first thing I would do is to use process explorer to determine where the bottleneck is, is it disk or RAM etc.
+I wonder if you might have a network problem in the mix here, too.
+How would I go about diagnosing this (user mailboxes are not reporting anything amiss)?
+You could enable diagnostic logging and see what's happening in more or less real time.
+If this is being caused by spam, you could also look at putting in a front end server to handle spam before it gets to Exchange, something like postfix.
+Recently they have been intermittently failing with various errors -- boiled down they report "Exchange refused the connection".
+We have some internal processes that send email to our Exchange 2003 system (on Win2K3 R2 32bit).
+Once you know that you can look at resolving what's causing it.
+You might consdier sniffing traffic between the XWall machine and Exchange (if you can catch it in the act) and see if it's really a matter of unanswered SMTP sessions.
+We only have about 25 user mailboxes (about 20-25GB total) and the CPU load on the machine is not pegged (it's a 8-core Dell w/4GB RAM).
+The easiest option is obviously to throw hardware at it, will more RAM or faster disks help, or moving Exchange to its own disk.
+There are lots of angles to an exchange environment to look at.....
+What client do users use to connect with and if Outlook do they use "Exchange Proxy"?
+Yeah, I can look at Task Manager, but that's not really telling me anything.
+What should I look at to see where the bottleneck is -- disk I/O?
+What's the storage look like (local/SAN, SATA/SAS, RAID level).
+If you're most interested in IO, you might grab the "Process" counters for the Exchange services associated with IO (IO Read / Write Bytes or Operations per second) and get those on the chart, too.
+Without knowing more details, it's difficult to tell you what counters on Exchange services to look at.
+Chart gross performance of CPU (% utilization, % user mode vs kernel mode, context switches), disk (queue length, % disk time), and memory (page faults / sec, working set sizes) for starts.
+I haven't seen a lot of situations where the Exchange/Windows SMTP service doesn't answer for connections.
+As for configuration fixes, you could look at getting XWall to drop as much spam as possible before it even reaches the Exchange server, which will help reduce the load on Exchange.

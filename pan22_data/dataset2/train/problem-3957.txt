@@ -1,0 +1,10 @@
+I have been looking online for some time but unable to find a definitive answer to this in terms of best practice and extracting the pro's and cons has been difficult.
+Then I have different server blocks in my nginx configuration for each application based on server name.
+When you request http://example.com/app1/index.html your browser will then try to load the script and request http://example.com/js/jquery.js and will happen then? 
+The reverse proxy will not automatically rewrite the absolute URL "/js/jquery.js" to http://example.com/app1/js/jquery.js for app1 and neither will it do similar rewrite to http://example.com/app2/js/jquery.js for app2. 
+The URL /js/jquery.js might map to file in the local file system /var/www/html/js/jquery.js, or it will trigger a 404 not found error, but it will definitely not be reverse proxied to appserver1/js/jquery.js 
+And that will cause issues when you then have to use reverse proxy rules on an URL path that is below the level of the root /.  
+and in the nginx configuration you have two reverse proxy blocks to map those applications into the URL space of example.com as example.com/app1 example.com/app2 
+You are likely have several different applications that all use the same base URL's such as /js/ /images/ /css/ etc. with absolute links to resources those base directories in their HTML. 
+Personally I prefer example.com/app1 , example.com/app2  or maybe even on a deeper level, example.com/portal/app[1-N] to app1.example.com and app[2-N].example.com   as to me that appears completely seamless.  
+Which is better practice? the lack of subdomains makes CORS/Session cookie management easier as well as not requiring multiple DNS records for the subdomains. Are there downsides to the route approach? Both these approaches seem to be implemented around the web so what is the deciding factor.

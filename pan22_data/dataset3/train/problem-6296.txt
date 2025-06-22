@@ -1,0 +1,24 @@
+Somewhat related: mixing SAS and SATA drives on the same backplane tends to fail, because the signaling of all drives (including SAS) is lowered to SATA level.
+As an engineer that works with RAID controllers, I can say that it is not uncommon for some brands of drives to have problems with certain RAID controllers.
+However, as soon as you start using enterprise storage controllers, whether that be SAN's or standalone RAID controllers, you'll generally want to adhere to their compatibility list rather closely.
+A drive not on that list may have been designed to perform optimally with a different brand of controller, and the errors you are seeing are a side effect of the optimization.
+Usually in the enterprise world attaching SATA drivers directly to a SAS controller is not officially supported, you should use an interposer (a small logic board that connects directly to the disk that on one side understands the full SAS protocol, on the other speaks ATA - in this way the backplane carries the higher SAS signaling).
+Especially when it comes to Enterprise-grade equipment, device manufacturers and drive manufacturers spend a lot of collaborative time and energy ensuring that customers get the best possible performance out of the configurations used by the majority of customers (that is, using drives off of the "supported devices" list).
+Again, this is plain vanilla desktop use with no RAID involved.
+Every drive has its particular quirks, and any drive model listed on the controller's "compatible devices" list will have its quirks accounted for by the controller.
+For a drive model to show up on the list, it has to meet the controller manufacturer's standards for performance and reliability.
+In your case, you are might be seeing a controller that is expecting a drive to respond to a particular proprietary command or a drive that is expecting to see a proprietary command that never arrives.
+In other words, explicit incompatibility is very uncommon, but explicit compatibility adherence is recommendable.
+Any drive not on this list might work, but since it hasn't gone through the same rigorous testing as "approved" devices, YMMV.
+While SAS protocol can be used to tunnel ATA commands the signaling at physical level is a bit different (SAS uses higher voltage and wider differential).
+You have a SAS controller, that might be the problem.
+I'd say, yes, more common than you might think, even beyond the enterprise realm.
+backplane in the middle the signal might be disrupted.
+Another possibility is that your problematic drives do not behave very well under certain stressful workloads, and the behavior you see was enough for Adaptec/IBM to not list that drive model as supported.
+You may be able to save some bucks on the sticker price by buying a cheap range of disks, but that's probably one of the last areas I'd want to save money on - given the importance of data in most scenarios.
+Even for non-RAID, plain-old desktop hard drives, buying drives from the vendor (at the expected ridiculous markup) can often make a difference.
+Unfortunately, storage protocols (SATA, SAS, etc) are not as nice as other standardized interfaces (USB, PCI, etc) where all you need is a bus and a device that speak the same language and everything's fine.
+In particular, the SATA protocol allows for vendor-specific (non-standardized) commands that can be defined by the drive or the controller.
+Almost all controllers are able to speak directly to SATA drives, but if there's a (big?
+For example, Apple is careful to only ship drives that are actually capable of honoring Mac OS X's F_FULLSYNC fcntl() flag, which goes a long way towards making sure things like Time Machine backups work reliably.
+Anything more complex than that and you definitely want to buy, if not the vendor's own over-priced drives, then at least drive models that you know for sure are on the vendor's "approved" list.

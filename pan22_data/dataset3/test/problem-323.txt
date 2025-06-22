@@ -1,0 +1,8 @@
+You can check using dmesg, when server start, it display the number of drive used in the raid array.
+Try specifying md-mod.start_dirty_degraded=1 as a boot argument to the kernel image.
+Eventually, you can use mdadm /dev/md0 --manage --fail /dev/sda1 for instance to force /dev/sda1 to be marked as failed and then reboot.
+you can also check /proc/mdstat to read current status.
+I don't have an easy way to test this right now (only Debian box that isn't remote, and is using software RAID1 is in production at the moment), but I'm pretty sure I remember one or two cases in the past where one of my Debian softraid boxes had a disk issue, and I think Debian defaults to allowing it to boot with a degraded RAID.
+Debian does not care wether or not your raid is safe or not while it boot.
+In fact, I'm nearly positive that it does, because if you aren't using the write-intent bitmap feature (which adds a big performance hit if you use internal bitmap, much butter to store it on a separate disk), and your box crashes/reboots for any reason (without shutting down cleanly), it'll come up with a degraded RAID, and then resync after starting.
+I would try to boot into something resembling single mode running off initramfs and "fixing" it.

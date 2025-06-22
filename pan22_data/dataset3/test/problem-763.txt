@@ -1,0 +1,14 @@
+If you want, you could use two IP addresses, one for your secure site and one for the non-secure sites, and only listen to 443 on the secure IP.
+Another solution would be to put all non-SSL websites on a completely separate IP address that does not have a listen on the https port.
+Note that I normally use deny all but in this case added the 404.
+It is not possible with NGinx (or, by default, with anything else).
+This should be the first server block or at least before any other ssl blocks.
+If you totally do not care about older clients (such as the ones using Chrome or IE on Windows XP) and you are ok supporting only clients that use the SNI extension of the TLS protocol, then you can use haproxy in front of nginx to do this.
+Without Server Name Indication (SNI), the hostname is part of the encrypted payload.
+Edit: on second thought, if i recall, because nginx supports SNI, even if a client that doesnt support SNI connects, it will still cause nginx to return 444 while trying to match a certificate to send...thoughts?
+To generate the self signed certificate you can use the following commands
+For non-SNI support (read: legacy) you could always get a cheap certificate for wildcard-catching, then you'd be able to handle all connections and redirect as wish with no issues.
+You can do what you are looking for by adding a server entry with a fake ( I use self-signed for localhost ) ssl certificate that returns the error you want.
+Even with SNI, a browser won't accept a redirect from a HTTPS URL without first going through the HTTPS handshake + validation process.
+which will dump non-matched servers (from a config i used to use, i don't currently, so  apply grain-of-salt) As others pointed out, i don't believe you can do a redirect this way, only a drop.
+I'm not sure what exactly you tried, but if you do have SNI support, one method is to form a catch-all:

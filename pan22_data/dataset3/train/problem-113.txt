@@ -1,0 +1,22 @@
+So, changing it in production without carefully testing the entire app is dangerous.
+I need to better understand the possible negative repercussions of adjusting these parameters.
+Generally you want to set these parameters BEFORE you go live.
+It sounds like you do  not know alot about database tuning since you mention response time instead of query plans.
+Most DBAs don't grasp the difference in concepts between fix and design.
+The reason it is not recommended to change this parameters is that they have db-wide impact on the optimizer - so when you change it to tune a specific query, it will likely have some impact on many other queries.
+If they are bad, I leave them bad and tune the queries.
+What is the correct way to set the optimizer index cost adj parameter for Oracle.
+If you change them after you go live then you risk change other queries that were tuned to bad settings.
+They lead to more full table scans and bad queries.
+If you want to use both system statistics and the optimizer parameters, google it up, Jonathan Lewis wrote about it (sorry, the site doesn't let me post more than one link)
+I am currently only seeing only an upside, much improved application performance and no downside.
+Common queries are reduced from 2 seconds to 200ms.
+As a developer I have observed huge performance improvements as this parameter is lowered.
+For batch processing the settings you want to start with are very different.
+The defaults for these 2 parameters are terrible for OLTP systems which are the most common type of database.
+After you are live, you are fixing and that is when you need to be careful changing these parameters.
+I tinker with these a little, but those settings give me the best overall results 99% of the time on an OLTP.
+However, I do NOT touch them after we go to production.
+BTW, a good place to start with these parameters (note BEFORE YOU GO TO PRODUCITON AND ONLY IF YOU KNOW WHAT YOU ARE DOING!)
+There are lots of warnings on the net that lowering this value will cause dire issues with the database,  but no detail is given on what will start going wrong.
+Before you go live in you are in design and development phase.

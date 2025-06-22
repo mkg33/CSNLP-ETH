@@ -1,0 +1,23 @@
+The NAT rule you need to set is a POSTROUTING rule (snat).
+If ABCD is a specialized router/switch device then it should just work.
+There should be a rule that drops packets with RFC1918 source addresses.
+There is already a range specifically alloted for this type of use.
+If linuxbox (p.q.r.t) and INTERNAL (p.q.r.s) are on the same subnet then you should not be hitting ABCD as it's really acting like a masquerading router in the scenario you described.
+Keep in mind that FTP has two very different protocol schems you need to account for.
+Just plug in the internal network server to a spare port.
+You will no longer have two NICs but only one bridge device in their place that will act as a single "NIC".
+The /16 network allows for 2^16 = 65,536 (minus two for router and broadcast address).
+You can of course limit the hosts that get traffic logged if you have a lot of FTP traffic on your network.
+You can add iptables logging for specific traffic to see if ABCD is the problem, something like this:
+iptables -t nat -I POSTROUTING -o nameOfABCDInterfaceGoingToInternet -p tcp etc...
+What womble is saying is correct, but if this is cabled the way it should be, then ftp should work and if it doesn't your problem is probably not with ABCD.
+Your firewall rules should be updated to reflect the new device (the bridge).
+If you need to restrict the traffic between the machines in INTERNAL and linuxbox then you need to write those rules.
+BTW, you should not pick your own p.q.r.0 network numbers.
+Everything will appear to be in the p.q.r.0/24 network.
+POSTROUTING means after rooting, so you can match only packet going to INTERNET because your routing tables already decided it.
+If, however, ABCD is a server with multiple NICs (as it appears to be from your question) the then you will have to bridge the NICs together.
+Turn this off after your done because it can fill a log really fast.
+I have to assume that forwarding is enabled on ABCD or you would not be hitting the internet from there, and I also have to assume that the proper routes are in place or your internal clients would not be getting traffic back.
+As for communicating to INTERNET, you need only alter those rules already working for linuxbox to reflect the new device.
+The /16 network is 192.168.x.x and it seems like you should use it.

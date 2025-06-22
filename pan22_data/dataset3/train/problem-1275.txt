@@ -1,0 +1,26 @@
+(If you have a use case that requires the size, please edit your question.)
+https://github.com/mircea-vutcovici/scripts/blob/master/vol_resize.sh
+Hopefully it won't get so full as to trigger alerts about almost filling up.
+It's pretty simple to convert bytes to KBs and compare if there's any significant difference between those two.
+And finally, I run my new script to see that the new space has been incorporated into the filesystems
+Just taking a look in the script you will realize that the answer is a bit more complex.
+Specifically, I had to use tune2fs for EXT4 and xfs_info for XFS.
+I should note that since determining the size of the filesystem is dependent on that filesystem's tools, you have to personalize it for which filesystems you are using for your LVM disks.
+Now I run the script and see the free space in the LV
+I had to not use the variable name PATH since it is has a reserved meaning in shell scripting.
+Others have listed tools that could be used to answer your question, but I wanted to produce an actual working implementation that you could use.
+Prevent forgetting the file system again by adding lvresize --resizefs to your scripts or shell aliases.
+In a similar way you can change it to run the commands that show the block device sizes and the file system size.
+So, I wrote a bash script to do exactly what you are asking: reporting how much free space is at the end of the LV not yet absorbed by the FS (such as happens when someone forgets to grow the FS itself).
+To get unused bytes, you should get partition table, and take a look at boundaries of partitions and boundaries of filesystem.
+df gives you total size as seen by FS, with -k — in KB.
+Ideally the lack of space will keep appearing on capacity planning reports.
+Now, I remember to grow the XFS and EXT4 filesystems:
+I personally use both XFS and EXT4, so the script below implements both of them.
+There are multiple ways how to do that, so I am going to name a few of them
+You can invoke parted to print free space in the partition table
+sudo blockdev --getsize64 gives you pure block device size — in bytes.
+I solve the problem of the resize with a script that find all block devices involved and prints the resize commands them accordingly.
+First, I extend a couple of my LVs, but forget to extend the FS
+The default size of the entire block device, plus online growth, makes the size check unnecessary.
+You can see how many sectors there are on the disk, and you can see number of sector at the beginnig and at the end of every partition, so you can calculate if there is any free space left.

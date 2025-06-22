@@ -1,0 +1,17 @@
+In the router :  Change 802.11bgn to just 802.11bg.
+However as you have not run the suggested wireless information script, it's hard to know.
+So check to see if any of your modprobe.d files contain config options for cfg80211 and try commenting/removing them.
+In Network Manager at top right corner of the screen, click on Edit connections -> Wireless tab, and set IPV6 to Ignore.
+For more details see Linux Wireless Regulatory info.
+In particular, you've not specified what wireless card or driver is in use, but the last link refers to a Lenovo T440s which may have similar hardware.
+This is most likely a configuration issue or a software conflict on your client.
+Suggestions include misconfigured supplicant software, or having multiple applications trying to manage the wireless at the same time:
+I saw a similar issue which turned out to be down to an old modprobe config file (in /etc/modprobe.d) I had installed a few years ago.
+In the driver : Depends on your WiFi card (but the above might be enough).
+Set the wireless channel in the router to 1 or 11, then save the router configuration and reboot it.
+http://ubuntuforums.org/showthread.php?t=2198221&page=3
+Also it may help to check to see that the REGDOMAIN is set in /etc/default/crda.
+This means your wireless software is deliberately choosing to disconnect from the access point.
+Specifically it specified an option for the cfg80211 (WiFi stack module) options cfg80211 ieee80211_regdom="EU"
+After commenting/removing the option and rebooting it was fixed.
+Change the router WEP encryption to just WPA2 (CCMP)(AES) not (TKIP), if you have that option.

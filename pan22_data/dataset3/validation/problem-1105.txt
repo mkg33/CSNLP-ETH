@@ -1,0 +1,19 @@
+But as @Alex pointed out, trying it is a great learning experience.
+The problems @Alex raised with sterilization are just the tip.
+It gets even more complicated when you start adding generics.
+Model Binding and many other things expect a no-param .ctor.
+The compare I use here takes two Funcs for each interface method.
+It performs only type/inheritance matching because I'm not creating a second Autofac and I think I won't need anything more complex any time soon (aka YAGNI).
+Before I knew it I was modifying .Net libraries to make things work, and knew it was time to stop...
+Do you think this DI is smart enough or does it need any improvements?
+I don't use a DI container because I use it for creating commands based on the command line.
+You are putting pretty strong limitations on classes you can activate this way - a single .ctor, no default .ctor(which can make serialization troubles later) and all .ctor arguments should have different types, otherwise .Join will go crazy.
+Activator has generic and non-generic implementation that use different approaches.
+If the parameters and dependencies counts don't match I use Except to find the missing ones and put their names in the exception message.
+To find the dependencies I use a Join with a custom comparer.
+I went this way once and two months later I wished I hadn't... unless you need to save every byte of RAM, home-made DI surrogate simply doesn't pay off.
+You create and instance of the activator, specify the type you want to create and pass an array of dependency caditates.
+It runs over constructor parameters and tries to match a dependency and maintain the order of the parameters.
+In one of my projects I needed a simple dependency incjection activator so I've built one.
+So, all in all, your DI is rather stupid, and if you try to make it smarter, you'll unavoidably end up with "another Autofac".
+This time without examples because I think the usage is strightforward.

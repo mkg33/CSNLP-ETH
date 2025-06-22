@@ -1,0 +1,20 @@
+So in your previous setup I suspect your fully qualified domain name was something more then just the bare hostname.
+For dynamically assigned addresses (DHCP) you have to add a "."
+Alternatively you can add a domain name here as well.
+However, having just installed Tomato onto my Asus N66U, trailing dots are always required.
+to make it actually do a dns lookup (mostly a problem with local domains/hostnames for intranet sites or LAN resourses) here is the solution:
+For statically assigned addresses you have to add a "."
+So your routers hostname would be router.local., and your DNS resolvers would have a search patch of local.
+That when your clients perform a lookup for router, the DNS client will automatically append the .local.
+If you found this thread due to a similar problem without using ddwrt, but using dnsmasq on linux and using windows hosts that query it, requiring you to add a "."
+Does anyone know how to configure dnsmasq to do so?
+to the "Append these DNS suffixes" under "Advanced TCP/IP Settings".
+Modifying my HOSTS file is not acceptable, and I've shut off NetBIOS over TCP/IP completely (I'm slowly transitioning to a Linux-only network), so that is not an option for numerous reasons.
+With a fully qualified name defined, you could then the DNS search path setting for your network via your DHCP server.
+I had DDWRT on a Linksys router of mine many, many years ago, and it resolved local hostnames via dnsmasq without the trailing dot.
+For example, "ping router" doesn't work, but "ping router."
+Similar to the static settings, but in your DHCP server settings.
+I realize that a trailing dot after a hostname is technically "correct", but it's a pain in the butt to type and is unintuitive for non-technical users.
+Assuming my router's hostname is "router", I'd like dnsmasq to allow me to type "ping router", "http://router/", etc and have it work as expected.
+If you are using DNSMasq as both your DHCP and DNS server making this happen should be trivial.
+Hope this helps, there is not much info out there on this problem.

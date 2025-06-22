@@ -1,0 +1,10 @@
+First, do you have a client-connect script in place?  If so, any IP directives from that take precedence.
+Secondly, according to the OpenVPN documentation, the client-config-dir only uses the client's X.509 common name to determine which file to use.  You can validate if the joel file is not matching by creating a DEFAULT file.  It appears that you are not using client certificates at all, which may preclude the use of the client-config-dir option.
+I have OpenVPN setup and running correctly. The problem is I want to assign static IPs to certain users on my VPN, so they always get the exact same IP every time.
+My setup is for PAM authentication, this is working fine:
+My username is joel and also it is working fine as I can login to the VPN from any PC using this username. Here is my server.conf file for IP static config:
+CCD Directory and the User file are both owned by nobody as my process runs as them:
+Even with all of this I still do not have a static IP when I connect as user joel. I get different IPs everytime, from .6 to .10, but never .4.
+Using username/password authentication disables any Common Name use by OpenVPN. So it doesn't set the client Common name when logging in.
+The solution is to set the following flag in the server.conf file and restart the OpenVPN server:
+This tells OpenVPN to set the username to the client's Common Name when connecting. Since the file is named after Common Name this is required or OpenVPN doesn't know which file to check.

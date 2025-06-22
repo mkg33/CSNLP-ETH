@@ -1,0 +1,11 @@
+This suggests that if [type] == "httpd_access_log" { isn't catching all possible instances of timestamp, or the pattern for your date filter isn't catching this.
+If it actually is entering the pipeline like that, figure out why.
+This is a sign that the timestamp field hasn't actually been run through the date {} filter.
+That's telling you that the plugin that failed, was the elasticsearch output.
+Here are the key parts of the error message that show you this.
+The fact that it says number_format_exception says that ElasticSearch is expecting a non-string as input.
+What's happening here is that the timestamp field in the index is not accepting the string you're attempting to put into it.
+This isn't 100% a filter problem, the output is merely the symptom.
+Logstash is attempting to write a string to the timestamp field.
+The error string was cleaned up, but I'm not sure if your source really is issuing a timestamp like:
+(Clipped for clarity) That's attempting an index action on ElasticSearch.

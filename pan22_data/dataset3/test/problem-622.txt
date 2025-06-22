@@ -1,0 +1,32 @@
+This would also explain why you are seeing low response times and high response times during the busy period.
+BTW, the 18:00 "event" is enough evidence for me that it's nothing to do with data center congestion/activity.
+A sample pool of 800-1000 requests is a good sample count for this, a pool of 50-100 requests maybe not so much.
+If a given script / database / whatever has not been used recently, the relevant cached data may have been dropped in order to free up memory for the rest of the operating system.
+In busy periods this won't occur as the last query will have been frequent.
+That suggests that there is a change in the profile, and you possibly have 2 distinct types of clients:
+Though @BillThor's answer may be correct, it seems unlikely that the period of low load is entirely taken up by backup processes (i.e.
+This might be indexes on a database, or O/S buffers in relation to a file, or anything else similar.
+During the day, streams 2+3 are well hidden above the 95% percentile.
+My hypothesis: you've got three distinct categories of requests:
+response time minus queueing), and response times tend to follow a Weibull distribution which means that the mode (or the most common value) is just above the minimum.
+A normal chart will be much smoother during the transition to off-peak hours.
+At this stage I would do a deep dive into the logs to find out what is different about the 18:00 low-volume samples compared to the high-volume samples before and after it.
+In that case traffic drops as request times grows (for whatever reason), due to client-side queuing.
+Most of the time before and after, we have the high volume profile--high TPS and low latency.
+If you assume that the number of slow requests isn't a linear function of request volume, such that an order of magnitude increase in requests doesn't result in an order of magnitude increase in slow requests, then higher volumes of requests will result in lower average request time.
+This relation may happen in the other direction if the request senders wait for a previous request to complete before submitting a new one.
+While the overall pattern looks normal, there is a very sharp break occurring at about 9pm, and then again at about 7am.
+And 95% percentile depends on stream 3 so it can never even show on the graph.
+So the step-down in the 5th percentile says to me that there is a sudden break in the series, and the service time has actually dropped even though both the variance and the average response times have greatly increased.
+A query is then going to have to reconstitute this information if it has been a while since the last query.
+At night, the 50 requests per minute are correspondingly 20+20+10.
+For that to be true, the congestion would have to cause a drop in TPS, which is possible at 18:00 but extremely unlikely to be causing a sustained, and smoothly curving drop in TPS for 10 hours between 9pm and 7am.
+The third hint is the step-down in the 5th-percentile response times.
+First off, there is something really weird going on with your TPS.
+The more I look at it, the more I'm inclined to think that there's a problem with the data collection.
+And so, the 50% percentile's result now strongly depends on the result of stream 2.
+But at around 18:00 there is a sudden drop from 800-1000 RPM to less than 400 RPM.
+What you're seeing there looks, to me, like it could be a statistical issue.
+I actually prefer to look at the min response times (but the 5th percentile is possibly better) for two reasons: It tells me service time (i.e.
+Or it can be an artifact of your measurement - if the graph above shows completed requests, as opposed to arriving requests, the rate will drop as request processing time grows (assuming finite capacity :D).
+It might not be, @BillThor's answer could well be right, but I'll post this for completeness.

@@ -1,0 +1,7 @@
+I have an Apache server running on port 8888 in my dev environment. I would like to have my WebSocket server use the same port. (The reason is in the live environment it's not 8888 and we want every users to be able to use the websocket so port 80 is the best).
+I thought that if I can proxy the call to 8888 to the internal WebSocket that is hosted to the port 12345 that the socket can works.
+I know the code Javascript and PHP server for websocket works because if I simply put the port 12345 directly it works. But now, I want to use from the external the port 8888.
+I think you'll want to use Apache 2.4, and use its mod_proxy_wstunnel module.
+http://httpd.apache.org/docs/2.4/mod/mod_proxy_wstunnel.html
+I would even think it preferable to have you API endpoint on a different hostname (eg. api.example.com versus www.example.com), which would mean that you can separate you API traffic from non-API traffic, and use infrastructure that was suitable for each. (Example: I have recently heard that the Varnish crowd have released a product like varnish but for API management --- and that's about all I know of that at present).
+I wouldn't be comfortable having Apache (2.2 at least, which is what I use) be serving up an API endpoint due to C10K concerns.

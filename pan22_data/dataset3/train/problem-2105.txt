@@ -1,0 +1,15 @@
+I could type copy running-config startup-config before the end.
+Here is the output from a switch that receives the file correctly from TFTP:
+My configuration file is simple at the moment it basically allows telnet/www access with username/password cisco
+I am not going to go into detail with DHCP and TFTP configurations just let you know what you need to be aware of.
+The cisco switch that needs to pull config obviously needs to be able to contact the DHCP Server, so vlan1 is probably where you want to be sure dhcp is passed out.
+If there is no filename specified or if that file is not available, the switch will start asking for default configs, this will be different per switch/ap/router.
+If it cannot get data on the tftp address specified it will also try on 255.255.255.255 so it will ask on broadcast for a tftp server as well.
+filename is specifying configuration file you want cisco device to download which is on the TFTP server.
+The TFTP and DHCP could be set up on a 2960 switch as well if you wanted to, there are guides for this on the interwebs.
+So I have found a way to do this that should work for almost all cisco 2950/60, 35xx etc models and firmwares.
+The files it requests can be seen if you have console access to the device.
+But if you just want this to run in running-config every time the switch starts your good to go.
+Here is raw output after bootup on a Cisco 2960 switch where the filename specified is not available on the TFTP server so the switch will start asking for other files:
+For my CentOS 6 distribution I needed to set the dhcpd options filename and next-server
+If someone wanted they could make a do telnet "directorip" on a 3560 switch and check out what the director is replying.. i'm sure it's easy from there to actually create custom configs based on serial number of switch.

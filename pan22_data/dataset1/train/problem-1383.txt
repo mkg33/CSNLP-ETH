@@ -1,0 +1,8 @@
+I want to connect two servers to eachother over the internet. For various reasons I cannot use IPSec for this.
+I would like traffic to be transparently encrypted as if I was using IPSec transport mode. I have decided to use routing for this (but I'm open to better alternatives)
+My tunnel is up on 10.255.255.0/30, A uses .1, B uses .2. Let's say server A is at 192.168.0.100 and server B 172.16.0.200.
+While I could add a route to encrypt all traffic (using on A ip route add 172.16.0.200/32 dev tun0 via 10.255.255.2), doing so kills the tunnel because OpenVPN traffic is using the same remote IP to keep the tunnel up.
+I need a way to route the actual OpenVPN tunnel through eth0 but otherwise use tun0 to carry all traffic between server A and B. I have ip_forward enabled on both servers and appropriate firewall rules to allow the traffic, but I am not sure where to start in iptables to accomplish this.
+I guess what you need is an additional routing table for all traffic between 2 hosts except openvpn. You may try something like this:
+iptables -t mangle -A OUTPUT -d 172.16.0.200/32 -p <vpn_protocol> ! --dport <vpn_port> -j MARK --set-mark 2
+ip route add default via 10.255.255.2 dev tun0 table 2

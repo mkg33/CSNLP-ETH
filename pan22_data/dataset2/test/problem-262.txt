@@ -1,0 +1,11 @@
+.zip files support unix permissions and symbolic links if created using the zip utility installed on most Linux systems. However, it doesn't support all the extensions supported by tar, such as hard links and extended attributes. But you can extract files from ZIP archives without decompressing the whole archive up to that point first, so that's a win.
+In a similar way, listing the file names with -t (--list) needs to decompress the whole archive, but discards all the file content.
+To extract a single or multiple files, tar will decompress the whole archive, but discard anything except the files listed as arguments.
+Another option is to copy the directory trees to a usb drive. That would allow easy access and would give protection from a disk crash. 
+If you're looking for a mountable compressed read-only filesystem, the top contender is currently SquashFS. But there's a catch... well, a few catches, really. Specifically:
+And it will print out the files in a long list like format including timestamps and sizes. It turns out that if you use two v options when creating the archive that it will long list out the files (instead of just plain listing them) as it adds them to the archive, so you can do something like this to auto create an index while you're backing up in one go:
+It's true that it needs to be decompressed, but that does not mean it's necessary to "unpack" all the files to the filesystem.
+You may want to look into fusecompress, which "provides a mountable Linux file system which transparently compress its content. Files stored in this file system are compressed on the fly and Fuse allows to create a transparent interface between compressed files and user applications."
+To understand why there is no index at the start of the archive, take into account that tar is originally made to work with magnetic tape devices; Hence the name tar - like tape archiver. On a tape, you want to add the next file at the end, you do not want to rewind to the beginning for writing an index.
+Note the use of two v options. Many other commands allow you to increase verbosity this way (ssh for example).
+Do you know about tar's t function for printing out the contents of the archive?  You can use it on a gzip compressed archive like this:

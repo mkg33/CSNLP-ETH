@@ -1,0 +1,8 @@
+file1.sh is getting executed when referred in file2.sh. How do i import the variables alone in file2.sh without executing file1.sh?
+Create an upper section of script with definitions (functions / variable assignments / etc), but no direct code execution.
+This is simply a matter of dividing up your code. I have a group of bash 'libs' that contain frequently used functions, and on a per project basis usually setup a small sourceable library for storing configuration data (constants). If that data includes populated arrays, then I will also use a version of Option 2.
+There are three options I use when I have a bash script that I want to behave differently when it is sourced vs. when it is executed (or in other words have data items in a script that I want access to without executing any code at that time). The comments touched on them to an extent.
+This one is usually only used in complex situations, and for this particular example it's overkill. I create a function in the file that I want to source, and in that function determine what should be available to the caller. In this case it's the two exported variables. Normally I use this mode when I have associative arrays, which are otherwise nearly impossible to hand around. Also, the tmp file should be deleted by the caller; but I didn't in this case:
+Just before the executable code section starts, place logic that will exit the script if it detects it is being sourced. 
+If your variables are all exported in the same way (export foo=bar), then you can source all of them easily using bash process substitution feature:
+The final common way I handle this is simply with a library file that only holds definitions, and has no code that will execute when sourced or directly run.

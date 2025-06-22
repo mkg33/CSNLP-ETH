@@ -1,0 +1,13 @@
+It is all about data, if you have similar data in multiple groups, there is no logic in storing it in multiple table. Always better to store same type of data in a table (entity).
+For example, when a group having an attribute Mobile_Number, then it there is no logic in storing Mobile_number column in multiple tables. You should have simply a table with Mobile_number and have relationship with the groups which have Mobile_number attribute.
+By doing this way, you can manage the data in much better way, for example, some groups may have a common attribute such as group_name, other groups may not have group_name but they may have group_number, etc...in this case you cannot insert NULL column in table if you store in a single table.
+Here comes, the concept of normalization and denormalization, as per your requirement you will store the data in table. Also, you should consider the  future requirements as well, in real world there will be unexpected business requirements, for example, in future your business may require a special attribute such Group_code only to specific groups, if you store it in a single table, you process of altering table every requirement is huge task. 
+I advice you to understand and gather the business requirements clearly and start with the conceptual data model to physical design, in the long run you will understand its benefits.
+I hope this answer will give you an idea. Thanks!.
+If you went with multiple tables, how would you identify them?
+You don't want to use Group Names as Table Names, because someone will create a Group containing a character that can't be used as such and break everything. 
+So you'd wind up with another table that links each table name to its Group name using some other, arbitrary identifier. 
+Assuming you did this; how would you then write any sort of query that goes across all of those tables, which you might need to do for Administrative purposes. 
+Let's assume that the database is powerful enough to be able to join or union that many tables in one query?  (MySQL, for example, used to be limited to 61 such tables). 
+Basically, the table-per-thing model is generally a Bad Idea and should be avoided. 
+Create a single Groups table, with a unique identifier for each Group and index it sensibly for the queries that you intend to run against it. 

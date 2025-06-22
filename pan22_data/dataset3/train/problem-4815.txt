@@ -1,0 +1,22 @@
+Have you configured NSS to talk directly to the LDAP server, or are you going through a proxy such as nslcd?
+However, this is only set after login, so you'll still get an error that login can't find the users home directory.
+Doesn't seem like changing the local /etc/bashrc would help because it might not even be loaded!
+I'm using CentOS 5.3 to connect to use Kerberos for authentication and LDAP for user information.
+You could also do this by modifying the nsscache source directly.
+If you can't do that, I can suggest something that is a major hack but would get the job done:
+The best thing will of course be to change the data in the LDAP server, and save your self the trouble, but here it goes:
+So, when using these components -- Kerberos, LDAP, pam, autofs -- when and where can I specify the environment for my users, if necessary overriding the environment set in LDAP?
+Hopefully at this stage you'll be able to use automount to map the home directory to the correct NFS server
+If so, look into configuring the proxy to rewrite the user's home directory attribute.
+I agree with Mark, your best bet would be to modify the entry in LDAP.
+Without having any access to LDAP, I need to figure out how to force users to use the local directory "/home/username" as HOME.
+Then in the same cron job that will periodically update cache, add a script that will rewrite the home directory attribute for the users to the one you want.
+This will also have the nice side-effect of reducing/mostly eliminating queries to your LDAP server :)
+You can use a similar method to alter the default shell.
+2nd phase of ugly hack is to add a "cd ~" at the end of /etc/profile, which will bring your user to the right home directory.
+Add the following line at the end of /etc/security/pam_env.conf:
+This will override the users $HOME variable to point to the right directory.
+Instead of doing the lookups directly to LDAP, use nsscache to pull user data from LDAP.
+Unfortunately, the home directory for all users as stored in LDAP is "/".
+Plus, I might need to edit the user's default shell, which is also stored in LDAP.
+I've tried editing /etc/bashrc but it seems like at that point it's too late to set HOME.

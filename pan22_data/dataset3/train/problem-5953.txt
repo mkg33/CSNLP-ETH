@@ -1,0 +1,24 @@
+            int insertionPointForNewChar = -(binarySearchResult + 1);
+Using Arrays.binarySearch(char[], char) to look for a char in a char[] seems to be faster than searching for a char in a String using String.indexOf(int).
+        int binarySearchResult = Arrays.binarySearch(distinctChars, array[i]);
+To ensure that distinctChars stays sorted, it is important to insert new chars at the correct position when updating distinctChars, which is why two calls to System.arraycopy are needed.
+private static char[] getYOURCharArray(char[] array) {
+On the other hand, Arrays.binarySearch(char[], char) requires the char[] to be sorted, which is why we need a second char[] that stores all distinct characters in the order they were first encountered in the original char[], assuming the returned char[] must fulfill this requirement (if it doesn't, then the array distinctCharsInOriginalOrder is actually not needed and you can return distinctChars directly at the end of this method, which might speed up the process a little bit).
+Apparently, the larger the original char array, the greater the difference between the performance of the two algorithms.
+I have no idea why the first simulation with the String algorithm takes twice as long as all the others.
+(sorry for the brevity and typos, writing on a phone)
+Maybe I did something wrong, or the JVM does something mysterious here.
+It was like that every time I ran the program, even when I switched the order of the two tests (meaning the first String algorithm still took twice as long as the others, even when the char[] algorithm was tested first).
+    return Arrays.copyOf(distinctCharsInOriginalOrder, distinctChars.length);
+If input isn't limited to ASCII, simply use a HashSet instead of the boolean array but the array is faster.
+Assuming that you are only using ASCII characters you can simply keep a boolean array and keep track of characters seen like so:
+            distinctCharsInOriginalOrder[distinctChars.length - 1] = array[i];
+    char[] distinctCharsInOriginalOrder = new char[array.length];
+It takes advantage of Java's native support for arrays instead of using an internal String:
+            System.arraycopy(distinctChars, 0, updatedDistinctChars, 0, insertionPointForNewChar);
+Here are the results of 10 simulations with 500000 random characters:
+I did some simulations with random char arrays, each containing 100000 random characters.
+Here is a slightly convoluted algorithm that yields the same result as yours but is faster.
+            char[] updatedDistinctChars = new char[distinctChars.length + 1];
+            updatedDistinctChars[insertionPointForNewChar] = array[i];
+            System.arraycopy(distinctChars, insertionPointForNewChar, updatedDistinctChars, insertionPointForNewChar + 1, distinctChars.length - insertionPointForNewChar);

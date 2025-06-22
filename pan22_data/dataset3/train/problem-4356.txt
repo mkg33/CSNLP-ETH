@@ -1,0 +1,41 @@
+Generally stacks share a table between the members (eg, Juniper's "Virtual Chassis"), as they often have redundent paths, and a standard table can't work.
+Then your PC will answer to my PC and they will both know each other's mac address.
+Spanning tree is the bane of many professional lives; add to that the fact that Ethernet has no loop protection; a minor misconfiguration could lead to broadcast storms that require you to manually intervene and down links in order for them to subside.
+Let's just say going beyond a /8 (255.0.0.0) is not very reasonnable and will make you go out of private IP space.
+If there is going to be one administrative IT authority, then just build a hierarchical network; having users served by shared routers won't be a problem.
+The PC on my switch is going to need your PC's MAC address and to do just that it will need to emit a broadcast ARP message (Level2 Broadcast but Level3 unicast since it has your PC's IP address).
+For you question concerning macs that they don't directly control I think you mean macs of PCs that aren't directly connected to their ports.
+Then it arrives on your switch who will do the same.
+Desktops (and laptops) tend to be chatty, so there's noticable broadcast traffic at only a few hundred machines.
+In terms of giving each department a router and meshing them, how is this network to be administered?
+Well managed servers (eg, arp expiry extended into hours) add almost no broadcast load, so limits on your edge router throughput might be the limiting factor.
+In the process, both switch will write down the mac addresses they didn't know.
+When Host B sends a response, the following happens.
+(To simplify things, we'll assuming that host A and host B have static ARP entries for each other, so there is no need to ARP for MAC addresses).
+Switch 2 receives the flooded frame on its Port 2.
+3) It depends very much on the scale of your network, and how much intranet vs. internet traffic you expect to see.
+Switch 1 receives the forwarded frame on its port 2.
+Each switch maintains its own bridging table, which is built by listening to the traffic each switch receives on a give port.
+Otherwise each switch needs their own table, although through protocols like CDP and LLDP they can get more information from their neighbour.
+As you add more complexity to your switched network (VLANs, Spanning Tree), more subtleties come in to play, but the base algorithm remains the same.
+Remember, switch-only networks operate on level 2 so they are (theoreticaly) independent from level 3.
+For low traffic servers (or an exceptional network) many thousands of servers could easily be on the same broadcast domain.
+If each department is going to maintain their own IT staff, then a router per department and internal peering may be required, but it will most likely complicate your network design.
+I know the difference between a router and a switch, but there are a few fuzzy spots in my understanding.
+Even if your network is small, have at least one router off which all your layer 2 subnets hang; it's just easier in my opinion.
+Your PCs and your switch are all alone in the networking world when I come along and connect my switch.
+Again, as its bridging table is initially empty, it follows the same process:
+I'm going to try to answer all of your questions as clearly as possible.
+If security's not an issue, then it simply comes down to broadcasts.
+If on the other hand, you expect everyone to access only a common set of services (AD, email) and the internet, then a single core router (or a pair, for redundancy) may be sufficient.
+If there will be a lot of communication between departments, it may make sense to have a hierarchy of routers so that pure internal traffic does not impact internet access for everyone else.
+In terms of learning MAC addresses, this same process is followed regardless of the number of switches and the number of devices connected to them.
+Well let's take for example PC A on my switch and PC B on your switch.
+My switch will broadcast it on every one of it's ports.
+The two switches are interconnected via Port 2 on both.
+Assume at the start the the bridging tables of both switches are empty.
+Both are valid views, however in these days of Layer-3 switches that run OSPF I tend towards the second.
+Consider the following example (apologies for the terrible ASCII art):
+Both switches are connected via a standard uplink.
+2) My personal bias is to minimise switching wherever possible.
+I would definently say a hierarchy of routers because it allows you to have clearer configuration and enforce policies on a per-department basis.

@@ -1,0 +1,13 @@
+On a domain controller, the first and second DNS servers should be other domain controllers.
+If it is depending on the offline server for DNS, you will have this problem.
+Make sure the secondary DC can see itself as a DNS server for the domain.
+http://blogs.msmvps.com/acefekay/2009/11/29/dns-wins-netbios-amp-the-client-side-resolver-browser-service-disabling-netbios-direct-hosted-smb-directsmb-if-one-dc-is-down-does-a-client-logon-to-another-dc-and-dns-forwarders-algorithm/#section7
+https://blogs.technet.microsoft.com/stdqry/2011/12/14/dns-clients-and-timeouts-part-2/
+In a deleted answer, you commented that "1st and 2nd they are configured fine and both DCs are pointing to themselves and clients can do nslookup on both server".
+Also, a trick to log a client in when the DC is down is to simply pull the network cable when entering the password.
+Whenever I've had problems with authentication, removing the Ethernet connection will force the PC to use cached credentials.
+So long as that user has logged onto the PC before it should at least get you logged in to troubleshoot, then reconnect Ethernet.
+It may be a timeout issue at the client that has previously seen the primary.
+If your clients are set to DHCP, then why don't you just add the secondary DC as secondary DNS server, assuming DNS is also running on the secondary DC?
+Try an ipconfig -flushdns on a client and see if it makes a difference.
+All of your clients should have at least 2 domain controllers as their DNS server.

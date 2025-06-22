@@ -1,0 +1,16 @@
+First of all, SQL Server (2016) does NOT want to write to a mapped network drive. It doesn't seem to matter which user mapped it, how "accessible" the share is on the Linux box (SELinux off, Firewalld off, directory permissions set so anyone could do whatever they desired). It looks like it doesn't even try to write there - there's absolutely nothing in the logs on CentOS box.
+I have a stored proc that's going through the tables, getting data, and write the result into a csv file (mainly to provide up to date data for FTP customers).
+Next step was to create a user with limited access, that samba could use as guest account instead of default "nobody":
+Samba logs absolutely nothing, which leads me to believe SQL isn't even trying to touch that share. There's nothing at all on the Linux side that would suggest SQL tried to make a connection.
+Update lookup tables in SQL Server to use network path instead of local directory, see it finally doing what you want, have a beer and celebrate.
+With the benefit of hindsight - @Aaron Bertrand's suggested approach is the most sane way of doing this - Export data to a local share on SQL Server box, mount it on Linux box, and set a cron job to pull the data.
+My current theory is that it's refusing to do it because it's not SQL Server's service account that mapped the share, so here goes:
+SQL Server reports that query was executed successfully, but the output file disappears into a network black hole somewhere along the way.
+As I'm setting up new FTP server, I decided to try and ditch 12672 batch scripts transferring files from the DB server (Win Server 2012 r2 running SQL Server 2016)
+Any suggestions appreciated. I can do / change whatever I want on the Linux box, Windows side of things is a bit more complicated as my knowledge / experience with Microsoft systems is "mediocre" at best.
+Alternately, as Aaron Bertrand alluded to in a comment, write a utility to query the data from SQL Server and write directly to the samba share on Linux.
+When writing it to the local D: drive, everything runs fine. File writes as it should and everyone is happy.
+In order to map a network drive under the SQL Server Service Account, you need to login to the server as the service account.  Then use net use /persistent:yes to connect the share.  This should make the share available to the SQL Server Service Account automatically each time it logs into that server.
+I'm not sane however and was determined to do things my way (also, I still believe it's a better way to handle it in our case).
+Giving SQL Server UNC path (\\1.2.3.4\share\file or \\server-name\share\file) made things better, at least I could see that it finally tries to do something, but gets shut down by samba. A lot of cigarettes and swearing later - SQL Server does not try to authenticate as the account it's using to get access to the samba share. It sends no credentials whatsoever and therefore gets defaulted to the guest account (Which, of course, I had disabled). Below probably does not belong here, as it's got nothing to do with databases and everything to do with samba/permissions, but someone may find it helpful one day so here goes.
+Having said all that, instead of using a drive letter for the share, simply write directly to the Linux SMB share via the UNC name... so \\linux-machine\share\some-file-name.csv

@@ -1,0 +1,9 @@
+I recently setup centralized authentication system using OpenLDAP. Now I need to extend the users that are defined in the database to include a new object class that contains some security related data about them.
+Look inside bundled schema if there is the object of your needs (located, on a debian filesystem is /etc/ldap/schema)
+As an example (taken straight from openldap manual), if your file contains this it'll add/modify all those fields
+After you can modify your ldap entities and attached to them new objectClass (and, by extension, new attribute types).
+Here is an example LDIF file to add the objectClass posixAccount to an existing entry uid=testuser,ou=people,dc=example,dc=com of e.g. objectClass inetOrgPerson:
+You can run ldapmodify to modify one or more entries, you just need to feed to the program the credentials and a file containing all the changes you want to do
+If you want to build your own attribute type and/or your own objectClass you need to request an OID object number (OID Registration).
+The - are important to separate the add blocks. One has to make sure that all necessary attributes (for posixAccount homeDirectory, uidNumber, gidNumber) are added in the same file.
+The number following the YOUR_ATTRIBUTETYPE/YOUR_OBJECTCLASS must be unique (ie : one number for each attribute)

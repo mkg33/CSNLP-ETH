@@ -1,0 +1,13 @@
+I eventually solved this by using the following advice and settings from the open-iscsi documentation:
+If so, it's looking like this write error is being passed up to the domU.
+Setting up in this fashion could prevent the segfault in the above situation when combined with the other suggestions.
+Best practices security wise state you should have "/" mounted ro, and that any filesystems that need rw should be mounted seperately, (i.e, /var and /tmp).
+The domU doesn't "know" that it's an iSCSI device, so it's behaving as though the underlying disk had gone away and remounting the filesystem read-only (see mount(1) manpage - errors=continue / errors=remount-ro / errors=panic)
+Are there any messages in dom0 indicating any sort of read/write errors or scsi errors at the time of the failover?
+You mention that "all other I/O is failing" at this time - do you mean the domU or dom0?
+If there are directories under /etc that need writing to, they should be moved to /var/etc/path and symlinked to /etc.
+After setting up the connection to each LUN as described above, the failover works like a charm, even if it takes several minutes to happen.
+Um...Part of the problem is also that you aren't running / as RO.
+Usually when setting up an HA iSCSI solution I use multipathing rather than virtual IP takeover - it allows greater visibility to the host and you don't have an iSCSI session suddenly disappear then needing to be restarted - it's always there, there's just two of them.
+From the dom0's perspective, it won't get changed to read-only - this read-only behaviour is a filesystem semantic, not a block device semantic.
+"/" should only be mounted RW in single user mode.

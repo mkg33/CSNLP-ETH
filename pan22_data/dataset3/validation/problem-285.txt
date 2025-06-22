@@ -1,0 +1,10 @@
+However, as SSH seems to give local identity files precedence over agent-provided ones, I always end up being authenticated as the wrong user.
+First use ssh-add -L to extract the public key from the agent to a file; then point IdentityFile to the extracted public key.
+I need ssh to only use keys provided by ssh-agent, and ignore any identity files in ~/.ssh.
+Background: I need to authenticate against a Git server via SSH.
+This is a bit easier to answer, actually – you can do that using the same IdentityFile (-i) option as always.
+But the real question seems to be "how do I make ssh prefer a specific agent-only key".
+ssh will accept it even without the private part, and will automatically use ssh-agent for authentication.
+So I need to use a different key, which I can only provide via ssh-agent, to authenticate as the correct Git user.
+There's no option to do exactly that (aside from renaming id_rsa to id_whatever).
+I have a ~/.ssh/id_rsa which authenticates properly, but its associated Git user does not have the correct repository access permissions.

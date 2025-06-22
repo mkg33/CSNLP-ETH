@@ -1,0 +1,10 @@
+We use a closed source application but the built-in reporting tools aren't great so we've started using a seperate database reporting application to generate our reports.
+You can use the v$sessions table to see all the active queries. If you are using PL/SQL Developer, then Tools > Sessions and then Active Sessions. 
+You can start running your report from the application, and follow the contents of the trace file (even tail -f, but it will not be human-friendly). After you have finished, disable tracing:
+There are several ways of enabling SQL tracing, it is just one of them. It may be useful to enable capturing bind values (as above), so you can match your report input parameter values to the query bind variables.
+You can find all the active sessions in the database and if you view the 'SQL Text' for these sessions, you will get the query running in the backend.
+You can read the raw trace file (if you are patient enough and interested in more details), but if you want only the query texts, you can use tkprof on the trace file (e.g: orcl_ora_6789.trc):
+In addition to this, you can refer the columns: Machine, Program, Logon time, Schema-name etc to pinpoint the exact session
+With aggregate=no added, tkprof will not aggregate the SQL statements and it will generate an output where the order in which the statements were executed is preserved. Without that, you can aggregate multiple executions of the same SQL and sort them, a typical use case would be to sort by elapsed time, so you the output starts with the longest running queries:
+I want to run the report in our old application and monitor what queries it is sending to the Oracle database so that I can copy those queries across to our new reporting application.
+Start the old application, and log in. Find your session in the database (let's say: sid=12, serial#=3456), and enable SQL tracing for that session, for example:

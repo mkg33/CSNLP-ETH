@@ -1,0 +1,5 @@
+See this wiki page for a starting point about the state of Parallel Query in Postgres and workarounds. 
+My instinct says it no. Instead of scanning one index we will now be scanning multiple indexes. However, another developer I work with insists that the query will be faster because instead of scanning one large index, the database will scan multiple smaller tables in parallel.
+It'll be up to you to test whether querying N small indexes works out faster than querying one large one for your particular use-case. FWIW, folk wisdom says probably not, but YMMV,  in particular you may do a better job vacuuming and keeping bloat down on several small partitions and indexes than with one giant table plus index(es), for instance.
+We have a table in Postgres that we are considering partitioning. We occasionally query an indexed field that is separate from one with the partition key.
+PostgreSQL does not currently support parallel query (though hopefully it isn't far away), so it will be digging through your partitions essentially one-at-a-time if you are querying based on something other than the exclusion constraint for your partitions.

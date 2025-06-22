@@ -1,0 +1,18 @@
+Then it starts over again with the next record; again all in one long string printed across all these physical piece of paper.
+If those 10 fields make up 10% of the actual data length, you are wasting 90% of the paper in his massive book you have printed out.
+My guess is either one or both of the following is occurring in your query in regards to the questions above:
+1) The actual rows are way off from the estimated rows (because the sql optimizer has no good estimates on what is actually in your tables)
+2) The IO from your query listed above is at least a magnitude higher than if you just inserted those same 10 fields into another table and ran the same query (if those 10 fields are no larger than your average across all those 99 fields)
+Or you could add one composite index on A, B, C, D, E, F
+If you create a non-clustered index on just these 10 fields you will save a lot of reading (because now these sheets of paper you have printed out will be completely crammed full of good data and the overall size will be 10% the original book.
+All your records are striped in one long string; at the end of the each record (99 fields), you have some delimiter.
+Also, if those 7 rows you mention in your other query are static values, I would recommend to even go further and do a filtered index on those 7 values OR a filtered index on one of your where criteria.
+Have you checked your actual rows vs estimated rows in the actual execution plan?
+Think of it like this: You have a word doc all your data printed out on paper.
+you can have a filter index if filter values are static or if not they you can have a composite index based on your filter columns and include rest of columns in it out of 15 col which are in that view if there is not too much insert,update,delete
+Now if you are wanting to read just 10 of those fields, you still have to look at that whole piece of paper and pull out just those 10 fields.
+Without even seeing any of that I would say you definitely need a non-clustered index.
+Also, have you checked the reads from your query compared to the reads from a table made up of just the fields you are selecting on?
+Even if you don't use those other 89 fields (since your query looks to only select 10 fields), SQL can only read what is on the page -- all 99 fields.
+but as you said there is no other index except clustered then you may probably bear the cost of another index...
+You will of course want to index on something that limits the most (based on the criteria of your query) and then just throw the other fields into an includes.

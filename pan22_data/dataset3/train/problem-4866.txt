@@ -1,0 +1,13 @@
+If you want to backup and restore the whole cluster, you should use "pg_dumpall", not "pg_dump".
+But it is also a bit harder to document, and more likely for files to get out of sync with each other.
+If you run "pg_dump" with -C option, it too will emit "CREATE DATABASE" commands.
+If your primary use case to restore a single database but without knowing ahead of time which one it will be, this would be faster than the previous options, and could be run on a smaller machine than the original.
+If you don't like any of those options, you could do a pg_dumpall -g accompanied with a pg_dump -C of each individual database.
+If you want to do something different in the future, then do something different in the future.
+The question you are referencing is a bit of a mess, I think you would be better off not referring to it at all.
+Or you can restore the whole, and re-dump what you do want out of it.
+Using "pg_dumpall" without any of the restrictive options will emit the necessary "CREATE DATABASE" commands.
+Or use vi or sed or awk or perl to munge the "pg_dumpall" .sql file so that it does only what you want.
+You can restore the whole thing, and then drop databases you don't want.
+It just introduces misconceptions to then partially remove some of them.
+Or just dump what you want out of the original server, if that is still around.

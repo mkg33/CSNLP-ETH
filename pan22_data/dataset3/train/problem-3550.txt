@@ -1,0 +1,12 @@
+This will remove any config file, original or modified, but custom files will be preserved, with an onscreen message.
+Is there a way to restore the config file from a package without un-ar-ing the package file?
+In Debian Squeeze — at least —, we also can do it this way, after su — or sudo for Ubuntu —
+The file belongs to package mysql-common which is needed for some vital functionality so I can't just purge && install it: the dependencies would be also uninstalled (or if I can ignore them temporarily, they won't be working).
+Note, by the way, that dpkg also recognizes --force-confnew and --force-confold options.
+It appears some of the other solutions won't work if the configuration files of the package are managed with ucf.
+You need to reinstall mysql-common with this command:apt-get install --reinstall mysql-common
+dpkg -i --force-confmiss mysql-common.deb will recreate any missing configuration files, ie /etc/mysql/my.cnf in your case.
+Conflicting (remaining) files will be prompted out to be kept or reset.
+This will care for the dependencies of mysql-server and reset all the missing conf files of the lot, including mysql-common.
+I've occasionally lost my config file "/etc/mysql/my.cnf", and want to restore it.
+To get mysql-server dependencies' list print on screen :

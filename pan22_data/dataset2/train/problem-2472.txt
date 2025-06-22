@@ -1,0 +1,9 @@
+There are often other times where it can be just as easy and perhaps cleaner to poll for the current state rather than trying to react to it using a listener.  
+Whenever a keyboard press/release occurs, your input system can then create a KeyEvent, populate it with information and then iterate the listeners and dispatch it.
+Any object that now wants to be informed about keyboard events can simply be derived from this listener contract and your input system simply needs to allow a way to register these dependencies.
+Hope this gives you an idea of how simply this can be handled without having to dive into function pointers :p.
+There are times where it makes sense for part of your code to react to state transitions in a generic semi-coupled way.  Listeners are a great way to do this with little effort in C/C++.
+When you combine this together, you can start to create elaborate high-level systems.  For example, an action/keybind system may act as an observer to the input system.  As input occurs, the action system updates the state of game action commands based on bindings between keys and actions.  Any other piece of code can query the current state of a game action command and react accordingly.
+This allows you to separate the actual key combinations from the actions and even allow actions to be triggered based on a series of key presses rather than just logical press/release state.  And instead of polling, you could react with listeners.
+For example, in a PlayerController, it may make more sense to simply do something like this in it's update method rather than trying to implement it as a listener.
+But rather than trying to over-engineer an input system by using function pointers, I would consider approaching input from two angles, and allowing both to be available.

@@ -1,0 +1,13 @@
+Your LAN would be presented with a single fully routed IP range, and cope with failures etc, but the downsides are then:
+"Bonding" (teaming, trunking, or a host of other terms) NICs is used to increase bandwidth into a switch, or for redundancy for LAN connections.
+Shorewall integrates nicely with the most popular Linux distros, and has actively-maintained packages for RHEL/CentOS, Fedora, Debian, and OpenSUSE.
+However, I would not recommend implementing that tutorial in a production environment.  It's pretty raw, and it will break your existing distribution-specific IP configuration (network-scripts, etc.), and it doesn't handle upstream failures automatically.
+Normal bonding with a single ISP obviously has its drawbacks, but to me they are outweighed by the quality/support/flexibility issues of doing it with multiple ISPs.
+You are then bonding over the public internet - which means you can't guarantee latency etc, and if you experience problems, it will be much more difficult to sort out.
+The Shorewall project (http://www.shorewall.net/) provides a wrapper mechanism that is far easier and more manageable, especially if you're not already a policy routing pro.  It calls itself a "firewall", but it can be strictly useful as a load-balancing, failover-handling gateway to multiple ISPs.  The project has a tutorial page that outlines some of the details, here:
+No, you cannot handle multiple ISP uplinks using bonding.  Bonding is strictly a Layer 2 (Ethernet) technique, and has no way to detect upstream failures or properly split traffic beyond the direct Ethernet link to your upstream switch/router.
+You can bond over multiple ISPs, but there are significant downsides.  It involves tunnelling across your existing connections to a single ISP datacentre with a bonding server/cluster.  Then you would use this ISPs IP transit to the internet and IP addressing etc.
+Plug both your internet lines / connections to it and either run it in load balance mode or failover mode
+Specifically, Shorewall provides a set of simplified, rule-based configuration files that you can edit as needed to describe your configuration and implement your desired functionality.  It has lots of examples to copy, too.
+Linux can support multiple upstream ISPs, in either a load-balancing (with limits) or redundant configuration (or both), using policy-based IP routing with multiple routing tables.  There is an excellent explanation of the theory and practice, with diagrams, here:
+Redundancy and/or bandwidth expansion for WAN connections (like, to the Internet) is accomplished with routing protocols (typically BGP). Bonding the NICs together on a server computer isn't going to accomplish that.

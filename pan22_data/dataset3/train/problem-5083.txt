@@ -1,0 +1,15 @@
+Most of those times there will be a Commit method in that repository to "Commit" that atomary transaction.
+You can then also Implement a "Rollback" method if one of those 3 write actions will fail.
+This save button is separate to the adding itself and means that you can bulk add items and only save when you are ready.
+One other point of doing it this way is that you never get to share Context.
+Perhaps you could take a look at the UnitOfWork pattern as that goes well with the repository pattern (There are plenty of articles online).
+I would then look at injecting the context into each repository and letting object that ends up creating the context be responsible for it's disposing.
+In light of this I then probably would let another class/object be responsible for when the changes are persisted to the database.
+Then there is a save button that will actually do the persist to the db.
+Perhaps look at it like a UI that lets you add items to a list as much as you want.
+You are right that using is modern only it can not be used if you have a Unit Of Work in your repository that has lets say 3 write actions in it that are part of ONE transaction, but can be split in 3 writing methods.
+Even though your RepositoryBase class is abstract I would have a protected constructor
+Firstly I would consider injecting the DbContext into the repository.
+This maybe what you are after but if not, it's something to consider.
+For those 3 write actions you will need the same context from the same repository.
+That means that each repositories set of changes will not be visible in another set (until the changes are persisted).

@@ -1,0 +1,5 @@
+The 84 million rows are all in the same table.  That table alone accounts for 90% of the whole database.
+I have about 84 millions rows.  Of those all of them needs to be transferred to a separate database on the same server, then I delete to delete about 60 millions rows from the source database.
+Even minimally logged, those are big transactions, and you could be spend a lot of time dealing with the ramifications of abnormal log growth (VLFs, truncating, right-sizing, etc.).
+Dropping partitions out of a table is a really fast and resource-efficient way of removing large chunks of data from a table.  Were this table partitioned in a manner that supports your source / destination split the answer would be to restore a copy, drop the redundant tables and redundant partition(s) from destination and drop the complementary partitions from source.
+I would add that, however you decide to approach this, you'll need to batch these transactions. I've had very good luck with the linked article lately, and I appreciate the way it takes advantage of indexes as opposed to most batched solutions I see. 

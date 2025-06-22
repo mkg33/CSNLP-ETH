@@ -1,0 +1,9 @@
+Tell your firewall to drop any outgoing SMTP packets to all hosts except your mail server.  That'll prevent any direct SMTP spam from any of your potentially infected workstations.
+Can you view the mail headers on those phishing emails? Look for Received: from line. It will tell you what computer that message is coming from.
+if you get back 250 OK, you're allowing relays, and a bot can easily be relaying mail out off your mail server.
+You say that your mail server is not an open relay, but are you allowing relays from the LAN?  Alot of people do this when they setup MFPs, scanners, etc.  You can test by hopping on another workstation and doing:
+If you don't get anywhere with this soon it might be worth running wireshark with a suitable filter to capture just the SMTP stuff. That way you'll certainly see which system is involved, even if the header is faked.
+Turning recipient filtering on most likely prevents this. Mails sent to non existing users simply won't be accepted by Exchange.
+To find the workstation that's spamming, grab a laptop, install WireShark.  Put your laptop on a hub (make sure it's a hub), and plug your LAN interface on your firewall into hub port #2, and then plug another cable from hub port #3 into the LAN interface.
+It appears that there is a virus on my network somewhere that is sending phishing emails through my exchange server. I can see the messages in message tracking and I see many SMTP errors for NDR's and rejected connections from external servers, but I do not see any SMTP authentications and I have logging up to MAX. How can I find the IP or hostname of the PC that is infected? Or is there some other explanation than virus?
+Check if recipient filtering is turned on or off. If it's turned off and Exchange is configured to send NDR's, the server will probably accept mail sent to non existing users, causing the queue to fill up with NDR's.

@@ -1,0 +1,22 @@
+"Trusted" means you are entirely confident that no on on the remote host will get access to your Xauth data and use it to monitor your keystrokes for instance.
+I already had the latest XQuartz 2.7.11 installed, but I think I've also updated the OS a few times since then.
+That bit me several times before I read enough docs to understand what was happening.
+and now ssh -X hostname works (XQuartz 2.7.11, macOS 10.4 Mojave)
+I don't have a setup that can exhibit this behavior, so this is a shot in the dark:
+An "Untrusted" connection attempts to limit what a black hat could do to you by engaging the X11 security extension and disabling other extensions that you (hopefully) don't need.
+You can place this in either ~/.ssh/config or /etc/ssh/ssh_config, and you can make the option specific to a particular host by including Host <hostname> on the line above.
+But actually it's an option you're supposed to use in situations where the connection IS trustworthy and you want to run stuff without extra security measures getting in your way.
+As has already been explained above, the following worked for me:
+When I use ssh -X on my Mac (running OS X 10.6.7) to connect to my Ubuntu (11.04) box, I get the following warning:
+I reinstalled XQuartz 2.7.11, and now it is working fine.
+the <hostname> component matches what you type on the command line (not the resolved hostname), and it can include wildcards.
+The warning might be suppressed if you set ForwardX11Trusted to "no" for hosts that give this warning.
+Is there something I can do to make this warning go away?
+"Untrusted" is the one that makes it (somewhat) safer to deal with an untrusted remote host.
+If it's not, I'll file a new question about that.)
+SSH will use additional security measures to try to make X11 forwarding safer.
+"Untrusted" in this context means you don't trust the connection.
+X11 forwarding seems to work fine, though I do see this message:
+Do you need to be able to rotate your X display from the remote host?
+It's also important to note that "untrusted" X11 forwarding turns off after a certain amount of time to keep you from accidentally leaving it on.
+New attempts to open windows will just fail after that.

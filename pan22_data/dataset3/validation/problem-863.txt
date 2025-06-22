@@ -1,0 +1,66 @@
+// Converts the string to lower case string says nothing which text.Tolower() doesn't already, and is liable to rot as the method is modified.
+    foreach (KeyValuePair<string, int> kvp in counts)
+    writer.WriteLine("The number of counts for each words are:");
+The code uses the Regex object’s Replace method to replace the characters that match the pattern with a space character.
+/// Counts the number of occurrences of each distinct item
+return wordMatcher.Matches(text).Select(c => c.Value);
+public static IDictionary<T, int> CountOccurrences<T>(IEnumerable<T> items, IEqualityComparer<T> comparer)
+/// Splits the given text into individual words, stripping punctuation
+Value -> value (or values, since it is a collection).
+Put this code in a nicely packaged method, and take the input as a parameter.
+If you wanted the separation to be clear, you could put the reading of the text and to-lowering in a different scope (or even method), so that only textToLower appears for the rest of the method; however, you've already confused matters by re-using textToLower as textToLowerAfterRegex.
+In the code below, I write a custom general-purpose CountOccurances method, which could be reused for other purposes, and makes the intention of the code plain without compromising on performance (GroupBy would introduce significant overheads).
+You don't have to check the returned value from TryGetValue() and you can add a new entry via the indexer.
+Instead of a for loop, you can use a foreach loop:
+I'd be strongly inclined to separate this 'extracting words' bit from the 'counting words' bit, and to avoid ToLowering at this point.
+This parameter could be a file-name, but it could also be a Stream or String (if you intend to always read the whole thing at the start) or whatever; you can always provide a convenience method to cover important use-cases.
+if (CountTheOccurrences.TryGetValue(value[i], out int count))
+It would be nice to see a version which takes a stream of some description rather than a whole file, as this could (in theory) cope with very large files (ones which can't fit in memory), could have much better memory characteristics, and with a bit of effort could start processing the file before it has read the whole thing, so that you are not stalled waiting for the whole file before you can begin (though an asynchronous implementation would be necessary to fully exploit such possibilities).
+You can use Regex.Split instead of performing a replacement and then splitting, and use something like \p{L} to cover a wider variety of letters (just for example).
+I'll leave someone who knows more about unicode to comment on how you should do this sort of thing properly, but your code is deficient, not least because it will cut "naïve" into "na" and "ve".
+The out int count value defaults to 0 if the word is not present in the dictionary, so it's valid to write:
+(The word counter in Microsoft Word counts "doesn't" and other contractions as one word).
+return nonLetters.Split(text).Where(s => s.Length > 0);
+is far too wordy, and just states what the code is doing, without any indication as to why it might be doing that.
+Returning the dictionary (perhaps as an IDictionary, so that you aren't coupled to the particular class) produces a much more useful interface.
+if (!CountTheOccurrences.TryGetValue(value[i], out count))
+Personally I prefer the second one (count doesn't leak if not-found), but the first is closer to what you already have.
+The English term: "doesn't", how would you count that: as one word or as "doesn" + "t" (or even "does" + "not")?
+public static IDictionary<string, int> CountWordOccurrences(IEnumerable<string> words)
+A more efficient alternative might be to use a regex which matches words, and return captures instead of splitting; however, again, if performance is a concern, then you need to benchmark under realistic conditions.
+I won't say much about efficiency - because without a clear use-case it will be hard to know whether possible changes would be worth the effort - but my main concern would be fact that you force a whole file into a string, of which you immediately produce a second copy.
+I've been doing a task for an interview that I will have soon.
+Though there is merit in using a separate ContainsKey call and [key] lookup, it's more efficient and a bit tidier to use TryGetValue.
+And don't print the output to the console: if the calling code wants to print the counts to the console, let it do that, but give it the information it needs to do what it wants, rather than deciding what to do with the information for it.
+CountTheOccurances is not a great name; counts or wordCounts would scan much better.
+/// Counts the number of occurrences of each word in the given enumerable
+    var text = System.IO.File.ReadAllText(fileName);
+IDictionary<string, int> CountWordOccurances(string text);
+Another option is to ditch the loop completely, and use a LINQ GroupBy call, reducing the code complexity alot.
+Your regex bit doesn't really make sense; you are replacing every character that doesn't map to a lower-case latin letter or arabic numeral with a space: where is the specification which tells you what counts as a word or not?
+The separation of concerns is maybe a little excessive, but while the number of lines of code seems to have increased, essentially all the complexity is hidden away in the completely generic (and potentially widely reusable (I wish LINQ had it already)) CountOccurrences method; the other methods are trivial, but none-the-less encapsulate domain information behind a nice API.
+I'd be inclined to ditch textToLower, and just replace text: it's so easy to use the old variable accidentally when they have such similar names.
+public static void PrintWordCountsInFile(string fileName)
+The below incorporates most of the ideas above, with a couple of other adjustments.
+I'm not expert in English, but I would consider it to be one word, because neither "doesn" nor "t" can be counted for as words in grammatical sense.
+Alternatively you can use the \b anchor, which matches boundaries between alpha-numeric and non-alpha-numeric chars:
+public static void WriteWordCounts(IDictionary<string, int> counts, TextWriter writer)
+The requirement is to code the following problem in C#.
+        writer.WriteLine("Counts: " + kvp.Value + " for " + kvp.Key.ToLower()); // print word in lower-case for consistency
+They don't escape the method, so it doesn't really matter what style you use (though everyone uses lowerCamelCase, see the Microsoft Naming Guidelines), but you must be consistent.
+We can see that it uses a Regex object, and we can see that that is uses the replace method, and we can see that it replaces matches with a " ": none of this needs clarifying.
+You can take that into account by extending VisualMelons regex pattern a little bit:
+Note that every method has inline-documentation, which describes its job (though I'll grant the summaries are not very good; with a proper spec be able to writer better APIs with better documentation).
+Is there's any way I could to the problem more efficiently.
+public static IEnumerable<string> SplitWords(string text)
+I coded my solution and it's working fine for the tests I gave.
+    return CountOccurrences(words, StringComparer.CurrentCultureIgnoreCase);
+I'm looking for any ways that I can improve my code and to get feedback on the solution.
+/// Convenience method which prints the number of occurrences of each word in the given file
+A LINQ where can then be used to filter out empty entries.
+    return wordMatcher.Matches(text).Select(c => c.Value);
+Indeed, rather than using ToLower() to group words, consider supplying the dictionary a case-insensitive string comparer such as StringComparer.CurrentCultureIgnoreCase.
+    var counts = new Dictionary<T, int>(comparer);
+Comments should be useful, explaining why code is doing what it is doing or providing some important context.
+If your specification says that you must be printing these counds to the console, then you can write a method to print out the dictionary (perhaps to an arbitrary TextWriter, rather than only Console.WriteLine, which is no fun to test against), and write another method which composes the two.
+reg_exp encodes no information beyond that which is clear from the type.

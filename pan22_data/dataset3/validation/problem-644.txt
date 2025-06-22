@@ -1,0 +1,25 @@
+Here is an update with a newer symptom, and a final solution:
+At the firewall, port 80 traffic is coming directly to the AD/DNS/CRM server -- but port 443 traffic is going to the Exchange server for OWA.
+ourdomain.com is using Network Solutions for a NameServer.
+The CRM database, however, is stored on the local domain's Exchange 2007 server box.
+There was no authoritative server for the name that the box was using from behind the firewall (crm.ourdomain.com).
+One of those entries is to a machine called crm.ourdomain.com which points to our public IP address.
+Sorry, I tried to be thorough enough to clear up any of those 'Check your DNS' replies, etc.
+Port 443 was being forwarded to a different machine -- which didn't help, but that wasn't the final solution.
+Now that has been corrected, and I can reach CRM on the local domain using the browser with the NETBIOS name or even the full internet domain name (crm.ourdomain.com).
+Very desirable information includes what the IIS settings for CRM SHOULD look like.
+The CRM server also has an ourdomain.local (A) record with the same IP being used in the crm.ourdomain.com zone.
+I have inherited a group of servers that I am now administrating full-time.
+We have a CRM 4.0 installation that is installed on one of the DCs in the local domain.
+Port 80 was being forwarded correctly, and after relaxing the bindings to send ALL HTTP:80 traffic to the CRM site, a funny thing started happening -- the URL would redirect to something like this:
+The AD/DNS/CRM server is the SOA for the crm.icucare.com Zone.
+Then I changed the DNS from crm.ourdomain.com to crminstancename.ourdomain.com and updated the IIS bindings accordingly.
+Port 53 is open for DNS and pointing to the AD/DNS/CRM server.
+When I try to browse (outside of the LAN) to the site: ht tp://crm.ourdomain.com/ I immediately get a 404 error, but if I browse to ht tps://crm.ourdomain.com I get a blank page.
+Outside of the company LAN, the CRM web portal will not resolve -- and presumably the Outlook client will not resolve either.
+http://crminstancename.crm.ourdomain.com/FileNotFound.aspx?file=/signin.aspx
+I assumed this was DNS, and I still think I was right on that originally.
+CRM works locally on the domain for all users, either via browser or the CRM Outlook Client.
+The IIS configuration on that machine has an inetpub\wwwroot\crm folder that is bound to any traffic (80 or 443) on either of 2 statically set IPs (IPv4 addresses) assigned to it with bindings for crm.ourdomain.com and crm.ourdomain.local.
+Windows Server 2008 (CRM / Exchange) and Windows Server 2008 R2 (Backup DC)
+I re-ran the CRM IFD Configuration Tool and changed the old IFD Root Domain from: crm.ourdomain.com to ourdomain.com.

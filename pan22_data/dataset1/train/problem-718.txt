@@ -1,0 +1,9 @@
+Personally, with VMware Server (or Workstation or Fusion), I always suspend or shutdown my VMs before doing any snapshots since all write activity (such as virtual memory swapping, or application logging) is a change to the VM.
+To second @Chopper3's comment... you really should be moving to a "real" virtualization tool now: ESX or ESXi for that many guests.
+Are you sure your understanding of VMWare Server's snapshot tool is what you think it is?
+The snapshot tool that ships with VMWare Server is intended to allow the rolling back of changes, not backups.
+i.e. Once you create a VMWare Server snapshot you can't just delete it (unless you want to lose changes), you have to merge it back into the VMDK.
+It sounds like what you are doing is creating a snapshot and backing up the primary VMDK. During this time the guest is still running and writing changes to the snapshot file. You are then deleting this snapshot, which is throwing everything out because your disk is being reset to when you started the backup.
+Given that you are unintentionally shooting your servers in the head each night, here's a few things you should do as soon as possible:
+If you have to run VMWare Server then forget about live, VM-level backups.
+Look at doing data-level backups and then every few months shutdown your guests and make external backups.

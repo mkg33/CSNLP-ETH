@@ -1,0 +1,16 @@
+Now, we have an (directed) edge between the node $V_0$ and the node $V_{x_1}$, as well as between $V_0$ and $V_{\overline{x_i}}$.
+We will construct an instance graph $G_F$ of your problem with distinguished nodes $V_0$ and $V_\top$ such that there exists a valid path from $V_0$ to $V_\top$ if and only if $F$ is satisfiable.
+Then $G_{c_i}$ has an entry node $V_{C_i,x_4}$, and nodes $V_{C_i,\overline{x_2}}$ and $V_{C_i,x_3}$.
+For $1 \leq i < n$ we have the edges $(V_{x_i},V_{x_{i+1}})$, $(V_{x_i},V_{\overline{x_{i+1}}})$, $(V_{\overline{x_i}},V_{x_{i+1}})$, and $(V_{\overline{x_i}},V_{\overline{x_{i+1}}})$.
+The problem SAT takes as input a formula in conjunctive normal form (CNF), and outputs YES if the formula is satisfiable, and NO otherwise.
+For the hardness part, we can directly reduce from the Boolean satisfiability problem (SAT), which itself is NP-hard.
+For every clause $C_i$, $1 \leq i \leq m$, we construct a graph gadget $G_{C_i}$ encoding that $C_i$ is satisfied.
+Now, the fact that your problem is NP-hard is not necessarily the end of the world, since, as you said yourself, you can still get good results with a simple brute-force strategy.
+You have a “switching” edge from $V_{C_i,x_4}$ to the entry node of $G_{C_{i+1}}$ that checks that $I_{x_4} = \text{TRUE}$, and a switching edge from $V_{C_i,x_4}$ to $V_{C_i,\overline{x_2}}$ that checks that $I_{x_4} = \text{FALSE}$, and so on.
+For instance, suppose that $C_i$ is the clause $x_4 \lor \overline{x_2} \lor x_3$.
+For now, a path in the graph simply assigns a Boolean value to each variable, so we now need to construct the part that “checks” that this assignment satisfies $F$.
+Let $F = C_1 \land \ldots \land C_m$ be a CNF over variables $\{x_1,\ldots,x_n\}$, where each clause $C_i$ is a disjunction of literals.
+You then chain these gadgets in series and plug that chain to the already partially constructed graph $G_F$ (that guesses an assignment), and construct the node $V_\top$ in the expected way (I'll leave the missing details), and voilà: there is a path from $V_0$ to $V_\top$ in $G_F$ if and only if $F$ is satisfiable.
+For every variable $x_i$, $1 \leq i \leq n$, $G_F$ has a node $V_{x_i}$ and a node $V_{\overline{x_i}}$, and you have one “indicator” $I_{x_i}$, with possible values being $\{\text{TRUE}, \text{FALSE}\}$.
+To see the membership in NP, you can first guess a path, and then check that this path ends with $V_q$ and is valid.
+The node $V_{x_i}$ assigns $I_{x_i}$ to TRUE (i.e., you have $I_{x_i} := \text{TRUE}$), while the node $V_{\overline{x_i}}$ assigns $I_{x_i}$ to FALSE.

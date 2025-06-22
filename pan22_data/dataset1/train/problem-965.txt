@@ -1,0 +1,8 @@
+You seem to have some invalid assumptions here. Email does not necessarily have a single body part and it might not be in HTML.
+Without more information about what you actually want, this is going to be very speculative; but something like
+will decode QP and append to a growing file of HTML payloads (assuming you have a command named quoted-printable with the option --decode to decode QP).
+This is probably not useful as such, because most HTML payloads are in MIME multipart containers. The above assumes the message has a single top-level payload which is text/html and encoded with quoted-printable, and will simply no-op if this is not true.
+Procmail is not particularly good at traversing MIME structures, but something similar should be easy to write with e.g. Python and the standard email library.  There are also standalone tools like ripmime which allow you to extract selected payloads from a MIME message.
+Although I have found my own solution, I think in the future I should consider using some of the solutions you have mentioned.
+I finally found a solution to what I was looking for. The problem I had was when I open the email file retrieved with fetchmail, it has many specials signs that were added. So it didn't look good on the browser, and had "=" signs in places where it shouldn't have. 
+So in order to solve this, I saw that when I open the file with Python, it has the characters "=" and \n" at the end of every line. So when I removed each of the "=" and "\n" at the end of the lines, the file looked good when I opened it with a web browser again.

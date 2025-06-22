@@ -1,0 +1,51 @@
+I agree 100% with your focus on trying to provide clear compilation errors when the usage is incorrect.
+Setting aside the question of whether this is the right approach, I really wanted to try to review the code you did write.
+And your point about ownership make sense; I would expect the original source (whether a zip'd collection or a referenced tuple) to maintain ownership of the actual data; perhaps this should be a NamedRefTuple instead.
+Now I want to bring back the question of whether this is the right approach.
+Anyway, definitely +1 for a cool question and clean code.
+I can not comment on the design on the macros as I find them harder to read than what is worth spending my free time on (this is not specific to your macros, but to complex macros in general).
+However if you are working in an environment where there are more developers than yourself, then I believe that this type of convenience macro is rather an inconvenience.
+In general I find that the further one goes to try to make C++ look like something it isn't by "inventing/implementing new syntax" using various macros, the more difficult it becomes to maintain over time.
+I was worried that it required more of a learning curve than I could allocate time for, as I'm not yet familiar with using BOOST_PP_*.
+And while this is carefully crafted to be only a tiny burden to the reader, it is still yet another burden.
+While this is truly painful to read (and easy to use the wrong tuple index)
+If you're a single developer using this in your own project then I do not see any problems with the usage.
+In Python it's easy to create tons of arbitrary tuples by zipping structures in arbitrary order.
+However based on a comment by op, I felt compelled to give this a shot without macros.
+But I'm not sure that it's more comfortable to read.
+You counter with two worries: one is that this could result in re-implementing the named tuple for each instance of a corresponding iteration, and that sometimes you are given a std::tuple rather than the opportunity to build your own.
+For the stronger motivating case where you want to iterate several collections in lock-step, I'm still not sold on the position of the code that the user has to write.
+If one wishes to get the same simplicity as OP one may use a macro in the tune to:
+All I can suggest here is considering using an #if defined(VERIFY_BAD_SYNTAX) instead of locally commenting the tests out to make it easier to verify them if you update your macros.
+(Well, biggest complaint aside from the macros being macros.)
+And that still only handles things like mismatched sizes; it wouldn't handle a case you don't have a test for: reusing local names in multiple DECLARE_AND_TIE calls.
+The first may be a legitimate concern, but until we have an implementation, it can't be measured.
+Sometimes you can use techniques based on SFINAE in order to create such tests, but I'm not sure how to do that here.
+If you have a lot of cases where you're handling numbers, names, ages, addresses, it seems like you should already have a PersonInfo struct (or PersonInfoRef) that can construct from a std::tuple, and then all you need is zip:
+This is doubly important in cases like this with magical syntax.
+One of your questions was that of turning tests that fail to compile into actual live tests.
+is more comfortable to write than the corresponding manual reference declarations.
+Developers come and go and the closer you stick to standard approaches to solving problems the better you will be able to handle new programmers on your project.
+Instead it would handle a 2-tuple, but this suggests it would be similarly unable to handle tie-ing inside a range-for over a std::map.
+My biggest complaint is small: I cannot figure out how you chose the order of your different macros; they seem neither top-down, bottom-up, or alphabetically sorted.
+and it has the advantage of calling out the termination case for mismatched collection lengths.
+First of, I'm aware of the fact that this is not a typical review response so feel free to mod me into the ground.
+In any case, these are largely my personal opinions.
+Somehow NamedTupleZip would have to create a namedtuple-inspired struct that replaced the use of a std::tuple, and iterated over the respective collections like zip to populate each iteration's values.
+It wouldn't surprise me if there's a way to extend the macros to handle this, but I do strongly suspect diminishing returns.
+Aside from the impossibility of this syntax, I think it places the complexity in the right place.
+After all the side thoughts about handling an enumerate helper that seemed to return a std::pair, I was surprised to see nothing that appears to handle std::pair after all.
+Everything I can think of would require turning your error cases into run-time exception throwing cases instead, which is a poor trade-off.
+It doesn't provide exactly the same convenience as OP but it is close IMHO and it doesn't use macros.
+But it's a lot less clear what the motivation is for doing that in C++.
+It's a shame there's no way to use std::tie to name references to a std::tuple.
+To end with, I want to raise the question of whether you're using the correct data structures in the first place.
+But your sugar may be my vinegar as I'm not a python developer.
+Oops I realize after writing all this that the above example code misses some functionality that OP's macros have.
+I'm aware that this is not perfect and will probably fail for types other than std::vector but it does illustrate a technique.
+The second doesn't seem important to me; if the helper struct can construct from a std::tuple, it's easy to convert.
+I can say now that your macro implementation is fairly straightforward to understand (assuming the BOOST_PP_* macros do what they have to in order for your code to work).
+If instead you want to handle lots of different arbitrary subsets, you have to weigh the cognitive load of approaches like DECLARE_AND_TIE vs. the traditional for loop.
+In the enumerate that returns a std::pair<Counter, Value>, I think we all agree it's way too much hidden complexity, and even probably too much usage complexity for its benefit.
+In a comment I proposed a magic unimplemented syntax that would instead read something like this:
+But it solves the motivational example that was given to get the index and value during the iteration of a range based for loop.

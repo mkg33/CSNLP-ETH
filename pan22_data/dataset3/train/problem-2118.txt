@@ -1,0 +1,14 @@
+You may want to experiment with running mysqldump remotely from an offline host and moving the dump file to the NAS after completion to take as much of this operation out of band as possible.
+You may not be saturating the bandwidth, but they still compete.
+Next I see you're using the --single-transaction flag.
+This may use local CPU that's unnecessary in this context.
+I'm a fan of NAS for backups, but it must be connected on a separate physical NIC from the production traffic.
+This is going to cause extra CPU as it's testing on every select as part of the mysqldump.
+It says 'devNas' so I'm going to assume this is Network Attached Storage.
+This is going to be more of a problem because of the --quick flag, since it flushes every row instead of holding it in memory.
+It looks like you're running mysql locally since you didn't use the -h switch.
+The next thing I see is that you've invoked --compress.
+Here are some thoughts I have about improving mysqldump performance, given your circumstances.
+The first thing I notice is you're redirecting output to a filesystem.
+This has nothing to do with performance, but you're using --disable-keys which only works on MyISAM (manual).
+It only compresses data between the mysqldump client and mysql server, not the file contents.

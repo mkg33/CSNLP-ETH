@@ -1,0 +1,24 @@
+The thread released may be the second thread which is already waiting on the mutex, or it could be that the current thread manages to process the rest of the while loop and reacquire the lock.
+This allows your functions to be much more flexable in how they work.
+Assuming this is some kind of learning exercise and putting this issue to the side, I'd introduce a new mutex.
+It would be simpler to have one function that is prameterized based on some input argument.
+Pass in the variables as parameters to your function.
+This way, by each thread having its own mutex, threads are only ever allowed into the area when they have something to do.
+But it would be simpler to write things in terms of loops.
+At the moment, both of your threads share a single mutex which means that when one is done processing it unlocks the mutex which results in a thread being released.
+Your solution works because the main code is inside the else and you repeat using the outer loop.
+Normally when using conditional variable you use a loop (not an if).
+It has been deprecated since C90, so I see absolutely no reason to use it, ever.
+Multiple variables number like this implies an array.
+thread1, on the other hand, moves on to pthread_cond_wait() and waits forever because thread2 isn't around to send a signal to wake it.
+Here you are checking something from multiple loops outside the confines of a mutex.
+Compile the program with the thread sanitizer (or the corresponding tool in Visual Studio) and it should throw a warning.
+If you change it so that you have two mutexes, you can have the following pattern:
+You do things multiple times (I know its only two in both cases).
+My initial impression is that this is a really bad way to have threads interacting.
+There's no real reason why either thread can't print out the next number.
+It looks like thread1 is blocked at pthread_mutex_lock() while thread2 increments count to 11.
+count is accessed outside the mutex from both threads:
+After thread2 unlocks the mutex, it exits because count <= 10 is false.
+The thread functions function_count1 and function_count2 are practically identical.
+When I run it, thread1 hangs forever at the call to pthread_cond_wait().

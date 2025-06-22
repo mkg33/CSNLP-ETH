@@ -1,0 +1,19 @@
+This difference also explains your observed (correct) behaviour.
+That seems a bit odd, as it could cause programs to behave differently than they do either as the original user, or as root.
+It's also illustrative to do "sudo printenv" and compare to just "printenv," which actually surprised me a bit.
+As such it has replaced having a root users on many distributions including Ubuntu.
+Sudo temporarily grants who ever you are (given you are allowed to sudo in the first place) root level privileges.
+The reason this is useful is that with this setup multiple people can have root rights yet all the logging and so on still indicates who did the changes.
+If you want to show That Fred is executing something as sudo, che3d the SUDO environment variables, SUDO_COMMAND might be the most useful.
+It shows that [i]some[/i] exported variables are available and and others are not: it reports the invoking user's HOME, PATH, PS1, SHELL, TERM, and EDITOR, but not others like MANPATH, CVSROOT, LD_LIBRARY_PATH, or ENV.
+To be root, you'd have to log in as root which is blocked in Ubuntu by default.
+"The real and effective uid and gid are set to match those of the target user…"
+The backticks are obviously doing what others explained, expanding whoami before invoking 'sudo', and leaving the backticks off return 'root', as expected.
+But, what's happening to you is that the back ticks are being evaluated before sudo runs, as they're needed to evaluate the command.
+So it appears that the observed behaviour has nothing to do with the difference between effective and real user id.
+But it's useful to understand what is actually happening with sudo(8).
+sudo allows you to run any command with root privileges, but not as root user.
+The subshell (whoami) is executed first, as you, and the result (myuser) is placed into the sudo command; what sudo sees is echo myuser.
+Your whoami in back ticks is actually evaluated in a subshell as the current user, which is why you see what you do.
+You need to be careful with this, sudo is not root.
+sudo su on the other hand makes you the root users and therefore should not really be used.

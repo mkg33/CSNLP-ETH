@@ -1,0 +1,26 @@
+The major advantage is the ability to keep all related data in one place for atomicity and backup purposes.
+I want to add my experience here as to the tradeoffs.
+Many frameworks I have seen for doing this involve passing the value (not as a reference) and then constructing a new binary string based on it.
+You can easily move the files even cross the servers, just need to modify the folders table.
+In some applications, the filesystem shouldn't be modified anyway.
+Although it partly depends on the application/environment (people included), I'd go for the blob.
+This greatly reduces the chance of something going wrong.
+This then has to be converted back to binary in the front end.
+Use the other options if you don't care about data quality.
+The major disadvantage is not one I have seen covered above, and that's memory usage on the front-end.
+For example, on a production website, I'd avoid ever using the filesystem for any non-disposable data (site lives under a SCM, data in a database).
+I calculated that using Perl to do this ended up using many times the memory of the original binary to accomplish.
+I don't know exactly how every db handles this so this may depend on implementation but for PostgreSQL, the data comes in as an escaped ASCII string (possibly hexadecimal, possibly with inlined escapes).
+Assuming we've got multiple users/applications with separate permissions, then any filesystem storage provides an opportunity for differences in DB and FS access rights.
+In PostgreSQL, at least, the performance impacts are quite minimal in terms of the db server.
+The refinement I'd consider making to BLOB storage is to chunk data if it makes sense; if you only need 512 bytes from a 20Mb BLOB, this sector-like access is a real boon, especially if you're dealing with remote clients (and again, a partial update creates much less replication traffic).
+Verdict:  If the files are only being occasionally accessed I would store in the db.
+Large blobs are stored in separate files, not in the main heap tables so as to move them out of the way of operations that may count large numbers of records.
+Store the data in a system like Amazon S3 or Microsft's CDN and store that URL in the database.
+You'd need a separate mechanism to synchronise FS files.
+Keeping everything in the database means replication works for file data.
+If they are being frequently and repeatedly accessed, at least with PostgreSQL, I think the costs outweight the benefits.
+This way you get reliability of having the data always accessible without having monster sized databases to deal with.
+Most RDBMS have optimizations for storing BLOBs (eg SQL Server filestream) anyway
+Database has two tables, one for the file folders and access credentials, one for the filename.
+Share my experience of Ms SQL server and a huge number of files.

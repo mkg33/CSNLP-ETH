@@ -1,0 +1,11 @@
+I would instead recommend using GNU parallel to download n files at a time.
+Remove the --dry-run when this prints what you want.
+Since the & puts the job in the background, the loop should exit fairly quickly once all ffmpeg processes have spun up, but then you have 3000 jobs running…
+If your input is not MP3, you might want to leave out the -c copy again.
+You haven't shown any logs that would hint at what the underlying issue is, but you're essentially launching 3000 processes at the same time, which might have unexpected consequences (e.g., the remote server terminating the connection).
+It would run the following commands in parallel, with at most n jobs running at one time.
+Note that I've added -c copy since you usually don't want to re-encode the audio stream if the URL already points to an existing MP3 file.
+This reads the text file and processes each line, splitting the columns by ,.
+You can add --joblog jobs.txt to have it create a logfile, and you could also add --eta or --progress to print out some estimates as to when the jobs will be finished.
+And I changed quiet to error since you probably want errors to be shown.
+You can then use the column values as {1}, {2}, and so on.

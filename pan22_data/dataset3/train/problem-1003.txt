@@ -1,0 +1,16 @@
+Since you are using round-robin DNS, you already have server affinity - so you're not going to have the problem where a user updates server A then can't see the updates because he's looking at server B.
+For static servers that are not in scope for change control, I have found rsync to be an appropriate solution in the past.
+When code is deployed to production, it should be deployed to all the servers at once.
+For PostgresQL, there are some mirroring solutions, but what is the best way to mirror our static files, using "three masters" schema?
+But delays in propogation of code can cause some pain in deployments (particularly if you've got a code dependence on DDL changes to a common database).
+Typically for servers that fall under this category, scaling is unlikely to be an issue but if it is that's where NFS or AFS might come into play.
+I implemented a lot of what they do on my own but for someone who has no foundation, it would be a good start.
+If this action is properly controlled, it should be mirrored as part of your controls and a technology solution will be unnecessary.
+There are lots of other solutions (afs, unionfs...), but rsync works surprisingly well for one way replication and is self-healing - and is scalable along as you have defined paths for replication (a single master is fine for up to around 5 slaves, but beyond that there's probably good reason to go to multiple tier replication).
+OpenEFS is a tool that was designed to enable change control as well as deployments, which you might find helpful.
+We use Django, nginx to serve content and PostgresQL as database.
+If you are currently running rsync manually / via cron, you might consider using inotify to run the rsync on files as they change such that the delay becomes very short.
+We have three servers running Ubuntu Server 10.04, load balancing between them through DNS.
+Not all administrative solutions are based in technology.
+If you must have bi-directional replication (try to avoid if at all possible) then yes, a realtime replication system would be more appropriate.
+I guess just rsyncing them wouldn't be a scalable and easy-to-maintain way.

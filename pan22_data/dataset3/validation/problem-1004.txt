@@ -1,0 +1,22 @@
+I have no idea what you're doing this for but as pointed out by Stephane Hockenhull above a conventional weight of making it easier is to used a coarsening approximation.
+The complexity of obtaining the trapezoids is quite low but iterating over a vast number of points may be quite slow.
+Look carefully at 'A More Complex Case' and how the horizontal lines divide the polygon into a set of trapezoids (if you recognize a triangle as degenerate trapezoid with a zero length side).
+I'm assuming you don't mind what order you enumerate in!
+That shouldn't be too hard particularly given the trapezoids are nicely oriented being 'trapped' two lines both parallel to the X axis.
+So, now you've reduced enumerating points in a polygon to enumerating points in a series of trapezoids.
+Your data structure might look like a list of polygons, an index indicating which polygon you're in, which x and y coordinate your at and the end index of the raster row you're in.
+What you are seeking is a solution to the "point-in-polygon" problem.
+actually more than one polygon or could contain polygonal 'holes'.
+Also, only add nodes to your open list if they're not already on your closed list.
+For each point; add the point to a set of closed nodes (ie.
+Further complexity will be incurred if your 'polygons' included disjoint shapes (i.e.
+unvisited nodes), then your enumerator could explore this list.
+It is probably easiest to do that in a raster scan so you only have calculate the start X and end X of each raster row.
+If your polygons are (potentially) concave you need to discard some trapezoids based on the direction of travel Y(n)-Y(n+1) rule mentioned in the text.
+That would mean actually scanning in steps of (say) 5 and (if your algorithm is ameanable) treat the centre point of a 5*5 'cell' as somehow representative.
+If the point is within the polygon, add it to your enumerator and add it's children to your list of open nodes.
+You could possibly treat it as a graph traversal problem.
+They are just calculating area and you are enumerating points.
+In case you're unfamiliar with search algorithms, this would probably look something like:
+You can find C code following the links to Computational Geometry in C, or at many other locations
+If you treat adjacent points as 'children' of each other and add each child of your boundary points to a list of open nodes (ie.

@@ -1,0 +1,24 @@
+Change Tracking is in every edition - the whole point of it is to support the occasionally-connected systems scenario - e.g.
+The execution of the SELECT statements and object access are not tracked
+http://msdn.microsoft.com/en-us/library/cc280462.aspx (Change Tracking)
+http://social.msdn.microsoft.com/Forums/en-US/sqlexpress/thread/3452dd14-d4d1-48e0-9de4-a193619a72be
+Then I added a row AddressID = 32522, and deleted it afterwards
+From talking to the tech writers in the SQL Books Online team, they know that the BOL needs to be upgraded a bit for these two features - the TN Mag article is a bit more 'accessible' right now.
+The feature doesn’t track the user who made the change.
+The second one was a delete, but we don’t know what the first one was
+I modified the records in a table, the changes are highlighted – the rows with AddressIDs 1, 5 and 2, in that order
+http://msdn.microsoft.com/en-us/library/cc280519.aspx (Comparison)
+There is no clear indication that the 32522 row was first inserted, but according to the Change Creation Version (ChCrVer) and Change Version (ChVer) values 5 and 6, there were 2 changes.
+http://msdn.microsoft.com/en-us/library/bb522489.aspx (Change Data Capture)
+Main one for Change Tracking is that you should really use snapshot isolation too -> tempdb load.
+For updates, it shows both old and new values of the updated row
+To do that, you have to create a new field where the user’s details are stored and updated after each change.
+While Change Tracking shows only what was changed and whether the change was an insert, update, or delete, Change Data Capture shows the values inserted, deleted or updated for the modified rows.
+And here's a feature article I wrote for TechNet Magazine in the November 2008: SQL Server 2008: Tracking Changes in Your Enterprise Database, that gives some of the gotchas you might run into as a DBA on a system with either Change Tracking or Change Data Capture enabled, and an expanded comparison sheet between them.
+The same goes for the time of the change and the machine used to make the change.
+The values shown indicate the changes made – three updates on the rows with AddressID 1, 2, and 5 and deletion of the row with AddressID = 32522.
+If a column was first updated from ’1970 Napa Street’ to ‘123 Street’ and then to ‘99 Daisy Street’, you can get all 3 transactions, or just the net (last) value
+Here is the information provided by Change Data Capture
+and, finally, this seems to indicate that Change Tracking is supported by Express Edition:
+__$operation = 1 is the deleted row, 2 inserted, 3 is the row that was updated before the
+To show the difference in audited information, and explain Comparing Change Data Capture and Change Tracking better, here are some examples:

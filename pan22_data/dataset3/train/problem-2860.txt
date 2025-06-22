@@ -1,0 +1,12 @@
+I would change the name to remove the word switch throughout.
+If you can change currentAppswitches's class to accept an NSNumber object rather than a BOOL you have some convenient options.
+One more approach would be to transform the data to a dictionary, and then use that dictionary with the method setValuesForKeysWithDictionary: to populate the switches object.
+If currentAppswitches must continue to accept BOOLs then you could create an invocation:
+I'd imagine the interface would look something like:
+It appears that these values are user settings, or configuration options that can be ON or OFF.
+If currentAppswitches is KVO compliant you could write:
+However, since a switch implies the ability to turn something on or off, but the data you're storing is just a set of values that were derived after playing with those switches, I'd name it UserSettings or ApplicationSettings, or ApplicationOptions or something of that nature.
+Once this transformation is done, and if your class is KVC compliant for all those keys, then currentAppSwitches object can be populated using:
+Assuming the values under the id keys always match properties of currentAppswitches.
+The transformation from switchesArray to switchesDictionary can be done as:
+If the format of the incoming dictionary is fixed, you could move the conversion logic into the class itself to have fewer moving parts, and make the logic more or less self contained.

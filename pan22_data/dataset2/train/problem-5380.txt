@@ -1,0 +1,11 @@
+An option would be to not have a Listener1 at all.  We could just define the AsyncTask's in the Activity and let them do their job.  For example, create JsonFetchAgeAsyncTask and JsonFetchGenderAsyncTask and just override their onResult callbacks so that each one can modify something in the Activity.
+Or, alternatively, if you're using (or could upgrade to) Java 8, how about passing in a lambda function argument to the task object, if the callback is the only difference between them?
+Another option would be to use composition, which is actually what you are doing by sharing Listener1 between different Activity's.  But it seems a bit off: I would at least change the name (not Listener) and I would define Task1 and Task2 within that class.
+If you have duplicated code between your MyTask1 and MyTask2 classes, have you considered introducing a new superclass for them?
+In the Swing API, it is common to have support for multiple listeners. You have just one. That is OK.
+I would need more details to give you better advice.  More specifically, I'm not sure how Listener1 is related to the containing Activity's.
+The logical place to look for examples is in the Swing API. Will get back to that in a second, but, there are two items that are useful first:
+I prefer your original code.  It avoids the need for the switch by using two different classes, which (assuming they and their callback functions are well documented and have good names) is usually clearer and easier to understand.
+I somewhat understand that you do this in different Activity's and you want to re-use your AsyncTask's subclasses.  You could instead define your AsyncTask's within an abstract parent Activity class and then make children Activity's.  Those children Activity's would share the same AsyncTask's.
+I believe I understand that Listener1 will be used by more than one Activity.  However, it would be helpful to know what Listener1 needs to access in each Activity, or if it needs to access anything at all.
+Despite your explanation in the comments above, it is still not quite clear what you are really doing.

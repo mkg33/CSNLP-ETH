@@ -1,0 +1,19 @@
+Having said all that, it sounds like you're relatively safe.
+So either way, you basically broke authentication between your VM and the domain when you "restored" the old backup.
+What's relying on those changes that could break or cause monstrously difficult to troubleshoot issues?
+When a system is offline for an extended period the domain no longer recognizes the systems credentials.
+As a result, the Domain Controller wouldn't let the computer authenticate, and the error you see is a failed trust relationship.
+The different computer account password won't be referenced anywhere, and generally your computer's full SID isn't going be referenced by much outside of AD either, so changing it shouldn't cause problems.
+Why it's "bad practice" to do as you did is subjective and will get different answers (or different specific concerns) from different admins, but my answer would basically be that it's bad practice because there's a better way to do it that doesn't break domain authentication or add complexity and unknowns into the mix.
+(Assuming, of course, the old backup isn't missing a bunch of SQL data, or has an older version of something installed, or anything basic like that.)
+This relies on an assumption or two, most notably that your backup and the machine that failed didn't have different SIDs, which will also break the domain trust.
+Basically, what happened when you jammed the old VHD in your machine is (I'm betting), the local password for the computer account failed to match the password the DC had for the computer account, because the password got changed sometime between the backup you did and the time you restored it.
+That commonly happens when you rename a computer or join a computer to a domain with the same name as an existing account.
+The newly renamed computer will try to authenticate with its new SID, but the name maps to the old SID, so when AD checks, the SIDs don't match and the authentication fails.
+As long as you don't rename the system you can rejoin the domain without issue note you can also try NLTEST /SC_RESET:domain_name\DC_name rather than rejoin the domain
+Domain members sync domain membership credentials periodically.
+(But like any admin who's been around the block once or twice, I've seen stuff that would make your blood curdle and results in my qualifying what would otherwise be absolute statements.)
+That's very bad, for reasons I hope you don't need clarification on.
+First of all, some basic concepts about Windows machines/domains you need to know (and may or may not already know):
+(It's less bad if it was just the machine password, and not a different SID, which is worth mentioning.)
+It's also bad practice because it sounds like you don't have actual, effective backups, or a quick process to restore from [a real] backup if/when needed.

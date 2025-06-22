@@ -1,0 +1,8 @@
+Are you sure your system supports rc.local? If it isn't documented, you will need to follow all of the init scripts. You start at /etc/inittab. (You may find that from there you go to /etc/rc.d/rc)
+Not sure if processing of init scripts on linux is sequential or parallel, but Solaris systems launch the scripts sequentially. If an earlier init script hasn't yet finished (I see this sometimes due to sendmail/DNS dependency) the later ones don't get launched  as quickly as you'd assume.
+Then if it is check dmesg to see if there is an selinux related error that looks like it might be to do with your script.
+If you're using RedHat, there's no real reason to not create your own init script, add it to /etc/rc.d/init.d, chkconfig --add the script, and chkconfig on the script. This will make the correct symlinks into the /etc/rc.d/rcX.d directories, and makes init scripts easy to deploy or disable.
+On some systems, /etc/rc.d/rc.local is supported via a symlink /etc/rc.d/rcX.d/S99local. (where X is the appropriate runlevel).
+Perhaps there is a syntax error in the rc.local script.  If you try to manually run it from the command line after the system has booted, does it execute correctly?
+rc.local was the BSD way of running startup scripts. Although many Linux versions do support having a file called "rc.local" which is run at startup, as I recall these required a bunch of symlinks and other glue to work, as Linux followed the Solaris way of handling startup scripts.
+Making use of the obsolete rc.local is fine for a quick hack if your system does support it, but it's not really appropriate for something important or permanent.

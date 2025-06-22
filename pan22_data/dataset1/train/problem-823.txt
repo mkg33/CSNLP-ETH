@@ -1,0 +1,12 @@
+I believe you are running into the issue described in Subqueries that you define on merge articles are not re-evaluated.
+We've set up a new merge replication, on SQL Server 2008 R2 (on both the publisher and subscriber). Most tables use a filter for which rows they're going to replicate, similar to this example:
+The fn_GetTable1IDsForUser function brings the relevant Table1 IDs for each subscriber based on pre-set criteria. Running the above query on the publisher (after replacing <published_columns> with *) returns the expected rows correctly.
+Each synchronisation that is not done immediately after a (re)initialisation of the subscription seems to have succeeded, as it produces no error message, however no new rows are downloaded to the subscriber. Reinitialising the subscription allows the new rows to be downloaded, but only for the first synchronisation.
+If I try to validate the subscription (in Management Studio; it only seems to work if I do it for all subscriptions, trying to do it for one has no effect), the next synchronisation produces the following error message:
+I have followed the advice in this article: http://technet.microsoft.com/en-us/library/ms152532%28v=sql.105%29.aspx
+However none of the suggested solutions do anything.
+This basically suggests to test the filtering query, which is working correctly, as I've described above.
+There are no errors, except when I ask for the subscription to be validated. There are no conflicts either.
+Nothing acts on the data immediately after synchronisation.
+There are no triggers except for the ones set by replication itself (MSMerge_*).
+In the end we've not been able to figure out why this happens. We'd welcome any suggestions.

@@ -1,0 +1,70 @@
+The PLA would basically say what parts of the chip were involved at each step of each instruction (6502 instructions range from 2 to 7 cycles).
+If you design motherboards or write operating systems, you probably use "microcode update" as shorthand for the more unwieldy and less familiar "CPU firmware update".
+Some perspective on what a CPU microcode could actually do/actually is might be gained if you read about the 6502 PLA decode ROM - the 6502 is an old 8-bit CPU and its instructions were sequenced/controlled by an internal PLA.
+The instructions might be like "play A sharp" or "interpret this data as a waveform and play it".
+I think the term "microcode" refers primarily to what the code does (it executes low-level instructions using even lower-level instructions), while the term "firmware" refers primarily to how it is stored and managed (less easily updated than software, more easily updated than hardware).
+It's loaded into Intel or AMD CPUs with a WRMSR instruction.
+In particular there is no flow of control, i.e., no instruction to tell the SATA drive which instructions to run next.
+Peripheral devices that take firmware, such as hard drives, USB devices, etc.
+So, to reiterate: microcode (at least to a first approximation) is a specific kind of firmware.
+Firmware is executable code placed in a ROM or other non-volatile memory.
+The original and primary purpose of firmware is to be there when a CPU starts, so it has code to execute to start or boot whatever system the CPU is part of.
+You would send macro-instructions to the microcoded IDU to resolve the macro-instruction into a "micro-instruction" for execution on the CPU, which turns them into control signals.
+[NB: this answer is specifically intended to address the recent edit and does not otherwise add to the several sound answers that have already been posted.]
+In particular, machine code has a flow of control: the machine code tells the CPU what machine code to perform next.
+No one other than Intel or AMD processors know what the microcode really controls or does, as they do not release details.
+So, even realizing that you probably don't need to know or care, you may still be interested out of pure curiosity: how might you go about distinguish microcode from other firmware?
+It's true that devices like SATA drives also have embedded CPUs, but the difference is that the embedded CPU in a SATA drive only runs code provided by the drive manufacturer, whereas GPUs also run code provided by the operating system and/or application vendor.
+So in this context, you'd update the microcode with firmware.
+It seems we have a special names for these processes and components within the CPU: "IDU" on a CPU, and a name for the specific input table the IDU employs which holds all the "microinstructions": the "microcode."
+The instructions are like "set this pixel to this colour" or "write an A to this position".
+I'm guessing it came to your attention in press coverage of the recent speculative execution vulnerabilities, though you might also have heard it earlier in a context that made it more obvious that you didn't need to care.
+Still, there are some things we can say about microcode:
+Here I'm strictly wanting to know how to use these terms properly.
+The goal here is to try to distinguish between the job that a CPU is doing (achieved by a combination of hardware and microcode) and the job that a typical device is doing (achieved by a combination of hardware and firmware).
+Marketing would have called it XBoost Pro(TM) or something.
+We could rewrite that final bullet point above as: microcode usually implements a Turing Complete language; ordinary firmware usually doesn't.
+Old fashioned video cards (those without GPUs) are the same as SATA drives.
+You can loop over the same machine code repeatedly, you can run different bits of code depending on the data the code is working on - the instructions in a device interface language like SATA code can do a limited set of simple tasks, but machine code can do anything.
+Complex instructions in many CPUs are not directly wired in hardware, but "executed" by a smaller CPU-like facility in the main CPU.
+Microcode is data, but updating the microcode is done through firmware.
+And confusingly because you're talking about what essentially amounts to an internal lookup table, it's certainly also itself firmware in that it's essentially stored on the chip and used in the execution flow of the chip.
+Incidentally, the idea of microcode goes back to Maurice Wilkes in 1951, decades before computer processors were embedded in silicon.
+Firmware and microcode updates are in a similar category - things you need to do to get hardware working and may need updating from time to time - but they are very different things.
+The SATA drive follows instructions from the computer, which are along the lines of "read the data from sector 5,123" and "write this data into sector 1,321".
+The CPU itself retrieves the machine code from EEPROM (in the case of the BIOS) or RAM (in the case of the operating system and applications).
+This section also serves to expand on the last bullet point above.
+This is far, far before things like caching, superscalar architecture, branch prediction, etc.
+ Not sure if microcode on modern CPUs would control something like that PLA.
+This question is not a duplicate of this question (as far as I can tell) which I've also asked about modifying microcode.
+True but probably confusing; the important point is the distinction between machine code, which has a flow of control and is Turing Complete, and the instructions defined by a device interface such as SATA, which doesn't and isn't.
+Loading firmware into a device involves programming a ROM or flash medium, or relying on a small loader program to be present in the device to accept the firmware.
+Well, the first thing to recognize is that there isn't necessarily a single hard and fast definition, it is more of a Bleggs and Rubes situation.
+The information about that process is proprietary and closed.
+Rather, it's an engineering term; if you design CPUs, the distinction between microcode and the CPU's other firmware (and the sort of firmware typical to other devices) is important to you.
+Microcode is not executable code, but a code used by the internal facilities of a device.
+In that sense it's rather like the distinction between an "application" and a "JAR file" - the same program might be both, but you are looking at it from two different perspectives.
+The drive's instructions arrive sequentially, though they might not be processed in the order in which they arrive.
+These instructions aren't a program, they are sent by a program running on the main CPU.
+... GPUs are complicated and sit somewhere between the two worlds I've attempted to describe above.
+TL;DR: microcode is a specific kind of firmware, which helps the hardware to implement a Turing Complete instruction set.
+I would assume it's analogous to any other technology from modems (with ATDT and the like on a Hayes modem), to MIDI cards but we don't name the specific lookup table "microcode", and instead use the umbrella term "firmware" for the flashing process and the entire payload stored on chip.
+The microcode is sub-asm level, cpu-integrated firmware.
+Practically, microcode updates essentially are used to disable instructions that cause problems on known models/steppings of CPUs, and the latest CPUs from Intel often require at least one microcode update before they function reliably.
+These vulnerabilities were released earlier than planned which may have resulted in press coverage being less curated than it might otherwise have been.
+I think you could make an argument that General MIDI, hardware PostScript, and control signals for dumb terminals are also interpreted in the same sense, in hardware, and that something takes the instruction and ultimately generates "control signals" in some kind of interpretation process.
+From the end user's point of view, you need to install BIOS updates, operating system updates, and in some cases application updates; you need neither know nor care which if any of these include new microcode.
+Insofar as terminology, what exactly is "microcode" and if it can be updated, how does it differ from firmware?
+Most CPU firmware updates primarily affect the microcode, so it's close enough to the same thing.
+I've engaged a lot of the answers and I find a lot of those responses equally unsatisfying.
+The end user doesn't need to know or care about the difference, and in an ideal world would never hear the word "microcode" at all.
+Once it has finished initializing it runs the instructions ("machine code") provided by the motherboard (the BIOS, another type of firmware) which direct it to run the machine code provided by the operating system which directs it to run the machine code provided by application vendors.
+No, sound cards receive instructions, not code, just like SATA drives.
+In the case of PCs, firmware also is used to provide services to the running operating system and also holds code for the embedded controllers that control fans, power, and a few other things, and code for the ME/PSP that runs in the background.
+You probably do know the difference, but you don't need to care about it.
+This goes back to at least the Motorola 68000 which had a "MicroROM" containing microcode.
+I'll answer this myself using only use-context in this this pdf.
+I have an answer selected, but I'm not particularly satisfied with it.
+In confusingly different ways, I fear, but I'll address my own comment.
+It is probably simplest to think of them as an specialized computer sitting inside the main computer, one which has its own CPUs.
+The drive's firmware is responsible for making the hardware make this happen, and it is typically pretty ordinary code running on an embedded CPU of some sort.

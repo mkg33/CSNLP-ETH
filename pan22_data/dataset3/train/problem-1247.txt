@@ -1,0 +1,12 @@
+I prefer to use simpler switch names, perhaps ib-spine01, which can make parsing output easier, and allows mapping to hostnames in the case of a managed IB switch.
+Although @alnet's answer is correct, we can go further and set the GUID-to-switch-name mappings in a file, so that the switch names are always looked up without having to specify a command line flag.
+The syntax would look like this (as taken from the man page):
+MAD that reads this string is called "NodeDescription".
+I emailed Mellanox Support about adding descriptive names to unmanaged switches, they sent me a Python script named "Unmanaged_Switches_Set_NodeDescription_3.4.py" which can be used to set the description that shows up in ibswitches or ibnetdiscover output.
+According to IB Spec, NodeDescription is read only.
+I created a text file the script can use to map GUIDs to descriptive names, and now I can relabel every switch in the fabric with a single command.
+If your switch is unmanaged, then the only access to it is by SMP MADs (Subnet Management Protocol MAnagement Datagrams).
+Note that the actual map filename is managed by opensm, so it can be different if /etc/rdma/opensm.conf has node_name_map_name defined.
+On EL (CentOS/RHEL) systems using distribution provided utilities, the default mapping file is /etc/rdma/ib-node-name-map.
+I ran into a similar need when troubleshooting one of our IB fabrics, as it required a lot of searching to determine which switch was which when I needed people in the data center to reboot them, etc.
+This description will remain until the switch gets rebooted, after which it reverts to the default description.

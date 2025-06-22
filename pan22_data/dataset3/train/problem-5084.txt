@@ -1,0 +1,24 @@
+Take for example a typical wireless link, with a steady 10-30% loss rate.
+Let's say I send you a data stream of X segments (let's say 10 for simplicity).
+If you use NACK instead, then the receiver may eventually tell you that it has not received the packet that fell off the sender's backlog since a long time, and the connection is essentially unrecoverable.
+- If you send a single request packet and expect an answer, and that request is lost, you will have to have a timeout that expires if you do not get an answer.
+The reason for the ACK is that a NACK is simply not sufficient.
+One most important thing i would like to add here, in TCP, we DO NOT sent ACK for EVERY RECEIVED PACKET.
+However, the ACKs are sent only for the LAST RECEIVED PACKET.
+Now take a typical Internet network: You have close to 0% packet loss, until something bad happens, and you have a close to 100% packet loss for a certain time following some exponential distribution law, from a 200ms interruption to a minute and a half.
+If you want the application to deal with order of data and retransmissions, you can simply choose to utilize a protocol like UDP (for instance, like TFTP does).
+It is perfectly feasible to design a protocol supporting reliable transfer and flow control only with ACK, without NAK (with retransmission by Transmitter in case Transmitter does not receive an ACK, retransmission mechanism that is needed in any case).
+So, I resend segment 3, but then my computer falsely believes the data is successfully sent.
+Your computer sends the NACK for segment 3, but doesn't realize there should be segments 6-10 and does not NACK those.
+If you ack each received frame (like 802.11abg), you will quickly detect when a frame has been lost, so you will not loose time to wait for a timeout.
+Acking each packet would seem pointless in a non-lossy network, until you consider the case when the link is severed: you will not receive ACK or NACK for a possibly extended amount of time, and the receiver will typically not send anything until the link is restored.
+ACKs provide some assurance that the segment has arrived at the destination.
+If you use ACK, the sender will stop sending and keep its backlog until the link is restored.
+The receiver sends a variable-length bitmap of frames that it has received)
+If you were to NAK instead, you will become dependent on the traffic pattern:
+ACKs are useful in sliding window protocols, they allow Transmitter A to be aware that data sent has been received by remote B. Transmitter A can then proceed to send next data - until its transmit window is full (of data sent to remote but not yet acknowledged).
+But this mean that the recipient has to reorder packets and that the sender must keep track of a large backlog of messages that it has sent.
+- If you are just sending a stream of packet to a mostly mute recipient, then it is acceptable to only receive a NAK when the recipient receives the next packet or so.
+It all boils down to the loss probability distribution and traffic pattern.
+You are on a bad connection, and only receive segments 1, 2, 4, and 5.
+NAKs simply allow for faster recovery, in the case where a packet/block sent by A is not received by B, and B detects by some way that a packet/block is missing.

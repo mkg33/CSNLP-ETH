@@ -1,0 +1,13 @@
+Switches do not modify Ethernet frames, so there's no difference between one that was sent directly from the server and one that passed through the switch.
+On Linux systems, you can use ethtool to retrieve such information (it might not be supported with every NIC):
+Ethernet switches typically work using something called transparent bridging - emphasis on transparent, meaning they're usually somewhat invisible to the end hosts (bar things like STP/CDP). So never expect to see a switch MAC address in a host's ARP table!
+If they are Cisco switches, by default they will be using a process called CDP (Cisco Discovery Protocol). This is often disabled in some environments so you may need to consider enabling it to test. Some other vendors also support CDP as well, but it may be disabled by default. You can capture these with tcpdump as follows:
+All of this depends on some details, e.g. whether any of these interfaces uses teaming/bonding, or some level of aggregation, whether the server has bridged interfaces, etc.
+While you can't directly tell which interfaces connect to a switch and which connect the two servers directly, there may be ways to do this indirectly. Namely, look for the type of traffic that is generally produced by a switch and not by a server.
+The standard based version of CDP is LLDP (link layer discovery protocol). If the vendor's switches support it, they may have this on by default while others have it off. Here is the tcpdump command to capture this traffic:
+Option 3. Check you server's routing table. You should be able to see which route is for the directly connected server, and where it goes, e.g.
+Option 1. Record the IP and MAC address of the directly connected server's NIC (the "other" server, as you call it). From your original server ping that IP address and use the arp command to check on which interface does the MAC address of the "other" server appear. 
+Option 2. Generate traffic via the switches, e.g. ping multiple servers on your network that you know are connected via the switch ports. Run arp, and if there's more than one MAC address to a port, then this interface is connected to a switch port (multiple MAC addresses are a give-away).
+Unless you have the servers configured to participate in STP (i.e. generally only a concern if you are bridging or running virtualization with a switch/bridge), they don't tend to send out BPDUs like a switch will if running STP.
+There may be other options, but these are the ones I would expect a good chance of seeing from a switch in a business environment.
+I am not sure, what an equivalent of ethtool for OpenBSD is or if it available there. Sorry, if not. But theoretically, you can retrieve such information from the interface state, but not from the traffic.

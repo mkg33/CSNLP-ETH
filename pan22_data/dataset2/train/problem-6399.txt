@@ -1,0 +1,8 @@
+But if a large object belongs to user1, I can't find how to grant the permission to user2 to delete (lo_unlink) this object.
+I'd work around this by using oid references instead of lo, and then using vaccumlo to remove them once the references to them are removed.
+If user1 says GRANT UPDATE on LARGE OBJECT xyz TO user2; and user2 runs SELECT lo_unlink(xyz);, it's denied with:
+The SELECT permission allows for opening the object in read-only mode, and for UPDATE, the doc says:
+My use case is a db that stores mailboxes that are shared between different db users. All the tables with mail contents and large objects with mail attachments are owned by a "master" user, and other users may or may not delete messages depending on their database role.
+Deleting a message means deleting everything related to it, including attachments stored in large objects. So it would make sense that a non-owner should be able to delete large objects, just like he can delete from other tables if he has been granted the DELETE privilege on these tables.
+Is it really the case that only the owner a large object is ever able to delete it, or I'm missing something?
+That's consistent with other objects, which cannot be DROPped except by the owner. It seems kind of painful for large objects, though; maybe bug -hackers?

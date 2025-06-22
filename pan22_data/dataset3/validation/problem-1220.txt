@@ -1,0 +1,13 @@
+You may need to clear the Windows Events log if it is full.
+Almost every time I restart the machine hosting a SQL Server 2008 R2 express server, the database goes through the restore process.
+Most of the time, the database will become stuck in the restore process.
+I do not know the cause of the memory consumption, however it answers the problem I was having here.
+2011-12-09 10:13:18.86 spid13s     Service Broker manager has shut down.
+It turns out the problem was that the database was out of internal memory due to issues with the Service Broker.
+2011-12-09 10:13:18.86 spid13s     Error: 17054, Severity: 16, State: 1.
+The database simply ran out of allowed memory in express edition.
+Any obvious reason as to why I cannot restart the system without the database needing to go through a restore.
+2011-12-09 10:12:51.16 Server      SQL Server is terminating because of a system shutdown.
+2011-12-09 10:13:18.86 spid13s     The current event was not reported to the Windows Events log.
+After restarting the service, all of the memory that was consumed by the broker is still being reloaded and maxing out the available memory.
+This error was found in the windows event log: The SQL Server (__NAMEHERE__) service terminated unexpectedly.

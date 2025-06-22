@@ -1,0 +1,18 @@
+You can always verify which are mirrors by a crude manner of comparing the data, for example:
+(if you don't get any matches, you may need to increase skip=, as you're not skipping over RAID superblocksl; and if you get same md5sum for more than 2 disks, you may need to increase count=, as you're probably reading and m5summing zeros - to prevent that you should put some data on the raid first, otherwise they might be full of zeroes)
+Now we know that sda/sdb is one mirror and sdc/sdd another one.
+You may need (depending of your configuration) to adapt this file to reflect changes about our new array (/dev/md4).
+Don't skip=0, because the begining of the disk contains different information.
+The information there should help you determine which components are each others' mirror.
+The "dd" command is reading one time (count=1) one Megabyte (bs=1M) at one Megabyte offset from the disk start (skip=1M).
+At this time you have 4 raid 1 arrays with 2TB space on each,
+Recent versions of mdadm show this right in the details of the array.
+I had the same issue and after googling a while I didn't find a reliable answer.
+--run options is usefull because some components are active in another array
+NOTE: BE CAREFUL, IF YOU HAVE MORE THAN 2 DRIVES WITH THE SAME CHECKSUM YOU ARE PROBABLY COMPARING EMPTY DISKSPACE, CHOOSE ANOTHER OFFSET (skip option).
+I think you are talking about a real raid 10 array (1+0 striped mirroring)
+It is possible this data is not available while the array is rebuilding though.
+Run "mdadm --examine device" on each component device (i.e.
+After giving it some thoughts, I figured that the mirrors have the same data and so we could compare some part of it.
+In the above case, sdd and sdb can fail together without data loss.
+As for the swapping wires around, you don't need to do that - mdadm should create raid with devices as specified on command line in mdadm --create, so you would just specify drives in different order on command line.

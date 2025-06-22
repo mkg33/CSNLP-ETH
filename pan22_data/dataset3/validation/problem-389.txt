@@ -1,0 +1,18 @@
+The permissions for the Home directory on the destination server was set to 775.
+How much time elapses after the publickey packet is sent waiting for the reply when it fails?
+From what I discovered, the Home directory permissions must be set to 755 or less.
+I would start by checking the syslogs in /var/log on the server for any messages from sshd indicating why it rejected the authentication attempt.
+On the remote server, become root and run /path/to/sshd -d -p 2222.
+It will accept one connection, and it will print debugging information to your terminal.
+I would try cranking the debug up to 11 on the server side and see what it is whining about.
+For me, this was a permissions issue involving the Home directory as well.
+This indicates the server didn't accept your private key.
+If the login fails, check the debugging output printed by the server.
+The server does not seem to be sending a reply here.
+This will launch an instance of sshd which listens on port 2222.
+Then, on the client, run ssh as normally but include -p 2222 to connect to the correct port.
+You could also try testing with Userify, see if it works and that you have public key without errors.
+Unfortunately, the server doesn't provide the client with any more detail about why it didn't accept the key, so you really need to troubleshoot this on the server.
+Chown the root-created files (not just chmod) back to that original user account.
+This sets it to where no user other than the owner of the home directory is allowed to have write permissions.
+If you have root access on the remote server, you can run a debugging instance of sshd and then connect to it with a client.

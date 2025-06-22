@@ -1,0 +1,19 @@
+When I login using ssh -t myserver /bin/bash , my .bashrc IS loaded correctly.
+You can find more information on: man bash , section INVOCATION
+After that, the user automatically logged in with a bash shell.
+There should be the .bash_profile that you expected.
+When using the default ssh command, none of them is being loaded...
+Which ensures that ~/.bashrc is loaded if your shell is a login shell.
+Normally when a user is created it will copy a bunch of files to your new homedirectory (if you chose to create one).
+If your ~/.bash_profile contains the above and ~/.bashrc is not being loaded you can debug the scripts by using set -x as usual.
+As none of the previous, it seemd that the user didn't have a shell assigned, so it just show the character $ as prompt.
+I had to assign a shell to the user by running the command:
+the ~/.bashrc file is loaded for interactive non-login shells, that's why running /bin/bash from ssh works as you expect.
+Bash reads group of files depending on the invocation of the shell:
+I don't have any other files in my home folder, like .profile.
+In SSH verbose mode, I do see that /etc/bash.bashrc and ~/.bashrc are loaded using the last command.
+For login shells (amongst others) ~/.bash_profile is read.
+You can check the /etc/skel directory for those files.
+Typically your ~/.bash_profile contains something like
+What should I configure to have .bashrc (and /etc/bash.bashrc) loaded when using the default ssh command?
+When I ssh into a server (4.3.3-2-ARCH), my .bashrc is not loaded (however, I can load it manually by sourcing it).

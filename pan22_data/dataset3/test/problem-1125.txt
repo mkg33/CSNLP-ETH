@@ -1,0 +1,15 @@
+"Mail Contacts" are just information containers, and are essentially the equivalent of AD Contact (they map 1:1).
+To be honest this should be the same on-prem, you should need both as Exchange will use the AD contact as well.
+As we use SharePoint, we need both of these objects to be current (one for the address book, and one for SharePoint).
+Mail Contacts are generally used for external contacts to a domain.
+My understanding is that these would be Active Directory users that we just wouldn't license, and I assume we'd set a specific AD property that puts them in mail users instead of mail contacts, but I can't find any documentation about how to do this.
+So - you should not need two separate objects synced with O365, you only need one or the other.
+"Mail Users" are security principals with an email address.
+I've not tried to sync both - but if you have a Mail Contact, than syncing Mail User will fail and vice versa (as they both have the same SMTP address).
+However, many of these are contacts for users that we have also established an AD account for, meaning we have two objects for many of these people.
+We have Contact objects in Active Directory that are synchronized into Office 365.
+At this point your users have no licenses to any resources, BUT they will available as a  Mail User to Exchange online.
+If you have two resources however that conflict that could cause a problem.
+When you sync an OU with AD user objects, then corresponding security principals are created in Azure AD.
+Exchange Online supports mail users (non-mailbox users), and in Exchange Online, mail contacts can be synchronized from AD contacts, so how do you synchronize a mail user instead of a mail contact?
+I would move your "contact" objects to a dedicated OU and not sync this, just sync the AD principles with the email configured and they should be visible in your GAL.

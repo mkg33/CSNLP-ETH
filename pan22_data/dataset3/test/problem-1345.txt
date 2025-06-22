@@ -1,0 +1,35 @@
+http://blog.demofox.org/2015/08/15/resizing-images-with-bicubic-interpolation/
+You could, if you wanted to be spiffy, model an actual thermal conduction coefficient.
+What you will want is some form of linear interpolation, with weightings based on the distances to each square.
+Interpolate the values across the X axis, then the Y axis, then the Z axis, and you'll have your result.
+Please note: Originally posted in stack overflow, redirected due to nature of problem.
+http://blog.demofox.org/2015/04/30/bilinear-filtering-bilinear-interpolation/
+There are many other ways to do this, but another popular method is bicubic interpolation.
+Then, you'll need to interpolate 2 values across those values, along the Y axis
+You can read more about bilinear interpolation here:
+It works by doing cubic interpolation across one axis, and then the other, just like how bilinear interpolation works across one axis, and then the other.
+We will get the points: 80, 0, 60 100, 0, 60 80, 0, 80 100, 0, 80
+The way this works is, let's say we are at world space 95, 0, 65 (x,y,z).
+In 3d, the terminology is trilinear interpolation and tricubic interpolation.
+The values at the corners are 7, 0, 3, 5 as labeled, and if you need to get the value where the relative coordinates inside of the grid cell are (0.2, 0.8), you can use linear interpolation to find the value for that point as 5.16.
+Just use your Perlin noise generator at the player’s position.
+While linear interpolation interpolates values, bicubic interpolation interpolates both values as well as value slopes (the first derivative) so can be helpful in circumstances where you want smooth derivatives, like you might in the case you describe.
+You do not need to do anything special: Perlin noise is a gradient noise and is designed to give you an interpolated value at any point, not just at the square corners.
+This link shows the differences when using a couple different types of 2d interpolations on pixels in an image, and has source code for each:
+1) generate, using perlin noise, temperature values for every 20 squares (smartly generated to only do so to the 4 squares most relevant to us at any given time).
+So, in order to make the climate smoothly transition, I need to figure out how to get the distance each point weighted against its temperature so I can calculate the temperature of the space I am standing in.
+Lastly, you'll interpolate across those 2 values along the Z axis to get your resulting value.
+Note that bilinear interpolation is only ONE way to do this.
+http://blog.demofox.org/2015/08/08/cubic-hermite-interpolation/
+I tried taking the distance from my point to each point and multiplying that number against the temperature at that point, but I'm not sure if that's a correct first step, or what to do from there (just average the four resulting numbers?!
+You'll need to interpolate 4 values across the X axis.
+You then interpolate the two values across the X axis, and then interpolate between those two values across the Y axis.
+For cubic interpolation (across a single axis) you need the closest 4 points on that axis, not just the closest 2 line linear needs.
+The math is a bit more complex, but you can read more about the details here:
+The term you are looking for is bilinear interpolation.
+To do this you get the 4 grid points around the point you are looking at.
+It doesn't actually matter if you interpolate across the X axis and then the Y axis or the other way around, it comes up with the same value.
+If there is a name for this (there must be, I'm essentially sampling a gradient made by four points) and a way to do it, please just link that instead.
+If you have a grid of values, and you want to know what a value is when it's inbetween grid points, you can use bilinear interpolation to do this.
+I am trying to calculate the temperature for the player's current chunk by getting nearby temperature values and interpolating.
+Each of these points is fed into a perlin noise generator and spits out a number.

@@ -1,0 +1,5 @@
+I don't think there's a significant difference between your two options when it comes to memory allocations.  In both cases, you're reading the entire file into memory, which trumps any minor differences that might exist in the number of objects allocated by the two options. (Though both options are also immediately discarding those contents since they are only stored in local variables, but I'm assuming that this is just a highly simplified example.)
+If you're concerned about memory consumption when using a big file, you need to not read in the entire file all at once.  Instead, you should load chunks out of the file as needed by your application, and discard them when no longer needed so the memory can be reclaimed.
+Is the goal to get a string containing the content of the file? or to add the content of a file to an existing StringBuilder?
+if it's the former then Option 1 can drop the string builder altogether ... or better yet.
+if it's the latter then you might want to think about using StringBuilder.EnsureCapacity() to avoid the overhead of resizing the buffer more then it needs to. 

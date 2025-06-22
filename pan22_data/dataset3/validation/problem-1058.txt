@@ -1,0 +1,22 @@
+The above assumes that you have access to the shell that your IDE is using as a remote session, and set the variable there.
+Even in the same shell, you may lose environment variables if you spawn a process in a way that won't inherit them.
+Maybe it's just me, but this doesn't seem like good support for remote development and remote host execution.
+My existing setup (XQuartz & RPi-hosted idle3) handles this fine.
+Needless to say, MY_ENV_VAR will not be set if the IDE uses a different user for remote execution, which may not even use bash as a login shell.
+With Xojo you can use the Remote Debugger to run code directly on the Pi.
+IDEs can start their own login shell, their own subshell, or start processes with no shell at all, and in case of login shells they may log in as a user you don't expect.
+This works reasonably well, but I've developed a case of "feature lust" for some of the "professional" IDEs, so I read some reviews, and chose two commercial IDEs as most likely to succeed because they made strong claims for supporting "remote development" and "remote host execution".
+If you run Python from a different shell, it won't be.
+I've been developing Python code for my RPi from my Mac.
+Your code snippet is not as simple as you may think.
+So finally, here's my question: Does anyone know of a "full-featured" IDE that supports Python (other languages would be nice, too) that really and truly support remote development and remote host execution?
+You have to find out how to set variables in a way that is compatible with an IDE of your choice, and stick to that approach.
+Both of the other commercial IDEs fail to return a value for keyval, nor do they raise an exception/error.
+For instance, sudo -u pi python ./myscript.py will not inherit MY_ENV_VAR, yet it's a perfectly sane approach for a remote IDE to spawn a process with a specific user ID.
+I've been in touch with both vendors' tech support, and it seems they can't really execute this code on the RPi, but instead offer "work-arounds".
+It's simple: I've installed XQuartz on the Mac, idle3 on the RPi, ssh -Y ... to the RPi from the XQuartz terminal, then idle3 & to access idle3 on my Mac's desktop as it runs on the RPi.
+If you set MY_ENV_VAR in your .bash_profile, it will be set if you login as pi but it will not be set if you start a non-interactive shell as in ssh pi@raspberry.local python ./myscript or a subshell as in sudo -u pi bash.
+In essence, whatever an IDE does to execute a process remotely, you can always find a case where it doesn't have the same environment as a local process.
+To my way of thinking, neither of these commercial IDEs actually do what they say wrt remote development and remote host execution.
+Environment variables are set separately for each process (possibly with inheritance), so if you set MY_ENV_VAR in a shell and test for it from the same shell (with Python code or otherwise) it will be set.
+I'll illustrate what I mean with this very simple code snip:

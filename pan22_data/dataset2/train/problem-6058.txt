@@ -1,0 +1,10 @@
+So, if you need to know the client's IP address, you can NOT use the REDIRECT target. Rather, put your actual server in a different subnet, and use DNAT target, with your Linux server acting as a full router. Assuming your actual server has a local LAN address of 192.168.1.51, the mapping will be:
+Let's first understand what is a TCP Connection: It is a stateful connection-oriented data interchange between an 'initiator tuple' (IP,Port) and a 'terminator tuple' (IP,port).
+I don't think the redirect target is the right one to use in this case, the dynamic NAT target would be more appropriate.
+With this temporary mapping, the server at 10080 responds back to netfilter, and a reverse mapping happens:
+This means, all information transfer for that TCP Connection needs to fulfill the four-ple definition.
+Now, let's assume that your server is located at 1.1.1.1, and the client at 2.2.2.2. The client opens the connection to your server's port 80. Assuming the client's ephemeral port is 34567, we have the four-ple (2.2.2.2,34567,1.1.1.1,80).
+What will the actual listener do? Why it would respond directly to 2.2.2.2:34567, resulting in the packet to be dropped by the client, because the client has the four-ple of (2.2.2.2,34567,1.1.1.1,80) and not (2.2.2.2,34567,1.1.1.1,10080).
+On your server, the packet gets redirected to 1.1.1.1:10080. But this results in a different four-ple of connection! E.g., (2.2.2.2,34567,1.1.1.1,10080).
+An excerpt from https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/4/html/Security_Guide/s1-firewall-ipt-fwd.html:
+In other words, the TCP Connection is defined by a four-ple of (Client_IP,Client_Port,Server_IP,Server_Port).

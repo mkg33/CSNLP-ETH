@@ -1,0 +1,10 @@
+You can change that to 1 (or more), which means that if at least that number of secondaries don't also commit the transaction, then the transaction fails.
+However, a 2-node synchronous Availability Group isn't the answer either, because as Microsoft's own documentation points out:
+If the storage where the data files live fails, then both nodes will be affected.
+You can't guarantee zero data loss with 2 independent SQL Server 2012s without third party tools (like SAN replication, and even then, there's a ton of work involved.)
+Yes, SQL Server 2017 introduced a new REQUIRED_SYNCHRONIZED_SECONDARIES_TO_COMMIT setting at the Availability Group level.
+I'm guessing the question came from a test or certification written by somebody without real-world experience.
+The disk failure part means a failover cluster alone won't work because the storage is shared with both nodes.
+That wouldn't be the first time, and it won't be the last.
+The default is 0, which means as long as the primary receives the transaction, it's committed.
+Read further in that link in the "Factors That Disrupt Data Synchronization" section, and Microsoft elaborates on the reasons why you can't guarantee that a 2-node AG will not lose data on failover.

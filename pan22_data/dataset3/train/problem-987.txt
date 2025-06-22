@@ -1,0 +1,24 @@
+If the sync job can run over other protocols (psexec, FTP, SFTP, SCP, etc) that would likely be speedier.
+This works out to be very painful when running sync jobs, etc.
+The Prod Site firewall, running pfSense 2, accepts VPN TCP/UDP traffic on SMB ports 135-139 and 445.
+Your solution is to find another way for these remote users to manipulate files.
+Welcome to the wonderful world of SMB over any connection with higher than LAN latency.
+However, when attempting to perform a deletion of a folder with many subfolders/files, or uploading many individual files, or modifying many individual files, the explorer grinds to a halt, usually working around 2-4 FILES per second (even if they are <1kb).
+This lack of speed has been confirmed for Windows XP, 2k3 Server, and Windows 7 clients.
+We have the following arrangement: Dev Site <--vpn--> Prod Site.
+My guess is that neither will be the case, as you've discovered that SMB performance over a VPN generally stinks.
+If you have strictly Server 2008 with Vista or newer clients, it won't be as bad.
+You could try FTP, but that introduces another protocol, and FTP by itself is not particularly secure (better over the VPN).
+There may also be an issue with packets being fragmented - in which case you can try to adjust the MTU between links (though this may not be possible with the connection under the VPN).
+For mass uploads, they could upload a ZIP file and uncompress it on the server via remote desktop.
+Our developers can connect to administrative shares \\Computer\C$ without incident, and actually uploading individual files to the share is fairly breezy at around 200-300 kilobytes per second.
+Especially when working with shares with lots of files and/or directories.
+Everything you describe is perfectly normal for such scenarios, once you're over 20 ms things get significantly slower, in excess of 50 ms and it's painfully so.
+The protocol is very poorly designed for connections with higher than LAN latencies.
+But your best bet is to give the users remote desktop to the server and have them do the deletions there.
+You should certainly check your office ISP's bandwidth to make sure it isn't oversubscribed, and you can use ping to test latency between the remote developers and your server.
+The -f argument is the don't fragment flag, and the -l is the size.
+See "Performance issues" here for more in depth info:
+The question of sync jobs is challenging, because you most likely do have to look at each file.
+For example, on my desktop - I can't send a ping larger than 1472 without it needing to be split into multiple packets (Win7 -> Win2008R2):
+I would suggest starting at 1500 and working your way down.

@@ -1,0 +1,8 @@
+If you’re using CUBIC or another AIMD congestion control algorithm, when it hits congestion it quickly drops its rate back a bit and then slowly ramps it back up to find the max again. This leaves little “scallops” (in a tcptrace graph) of unused bandwidth that other flows can fill. If the UDP flow is fixed-rate, it won’t fill those gaps. But other competing TCP flows certainly will. I suspect the more TCP flows you have, the more they’ll fill in any bandwidth left by the others’ congestion control measures. 
+We know that the way (basic) TCP works is by starting with slow-start phase followed by a linear increase of congestion window (CWD). The CWD is adjusted according to network status. So once we initiate a connection, it will take some time for the connection to reach a stable CWD, depending on the network condition.
+So, by this logic, a TCP connection will try to fill all the available b/w of a link. So, if there are multiple TCP connections, each will adjust their CWD so that there is minimal congestion.
+So suppose I have a 100 Mbps link (The topology is given below)
+I have an application which is sending UDP traffic
+I have another application iperf which can initiate parallel TCP connections along that same link
+My finding says that the throughput of 1 TCP connection is lower than the throughput of 8 TCP connections combined (Exp 1 vs Exp 4). It should be kept in mind that the individual throughput of the 8 connections is much lower (which is obvious).
+So my question is, why can't the single TCP connection utilize the full b/w that the 8 TCP can do together?

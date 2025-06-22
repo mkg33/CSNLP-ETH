@@ -1,0 +1,13 @@
+I need to set the serial port /dev/ttyS0 to 250k bit/sec in order to send commands to another device expecting 250k.
+I am using Python and trying to set the speed with the command
+This generates an error because the port speed is a non standard unix speed the nearest being 230400   ....which is not close enough.
+Note this is not USB. The Rasberry Pi B has the ability to go to this speeds and I have confirmed to myself that it gets to the higher speed ranges with and oscilloscope.
+Looks like I need to recompile the kernel. I can do that, but can someone help with which code needs to be modified to get a new non standard uart speed.
+The clock speed of the serial port is 3000000Hz (3MHz).
+We can UNDERclock this (as low as 1MHz), but we cannot OVERclock it (with any confidence).
+So we will pick the Baud Rate one-above the speed you want and slow it down...
+Quick maths sanity-check: 250,000 is a bit more than half of 460,800 ...and 1,627,604 is a bit more than half of 3,000,000 ...yep that looks right :)
+So if we reduce the serial clock speed to 1627604 and then specify a serial port speed of 460800, the upshot will be a serial port that runs at 250000.
+You can even do the maths backwards to double check things: 
+249,999.97 is uncommonly accurate, you can get away with a lot more deviation than that! [citation required]
+So we edit /boot/config.txt; Set the serial clock speed to 1627604; And the Baud Rate to 460800

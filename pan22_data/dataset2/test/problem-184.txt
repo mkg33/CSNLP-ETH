@@ -1,0 +1,11 @@
+In httpd-ssl.conf I've specified the certificate paths ... https is working correctly for all pages except the Tomcat ones.
+Check the output of apache2ctl -S - a second SSL vhost that is loading first on the port will get requests instead of the desired vhost.
+The SSL connection is working for every page on the Apache server except these served to Tomcat. Tomcat works well on http connection.
+The DocumentRoot from the httpd.conf is only in charge for the global Apache settings. If you set on your server on a VirtualHostconfiguration it shouldn't interfere with your VH at all.
+I haven't used mod_jk for a very long time as I find the configuration itself not very amusing. I switched over to mod_proxy for this sort of reverse proxying as it is more intuitive. In case of Tomcat I use mod_proxy_ajp and enclose the elements with the <IfModule mod_proxy_ajp.c> container. But that might be a personal flavour thing. If you can't figure out why, you might save time giving that a try.
+If I try to connect to tomcat through http everything is OK. Every page which is specified in the JkMount directive is forward to Tomcat and all the others pages are Apache's responsibility. I have two virtual hosts - one for port 80 and one for 443. The working configuration for 80 is:
+Two factors: the order and definition of <Directory> and related directives, and the JKMount location(s).
+I am curious why you think you need two - just use /cas/* (apache will redirect a request for /cas to /cas/ automatically if /cas does not exist, based on the DirectorySlash setting, which defaults to On)
+When I try to use https with similar vhost configuration for port 443 - there is an entry in the apache logs:
+What is controlling whether the Apache is searching in DocumentRoot dir or forwarding the requests to Tomcat? What am I doing wrong?
+I'd recommend for now to increase yourLogLeveland check the log file after that. Additionally, if it ain't on productive server yet, you can drop the DocumentRoot lines in httpd.conf as well.

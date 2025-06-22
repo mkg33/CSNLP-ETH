@@ -1,0 +1,8 @@
+This will typically be the IP address assigned to the interface the post-NAT packet is sent out on.
+if you wish to filter based on the actual source of the packet, you should use -s x.x.x.x/xx before the -j MASQUERADE
+In practice, that will usually mean that the source will be the normal source address for the route to the destination's next hop.
+If I have two NICs on my server, what is the difference of
+the purpose of using MASQUERADE is so that it will modify the source address to that of the interface it is going out of; if the outgoing interface has a static IP, use SNAT, don't use MASQUERADE; it causes all connections to be forgotten whenever the interface goes down and is essentially intended for any interface that has a changing IP.
+When --source isn't specified, what does iptables then use as default?
+If you run iptables -t nat -L -v -n, you will see something like this:
+The system will follow the normal rules to define the source address as the machine's local address that is "closest" to the destination.

@@ -1,0 +1,6 @@
+The EXPLAIN SELECT you posted definitely seems counter-intuitive.
+-- use the STRAIGHT_JOIN directive to insist that the optimizer process the tables in only the listed order:
+It looks like the optimizer is getting distracted by the facts that supplier is a smaller table and that the supplier_id index in the po table can be used as a covering index... and with those facts in hand, it's overlooking the seemingly-obvious fact that the tables should be read in the opposite order than the one it chooses.
+The first option is probably the better option, since FORCE KEY, in spite of the name, is still only a "hint" that the optimizer can choose to ignore, while STRAIGHT_JOIN genuinely does force the hand of the optimizer to join the tables in the order they're listed.
+-- use the FORCE KEY index hint to direct the optimizer to prefer the primary key of the po table:
+If your query included WHERE s.id = ... then the query plan you're seeing might make a little bit more sense, but I'm assuming you're not.

@@ -1,0 +1,19 @@
+Finally, I've definitely seen connectivity issues when using IPMI over a non-dedicated port.
+The "ipmitool" command on it's own uses a local interface to the ipmi controller.
+If you're not using the dedicated IPMI controller ethernet port, then you may need to actively tell the IPMI controller to use the onboard ethernet port.
+The way the ethernet controller in the IPMI piggybacks onto your host ethernet port can result in DHCP issues, as well as network card driver crashes.
+This is why you need to load the modules in order to use ipmitool from the same host.
+Ensure that these kernel modules are loaded prior using ipmitool utility:
+I've also seen the situation where the IPMI IP address on a non-dedicated port is accessible from a remote machine, but not from the local one (which isn't a problem generally, because you can use the ipmitool kernel interface anyway).
+It may not be the same as the interface that your linux install thinks is eth0.
+As newbie, I try to use IPMI with a supermicro mothercard x8dth-if, version 1.0
+In all cases, to reset the IPMI controller you need to either use the ipmitool interface once you get that working, or to physically remove power from the machine (off at the wall/PDU etc - turning the machine off from the button at the front isn't enough, as the IPMI controller is still powered)
+If you're on a remote host you can use ipmitool over the network, using something like "ipmitool -I lan -H hostname -U username -P password  chassis status", substituing appropriate values for hostname, username and password.
+The onboard port the IPMI controller piggybacks on is LAN1.
+In BIOS I set the address to 192.168.1.199 for IPMI.
+So if you've changed your mind about which port to use, this might be occuring.
+These IPMI controllers default to an "auto fallback", so if you have an ethernet cable plugged into the dedicated LAN port at the time the IPMI controller is powered up, it will use the dedicated port, otherwise it will fallback.
+I decided to use the LAN1, not the dedicated IPMI LAN.
+I always advocate using a dedicated port where available.
+Now you should be able connect to your IPMI via kcs interface using ipmitool or OpenIPMI utilities.
+After modules are successfully loaded you should see at least this in your system's dmesg output:

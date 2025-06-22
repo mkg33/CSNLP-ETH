@@ -1,0 +1,23 @@
+I'm guessing that as long as this is more of an edge case it should work fine.
+If John Smith is directed to https://tenantA.foo.com, they could easily become confused (e.g.
+This must be a software-based solution that can run in Linux.
+This is easy to support today with one wildcard SSL certificate.
+This means SSL certs should be able to be added and removed from the LB pool at runtime.
+This way our Load Balancer pool will serve/terminate all HTTPS communications to foo.tenantA.com and all requests are load balanced to our SaaS web server cluster.
+As an illustrative example, let's say our SaaS is available at:
+To avoid this problem, our tenants would set up a subdomain like:
+This avoids a lot of end-user confusion: tenantA's users can see a URL they recognize as owned by tenantA and will more readily use the app.
+But tenantA wants us to host everything about the app, which means foo.com's infrastructure needs to serve the SSL connection.
+However, with our SaaS, our tenants may wish to expose our UI (but branded for them) directly to their own users.
+Is there a 'recipe' or existing solution that is documented and suitable?
+Amazon's Elastic Load Balancer (at the time of writing) cannot pragmatically satisfy this need - it would require an Amazon ELB for each tenant domain.
+What about just recommending that your client put a thin wrapper on it themselves?
+Changes cannot interrupt the ability to service existing or new HTTPS requests.
+It must also be highly-available (2 or more LB 'nodes').
+This causes a problem: let's say John Smith is an existing customer of tenantA (and has no knowledge of foo.com).
+Since every ELB needs to 'ping' the web servers, if you had 500 tenants, you'd have 500 ELBs pinging the SaaS web service endpoints - a non-negligible negative performance hit.
+EC2) with Linux, we don't have access to the hardware/data center.
+I have a cloud-based (Amazon AWS, Rackspace, whatever) multi-tenant SaaS application, and I need to support HTTPS communications for multiple unrelated tenant domains.
+For example, can Nginx, HAProxy or Squid (or anything else) be set up to support this?
+Tenants can access their tenant-specific UI and service endpoints via:
+Also, as we'll deploy on virtualized hardware (e.g.

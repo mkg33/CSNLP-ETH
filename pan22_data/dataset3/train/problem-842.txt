@@ -1,0 +1,16 @@
+Each step in your workflow that needs to run a script will call out to Azure Automation, do the work and return the result.
+I'm a bit overwhelmed with all the options there are out there.
+From my reasearch it seems that I could utilise either Event Hub or Data Factory, both together with Azure Functions.
+Data Factory isn't going to do what you want, that is more concerned with moving and processing data, rather than performing tasks against Azure.
+The goal: each time the the backup is copied to Blob Storage I want to test its correctness, so:
+create Data Factory event, make it react on trigger, create a pipeline with additional steps)?
+The invironment: a VM that creates some local db backups, then sends them via azcopy to Blob Storage.
+Which way would you recommend and what steps should I take (ie.
+Logic apps are Microsoft's cloud workflow engine, which can be triggered by a number of things, including files arriving at blob storage.
+I would suggest you look at a combination of Azure Logic apps and Azure Automation to do this work.
+The combination of Logic apps and PowerShell works well and is something I use a lot.
+Logic apps will do the orchestration of tasks, then we can use Azure Automation to run PowerShell that actually does the work, seeing as how most of your tasks are Azure tasks, so Azure PowerShell is good for this.
+Functions could do some of this, but you're going to hit issues with time limits of functions (10 mins max).
+Logic apps allow you to build a workflow of different tasks, which can follow a specific order, have branching, error checking etc.
+I'm looking into automating some stuff in Azure and wanted to ask for tips.
+You could also just use Automation and one big PS script, but using a logic app lets you build a workflow, it also provides a way to trigger based on blob storage which Automation cannot do alone.

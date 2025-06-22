@@ -1,0 +1,13 @@
+In your case, DHCPv6 is probably the way you will want to go, and it is what most major ISPs are deploying.
+With recent kernels (or recent NetworkManager versions), you can enable RFC 7217 address generation mode, which provides stable addresses based on a secret seed.
+Use ip -d link to make sure "addrgenmode stable_secret" is shown.
+With the following sysctl settings on my Ubuntu 13.04 Linux system, I get the temporary IPv6 addresses, but I also get the public MAC-based IPv6 address:
+If you want temporary addresses, you must be using either stateless address autoconfiguration (as you already know) or DHCPv6, which can be configured to request temporary addresses from the DHCPv6 server.
+This can be set for all new connections via NetworkManager.conf.
+NetworkManager 1.2 handles autoconf and assigns addresses on its own.
+Is it possible to configure the Linux kernel to automatically get the RFC4941 temporary (privacy) IPv6 addresses without getting the RFC4862 public (MAC-based) IPv6 address?
+I predict applications like Adobe Flash will allow web sites to have their flash applications phone home using the MAC-based IP, making it that much harder for people to avoid being tracked by marketers (or governments) wherever they go.
+I realize that use_tempaddr=2 says to prefer the temporary address, but applications can still bind() to the MAC-based address or use the IPV6_PREFER_SRC_PUBLIC sockopt (see RFC5014) to override this preference.
+How do I get temporary IPv6 addresses without getting the MAC-based IPv6 address?
+Of course, you'll need to generate your own key instead:
+Older NM versions and non-NM systems rely on the kernel to assign addresses.

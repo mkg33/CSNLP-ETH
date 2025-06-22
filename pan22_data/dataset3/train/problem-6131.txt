@@ -1,0 +1,15 @@
+use MegaCLI to turn on the amber light for a particular slot when a drive dies).
+I know most people are against this, but the snapshot/clone, compression and flexible partition of ZFS served us very well.
+if the device node name is directly related to the card and slot number, it may be a trivial transformation....otherwise, it may be quite difficult.
+We've been running ZFS on top of a single hardware RAID on dell poweredge for years.
+There is an excellent article and tutorial on how to do this at https://calomel.org/megacli_lsi_commands.html
+Whenever a drive dies, a dell technician is dispatched (the server is in another State), he will confirm that drive has an amber light, and replace it.
+Even if you have to manually use MegaCLI to turn on the amber light from the shell when a drive dies to satisfy the Dell tech's procedural expectations, you're still better off giving ZFS raw drives rather than overlaying ZFS on top of hardware raid - you're losing most of the important features of ZFS by doing that, and they're the most important features (e.g.
+See Here: https://forums.servethehome.com/index.php?threads/crossflash-dell-h330-raid-card-to-12gbps-hba-it-firmware.25498/
+I know that zfsonlinux has a ZFS Event Daemon (ZED) which you can use to cause particular things to happen on certain events (e.g.
+IIRC, FreeBSD has a ZFSd which can do similar things but I am not an expert on FreeBSD so can not point you to more information other than to say that the FreeBSD forums are full of useful advice and helpful people.
+You can control the PERC H730 and H330 using the LSI MegaCLI utility as both of these cards are Dell PERC badged LSI cards.
+I suspect that the hardest part of doing this will be figuring out what the MegaCLI "slot" number is for a given drive, because ZFS only knows about the device node / name, and doesn't have specific LSI or PERC information.
+Current dell RAID controllers (PERC H730/H330) do support pass-through.
+I flashed a DELL H330 RAID card to HBA IT Firmware.
+Now we want to take advantage of L2ARC/ZIL caching of ZFS, we are seriously thinking about running ZFS on bare disks.

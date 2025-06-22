@@ -1,0 +1,8 @@
+Sorry, there is no workaround for that. Postfix is very RFC compliant and insists on receiving a correct reply.
+There are methods to rewrite the reply to something completely different, but for this the reply has to actually occur. In your case there is no reply (in the eyes of Postfix and RFC 5321) and so a timeout occurs.
+Just for completeness here the excerpt of RFC 5321 section 2.3.0 :
+I'm having trouble with my postfix servers in combination with delivery on Postini servers.
+After lots of time debugging we found out that these messages only happened to mail that is delivered to postini servers (*.psmtp.com).
+Using tcpdump we noticed that Postini returns a '571 Message Refused' message but it ends only with a CR \r (0d) instead of with a CRLF \r\n (0d0a).
+Since the linefeed is never sent by Postini, Postfix keeps waiting for the end of the message. In the end the watchdog process will kill the postfix proces and causes the error message above. 
+This causes the e-mail to stay in the 'active' queue so postfix will attempt another delivery. This results in a postfix instance that will keep hanging over and over again. We tried installing a newer postfix version (from 2.5.5 to 2.8.3) but that did not solve the problem. Of course there is something wrong with Postini which has been reported to Google but I'm wondering if there is a solution for postfix to handle this gracefully?

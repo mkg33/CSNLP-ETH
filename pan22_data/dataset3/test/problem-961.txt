@@ -1,0 +1,9 @@
+When I send an email to a gmail account, using an ip which is not either of these- the email still reaches my inbox.
+fail (google.com: domain of me@example.com does not designate 99.9.9.99 as permitted sender) client-ip=99.9.9.99
+I have a domain whose SPF record looks like this: "v=spf1 mx ip4:6.7.8.9 -all".
+While the behavior of the receiving end may not always be reliable, it's definitely worth having there in case the receiving end does respect SPF in some way.
+The behavior on SPF mismatch is entirely up to the receiving end, and considering how frequently SPF is configured incorrectly (or out of date) a lot of providers won't reject based on a mismatch (even with -all instead of ~all).
+It is common to see the spam score bumped because of a mismatch, and maybe even a match receiving a spam score decrease, but even these aren't always the case either.
+To the original question: Gmail is DMARC compliant, and so if you want to enforce policy, you should publish a DMARC record with p=reject or p=quarantine and Gmail will then apply your policy when SPF and DKIM fail.
+The record is valid, and to my understanding implies that allow mails only from:
+When I look at the headers, it turns out that google did manage to read my SPF record as I intended it to be, and knew it should have failed, and yet it didn't

@@ -1,0 +1,21 @@
+Replacing this single rule would be fast (and even safe with iptables -A; iptables -D ... 1).
+However, the good news is that it would be pretty easy to write Python script that would replace insert the rule you want above the old one and then delete the old one.
+I don't think there is a solution for an extreme case like yours.
+Optimal would be to have just a single rule in each default chain which would just direct the traffic to the old or to the new set.
+All you should have to do is flush, delete, and recreate the chain(s) when you need to reapply your rules.
+Have you tried loading your new rules with the iptables-restore command?
+This does require that you write your rules in the format used by iptables-save.
+That way you could create the new set of rules without disturbing the traffic.
+So instead of a chain dropthis there would be set0_dropthis or set1_dropthis.
+So during an update, you insert a rule at the top that permits established connections, (maybe you want this to be a rule by itself always enabled and never touched), flush the chain, then adds the new rules to the chain.
+The only way for this to be feasible is to either rework your existing script to use the iptables-restore format or, modify your existing script to dump commands to stdout instead of executing them and then produce a second script to convert it to iptables-restore format.
+Create a chain or two and add all your rules to that.
+This is in theory an atomic operation, which may take care of most of your issues.
+A wrapper script would detect which set is currently active and call the real script with the respective parameter.
+Just parse output above for chain and rule number, say 4, do iptables -I chain 4 newrule, and then iptables -D chain 5.
+I suggest to adapt the script so that it uses one of two names for the same chain (makes sense to use a prefix), depending on how it is called.
+my suggestion to you in terms of getting the iptables-restore format would be to run your script against a VM or in a separate network namespace on the live machine and then use iptables-save to grab it.
+After that the default chains would be flushed and recreated with the new set as target.
+This assumes you are using stateful rules wherever possible.
+After that the old set's chains would be flushed and deleted.
+iptables-restore is guaranteed to be atomic and is thus the only reliable way to do seamless rule replacement.

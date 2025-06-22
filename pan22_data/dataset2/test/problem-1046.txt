@@ -1,0 +1,10 @@
+For step 2, we need to change the NULL values to something else. You want to include the final month for each account, so adding one month to the starting date suffices:
+I didn't like the query that I got when I put it all together. There can be issues with join order when combining OUTER APPLY and INNER JOIN. To get the join order I wanted I rewrote it with a subquery:
+I used the date dimension table from Aaron Bertrand, as you also mention in your question (which is a super-handy table for such scenarios) and I wrote the following code: 
+For step 3, we can join to the date dimension table. The column from the dimension table is exactly the column you need for the result set:
+This is by no means a clean looking solution, but it seems to provide the results that you are looking for (I'm sure that others will have nice, clean, fully optimized queries for you).
+I don't know how much data you have so it might not matter for you. But the plan looks how I want it to:
+I have the answer slightly different from yours ('JOSH' <-> 'JAMES') because your data contains these 2 rows:
+I added the EndOfMonth column to the #dim table(right after the FirstOfMonth column) using the following code:
+with the same account and assigned date and you did not precise which one should be taken is this situation.
+Here I don't use calendar table but a natural numbers table nums.dbo.nums (I hope you've got it too, if not, it can be easily generated)

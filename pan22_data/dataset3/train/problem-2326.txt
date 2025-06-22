@@ -1,0 +1,12 @@
+That said I've been surprosed before and there is some good advice on how to go about that in this VMWare Communities Thread.
+It looks like the RAID controller I was using had an issue.
+Remember that since you are using ESXi you'll either have to break into the unsupported console or use the Remote CLI tools or the VIMA appliance to run vmkfstools.
+This may give you some hints about what's going on.
+It's unusual for VMFS to truly get corrupt though, what's more common is that the state of the VM files has been left in such state that causes the ESX host to decide that it doesn't want to play nicely with them.
+Fortunately I was able to restore the data from backup.
+Since this is ESXi you'll have to export the diagnostics\logs from within the VI Client's file menu [ file -> Export -> Export Diagnostic Logs ] and then unpack the file (it's a .tgz) that this creates.
+Veeam FastSCP should allow you to connect to the ESXi host and browse the VMFS Datastore.
+It will display everything it sees and wont hide things the way the VI Client's Datastore Browser does.
+vmkfstools -R vmhba1:1:0:0 (or whatever the LUN in) should help.
+You should take a look in the logs, specifically /var/log/vmkwarning or /var/log/vmkernel to see if they give any hints as to what's going wrong.
+VMFS volumes are checked whenever they are mounted so I'd be surprised if forcing another check actually gets you anywhere.

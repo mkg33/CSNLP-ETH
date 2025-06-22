@@ -1,0 +1,22 @@
+From your description, it looks like the networks A, B and C are peered with each other.
+Cloud DNS appears not to be sharing properly across these networks.
+From the same page, it also explains that there is DNS Peering beta available, whereby a Consumer Network can forward DNS requests to a Producer Network.
+We have selected all networks (A, B, and C) to be included in this DNS zone.
+The VPC for B is shared from project A to project B, and the VPC for C is shared from project A to project C. The networks are peered with each other.
+An instance on network A will be able to resolve a domain from the network A DNS server, but not from a network B DNS server, and vice versa.
+I would like to try it as well, moreover because on top of this I have a VPN with on-prem (let's call it D) and the next step would be to setup a conditional forwarder to the on-prem DNS.
+But what if B and C have different private zones (which should not be so far from real)?
+I'm aware that private zones in Cloud DNS are still a Beta feature, but this setup should currently be possible according to the documentation.
+Would that mean having both setup on A  so that records for the respective VPCs are uniquely managed from within project A.
+Within project A, we have a private Cloud DNS zone which forwards to two DNS servers.
+However, if you explicitly define the DNS server, it works as expected.
+We have a master project A, and two other projects, B and C. In project A, we have a shared VPC with networks A, B, and C (related to which project they're meant to serve).
+With experimentation, we have found that instances will be able to resolve records that are on a DNS server on the same network, but not on another network.
+I can see there ins't documentation to use Peering Zones with Forwarding DNS at the same time, so you may want to try by adding both domains foo.com and bar.com in both DNS servers.
+Not sure if B and C would be able to resolve D queries through A project.
+If I understand it correctly, that would mean having the DNS setup on the producer network A, and let the networks B and C forward their respective queries to A.
+For example, let 10.0.0.1 have an A record for foo.com, and 10.0.1.1 have an A record for bar.com.
+This could explain why the DNSs can only resolve names to instances within the same VPC ehn using Cloud DNS forwarding; and in the other hand, the DNSs have to be asked directly to resolve when they are set in peered VPCs.
+The documentation about Peering zones says that, "when two networks are peered, they do not automatically share DNS information".
+One of these servers is in project A and network A, and one of them is in project B on network B.
+They are hosted on network A and network B respectively:

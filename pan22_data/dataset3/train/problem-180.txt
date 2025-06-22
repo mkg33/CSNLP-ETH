@@ -1,0 +1,17 @@
+Whenever using ArrayList, the method containsAll(collection) runs in time \$\mathcal{O}(mn)\$, where \$n\$ is the size of ArrayList and \$m\$ is the length of collection.
+You idea is good, but you've got it backwards and the implementation is not ideal.
+I think if you have a case in which you need an ArrayList which needs a faster containsAll() method, it is OK.
+As soon as you start having a non-trivial hash function your containsAll implementation begins to be slower.
+It never amortizes if the list is huge and the collection small.
+You are hitting a special case for your array as the hash function of Integer by default is just the integer value itself.
+See for example the following code which uses strings of 100 characters.
+You got it backwards: You're testing coll.containsAll(this).
+If you need MultiSets, which are available on 3rd-pary libraries, using a LinkedHashMultiSet, you could also preserve insertion order.
+In case of empty or single-element coll, it's wasting time, since the original implementation is optimal.
+You should also handle the case of this.size() < new HashSet<>(coll).size(), as the answer is then trivially false.
+So if you need random access and a faster containsAlls() and can provide a fast hashCode() method, it is certainly an easy method to get that functionality.
+My main question, should I do this optimization at expense of adding more requirements?
+I have this subclass of ArrayList that does the same in time \$\mathcal{O}(n)\$, but relies on hashCode() as well.
+Actually, you have to convert this to a HashSet, rather than the other way round.
+If you used, for example, a HashSet instead of an ArrayList, the containsAll()  method would probably be more like \$\mathcal{O}(m)\$.
+Also note that the removal is usually more expensive than a test and you should try to avoid it.

@@ -1,0 +1,22 @@
+Add the name to the list of Notification Packages.
+The DLL is not loaded since I can delete it without a lock.
+Save time, write a script and use 2 DLL names so when you reboot it you load the 2nd then switch back to the first on next reboot, etc.
+Does anyone have an idea on how I should proceed to solve this problem?
+I've solved this problem by installing the redistruable package of C++ visual studio on each DC.
+But there are no signs of the DLL even being called.
+On boot the OS reads the Notification Packages value and loads all DLLs there.
+for scecli and rassfm, both listed in "HKEY_LOCAL_MACHINE.SYSTEM.CurrentControlSet.Control.Lsa.Notification Packages".
+The DLL is only called during a pw change and only if the pw meets the windows requirements (min length, no min age issue, not in history buffer).
+sync is OK since pw was committed to AD, never try to sync of PasswordFilter() call).
+When you logon run winmsd or msinfo32 to be sure your DLL is loaded.
+I've set up auditing of system events and I'm getting 4614 events ("A notification package has been loaded by the Security Account Manager.")
+See Computer Configuration + Software Environment + Loaded Modules.
+The LSA first checks windows requirements (in 2K3 and 2K8) and then calls the PasswordFilter() function for each DLL listed int he Notification Packages in the order listed.
+If I remove them from "Notification Packages", they're not read.
+If you need to modify update the DLL you have to remove the entry from Notification Packages, reboot, copy the new one to system32, update Notification Packages again and reboot.
+If your DLL says pw is OK and no other filters reject it the pw is committed to AD/SAM and then the LSA goes through all DLLs listed there again to call PasswordChangeNotify() so a DLL can do pw sync (i.e.
+But the DLL that I've put into "Notification Packages" is not loaded.
+So if you debug it is probably easier to have it write to a file.
+I've written a custom password filter for Windows Domain Controllers (a passfilt.dll) and registered it according to the instructions (put it in the system32 folder and updated the registry key)
+The OS is Windows 2008 R2 x64 and I'm using an 64 bit version of my DLL.
+You MUST install the same version of the redistribuable package of VS C++ according to the version of Visual Studio used to compile your dll.

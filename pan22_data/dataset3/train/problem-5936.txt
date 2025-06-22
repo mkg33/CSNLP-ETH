@@ -1,0 +1,17 @@
+Because Apple's popular "Bonjour" protocols makes heavy use of multicasts, Apple is pretty good at making sure the AirPort Base Stations are very solid when it comes to multicast/broadcast handling.
+Older security modes like WPA (TKIP) and WEP can't keep up with 802.11n data rates.
+WPA/WPA2 (what the Wi-Fi Alliance calls "WPA2 Mixed Mode") supports AES-CCMP or TKIP as the unicast cipher, and has to use TKIP as the multicast/broadcast (group) cipher for the sake of older clients that only know TKIP.
+To be fair, these buggy implementations have almost never been from Apple.
+So DHCP usually works even when multicast is broken.
+It almost always uses unicasts from the server to the client.
+If you've already tried WPA2-only security and it didn't work, then the solution is to hope someone has updated drivers for your Atheros 5007 card that don't have this bug, or upgrade to a better quality card that doesn't have this bug.
+DHCP only does broadcasts in one direction, from the client to the server.
+If your roommate's Atheros 5007 isn't able to decrypt those ARP request broadcasts because it has a bug, then it will never see the ARP Requests, will never reply with an ARP Reply, and thus will be unreachable for the router, because the router will never know which MAC address to address the frames to.
+If your router wants to forward a packet to your roommate's Vista laptop, first it may need to send an ARP Request broadcast that the laptop needs to receive and reply to.
+This mode is compatible with older devices that only do TKIP, but it means that for clients that join using AES-CCMP, not only is there a different encryption key for multicasts/broadcasts as opposed to unicasts, there's a whole different cipher that has to be used.
+So multicasts/broadcasts from the client to the AP would work.
+This also means the Vista client can probably ARP for the router's MAC address, and even transmit its ping request, but it's when the router needs to send the ping response that it can't because its attempts to user ARP to find the client's MAC address fail.
+The 802.11n spec requires WPA2 (AES-CCMP) security if you want to use security.
+WPA2-only (AES-CCMP only) is a bit simpler to handle because it uses AES-CCMP for both the unicast and multicast cipher, although it still uses a different key for multicasts/broadcasts than it uses for unicasts.
+The funny/annoying thing is, the special multicast handling only happens in one direction (from AP to client).
+I've seen a lot of implementations that were buggy about handling the different key and/or cipher for multicast/broadcast, and effectively dropped all multicasts/broadcasts, breaking, most notably, ARP.

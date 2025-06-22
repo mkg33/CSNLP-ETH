@@ -1,0 +1,11 @@
+Removing the wildcard from the beginning will allow the indexes to be used.
+I have a table for author names with two fields, first_name & last_name, both varchar(55), both nullable (for crazy business logic reasons) although in reality last_name is unlikely to ever be null.
+So, I am restricted to InnoDB & can't make use of FULLTEXT, and needed to stay completely flexible on the LIKE wildcards.
+so that "Twain" or "Mark Twain" can be searched on.
+Not a real answer to this, I realize, but was best I could come up with.
+First, if you are on MyISAM or InnoDB 5.6+, you could store the concatenation in a separate field and use a FULLTEXT index on that field.
+The other option is to index the first_name and last_name fields separately.
+The table has about 15,000 rows & is expected to gradually grow, but won't ever be more than double that, and not for years.
+If it would make a great difference in performance, making last_name not nullable is an option, but not first_name
+For my own query, my solution was finally to write that part as a subquery that ran fast enough to be satisfactory.
+I understand that there are many other parts of my query that will affect this, but given just that information, how might I best index this?

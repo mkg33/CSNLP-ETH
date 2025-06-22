@@ -1,0 +1,19 @@
+This ACL is defined to vlan 4, allowing access to internet and to vlan 1.
+your routers default route should point to the ISP gateway
+The thing is that is you already configure your scenario, and on host or devices connected to it respective vlans, already have it gateway, you must be able to communicate devices between vlans.
+MUST be applied INBOUND on respective vlan 4 subinterface on router.
+It is not, you need to configure NAT on your router.
+Now, because you want to deny access from one vlan to another, you need to create access list and applied to the subinterfaces that you created on router:
+You would configure SVIs on the layer-3 switch, and the addresses of the SVIs would be the gateways of the VLANs.
+You need to create 2 mores to vlan 2 and 3, and do the same thing
+But to reach the internet, here is where you need to do some configuration.
+Finally, you should have 2 links between the router and switch stack.
+I guess you need to check if some kind of NATing is needed of if this is part of you ISP provider.
+The switch would need to be a layer-3 switch with routing enabled to allow communication between the VLANs; a layer-2 switch cannot route traffic between VLANs.
+You will also need a way to have a default route on the layer-3 switch, either specifically configured to point to the router, or through a routing protocol from the router.
+It should be configured as such because better/faster inter-vlan routing.
+Then on the router wipe out existing interface config and put
+You will either need to run a routing protocol between the layer-3 switch and the router, or you will need to configure static routes to the VLAN network on the router.
+You would then convert the trunk link to the router to a routed link:
+Your setup this like you described is something called "router on a stick", you can search on the internet by the topic "inter vlan routing".
+Note: x can be a gateway provide by your isp (usually you entablish a link using an /30 network, or can be the interface connected to you ISP, this one depends of your configuration)

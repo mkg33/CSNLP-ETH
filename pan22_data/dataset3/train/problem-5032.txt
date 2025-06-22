@@ -1,0 +1,11 @@
+algorithms) supported by the client, followed by the lists supported by the server.
+but looking in the manpages I don't see an equivalent option for the key exchange.
+So for client list a,b,c and server list c,b, the client chooses algorithm b.
+I'm trying to understand how OpenSSH decides what key exchange method to use.
+So if you have at least that version, you should be able to pass -oKexAlgorithms=<kex_list> to specify your preferences.
+AFAICT, the OpenSSH client won't actually print out what kex algorithm was negotiated, but if you pass -vv and look at the kex_parse_kexinit lines, you can see the list of kex algorithms (as well as lists of encryption, MAC, etc.
+In addition, I know every ssh server/client is required to support at least two methods: diffie-helleman-group1-sha1 and diffie-helleman-group14-sha1, but its unclear to me how the server and client to choose between the two, given that each program must support both.
+I would think that in every case diffie-helleman-group14-sha1 is used since it has the larger MODP group.
+Can someone 1) tell me a way to specify this 2) explain how ssh chooses the method?
+(I suspect it always picks the first in the list, meaning the second is never, ever selected)
+In theory, the client will select the first algorithm in its list that also appears in the server's list (i.e., the selection favors the client's preference).

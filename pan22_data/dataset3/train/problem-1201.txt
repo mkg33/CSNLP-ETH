@@ -1,0 +1,18 @@
+The wildcard only works for the host portion not the TLD which is why at some point you will have to transition URLs.
+I have a hosted service and have been issuing domain names to clients in the form clientxyz.ourdomain.com.
+The only option you might have is to redirect connections using the CNAME to clientxyz.ourdomain.com on HTTPS.
+product.clientdomain.com points to clientxyz.ourdomain.com).
+You are not going to be able to generate SSL certificates for your client's custom CNAME records that point to your domains.
+They are going to have to transition URLs at some point to your TLD.
+You will have to install a dedicated cert for each client in order for this to work properly.
+The issue is with SSL -- all interaction take place over https.
+Then you can use a wildcard SSL certificate to secure them.
+Typically they would do this on a site that they control which is covered by their certificate and then do a 301 to the URL where you host things.
+Install another certificate for each client that wants a custom domain?
+You can't directly CNAME a different domain to an SSL site and have the cert work.
+Best case is something I program to happen automatically after a client makes the CNAME change on their end.
+It is certainly one of the more frustrating issues when trying to make this sort of thing happen, but makes sense when you think about it.
+I am not 100% but I think I have seen others do this automatically.
+The cert is issued for our domain name *.ourdomain.com and hitting the site with the client's domain generates a certificate error.
+Now we want to offer clients the ability to specify their own domain and Alias (CNAME) it to our servers (e.g.
+The client could only use HTTP on product.clientdomain.com unless they also supply you an SSL certificate with private key.

@@ -1,0 +1,34 @@
+I've been using puppet for deployment of infrastructure, and most of the work I do is with Web 2.0 companies who are heavily into test-driven development for their web application.
+I don't think you could use test-driven development.
+So the first tests don't fail, they define correct (or expected) operation.
+Write a test, make the test pass, refactor the work you've done.
+I believe the following links could be of interest
+An example would be if you use apache and separate config files for differing parts, you can test the parts as well just use a different httpd.conf file to wrap them for running on your test machine.
+Once we are happy with our manifests, we push them to the testing environment where the application developers will get the changes on their VMs - they usually complain loudly when something breaks :-)
+In this case you approach TDD from the perspective of "Legacy Code".
+Basically you would need to deploy servers, start up the services in a test mode, and then run tests from another server (or series of servers) against the services.
+I worked in an environment that was in the process of migrating to a TDD operations model.
+Then you can test that the webserver on the test machine gives the correct results there.
+In TDD "Legacy Code" is existing code that has no tests.
+they don't break the application developer's machines and they don't produce undesirable output in the logs of the production machines' "noop" puppetd process, we push the new manifests into production.
+Then you can test, during deployment; And monitor during production.
+For many configuration jobs the first step is to test whether the configuration can be parsed by the service.
+As mentioned above, when following this path, the tests may not always fail in the accepted TDD manner.
+We used buildbot to setup the testing environment and run the tests.
+Our application developers do their work on virtual machines which get their Puppet configurations from the development Puppetmaster's "testing" environment.
+We have two puppetmasters set up, one is our production puppetmaster and the other is our development puppetmaster.
+When we are developing Puppet manifests, we usually set up a VM to serve as a test client during the development process and point it at our personal development environment.
+On a representative subset of our production machines, there is a second puppetd running in noop mode and pointed at the testing environment.
+We use this to catch potential problems with the manifests before they get pushed to production.
+But you could certainly try unit-testing on new servers.
+Or you could just roll this up into a monitoring solution, like Zenoss, Nagios, or Munin.
+Nagios has preflight mode, cfagent has no act, apache, sudo, bind, and many others have similar facilities.
+We have a rollback mechanism in place so we can revert to an earlier version.
+Does anyone here use a test-driven approach to developing their server configurations?
+For some things like monitoring scripts this worked very well.
+This is basically a lint run for the configurations.
+While I haven't been able to do TDD with Puppet manifests yet, we do have a pretty good cycle to prevent changes from going into production without testing.
+Many services provide some facilities to do just this.
+We use Puppet's "environments" to set up the following:
+Every step along the way you follow the same basic pattern.
+Maybe using python scripts to connect to databases, webpages, and ssh services.

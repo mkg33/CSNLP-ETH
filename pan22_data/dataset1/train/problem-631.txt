@@ -1,0 +1,10 @@
+My hobby engine has a deferred renderer that supports normal maps and specular maps. Now, some objects may have normal maps, and some may have specular maps. In some cases, an object has both maps, and in some cases, it has neither.
+The question is: how should I implement the rendering of these objects? Should I have a render queue for each different object type and render them with separate shaders like this:
+Or, should I use a single shader and bind a "default" normal map and specular map for those objects that do not have such maps? By a default map, I mean for example a normal map texture that's completely colored (128, 128, 255). This would be something like this:
+Basically, the first approach would involve less texture binds and more shader binds, whereas the second approach would be the opposite. Is either of these a preferred way to approach the problem? Or have I missed something completely here?
+You can assume the objects are queued correctly to the queues.
+You can use a tiny neutral texture to "disable" shader features you're not using which incurs a texture switch penalty but no shader switch penalty.
+You can generate multiple shaders with all feature combinations and switch to the proper shader, this incurs a shader switch penalty but the simpler shaders execute faster.
+Which ever is best depends on which is costlier: shader execution time due to code complexity or shader switch time.
+On mobile GPUs (-2015) shader complexity tends to be more expensive than shader switch, On desktop GPUs it will depend on the GPU core speed. Low-end desktop GPUs can be more like mobile GPUs in that sense.
+This will also vary depending on the 3D scene being rendered.

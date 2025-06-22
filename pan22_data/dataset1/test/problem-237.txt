@@ -1,0 +1,9 @@
+Did you put hardcoded references to the files with the full url? eg 'http://server/file.cs' 
+If the browser refuses to show insecure content for a secure web page then you will get the problem you describe.
+I have a website on which we have recently enabled SSL. In most browsers, this works fine: our scripts and stylesheets are imported using HTTPS and most browsers load pages successfully. However, in some circumstances, secure pages will load without page styling or JavaScript.
+One place we've reproduced this consistently is on Mac OS X (v10.6.4) with Safari 5. We have another user who reports consistent issues on Mac OS X with Chrome v5, but I see no issues with Chrome v6.
+Safari reports to me that the certificate is not valid as it's signed by an 'unknown' authority (DigiCert). This complicates the situation since Safari in Windows doesn't have this issue. At least in Safari, however, a user can tell the browser to always trust content from the site and stylesheets and scripts will load appropriately.
+Most Chrome users who encounter the issue have a similar error signature. However, one of them reports that his browser downloads the files with blank content. In these situations, Chrome's error console indicates the file was interpreted as the correct type but transferred with a blank MIME type. 
+The site itself runs Apache and the static content server uses Lighttpd. 
+The inconsistency of this issue is making it hard to pin down so any suggestions would be appreciated.
+This turned out to be a problem with how we set up the certificate on our static content server. It was set up in Lighttpd such that Safari could not follow the certification chain to the intermediary cert from the root cert. We had to stack the certs in a single file and move the server cert to a pem file. Afterward, Safari treated requests to our static server as valid and began serving the JavaScript and CSS to the browser again.

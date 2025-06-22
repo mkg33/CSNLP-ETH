@@ -1,0 +1,6 @@
+They can all do rollover and be accessed one way or another through simple repeatable T-SQL.
+I do this as standard across all the servers I look after because noticing a bunch of failed logins (security attack) or safely cleaning up the existing security over time is a core part of being a DBA.
+If you're on 2008 you can set up an extended event session to record logins to a file (you can configure it to roll over and set a maximum size, even 64mb may be enough).
+The main columns you want are the login name, application name, database name, host name (though this can be spoofed), the date, whether it was successful or not, and aggregate a count.
+Have an agent job which reads the event file each day and aggregates data into a table (on the server or on another server - if you have a lot of servers it's good to consolidate, and you can do this in a bit of PowerShell but it becomes more complicated too).
+You could use a ring buffer but it seems like a waste of memory... and if extended events were not possible then an audit trace will work, as will a standard trace (created in profiler and exported to a script).

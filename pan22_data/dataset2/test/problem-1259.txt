@@ -1,0 +1,6 @@
+3: All other requests must be rejected with the non-standard Nginx '444' rejection, meaning that they will be ignored.
+However, the "*.example.com" host string matches one of the https server definitions and is forwarded to the Django code.
+We've attempted catching this bad host string with the following "black hole" server definition in Nginx:
+1: Incoming requests originating from the load balancer (specifically, health checks and latency checks) must be allowed to reach the web servers.
+We've noticed in our logs that our Django code is returning a lot of 500 errors due to bogus 'Host' strings making it past Nginx. The host strings we are seeing for each of these requests is "*.example.com", which matches any one of our subdomains and therefore makes it to the Django code. Since that host string is unrecognized, Django returns a 500 error.
+Additionally, our website has several subdomains, each running essentially the same code for different clients. We've set up Nginx to redirect all http traffic to these subdomains to https. I'll call these subdomains "a.example.com", "b.example.com", and "c.example.com".

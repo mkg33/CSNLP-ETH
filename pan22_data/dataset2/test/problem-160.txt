@@ -1,0 +1,9 @@
+Why ZFS+RAID6? It's mainly because the inability of ZFS to grow a raidz2 with new disks. You can replace disks with larger ones, I know, but not add another disk. You can accomplish 2-disk redundancy and ZFS disk growth using mdadm as the redundancy layer.
+2) Are there possibilities for checksumming and compression that would make ZFS unnecessary (maintaining the possibility of filesystem growth)? Because the RAID6+LVM combo seems the sanctioned, tested way.
+The use case is a server with RAID6 for some data that is backed-up somewhat infrequently. I think I'm well served by any of ZFS or RAID6. Platform is Linux. Performance is secondary. So the two setups I am considering are:
+This may be a naive question since I'm new to this and I cannot find any results about mdadm+zfs, but after some testing it seems it might work:
+If you go for the MDADM raid6 + ZFS solution, you will lose self healing as ZFS have no data about how to recalculate/restore damaged data blocks, unless if you set copies=2 or more(which will use twice as much storage). Your ZFS storage will only report data inconsistencies. 
+You can also grow your ZFS file system by adding more vdevs to your pool, which will be dynamically striped. For example you can create a new raidz2 vdev with 4 to 8 disks and add it to your pool. You can even add a mirrored vdev to it.
+1) Is there anything that inherently discourages or precludes RAID6+ZFS? Anyone has experience with a setup like this?
+That means if a data block cannot be properly read, ZFS will tell you which files are affected. Your whole file system shouldn't be in danger as meta data is dual redundant and can be self healed if any inconsistencies are detected.
+Besides that main point (otherwise I could go directly to raidz2 without RAID under it), these are the pros-cons that I see for each option:

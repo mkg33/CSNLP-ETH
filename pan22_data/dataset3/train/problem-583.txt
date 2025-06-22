@@ -1,0 +1,30 @@
+I simply use iptables to do byte counting on each IP address and I can tell the in and out bytes.
+It would make sense to link Mac address -> IP address of client, and then match based on the IP address.
+From there, run your lines for your Wireless Access Points.
+Let it get its address, then you can work on the other parts.
+If you are also doing file sharing out of it, then leave the physical layout as is, but disable the wireless on your router, and the extra LAN ports; otherwise, clients can plug directly in, or connect via Wifi, and skip your server completely.
+All the computers should be able to talk to each other, and you can use your pfSense Firewall to check the logs, and see what each machine is accessing.
+First off, the server should be the first thing everything connects to, including the Internet.
+Do note, though, that trying to map the MAC address to the website is extremely difficult, and would require custom scripting to take care of.
+Using ISC DHCP I added lines like the following for each client in dhcpd.conf
+In my case, I don't worry where people go (nor do I assume all their traffic is HTTP - https is quite common and people use things like SIP and ftp as well).
+There's not need for it, and routers are easier to deal with anyways.
+In a network where you can trust there is no nefarious activity, you can create the link between MAC address and IP address by statically assigning the IP address based on the MAC address (most decent DHCP servers [ie running on your Server ] should be able to do this.
+It will keep track of URLs visited by user in great detail.
+Hook the second NIC of the Server up to the switch.
+If this is not an option, you have a major issue to solve.
+You might try running a captive portal to link IP addresses to mac addresses when someone logs in, or get serious and insist all devices connect over VPN to ensure they are authenticated.
+Although this question is quite open ended, I'll attempt to answer.
+As far as I know the only way around this is to use a network mapping software to keep track of what IP your MAC addresses are attached to as well as lightsquid, or manually login to your router and see what IP is assigned to what MAC address and keep DHCP lease renew at a longer time, perhaps 1 month.
+If you're using it just as a firewall, then it should be hooked directly up to your ISP's modem.
+Once you have the IP Address you could put in a transparent proxy and capture the log files and analyse these.
+(Otherwise someone can just fake a mac address or statically assign themselves an IP address belonging to someone else).
+Take everyone's suggestion, and assign static reservations in DHCP, or assign static IP addresses to all known devices.
+Can you describe your usage case better so we can give a more robust answer ?
+On your server, pfSense can (and probably is) going to be your DNS server and DHCP server.
+You will need to go into each of the other Wireless Access Points, and disable DHCP on them.
+Then after the DHCP leases are renewed, once again take note of what IP is assigned to what MAC address...rinse, repeat.
+Then every month you can log what IP is assigned to what MAC address and then at the end of the month use lightsquid to see the usage.
+For the ones that are routers, I would recommend assigning it an IP address in the range that your firewall is giving out addresses, then plug the cable into the LAN port to move it into Bridge Mode.
+I do not believe it logs the MAC address of the devices however (only IP and host name).
+It is probably not best practice to try and link a mac address to a website you are visiting as mac addresses are only used in your network.

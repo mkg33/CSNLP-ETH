@@ -1,0 +1,14 @@
+If I understand this correctly, what you want to do is have your external DNS server have all the records for bar.com, and your internal DNS server only the record for foo.bar.com, and somehow forward all requests for any other record in bar.com to your external DNS server for resolution?
+Everything else such as bar.com and www.bar.com would go out through the normal resolver.
+Let's say I have a web-server on my internal network which is behind a NAT router.
+I think Justin is assuming that foo.bar.com is a domain, but based on your question, it sounds more like foo.bar.com is the FQDN of just your web server?
+The server will see that it is authoritative for that hostname and use the local records.
+There are other DNS servers that have this feature (maraDNS) but I believe it violates the RFCs, so it won't be there in any mostly RFC compliant DNS server.
+What you'll want to do is add an authoritative zone to your server as foo.bar.com with the appropriate records.
+I want my internal network clients to resolve foo.xyz.com to the internal address.
+I have my external DNS for the “xyz.com” domain configured with an A record for “foo” that points to my router's public address.
+Do I need to create a primary zone for xyz.com and mirror all the records from my external zone with the exception of “foo” (this is what I am doing now), or is there a better way?
+To have any records for bar.com, the server has to be authoritative for bar.com, and if it's authoritative then it will always respond to a request for a bar.com record it doesn't have with a "no such record" response, rather than doing some kind of recursive query.
+If that's true, then no, there's no way to do that in the MS DNS Server (2000-2008 versions).
+However, this is the only xyz.com record that should point to an internal address.
+In short, your current method (mirroring all the records except this one internally and externally) is the best/only way to make this split-brain configuration work with the MS DNS Server.

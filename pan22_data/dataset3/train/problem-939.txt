@@ -1,0 +1,16 @@
+If you installed using apt-get, it would definitely not be expected to work in a Virtualmin default configuration (though you'd get a 501 error instead of downloading the file), because Virtualmin sets up suexec for all virtual servers.
+These three things alone would prevent 99% of the exploited systems I've seen in my 15 years of system administration.
+My domain name is mapped to the external IP and now everything is working well.
+After that, you can worry all you want about other stuff (but it probably won't make a big difference in the security of your server to worry about a bunch of other stuff).
+So, you'll need to either disable suexec for the virtual server you want to run it under, setup a virtual server specifically for this install of phpmyadmin that has suexec disabled, or install phpmyadmin in the public_html directory of the virtual server you want it to run under and owned by that user.
+The phpmyadmin package from Debian/Ubuntu apt repositories runs from within the default document root, and would need to run as the apache user.
+This problem indicates that php scripts are not configured to execute in that virtual server.
+Suexec is a security feature that causes scripts to be executed as the owner of the virtual server account rather than the Apache user.
+There is no security to be gained by trying to hide either.
+And when I go to mydomain.com/phpmyadmin, the php page doesn't run and it's downloaded to my computer.
+Suexec will not run applications not owned by the owner of the domain or outside of the suexec docroot (and your phpmyadmin is presumably owned by the apache user and outside of the suexec docroot).
+As for security, there are three things that are the most common sources of exploited servers in the wild, and they aren't related to any of your questions:
+I just installed LAMP and Virtualmin on my Amazon EC2 instance.
+But, your specific problem is that php scripts are not being executed in the location where phpmyadmin is installed.
+Don't get distracted by security theater until you've accomplished those three things and have made them a part of your daily sysadmin routine.
+When I visit my external IP, it just shows the same page as my domain.

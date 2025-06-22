@@ -1,0 +1,6 @@
+Galera Cluster by itself does NOT need binary logging enabled. The question is more what happens when you run a bad Query (for example UPDATE employee SET salary = 0 ; WHERE id = 42;).
+We have some problems with the binary logs - they got too big and crashed the server. We can remove them manually with the purge binary logs command, another way would be to set the expire_logs_days so they would expire.
+If binary logs get too big it means you have a lot of traffic and need more disk space. Or you have to purge binary logs more frequent. MySQL Backup Manager (mysql_bman) helps you doing this...
+For this scenario a HA Cluster does not help. And if backup was done at 02:00 in the morning you have a little problem (potentially) how to fix your data. So binary logging is possibly recommended.
+We are using a MariaDB Galera Cluster with 3 nodes. For the state transfer we are using xtrabackup. 
+I now that we could use xtrabackup to backup the DB and use the binlog to get to some point in time. But do we really need it for Galera to work ?

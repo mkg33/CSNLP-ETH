@@ -1,0 +1,12 @@
+If you have a lot of signal waits on your server, but you have low CPU utilization, you may see benefit enabling hyperthreading which will double your internal schedulers and spread the workers out more which means they won't wait to execute in the runnable queue as long.
+With hyperthreading enabled this equates to double the schedulers.
+If your CPU utilization is low, you might not notice, but the higher your CPU utilization goes the more problematic it could become.
+Understanding that background, hyperthreading somewhat works opposite of how SQLOS is specifically designed to function.
+Specifically, parallelism can be problematic with hyperthreading and can result in high CXPACKET waits since SQLOS may try to run a query at DOP 8 on what is reality a DOP 4 system.
+This keeps context switching to a minimum since the scheduler is doing the work and they are bound one for one.
+Once the SQLOS creates the schedulers, the total number of workers is divided amongst the schedulers.
+One of the purposes for the SQLOS is to minimize and prevent context switching from occuring which is why only one scheduler is created for each logical processor.
+However if your workload utilized parallelism heavily you get heavy CXPACKET waits in sys.dm_os_wait_stats, you might look at disabling hyperthreading to see if it reduces your waits.
+In the SQLOS a scheduler is created for each logical processor that SQL Server sees.
+I recently had a discussion on twitter regarding this, and the consensus was "It Depends" as to whether or not it would help or hurt.
+The SQLOS implements a form of cooperative scheduling in that the workers yield the scheduler as it requires unavailable resources, or reaches its execution quantum allowing other workers to execute on the scheduler.

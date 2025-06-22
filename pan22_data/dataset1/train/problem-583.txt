@@ -1,0 +1,7 @@
+Did you disable Source-Destination Checking: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#change_source_dest_check?
+At first glance it looks like you might have forgotten to update the security group of the VPN server to accept traffic from the other instances in the VPC. To test, could you edit the security group that the AWS VPN instance is in and add a rule that allows all traffic from 172.31.10.0/20. 
+I think this is the problem because security groups act as a stateful firewall. This means that when the AWS VPN instance sends traffic out from home to other AWS instances, the security group will automatically allow the return traffic. But when traffic is initiated by another instance in AWS with a destination of your home network, there will be no rule in the AWS VPN instance's security group to allow the traffic. This is why traffic from home can reach AWS, but the reverse doesn't work.
+If the security groups weren't the problem could you...
+Please enable VPC flowlogs within your VPC configuration. This will log netflow like information to CloudWatch Logs. We can use this for troubleshooting the AWS side of the traffic.
+Could you drill down into which of these situations work / don't work:
+Include a traceroute from another AWS instance to another home machine.

@@ -1,0 +1,5 @@
+I doubt whether there is any direct negative impact on the workload performance because of these write stalls? Or is there any good reason we should try to increase write performance of the disk?
+The server-level Recovery Interval, or the database-level Target Recovery Time (aka Indirect Checkpoints, and the default for SQL 2016+) can trigger aggressive flushing, which can increase the total write IO cost of a workload by eliminating the write-coalescing behavior of the page cache.
+If you set the Target Recovery Time and the "recovery writer" starts to fall behind, it will hijack your schedulers to help it catch up.  This will create "backpressure" to reduce your workload throughput to maintain your Target Recovery Time.  See, eg:
+The occasional disk write of 20ms or more on a volume hosting a database file is not normally a big deal.
+My user database MDF file resides on separated disk. There is nothing else on the disk than this MDF file. I can see average write stalls higher then 20ms on the file using appropriate DMV. I assume that writes are only made assynchroniously by checkpoints or lazy writer.

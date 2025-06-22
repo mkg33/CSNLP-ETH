@@ -1,0 +1,15 @@
+If you want to insert data into a different table instead of the original table from the INSERT/UPDATE statement, you need an "Instead Of" trigger.
+You find examples on how to handle Instead Of triggers here: http://psoug.org/reference/instead_of_trigger.html and http://docs.oracle.com/cd/B28359_01/appdev.111/b28370/triggers.htm#LNPLS020
+In the body of your trigger you first need to get the additional information like fname, lname, etc. With a query like this one:
+Remember to declare the cariables l_fname, l_lname, etc. in the DECLARE block of the trigger:
+Even though this solution might work, it is actually not correct. You better create the table grade_table as follows. According to the database normalization form 4 you should not store detailed data multiple times.
+When you query the table grade_test and need the details on the student, etc. you simply join the detail tables.
+I am new to triggers and SQL in general. Sorry in advance if this forum is only for experts and this is a newbie question...
+I need to create a trigger that fires when someone tries to submit a grade(evaluation) of "5" in bookinglog_table for grade column. This will then grab the values of 5 columns that gave that grade of 5, and put them in a new table (so a fourth table) that I already created.
+But the 5 columns are from 3 different tables (for example, fname=si_table, lname=si_table, phone=contact_table, email=contact_table, and grade=bookinglog_table.)
+So tables are si_table si, contact_table c, and bookinglog_table b
+What they have in common is si.student_id=c.student_id, c.event_id=b.event_id, and si.test=b.test
+I have a trigger that works only if I bring in columns from table 3 which is where the INSERT or UPDATE grade originally comes from. 
+So here is the new table, we'll call it grade_table in which I tested the trigger that WORKS.
+But I don't want test1 and test2 values from the bookinglog_table. I want fname, lname, phone, email from the other two tables, as well as the grade from the bookinglog_table.
+Any tips, hints or suggestions? I've tried creating a SELECT statement within the trigger, but I'm not sure when I need aliases, if I need to put :NEW somewhere, or if I need an IF statement instead, etc.. 

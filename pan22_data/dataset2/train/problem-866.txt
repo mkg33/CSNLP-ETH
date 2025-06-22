@@ -1,0 +1,5 @@
+I managed to solve my problem using rinetd on my computer (which is in DMZ) with the following rule in it's config:
+This is a problem by design, supposedly both IPs should use the same gateway IP address which should be the firewall running iptables, I've tried in the past doing exactly the same as you did with the same fail result. You need a reverse rule on that same nat to rewrite the packet again so the origin understands it properly, by sending it to another network this doesn't happen.
+I tried iptables -t nat -A PREROUTING -d <router_ip> -i vlan1 -p tcp -m tcp --dport 97 -j DNAT --to-destination 209.85.148.99:80, but it doesn't work.
+The only way to redirect to another external site would be using a bouncer or a proxying engine like squid, varnish or nginx or write your own very short bouncer code in the language of your choice.
+I have a WRT54GL home router and I want requests coming to the router public IP address on port 97 to be redirected to an external IP and port, for example 209.85.148.99 (google.com) and port 80.

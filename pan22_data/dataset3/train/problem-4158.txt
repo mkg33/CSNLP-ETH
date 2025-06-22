@@ -1,0 +1,24 @@
+Ie, you will use a single MX mail.yourdomain.com, but the A record of mail will be switched dynamically as per the availability of your mail server.
+Your DNS setup is OK to get redundancy on the "receiving" part.
+Ideally you also configure it with a list of users so that it won't try to forward invalid/spam addresses to the primary server.
+You will need some other solution for IMAP/POP clients to read their mail when one server or the other is down.
+Depending on your DNS settings and how long the server is down for and how fast you respond, you could have mail.mydomain.com that is a CNAME for mail1.mydomain.com until mail1 goes down and then you change it to mail2, but this takes time to work, and if your mailserver is only down for a few minutes, you end up making the problem worse (since mail1 will be back up but everyone will be using mail2).
+Nonetheless you still need to switch the POP3 server in case of a fault.
+If it stores the mail in one large file, then if an email is sent to both mail1 and mail2 at the same time, you will lose mail.
+MX is only for identifying who to talk to in order to send mail to your domain.
+By this way, your client's won't get interrupted by the server failure.
+You need a DNS fail-over (not load balancing) solution to achieve this.
+Also http://extns.net/ seems to be providing free DNS service with fail-over, but not sure how reliable they are.
+If mail2 is very absolutely sure that mail1 is down mail2 should take over the service-ip for mail1 in addition to his own service-ip.
+(According to this, if two servers change the file at the same time, whoever started first loses and that version of the file is moved to the Conflict and Deleted folder).
+Another option would be to make mail a high-availability proxy that automatically forwards connections to mail1 or mail2, whichever server is working.
+Remember that, you need to set this failover for your Mail Exchanger domain only, ie mail.yourdomain.com only.
+I would never use any auto-failback-mechanisms in any cluster.
+I even don't know if your server software is able to handle the situation that a user could purge the mails from one server while the other still delivers to the mailbox and simultaneously the syncing process copies mail from one to the other.
+The standard configuration is for the secondary SMTP server to forward the mail to the primary SMTP server when the primary server is back online.
+As for using DFS for synchronizing folders, I'm not sure how the mailserver you're using (exchange?)
+Or how should they know that their POP3 server is changing from mail1 to mail2?
+Check the zoneedit fail-over url:  http://www.zoneedit.com/failover.html for more details.
+When mail1 is up again you need a proper procedure to get it back online (including failback of its service ip).
+You can notice that the failover options are for webserver, so what you have to do is to add your MX domain mail.yourdomain.com as a separate zone and configure failover with it.
+Clustering software should be able to handle this - but be sure to test all cases.

@@ -1,0 +1,36 @@
+Given all access to the filesystem from non-Linux systems will be through an abstraction layer, pick whatever you want!
+Samba should be capable of communicating with your windows boxen and myth frontends, but it does not care what filesystem it's data is stored on as long as it can be read by the kernel.
+Summary: Use XFS for the media partition, and Samba or DLNA for sharing.
+I've also shared out certain directories by way of Samba so my Windows workstations can get access to it.
+I have a script that transcodes shows into a format usable on my iriver clix2, which dumps to a directory I map to from my Windows laptop and transfer to the media player.
+I'd suggest your distro's default (ext3 probably).
+However, depending on your distro, it might do you well to put the filesystem on top of LVM so that you can expand your storage seamlessly.
+I haven't had any corruption problems with it at home or at work.
+It isn't so hot for massively random I/O on SATA drives, such as the load VMWare Workstation puts on (ahem), but for sequential access it smokes.
+DLNA is designed EXACTLY for sharing media across a network, there are several choices for linux - like mediatomb or ushare.
+Sharing (with another computer) is unrelated to the filesystem.
+It might go ext4, but I haven't done anything with that FS yet.
+This tells the kernel to allocate 256MB hunks of space when writing a file.
+It has great performance for large file sizes and is very mature.
+I export storage to my Windows and Linux boxes via iSCSI using iSCSI Enterprise Target.
+XFS is best for storing video because it's very stable and has excellent large file support.
+I would pick what ever is the default for distro that you are installing.
+As SD shows are taking 2.2GB/hour on my rig, this reduces frag significantly.
+One of the nicer things about using XFS for a media server is that XFS has a defragger, as keeping those very large files sequential on that undoubtedly SATA drive is a good idea.
+I use XFS on my MythTV server, and it works very well.
+A suggestion that helped me out, is use the "allocsize=256m" mount option for XFS.
+Going one step further, I'd put the filesystem on LVM on top of a RAID array.
+For a filesystem that will have mostly large files, I would recommend using XFS.
+This way you gain fault tolerance and performance while maintaining your ability to scale.
+Media storage has no special needs in terms of speed or reliability, so you'll just add unnecessary complexity picking an exotic filesystem.
+JFS is worth mentioning, as well and has similar performance to XFS and is just as mature.
+Failing the need for direct access, samba will do the trick just fine.
+While Samba works fine, if XBMC is your focus you might also like to consider UPNP (DLNA).
+Another option for direct storage (in addition to Alex's NFS recommendation), is to use iSCSI.
+This will also be XFS, but shared out over NFS to the MythTV box for minimal network overhead.
+I'm actively in the planning stages of setting up another media server in the back room to supplement the storage on the encoder box.
+XFS support is relatively new in the land of Linux, but by 2.6.30 it has been in there a long time.
+Just don't export over samba storage that you've imported over NFS; you'll have file locking problems.
+Basically, if you're sharing with windows - choose Samba because it's easiest.
+If you are going to be storing large files primarily, there are some tuning parameters you can set to make this more efficient.
+The few HD shows I've managed to record are on the order of 15GB/hour, and my file-system hasn't blinked at it.

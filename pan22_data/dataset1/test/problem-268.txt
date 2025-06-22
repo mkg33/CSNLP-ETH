@@ -1,0 +1,9 @@
+You've not provided any information about what OS this is running. Since you mention Varnish, I assume this is some flavour of Unix. Assuming it's Linux (although most of this applies to other OS too)....
+Have you actually measured it and compared this with the path-rewriting approach? If you are seeing a degradation then you are likely running off a very old filesystem (or one whih has been upgraded by partial patching). With ext4 or BTRFS I wouldn't expect to see a measurable difference.
+But that's rather besides the point. Reverse proxies know they could be caching lots of files - and will not necessarily map URL paths directly to filesystem paths.
+You will run into problems with very large numbers of files managed by the cache - but these are to do with the VFS / methodology. Decreasing the vfs_cache_pressure should help.
+Instead google some irrelevant links, you definitely should have read the documentation about ngx_http_proxy_module.html.
+Directive proxy_cache is exactly what you need. The configuration should look something like this.
+In the /var/www/cache folder will be created directory structure of two levels. And cached  response for http://mysite.com/resample/dir/file.jpg will be saved as md5 of proxy_cache_key value. For example, if you uncomment #proxy_cache_key    $scheme$proxy_host$request_uri; above, response will be cached to file /var/www/cache/f/08/8db24849a311cc3314955992686d308f
+MD5 ("http://bla.bla.my.backend/resample/dir/file.jpg") = 8db24849a311cc3314955992686d308f
+and level=1:2 translated to dir structure, counting chars from last, ...08f --> f/08/md5value 

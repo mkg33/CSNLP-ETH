@@ -1,0 +1,13 @@
+If the disk activity is not paging related, you might be able to use fs_usage to track it back to one or more specific processes.
+I tried disabling its launchd configuration (in /System/Library/LaunchDaemons/com.apple.locate.plist), but it still ran anyway, so I just moved /usr/libexec/locate.updatedb out of the way.
+I always noticed this on Saturday mornings, and it turned out to be locate, which updates its database at 3:15am on Friday nights.
+It might be the OS paging to virtual memory instead of something application specific.
+Occasionally my Macbook Pro will slow down as the hard drive clicks away endlessly.
+However, something like iotop -C 5 12 should give you something to start with: it will output 12 samples, each 5 seconds long.
+If quitting some memory intensive applications seems to temporarily alleviate the problem, you might try adding RAM.
+This may not be precisely what you want - but it's a ksh script which wraps around dtrace, so you should be able to figure out how to make dtrace do what you need, if iotop doesn't handle it by default.
+CPU load is low, but applications and menuitems are slow to respond.
+Is there a utility that can help me determine what's going on, such as the number of bytes read/written or files open/closed per process, over time?
+You can also use fs_usage to get a blow-by-blow account of what apps are hitting the disk.
+Check out the various per-process memory statistics with Activity Monitor to find likely culprits.
+You might try quitting less frequently used applications or at least restarting some applications that like to build up in-memory caches over time (e.g.

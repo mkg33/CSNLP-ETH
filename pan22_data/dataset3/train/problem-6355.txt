@@ -1,0 +1,22 @@
+HowtoForge also has a pretty decent setup walkthrough if you're interested.
+From everything I've read, iSCSI seems to be the best choice for a cheap SAN.
+However, you really want to keep your storage and traffic networks separate, regardless of your protocol, simply because you don't want storage traffic to interfere with network traffic, and vice-versa.
+I'd like to use my Linux desktop as the iSCSI target.
+It is not supported by RedHat yet, just there as a technology demonstrator.
+The HS21 blades have Broadcom NICs that are also iSCSI Host Bus Adapters.
+I've seen a few kernel modules and various userspace tools, but I haven't been able to figure out which is the most used, best supported, etc.
+I recently purchased an IBM BladeCenter E chassis with HS21 blades.
+In my experience using it with CentOS is that it is reliable enough for a home user, but I am not confident that it is ready to use on a company network.
+I haven't used iSCSI with Linux before, what are the choices?
+I haven't used Open-iSCSI, but I have used IETD before.
+You're suggesting using a desktop machine as the iSCSI target though, which I guess means this isn't for a production environment, so I'll skip any discussion of FC- or SAS-connected SANs
+Finally, there are various appliance type systems that you can use, although this will preclude using your desktop for a target.
+BTW, Its painful to set up - no GUI, no Config file, just add your own shell script to the boot sequence.
+The other 2 should be setup with multipath to the iscsi target, and they should be on their own network with their own switches.
+I can't afford Fibre Channel, and ATA over Ethernet means I can't use the network for TCP/IP at the same time, right?
+2 should go to bond the interfaces (probably in mode 1) so you can lose a nic (or switch (or cable) ) without losing connectivity.
+iSCSI server side, Redhat / CentOS have included iSCSI target software, in release 5.3.
+iSCSI /can/ be routed and treated like normal network traffic, but according to all the people I've talked to, it /shouldn't/ be.
+Open-iSCSI is the primary implementation for most of the Linux distros that I've run into, and the kernel has had pretty solid iSCSI support since 2.6.11... As long as everything adheres to RFC 3720, it should pretty much just work.
+I'd like to build a SAN so the HS21 blades will have more storage space.
+To answer your secondary points first: ATA over Ethernet just means you're not using IP for the transport - you can stil use the NICs for TCP/IP if you want, IP runs over ethernet too.

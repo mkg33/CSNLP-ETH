@@ -1,0 +1,18 @@
+How am I supposed to keep the model agnostic of how the view is presenting things?
+Think of your view as a camera that can be pointing at any direction and zoom in and out.
+Here's my artistic take on what I'm rambling about.
+Using only fixed point is of course the most accurate solution, but floating point inaccuracies start to show mainly when you, for instance, exchange floats between two games that run on different hardware.
+The camera renders a portion of the world, world is 500 units wide and 500 units tall, camera instead uses pixels to draw but it maps what it sees from world units to pixels.
+Let's pretend there is no rotation or zooming applied to the camera, for simplicity's and example's sake, so it boils down to knowing your camera's position in the world (using world space coordinates) and knowing the size of one unit of world distance in pixels.
+You might see terms like "world coordinates" or "world space" used in this context.
+*It'd let me write the model once and write different views depending on the device.
+Performance-wise floating point calculations are very well supported by modern CPUs and GPUs, you don't need to worry about optimisation.
+I always end up giving the Model a position that holds x and y but invariably, these values end up being in units of pixels and that feels wrong.
+I can see the advantage* of avoiding that but how am I supposed to?
+What do I do if the numbers divide in such a way that I get decimal places?
+What the camera sees is just the model represented by some xy(z) values that map the model's position in the world.
+Then you can find out how many distance units your camera covers and which models are currently in view so that you can draw them.
+Using MVC in games (as opposed to web apps) always confuses me when it comes to the view.
+The suggestion of using arbitrary distance units is a very good one, and once it really clicks, you'll see that floating point vs fixed point is only a matter of how you represent your numbers.
+I think allowing decimal places would eventually cause really weird bugs in my game.
+When you want to take a picture with your camera, in other words render your frame, you take the model's world position and calculate what would the position be in the current view (which always starts from 0, 0 and ends with your screen resolution's x and y components, eg.

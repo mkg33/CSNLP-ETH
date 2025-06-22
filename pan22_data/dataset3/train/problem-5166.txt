@@ -1,0 +1,21 @@
+As Flip says, it looks like the problem is around what mysql is doing.
+I/O waiting on a database server - particularly on load spikes - is a clue that your DBMS might be either disk bound (i.e.
+For a high level approximation, a system that is 50% saturated has an average queue length of 2.
+Thus, on a system that is close to saturation, small changes in load can result in large changes to wait times, in this case manifesting as time spent waiting on I/O.
+You should probably also look into profiling your database server - i.e.
+Crank up your mysql logging to see if there's bad code in there / changing indexes would help.
+If the I/O capacity of your disk subsystem is nearly saturated then small changes in load can result in significant changes in response times.
+The output from top suggests that the DBMS is experiencing most of the I/O waits, so database tuning issues are an obvious candidate to investigate.
+As you can see from the below output, the waiting time is high (57%).
+You need to see what that daemon is doing...what queries are running.
+The high load average is direct consequence of the I/O.
+get a trace of what it's doing and what queries are taking the time.
+you need a faster disk subsystem) or it might have a tuning issue.
+Analyzing your tables may help (but probably not much).
+I have a forum with a lot of visitors, Some days the load increase to reach 40 without increase of the number vistors.
+I only ever see CPU/disk usage like that when running queries which update millions of rows.
+Some starter points for diagnising database tuning issues:-
+Around half of your physical memory is currently being used for I/O caching - forum software usually generates lots of quick queries returning small numbers of rows, with highly skewed hot areas of disk - so there's something definitely screwy going on if the system is spending this much time in wait.
+Queuing systems (a statistical model for throughput) get hyperbolically slower as the system approaches saturation.
+A system that is 90% saturated has a queue length of 10, a system that is 99% saturated has a queue length of 100.
+In both screens sure looks like "mysqld" is responsible.

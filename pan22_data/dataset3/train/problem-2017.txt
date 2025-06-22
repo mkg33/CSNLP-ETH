@@ -1,0 +1,23 @@
+Windows only keeps track of this information in the NIC driver software, and it's only packets queued per NIC, and doesn't distinguish between what's queued per socket.
+You can get this value on the command line with typeperf.
+As @Fencepost pointed out in his answer, you can try to query NDIS OIDs.
+The problem is that is can be asked for sockets whose handle you know.
+The sizes can be set on a per socket base so that global values have no meaning...
+The closest thing I can find is the performance counter Network Interface\Output Queue Length.
+Have a look here: http://support.microsoft.com/kb/224829.
+I guess some kernel driver could help drilling down into the system but did not find any available tool.
+As far as I can tell there is not a way to do this, but if anyone can do more digging and figure out a valid alternative that would be much appreciated!
+But the value is always 0: http://support.microsoft.com/kb/822226
+This isn't per-connection though - only per-interface and only covers the outbound queue (obviously, by it's name).
+This question is old but I wanted to add some information.
+@Chris J mentioned Network Interface\Output Queue Length.
+What you want might be the results of the WinSock API function calls getsockopt:
+Mark Russinovich is really a crack and even he does not provide the info in his tool.
+The settings per interface only represent the default-values.
+Querying from outside seems to be difficult, have a look at the sysinternals TcpView tool.
+I am pretty sure he would have added a column if he had a mean to get the values easily...
+I know of no way to view the window size of each socket.
+If you do want to do network debugging on the command line, any counters you find in perfmon can be queried using typeperf or logman.
+Most of the NDIS OIDs are mapped to WMI classes, you can list them in powershell with
+The most relevant NDIS OID I found is OID_GEN_TRANSMIT_QUEUE_LENGTH
+but there doesn't seem to be one for Transmit Queue Length.

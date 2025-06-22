@@ -1,0 +1,10 @@
+(For the last guard using IE on XP who don't include SNI, we'd want to send traffic to the old farm, and we'd manage proxying to the new farm when necessary).
+Now I'm a programmer, not a network guy, but when a new SSL connection request comes in, can't the router examine the SNI header, and route to the correct farm.
+We'd hoped to have a single load-balancer in front of all of the servers, which would route traffic to the correct farm based on hostname, but we want to maintain SSL to the webservers.
+As far as I can tell Haproxy does this, but it seems like hardware load balancers don't.
+I'm assuming the incoming SSL connection is identified by {source IP:source port}, so couldn't it remember this for subsequent incoming packets (if SNI is only present in the first packet)?
+It seems the routers we're being offered don't do this.
+We want to split this so we have a dedicated server farm for each app (we have good reasons for this).
+I appreciate that without SNI this is impossible, but we expect SNI indicators on virtually all of our traffic.
+We've got a webserver farm currently hosting 2 applications - both applications are running on all servers.
+Is there any reason for this, or is this something we should push for?

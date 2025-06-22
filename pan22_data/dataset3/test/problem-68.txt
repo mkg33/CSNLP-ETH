@@ -1,0 +1,32 @@
+I mean, if there's room to improve on your current design, do it first, but even in that situation caching will help a lot.
+Check your logs to see if you're under some kind of scan or probe from malicious users.
+While tedious, this process has served me well and once you get used to it, you can blow through it very quickly.
+By timing each of these tests you can begin to unravel where latency may be happening.
+Load averages typically around 3 but twice today it climbed to 30+; dumped its clients and stabilised back to 2.
+Am I crazy or should my dedicated server be making easy meat of this load?
+You'll need to narrow down what exactly is going on, if it's the database choking, are you getting an actual number of high hits to the website, what's your traffic look like, are there messages in the logs, is the server running a batch job of some kind that is heavy on disk I/O...?
+You can check by issuing the SHOW PROCESSLIST command to your MySQL server (PHPMyAdmin even has this exposed as a function).
+With a good toolkit and a systematic approach, you can usually begin to unravel the problem.
+I.e., every day you know about when this will happen?
+I see the raid maybe clogging up with a unresponsive ata interface in one such case of bad load?
+Of course, you have to do that before you check your server like Bart said and is sure that the server is doing whatever it can.
+reveals little of interest with mysql sitting at 11% cpu.
+The aforementioned threads can be waiting for something to happen - paging operations or I/O for example (which would be bad performancewise I/O is typically a shared resource and if a number of threads are waiting for it, chances are good that even more join the wait queue).
+I have seen highly loaded servers return static content very quickly.
+If it's correlating to something else...maybe updating a particular type of news story...check your bandwidth usage.
+Any of these things can cause a spike in server "load".
+It can be a network overload or drive system overload.
+How many req/s would you say is fair for a box this size?
+In your opinion is this possibly a hardware issue?
+The "load average" number is not actually load - it is the number of threads in "running" or "runnable" state.
+In a setup with a running MySQL server, I have seen similar figures due to lock contention on a popular table during longish update operations.
+What processes (top or htop should show it) are running?
+You'll need to narrow down where and what is going wonky at that point.
+I'm tearing my hair out trying to stabilise the LAMP configuration.
+Continuing working through the applicaton stack until you can find the slow down.
+Are you checking your disks to see if there's an issue on the drives?
+The quick-and-dirty solution for this was enabling low-priority-updates in the MySQL configuration.
+From here, I work up into the logs for Apache, MySQL and the system.
+Its a editorial news site that see irregular traffic spikes.
+You need to get more detailed metrics to pinpoint the problem.
+If it's happening at nearly the same time of day each time, check cron schedules and anything that might be doing housekeeping on the server, including backups or disk dumps.

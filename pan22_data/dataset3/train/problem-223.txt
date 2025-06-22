@@ -1,0 +1,24 @@
+If you aren't running it on the border device then you have to do work to get your clients to send their requests to the proxy.
+My main confusion is whether or not this sort of server needs to be a gateway having dual nics for wan and lan or not.
+As for the setup, on a non gateway device, it is pretty straight forward.
+Multiple NIC's is optional regardless of the configuration.
+It is a nice way to simplify the routing rules (interface based intead of packet marking), or to raise the amount of traffic the machine can handle.
+The traffic going over a single NIC from this machine will be twice that of any normal machine.
+Most of the how-tos' found online are with using pfsense (obviously as a gateway) and installing proxy and content filtering packages on top.
+So configuring the clients to use the proxy might not be too bad.
+The clients just have to be using it as their gateway to the web.
+You don't need to run an HTTP proxy+cache+filter on the border device, but it makes the setup a bit simpler.
+If the answer is that it does not need to be a gateway, would there be a way to filter and block https traffic as well?
+The proxy machine itself can use another real gateway for outgoing connections.
+On your firewall block all output http/https traffic except for traffic that comes from the proxy server.
+The most common option is to configure the clients so the proxy is their default gateway router.
+There are several alternative options listed in the Squid official documentation http://wiki.squid-cache.org/ConfigExamples/Intercept/IptablesPolicyRoute.
+In other words, can I have a server on the same network as my clients and configure squid with dansguardian using one network card?
+A proxy gateway does not have to be on the network border.
+Just install the required software on the proxy server.
+Ive been trying to understand the requirements for a proxy server with content filtering software in a given network.
+If you intend on filtering HTTPS, then you are going to be required to configure clients, since you must push a CA certificate in to the local certificate stores so that you filter can MITM the HTTPS traffic and do any content filtering.
+Then configure your clients to use the proxy server.
+In these setups the real border gateway machinery routes the client traffic via a proxy machine and only lets traffic from that machine out.
+Which relays all non-HTTP to the real border gateway router, and NAT's the HTTP through the proxy.
+This could by done through WPAD, group policies on a Windows network, some kind of configuration management system.

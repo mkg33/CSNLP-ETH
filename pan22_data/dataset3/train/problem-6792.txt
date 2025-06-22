@@ -1,0 +1,10 @@
+One possible solution, which I haven't tried myself, is to point PHP:s sendmail_path= toward the Anubis helper script msg2smtp.pl
+Of course, if there's multiple Postfixes involved, one on your web server as well as one on your companies designated mail server, then there really isn't any problem.
+If you want to encrypt the mail with pgp/gpg/smime, then you probably have to write a filter for that and specify it with content_filter.
+If you want to encrypt your outgoing mail using GnuPG, without involving your PHP code, then GNU Anubis might be what you are looking for.
+While there obviously isn't any problem with using SMTP to pass the mails along to Postfix, PHP tend to use the local sendmail binary.
+It can sit in-front of your SMTP server and (among other things) apply GnuPG encryption to your mails.
+If by encrypt you mean that all mail should be sent with SSL/TLS, with postfix then you can simply set smtp_enforce_tls to yes.
+In that case all you have to do is simply plug Anubis in between.
+You can tweak the SSL/TLS settings, check all the smtp_tls_* options.
+The potential issue here is that Anubis both accepts and submits mail using SMTP.

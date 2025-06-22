@@ -1,0 +1,27 @@
+Finally, note that your original PREROUTING/DNAT rule with -i ppp0 does not work, because the rule never matches packets coming from the LAN clients (since those don't enter the router via the ppp0 interface).
+Another solution -- and we're using this where I work on our Cisco firewalls -- is to rewrite DNS responses on the firewall that correspond to these addresses.
+You may need to configure the servers to be aware of their externally mappped ip address (e.g., by assigning it to a dummy interface).
+When clients on the LAN connect to the server via the external IP address, the server sees the connections as coming from the router's internal IP address (192.168.2.1).
+Of course, you need a DNS server internally in order to do this.
+What you are asking to do is called NAT Loopback and it requires that you add a SNAT rule so that packets originating from your LAN to your Server will go back through the router:
+I am surprised that after almost 8 years, nobody has explained how to do this the correct way using the UCI configuration system used by default in OpenWRT.
+The first POSTROUTING rule is a straightforward way of sharing the internet connection with the LAN.
+Because more people understand how DNS works than understand how NAT works, and a big part of building good systems is choosing to use parts that are maintainable.
+The PREROUTING rule and the second POSTROUTING rule together establish the appropriate NATs, so that connections to the server via the external IP address can happen, regardless of whether the connections originate from outside or from inside the LAN.
+I don't think there are tools for Linux that do this right now.
+If the target is changed to -j SNAT --to-source 192.168.2.1, the effect is (not surprisingly) the same as the MASQUERADE: the server sees connections from local LAN clients as originating from the router's internal IP address.
+Now, even after having laid out a "hairpin NAT" (or "NAT loopback", or "NAT reflection", or whatever one prefers to call it) solution in full detail, I still believe that a split-horizon DNS solution---with external clients resolving to the external IP and internal clients resolving to the internal IP---would be the more advisable route to take.
+On the other hand, if the target is changed to -j SNAT --to-source 89.179.245.232, then the NATs still work, but this time the server sees connections from local LAN clients as originating from the router's external IP address (89.179.245.232).
+A common solution is to point your internal hosts at a local DNS server that returns the correct "internal" address for these hostnames.
+You should be able to configure the routing on your gateway to do the right thing.
+A DNS setup is more likely to be understood, and thus correctly maintained, than an arcane NAT setup (IMO, of course).
+With this configuration, communication from one internal system to another internal system -- using it's "external" address -- would go through the router.
+ According to the indicated OpenWRT documentation, reflection is enabled by default.
+larsks comment about hosting an internal version of the namespace\domain is generally the way I've handled this issue in the past.
+Interestingly, it turns out that there are a couple of variations of the second POSTROUTING rule that also work.
+It would be possible to make it work by adding a second PREROUTING rule just for the internal LAN clients, but it would be inelegant (IMO) and would still need to refer explicitly to the external IP address.
+Here is the set of firewall rules that worked for me (in iptables-save format, for the nat table only):
+I have since had some time to set up a little virtual network of VMs to simulate the network in question.
+I deleted my original answer, because I wasn't fully confident that it was correct.
+Steven Monday's answer is correct, yet it is using iptables commands directly, which is a lower layer than the UCI configuration system, and is best left untouched by most OpenWRT users if possible.
+The correct way to access internal servers through their public IP/port combos from another internal host in UCI is by enabling the configuration option reflection under each specific DNAT target in the file /etc/config/firewall.

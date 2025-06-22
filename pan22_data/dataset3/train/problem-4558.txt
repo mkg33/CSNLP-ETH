@@ -1,0 +1,23 @@
+The pf firewall (used by most BSD Unices) will make your life a lot easier.
+as far as I understand, the question is not where to get the list of ip addresses that need to be blocked, but rather how to block them with iptables efficiently.
+List of per-country IP blocks in a format that can be easily used by many firewalls (I am using PF tables on FreeBSD which can be loaded from a file):
+The advantage of only doing it at signup time is that you're not going to make life awkward for customers who've already signed up who're travelling.
+I love OpenBSD as a firewall distro, but if you need a GUI for your firewall, pfSense and OPNSense will get the job done.
+Or you could use fwbuilder to generate your iptables policy and use the script it generates to manage ipset as well ( http://www.fwbuilder.org/4.0/docs/users_guide/address-table-object.html , see "5.2.13.1.
+It allows you to manipulate tables of address blocks directly, you only need one iptables rule to match the whole set.
+Linux iptables is passable for basic firewalling, miserable for everything else.
+Note that not all Linux distributions include ipsets in their default configuration so you may need to recompile kernel modules and iptables.
+I suggest you try module ipset ( http://ipset.netfilter.org/ ) .
+I like that it is free (no sign up required) and supports many different formats for routers, web servers, etc.
+Country address blocks change from time to time so you'll need to update your address set periodically.
+A script that does series of "iptables -A" commands is going to take very long time to load rules and during this time firewall runs with inconsistent policy.
+The tables feature in the pf firewall is analogous to the ipset module under netfilter.
+What we've found best is using the MaxMinds database at sign-up time.
+In any case it is much better at matching long lists of address blocks and allows you to reload it using command line tool without touching the rules.
+Using Address Tables Objects with iptables IP sets" in this chapter)
+As for what to put into the pf tables, I keep an updated tarball of CIDR blocks by country here.
+The free version locks down to country, and you can pay for more granularity.
+You'll need to experiment with different types of sets to find the one that can accommodate the number of ip address blocks you need to block and give you performance you need.
+To reload the set that is already being used you can use command line tool "ipset" and it is easy to wrap it in a shell script to automate the process.
+OpenBSD, FreeBSD, NetBSD, pfSense, and OPNSense all use pf.
+This has significant impact on its performance, too.

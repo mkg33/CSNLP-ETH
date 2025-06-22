@@ -1,0 +1,19 @@
+Also, the /k is just for proof of concept, you would want to use /c normaly.
+I am auto creating scheduled tasks with this line within a batch windows script:
+Now, when checking in the taskmanagers process list or, even better, directly with the
+Im a little confused.. you only 'switch' to these machines occasionally, do not want to install tail.exe, yet you are installing a scheduled task?
+But since I only switch to these machines in case of trouble, I would prefer to start the scheduled task in such a way that every user immediately sees the log.
+I wanted to avoid using specific user credentials and thus decided to use SYSTEM.
+1) Place tail.exe on a network location, and use it directly.
+If you're looking for something similar to tail you could use the more command or the type command.
+Powershell's get-content -wait will follow a file like tail -f
+The task would run a batch file, with the last bit of the batch file deleting the task and creating another.
+2) Run the job itself on the user desktop: Use psexec.
+command itself, all is working well, the tasks are running as intended.
+Given the UID is SYSTEM, the network share just needs $COMPUTERNAME access, i think the group is Users as opposed to Authorized Users, or vice-versa
+However in this particular case I would like to have an open console window where I can see the log flying by.
+You can omit the -s if the sched job is already providing system.
+If they don't have access to run the original process, you could run it using your original schtasks job, then just make the user's batch file read the output.
+You might also want to do some checking to see if the user has logged off (creativity may be required there) as you don't need their tasks to keep running while the machine is at a logon screen or someone else is logged on.
+cygwin (on all machines) or some proprietary tools like Baretail on Windows.
+One possible way of achieving it would be to create a task running as the logged-on user at login using schtasks.

@@ -1,0 +1,5 @@
+It's almost certainly due to the low cardinality of the index on the first column.  Since there are only 3 values, the optimizer decides that it is better do do a full scan on the table.
+But when querying on another table which has unique constraint on a single column, it uses the index.
+As per my understanding, left most column on a multi column constraint will be utilized  as index on select queries. Enlighten me if I'm wrong.
+Following query doesn't utilise the status index as it is the left most column in unique constraint.
+Using the index on the first column will point to about one third of the rows.  Looking up that many rows based on the primary key will likely lead to practically all of the primary key pages being pulled into the buffer along with a large portion of the secondary index pages, leading to more memory usage and potentially disk traffic.  Overall, it is more efficient and usually about the same speed to just do a full scan on the data if a large portion of the data is likely to be selected based on a secondary index lookup.

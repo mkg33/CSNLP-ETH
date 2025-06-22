@@ -1,0 +1,9 @@
+Basically you wouldn't write a server like that. Those tutorials are showing you the basics of 2 reading and writing and assume 2 trusted processes that are guaranteed to cooperate.
+Instead of waiting for a message from one client before the code continues to send a message out to another client, the server waits for messages from all clients simultaneously. When one arrives, it will check its business logic to see if the message came from the client it expected, and if so, it will process it accordingly. So instead of a loop which reads from each side in turn, you read from whoever sent something first, respond accordingly, and repeat.
+To wait for multiple clients you usually use some variation on the select() function to tell you which client has data ready for you to read it. Or better still, you use a library that wraps that (or a similar alternative) in some way.
+There's some explanation of the select() function here: http://beej.us/guide/bgnet/output/html/multipage/advanced.html
+The code there is in C, but you'd use something very similar in most languages. If you use a 3rd party library, usually they handle this part for you, and call a callback that you provide when the message comes in.
+In my curses based game, I decided to add multiplayer functionality over net, in addition to one-keyboard mulitiplayer game. I use switch loop and in case it's 1st user's buttons,
+user 1 is acting appropriately and second otherwise, without blocking each other's movements i.e not waiting for opponents move.
+Now I read socket tutorials, and use server looking like this:
+Now problem is obvious, players would block each others movements, how this network multiplayer problems solved in games design?

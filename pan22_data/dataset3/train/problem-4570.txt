@@ -1,0 +1,21 @@
+A final registration of the configuration puts things in place:
+The PowerShell endpoint in PS 5.1 isn't technically a JEA endpoint, but the mechanism is essentially the same.
+With that basis, look at the help for Register-PSSessionConfiguration, and an overview of JEA.
+The PSSessionConfiguration file defines the security group this session configuration will be available to:
+And lastly, with RunAsUser being blank - the code runs impersonated as the user or credentials provided.
+and the AD-JEA-DFS role capability file restricts the endpoint to the Add-DfsNamespace function only:
+Please be aware that the code is using some global variables which will not be defined in your environment by default, yet are vital for correct code execution.
+These can be built in, or exposed from custom modules you specify.
+Just Enough Administration (JEA) endpoints are well suited to your task.
+You could use a RunAsUser of a Domain Administrator, or another account with sufficient privileges.
+For bonus points, consider using Group Managed Service Accounts (GMSA) as part of your solution, particularly as the caller.
+Then define specific cmdlets you want them to use.
+You can restrict the endpoint to being called by your limited privilege users.
+Designing a JEA endpoint requires three main decisions:
+From this, the permission groups define who is allowed to call.
+Your last error message suggests to me that it isn't so in your case..
+We are using dfsutil in the code as it was written to run on a Server 2008 R2 machine, where the Dfsn-cmdlets are not available.
+Keep these specific to your task, to avoid elevation of privilege attacks with complicated arguments or too many low level commands exposed that can take advantage of being run as an elevated user.
+Just to add some implementation detail to Matthew Wetmore's sparking idea here, we've created a function setting up the Dfs namespace according to our requirements, exposed it in a Powershell module LT-DFSManagement and created a Powershell Session Configuration running in a "virtual account" (which is getting local administrator privileges) on a Domain Controller restricted to calling this very function and accessible to the members of a technicians security group.
+To create a domain-wide DFS namespace an account doing so should have a Local Administrator privilege on a namespace server, that is ADSRV0 in your case.
+There is no limitation on the PowerShell endpoint of what can be done, so you have full language capabilities.

@@ -1,0 +1,20 @@
+Will the operational system need to apply the same logic to the source data that the data warehouse is already performing?
+If it is customer-facing, and retrieving FX rates from the warehouse for pricing, probably not.
+A "best-of-both-worlds" solution would be for the warehouse to publish the data once processed for the operational system to consume.
+What is the impact to the operational system if there is an outage to the warehouse?
+This assumes that your warehouse is not "real-time".
+If the business is willing to accept the risks and proceed with using the data warehouse as a source for an operational system, then I suggest you get that in writing and triplicate.
+I must admit that I get the heeby-jeebies whenever someone suggests connecting an operational system to our warehouse.
+This assists in impact analysis for future changes because the extracts are visible within our ETL tool/suite.
+Does the operational system expect to write changes/updates back to the warehouse?
+In my experience warehouses, inherently, have a lower priority than transactional systems and may have, for example, up to 24 hours to become available (for querying) and up to 4 days for the ETL to be restored, running, and for the warehouse to be up to date.
+Within our environment, we made the architectural decision that we would not control how users could consume the data, provided it does not unfairly impact our ETL processes or other users.
+Your role would be to provide the facts to the business.
+Duplication of effort / Single source of the truth
+The data could be extracted to a file or replicated to another/the-operational-system's database.
+An operational system becomes another "user query", and as such we provide the same level of service wrt to availability and accuracy as we do to Joe Bloggs, the junior analyst in Finance.
+There is a forum discussion which discusses this briefly, but quite well IMO: Tek Tips - Using a data warehouse as a source system
+Is the operational system happy with the latency of the warehouse?
+I think the quote from that forum post that sums it up nicely is:
+If the operational system is internal and non-critical, this may be acceptable.
+If a user requires a higher level of service, then we provide the data (via FTP'd files) rather than the user pulling the data (via queries/direct access).

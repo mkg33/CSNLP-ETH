@@ -1,0 +1,29 @@
+5 isn't going away anytime soon, and despite it going out of support with RH in less than a year, I still have to get the population of 5's integrated with AD.
+We have several instances of AD: one is a "management AD" ("MAD") where all sysadmin accounts should live.
+Given the choice between the two, I'd prefer SSSD as Winbind is "pretty old".
+I won't post the entire sssd_CAD.log unless someone asks, but here are the first indicators that something is wrong.
+All other domains ("CAD", "FAD", "BAD") trust MAD.
+The main platform is RHEL, and I have a mixture of 5, 6, and 7.
+This isn't optional with several hundred systems; user account management is long past being an issue.
+I've found nothing to help me figure out what's wrong when one of those steps doesn't work.
+One more requirement is that "groups" and "id" produce information out of AD as we intend to use openssh's "AllowGroups" feature to restrict logins to particular AD groups.
+Any solution needs to work across 5, 6, and 7 as we don't want to be supporting multiple ways of doing things.
+Only internal systems will be associated with MAD.
+There are later entries that complain about sssd_ad not being connected to the AD, but that's no surprise given what I see here.
+My main options (at least the ones I am working on) are Winbind and SSSD.
+There's a lot of setup here, so please bear with me.
+For lab purposes, I'm starting with a fresh install of RHEL7 off ISO (kickstart with some basic config stuff), with no authentication bits set up within the KS.
+I'm at the end of my rope with this thing, and beginning to think making sandwiches would be a less annoying career choice.
+I am fairly strong with unix/linux in general, but I am not strong with AD, Kerberos, or LDAP.
+First off, the goal is to have all of our Linux and Unix systems authenticate against AD.
+If there's more stuff I need to add here, just say the word and it'll be up.
+Any guidance from you folks would be greatly appreciated.
+Manually as so far I can't depend on later steps to get it right.
+I've been perusing various posts already about getting linux systems to authenticate using AD, but haven't seen anything approaching what I'm beating my head against.
+Most systems will be associated with CAD, FAD, or BAD.
+Browsing through /var/log/sssd/sssd_CAD.log, I find a few things that give me a clue as to where things are screwing up, but I've not been successful in finding a way to fix them: every guide I read gives a sequence of steps and assumes every step works.
+I am guessing that this list should be much longer, but not being strong in kerb, I don't know if this really is correct, if not what it should look like, nor how to get it there.
+I have followed every manual, every howto, every guide, and when it comes down to it, there's always one little thing that doesn't seem to be usefully documented that blocks me.
+"kinit Administrator" followed by "net ads join -k".
+So: fresh image with timesync/krb5.conf/smb.conf all done, now "kinit Administrator" followed by "klist"
+Step 3: Make sure there are both forward and reverse DNS entries for the target system.

@@ -1,0 +1,6 @@
+When using root, a request to mysite.com/files/ will look in the local directory /home/myfiles/Downloads/files/ for an index file, and if not found will automatically generate a directory listing (since you have specified the autoindex option).  Note how nginx appends /files/ to the root directory you specified.
+According to the nginx documentation: "The request only reaches the ngx_http_autoindex_module when the ngx_http_index_module did not find an index file."
+I am trying to set up nginx so that a certain url produces the directory index of a certain directory on my server. Currently this is what my default.conf looks like.
+Since for your case you want /files/ to be a synonym for your download directory, you need to use alias /home/myfiles/Downloads/ in the location block.  Then, any request to mysite.com/files/ will be translated to the directory /home/myfiles/Downloads/ (e.g. mysite.com/files/bigfile.gz will become /home/myfiles/Downloads/bigfile.gz).  Note that the trailing / on the alias is necessary.
+Remove the index.html from /home/myfiles/Downloads/files/ and it should display the files in a directory listing
+I don't want it to search for files/index.html, I just want the directory index of Downloads. What do I need to change to make things work this way?

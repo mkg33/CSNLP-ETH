@@ -1,0 +1,9 @@
+Then the users have just to decide which identity they'll take for the outgoing emails: jsmith+role1@domain.tld or jsmith+role2@domain.tld
+You have a point about a user accessing email sent to one role from the other role, but I think the point is to take appropriate steps to keep the roles distinct and unique, not to close any and every possible loophole that exists. If that were the case then you'd have a lot more work to do, and not just regarding email.
+I don't see anything wrong with the HR plan. It makes sense to me to keep the emails separated by role. If the additional licensing cost is approved then my opinion would be to go with it.
+With that solution, the outgoing emails could be filtered and forwarded to that specific folders too.
+In such a solution, dovecot will need to serve via non-standard ports to work parallel with Zimbra. With such a solution you'll have no additional license costs and the users have two accounts.
+Then you could i.e. setup a second imapd like dovecot and forward specific mails to this daemon via LMTP. As auth mech you can use Zimbra's LDAP service, so you have no recurrently additional work with user accounts on the second imapd.
+If the specific emails should be separated, you won't be able to handle all emails within a single users account in Zimbra's mailstore. You could filter them for forwarding into specific folders, but for a complete separation you'll need different accounts.
+Another idea is to forward the emails from all users for a specific purpose into a single Zimbra account, filter them into different user folders and give them access to that folder via a subscription in their own accounts. That should be also handled automatically at least by a cron job.
+An almost automatic solution for separation of emails into different accounts would be in using the recipient_delimiter option in Zimbra's Postfix or a virtual transport table with REGEX. 

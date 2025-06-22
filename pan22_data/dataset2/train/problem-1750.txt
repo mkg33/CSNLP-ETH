@@ -1,0 +1,10 @@
+VM corruption, well anythings game I guess and thats down to a number of factors I can think of off hand, but probably would include more:
+At the end of the day, if you are using volume management software or thin provisioning software at any point in the flow of data being written to media (on your host, at your VM level, at the SAN/Controller level) you can have no reliable expectation that the sequential read you are doing is really sequential or that the media you are writing to is consistent (if its a fast disk or data was moved to a slow disk).
+Pot luck I guess if its better or worse. See the above environmental factors that might help/hinder.
+Virtualization is so powerful because it adds a layer of logical abstraction to a host. But it can also be potentially horrendous to perform any reliable degree of capacity management on them because of that layer of abstraction.
+One way you can look to see if other processes are utilizing the disk(s) is to download sysstat from the main webpage here.
+EL5 kernels backported disk accounting into the kernel since EL5.4 without providing an interface to utilize it, but pidstat will work once you've done this.
+Then run the pidstat -d command to generate useful metrics for disk I/O, in particular what other processes are doing with the disk. You can also use pidstat -d <interval> <count> to get a more realtime contention metric of the disk being used.
+OS corruption is quite unlikely (system calls being screwed somehow I guess). hdparm does not utilize the filesystem to do its tests which eliminates any slowdown from that area, including degragmentation issues.
+Sysstat is of course available from the repo already but, unfortunately it does not include the pidstat command which is needed to check this out.
+If your using LVM, theres a risk that you happen to be reading from extents that are fragmented though. Your examples dont indicate this however.

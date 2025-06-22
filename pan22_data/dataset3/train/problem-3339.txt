@@ -1,0 +1,27 @@
+postfix/smtp[31242]: D23242C681AA: to=, relay=127.0.0.1[127.0.0.1]:10024, delay=4.9, delays=0.12/0.01/0/4.8, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as A64A02C681B2)
+Gmail and most email providers will hide it by default (I believe only Hotmail used to enable at one point).
+postfix/smtpd[722]: connect from localhost.localdomain[127.0.0.1]
+postfix/smtp[733]: A64A02C681B2: to=, relay=gmail-smtp-in.l.google.com[209.85.221.45]:25, delay=1.5, delays=0.01/0.02/0.25/1.2, dsn=2.0.0, status=sent (250 2.0.0 OK 1245978619 11si5308893qyk.152)
+postfix/smtpd[722]: disconnect from localhost.localdomain[127.0.0.1]
+As you can see its only server-server transmissions.
+postfix/smtpd[722]: A64A02C681B2: client=localhost.localdomain[127.0.0.1]
+As long as the email is interesting enough (and not spammy), the user will be temped to read it..
+It looks like gmail won't show the IP if the message was sent from the web interface, but messages sent from an email program, using gmail's SMTP server will have the sending IP in the mail headers.
+Mail servers hide their senders addresses, especially if they use 'web mail'.
+postfix/qmgr[4010]: D23242C681AA: from=, size=2016, nrcpt=2 (queue active)
+Spammers have caught onto this also and are now using the heck out of Gmail addresses to send spam.
+postfix/qmgr[4010]: A64A02C681B2: from=, size=2602, nrcpt=2 (queue active)
+See also How to track the original location of an email via its IP address.
+Here is an example of an exchange from google.com:
+postfix/lmtp[732]: A64A02C681B2: to=, relay=mail.medomain.com[10.0.2.5]:7025, delay=0.12, delays=0.01/0.02/0/0.09, dsn=2.1.5, status=sent (250 2.1.5 OK)
+If you want to trace the real ip address, the easiest way (without a subpoena) is to create an email with a link (or image) and hope the user will read it (or click on the link).
+postfix/smtpd[26593]: connect from mail-yx0-f195.google.com[209.85.210.195]
+In email exchange its server to server and the client always retrieves their email from their server.
+When they send an email they don't send it directly to googles mail server but it gets sent to their mail server who than hands it off to google.
+I think Gmail is one of the few that hide the IP for you.
+postfix/smtpd[26593]: D23242C681AA: client=mail-yx0-f195.google.com[209.85.210.195]
+If you wanted to know who connected with what IP, google would have that information more or less in their front-end logs instead of the backend mail logs.
+I have noticed that hotmail and yahoo IPs are present, while Gmail is not.
+postfix/smtp[31242]: D23242C681AA: to=, orig_to=, relay=127.0.0.1[127.0.0.1]:10024, delay=4.9, delays=0.12/0.01/0/4.8, dsn=2.0.0, status=sent (250 2.0.0 Ok: queued as A64A02C681B2)
+But even if you get the full header, you cannot trust anything other than the last Received header (everything else can be faked).
+Anytime I receive responses to for-sale items on Craigslist I always check the IP before replying.

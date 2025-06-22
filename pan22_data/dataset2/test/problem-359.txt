@@ -1,0 +1,8 @@
+The disk space did decrease by exactly 1520K, which is ~1.46K per hard link created . At that rate, to consume 40GB in just metadata for hard links, you’d need about 29 million of them. (I imagine by that point you’d be hitting another limitation, like the number of file entries in a single directory. ;-)
+Theoretically CreateHardLink should be equivalent to the mklink /h command; but just in case, I created the following AutoIt script to make sure that I was using the same function call as you. (I was far too lazy to code something in VC++…)
+Then I created a separate 2.0GB disk in VMware and attached it, so that the tests wouldn’t be on the same disk as the pagefile, etc.
+Are you sure that it’s the hard links that are filling your disk? I tested this here, but couldn’t reproduce it.
+I copied about 1.08GB of data (in files of various sizes, and located in various directories) to the partition, and created one hard link for each file found to a directory called HardLinks. That batch file:
+Apologies that this isn’t a good “answer” per se; but hopefully it gives you some reassurance that, no, hard links aren’t supposed to fill your disk. If I were you, I’d create more hard links in smaller batches and measure the disk space usage before and afterwards. It might also be worthwhile to see if something else on the same disk is using more space than it should be.
+I put one file in the root directory and created an additional 1023 links to it (the maximum number supported) with the following batch file:
+I also can’t really think of an alternate solution for you; hard links seem perfect for this case, don’t they?

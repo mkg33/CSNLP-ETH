@@ -1,0 +1,9 @@
+That can lead to problems if you have asymmetric routing.
+Each router will actually have three NAPT pools and tables; one each for TCP, UDP, and ICMP.
+Actually, you have four routers, each with different NAPT pools, and they cannot share the pools.
+The yellow router will not have a NAT table entry, so the traffic originating from the host in the blue box will be destined for the address of the yellow router, and the yellow router, not a host in the yellow box.
+"The nat translation works fine, i can ping from the pc on the blue square to the primary router of the yellow square, and vice versa but i cannot ping beetween pcs."
+The TCP NAPT table and pool on the blue primary router is not shared with the TCP NAPT table and pool on the blue secondary router.
+If you originate traffic from inside, say from a host in the blue box, the blue router through which the traffic passes will create a NAT table entry so that return traffic can come back to the originating host.
+You have run across a weakness in NAPT, where it breaks the IP premise of end-to-end connectivity.
+You will need to create a static NAT table entry for that to happen, but you can only create one per transport protocol and transport address.

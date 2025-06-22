@@ -1,0 +1,10 @@
+Unfortunately I don't think that Cisco publish their how their FSM are working and you have to understand the log yourself or ask the TAC or SF ;)
+You just need to see the FSM state as described after the error message (from bottom to top as you correctly tell).
+So you got an error in the state machine of IKE AM.
+(UDP port 500, ESP, HA, UDP port 4500, ... depending of your configuration).
+It seems that you have something dropping packet between the 2 VPN Peer.
+So this trigger an authentification problem (EV_PROB_AUTH_FAIL), so an error (EV_ERROR) and finally the FSM reach its end (AM_DONE).
+You have to double check configuration at both end, and double check that all necessary port and protocole are open.
+So this mean start you started to communicate with the remote peer but never get any answer.
+You sent AM_SND_MSG2 (EV_SND_MSG), nothing was comming so you send it again (the NullEvent) and finally the FSM timeout by waiting AM_WAIT_MSG3 from the remote peer (EV_TIMEOUT).
+You may also want to check the debug on the remote peer to see if AM_SND_MSG2 is received.

@@ -1,0 +1,12 @@
+If you have dynamic maps that change frequently you are pretty much out of luck.  You have to way your decision  making your algorithm stop before completion or do checks on sections get closed off frequently. 
+If your map is static you can just have each separate section have there own code and check this first before running A*. This can be done upon map creation or even coded in the map. 
+When deciding whether a node is passable, put the most likely situations at the top, so that most of the time the function returns right away without bothering to check the more obscure possibilities.
+Run a dual A* search from the target node in reverse as well at the same time in the same loop and abort both searches as soon as one is found unsolvable
+If the target has only 6 tiles accessible around it and the origin has 1002 tiles accessible the search will stop at 6 (dual) iterations.
+As soon as one search finds the other's visited nodes you can also limit the search scope to the other's visited nodes and finish faster.
+But this is for making it faster to check a single node. You can profile to see how much time is spent on querying nodes, but sounds like your problem is that too many nodes are being checked.
+If the latter is the case, you can speed it up by doing a bidirectional search - that way the search starting from the destination can quickly find that there is no path and stop the search. See this example, surround the destination with walls and compare bidirectional vs. single direction.
+Impassable tiles should have a flag and when moving to a tile like that you could opt not to run A* or pick a tile next to it that is reachable. 
+If the destination tile itself is impassable, the algorithm shouldn't check any tiles at all. Before even starting to do pathfinding, it should query the destination tile to check if it's possible, and if not, return a no path result.
+If you mean that the destination itself is passable, but is encircled by impassable tiles, such that there is no path, then it is normal for A* to check the whole map. How else would it know there's no path?
+Other answers are great, but I have to point at the obvious - You should not run the pathfinding to an impassable tile at all. 

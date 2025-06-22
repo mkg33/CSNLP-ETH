@@ -1,0 +1,10 @@
+Almost all answers here require changes in tasks, but I needed to dynamically merge dictionaries in vars definition, not during run.
+E.g. I want to define some shared vars in all group_vars and then I want to extend them in some other group or host_vars.
+If you try to use the combine or union filters overwriting the original variable in var files, you will end in infinite loop during templating, so I created this workaround (it's not solution).  
+You can define multiple variables based on some name pattern and then automatically load them in role.
+It's just a snippet, but you should get the idea how it works.
+note: lookup('varnames','') is available since ansible 2.8
+I guess it would be also possible to merge all variables dictionary_of_bla.* into one dictionary during runtime using the same lookup.
+The advantage of this approach is that you don't need to set exact lists of variable names, but only the pattern and user can set it dynamically.
+Not sure when they added this, but at least for dictionaries/hashes (NOT lists/arrays), you can set the variable hash_behaviour, like so: hash_behaviour = merge in your ansible.cfg.
+Took me quite a few hours to accidentally stumble upon this setting :S

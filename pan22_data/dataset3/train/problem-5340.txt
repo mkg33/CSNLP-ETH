@@ -1,0 +1,16 @@
+As far as I can tell from man find, it should recurse into subdirectories automatically, but I am not sure.
+You can use the same method to do 777 as well (similar to the xargs but I prefer it this way, seems cleaner:
+-exec chmod 777 '{}' \; as for the underscores, it shouldn't be an issue (it's possible they were being interpreted by the pipe or something), but if they are:
+If you're trying to give full access to www and you're on a redhat system with acl available (may need to remount), try:
+Here's an anonymized snippet of the directory tree:
+sudo chown -R www:www ./ and if you don't want the directory owned by www, just change it back.
+If there will be files in there as well not covered by directories, you'll need to run it again for those (I'm sure someone will tell me about a switch to setfacl to only do the top directory):
+setfacl -d -R -m user:www:rwx the_parent_directory and repeat with user replaced by group if necessary.
+I'm not sure why this would break the script, but it did.
+-type d -exec setfacl -d -R -m user:www:rwx '{}'; setfacl -R -m user:www:rwx '{}' \;
+When I ran the above command, some of the files changed, but the majority of the directories remained the same (same permissions).
+Alternatively, since it's more secure, I could also settle for a chown www:www of these files to make them web accessible.
+Now, since I have over 400,000 files, sudo chmod -R 777 ./* and sudo chown -R www:www ./* didn't work at all, returning only with "Arg list too long"
+If your argument list is too long and you can't use the full directory, then this will work (but will be slower):
+Some googling turned up find and xargs, but this didn't quite work for my file set, since some of the files had underscores in the name.
+Thanks in advance for any help you guys can offer :)

@@ -1,0 +1,7 @@
+I feel obligated to point out that there are too many things the rasterizer needs to know the facing of the polygon it is drawing for your use or non-use of gl_FrontFacing in the fragment shader to have any affect on the operation of the pipeline.
+I highly suggest you take a look at the PDF diagram here, which shows all of the stages and inputs/outputs for the OpenGL graphics pipeline.
+OpenGL actually uses the polygon's winding (after projection) and compares it with the front-face you established (Clockwise or Counter-Clockwise).
+Keep in mind no cross-product is necessary to determine whether a polygon is front or back-facing (GL does not compute or use a triangle normal for this process).
+This is a far simpler process than you expected, and it only has to be done once per-primitive, since all polygons in OpenGL are planar.
+If you look carefully at the rasterizer part of the diagram, you will see that polygons must always first go through facing determination.
+This is used for polygon mode, culling, stencil testing, and in older versions of GL, lighting.

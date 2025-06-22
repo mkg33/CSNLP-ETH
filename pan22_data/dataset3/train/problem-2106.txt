@@ -1,0 +1,13 @@
+If the database being checked has a heavy update workload, more and more pages are pushed into the database snapshot, causing it to grow.
+http://sqlism.blogspot.com/2014/10/a-database-snapshot-cannot-be-created.html
+Your go to guy should be Paul Randal's Blog for all things CheckDB.
+Sometimes an issue arises when the hidden database snapshot runs out of space.
+An example of this is shown here (the errors can vary depending on the exact point at which the database snapshot runs out of space):
+Because it’s implemented using alternate streams of the existing data files, the database snapshot consumes space from the same location as the existing data files.
+I am not sure the root cause that is stopping the snapshots being taken; but have you tried running DBCC CheckDB with Tablock option to see if it works?
+Most likely the SQL service account doesn't have permissions to create the snapshot files necessary.
+(Books online explicitly states tablock option "includes a short-term exclusive (X) lock on the database.")
+But atleast it doesn't take snapshots and DBCC CheckDB may succeed this time with this option.
+In a situation where the volumes hosting the database don’t have much space, this can mean the hidden database snapshot runs out of space and DBCC CHECKDB stops with an error.
+On an active database its very unlikely CHECKDB will be able to get the X database lock necessary for the allocation checks to run, which is why I changed the lock timeout for it to be only 20 seconds (IIRC).
+The other option is this isn't a critical system and you can afford down time; try changing it to single user mode and run the DBCC again OR restore it somewhere else and do the DBCC if you have test environment.

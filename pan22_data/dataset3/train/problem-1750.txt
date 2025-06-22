@@ -1,0 +1,20 @@
+: hostname generating a filename like hostname.pfx.
+I want to add SSL termination to them though, this is where I'm having issues.
+I've tried editing the bindings in the applicathost.config to not have a specific domain (from google searches).
+This will give you an idea if HTTP.sys is probing the CCS store location for a specific filename.
+If so, you can then rename the pfx file accordingly, adjust permissions if it's a permission issue or correct any password specified for the pfx files or to access the store location itself.
+If the handshake is successful, then the HTTP Host header should be read to determine which website binding the request belongs to.
+The blog also suggests that CCS works based on filenames.
+So, to address the why the management certificate is being displayed even though the binding has a hostname: This is because your default binding is not using SNI.
+When SNI is not used, the decision to choose the certificate that will be sent to the client will be done via the TCP/IP layer's IP and Port.
+I'm trying to get IIS 8.5 on windows Server 2012 R2 to actually use the central  certificate store, but i can't figure it out.
+Having said that, I would recommend to remove that default binding and running Process Monitor.
+Is there anyway to debug IIS as to what decisions it is making?.
+I've tried wildcard and specific certs for domains.
+Specifically, the "How CCS works" section describes that the IP:Port binding takes precedence.
+I have two instances of IIS setup using shared configuration and NLB, these will be acting as frontend reverse proxies (this works).
+If I go by this blog here, it details how HTTP.sys does the decision making.
+What's baffling is the first binding has a hostname, but other hosts get signed with that cert, that's never going to work because the CN/FQDN will always be wrong, so I have no idea why IIS is doing this.
+Without a default SSL site, IIS sends a connection RST (inspected via wireshark).
+With a default SSL site, IIS resigns everything using whatever that certificate is, it doesn't bother with the SNI part, or look at the central certificate store.
+I see the certificates loaded in the central certificate store, but they are never being used.

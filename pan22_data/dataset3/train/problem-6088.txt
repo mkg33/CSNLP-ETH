@@ -1,0 +1,12 @@
+Now I want to have a nightly backup of this vmware instance so I thought I just use rsync to keep them updated.
+Windows doesn't guarantee the accuracy of file modification times better than 2 seconds, so give rsync some leeway in its comparisons by using modify-window.
+EDIT:  I know the vmware instance must be shut down.
+It appears that rsync thinks almost all files have changed even if I try to use snapshots (workstation) to keep the changes to a minimum.
+I'd make certain I never compressed the host disk (since it will change a lot if you do) and make certain you are telling rsync to handle empty blocks efficiently (with the --sparse flag) and tell it to update the destination in-place (--inplace) or you will end up copying the entire file each time a single byte changes in the source.
+I have a vmware player on Ubuntu 9.04 which works well with an XP in a virtual machine.
+Are you rsyncing the files in the vm of the vmdk files (split 2gb i'm guessing?)
+It will be a local copy, but still, chances are your files are just this side of huge.
+If the second have you tried setting up rsync servers and using delta modification sync?
+It's the only real way to make certain it will work.
+What is the appropriate way to do this, and what rsync argument works best?
+Of course, if the guest is not running, you can use rsync -- but chances are it will never be all that efficient.

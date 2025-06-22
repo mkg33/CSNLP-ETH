@@ -1,0 +1,18 @@
+On-link means you should add a route without a gateway, but directly with a destination interface.
+The route will be deleted after the machine is rebooted.
+Usually 169.254.0.0/16 is used for link-local addresses, though according to your comments, your network uses 169.254.1.0/24.
+You say that these hosts are on the same link (connected to the same switch).
+first VPN to a box in that office, or log into the router in the other office).
+After alot of comments I am reading the setup as follows:
+Althought PowerShell understands the syntax of the "NetworkDirectAcrossIPSubnets" on client operating systems, this feature is available for servers only, setting it under a client OS will give an error.
+Now if the setup is less simple and it is not a switch, but there are one or more routers in between then you may have a problem.
+Thus if there are any router in between you will need to reconfigure them.
+Which is good, since the 169.254.0.0/16 range is defined as "link-local" and explicitly forbidden from being routed.
+(Some routers allow this, but most will refuse to forward packets from/to this network.)
+In route command gateway must be in same subnet that peer ip address.
+If there are third party routers (e,g, the headless boxes are in another office and you try to reach them via the Internet) then give up.
+But doing so makes you unable to use DHCP; all IP addresses must be fixed.
+A workaroud can be, if both networks are connected to the same physical ethernet network, add a second ip address to your computer in the second ip subnet.
+If you simply need to have a gateway outside your subnet - Windows Server 2012 R2 and Windows 8.1 have the powershell cmdlets to enable direct access outside the subnet, the "Get-NetOffloadGlobalSetting" shows the current state, and "Set-NetOffloadGlobalSetting -NetworkDirectAcrossIPSubnets" allows you to configure the value.
+In order for the route to stay use the -p flag to make it persistent.
+If this is the case, then please add more detail to the original post.

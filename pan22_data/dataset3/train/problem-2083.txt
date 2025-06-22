@@ -1,0 +1,6 @@
+You could pragmatically create such a function by cursoring through a view based in sys.servers and other DMVs to put the function together through string concatenation, then replace the old version with the new using a call to EXEC.
+You can't use an ad-hoc distributed query via OPENROWSET (https://msdn.microsoft.com/en-us/library/ms187569.aspx) either as OPENROWSET explicitly requires its inputs including the query text to be string literals not more general string values (so you can't use an expression or variable).
+You still need to run the generation procedure every time the list of linked servers changes, but at least it would just be one procedure call (or script/statement run) and not a more manual code change.
+It is not possible to do this dynamically via EXEC, as IIRC you can't do that in a function.
+The only ways I can think of involve either having one function per remote database or the CASE/IF suggestion from Marian's comment.
+Such a "code smell" would suggest a redesign is in order if you have such power!

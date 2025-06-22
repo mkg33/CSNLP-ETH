@@ -1,0 +1,7 @@
+CoreOS doesn't appear to support doing this, and comes with no package manager; the idea being it is only a minimalist host for containers.
+The fundamental principles of containers is that they should be portable and completely self contained. 
+I can mess around with the container and mount it from within the container but I was having trouble getting that setup via Dockerfiles and entrypoint scripts; also that approach feels hacky: Containers shouldn't worry about where the data is stored, they just ask for a volume. In production I'd be using AWS storage or Azure storage, etc, so I'd have to modify my images for different host AND i can't use the official images. 
+It should not have any external dependencies that are environment specific, (like a specific network share).
+For development I want to mount a file share from my windows dev box inside my CoreOS VM, so I can then mount that volume inside a container.
+Instead of making your container inside CoreOS, you should build your container on a dedicated build host which has access to the network share. All files that are needed by the container should then be encapsulated inside the container, or a volume container and pushed to CoreOS using the docker registry.  
+CoreOS isn't really meant for development work. It is meant to be used for deployments. You may find vagrant gives a better workflow since it can mount volumes between the host and the guest. 

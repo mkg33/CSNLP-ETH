@@ -1,0 +1,17 @@
+I'm not sure how your variable-to-binder-function would be represented and for what purpose you'd like to use it. If you are using back-pointers then as Andrej noted the computational complexity of substitution is not better than classical alpha-renaming.
+From your comment on Andrej's answer I infer that to some extent you are interested in sharing. I can provide some input here.
+In a typical typed lambda calculus, weakening and contraction, contrary to other rules, do not have syntax.
+$$ \frac{\Gamma \vdash t : T}{\Gamma, x:A \vdash t : T} \;\mathtt{W}$$
+$$ \frac{\Gamma, x_1 : A, x_2 : A \vdash t : T}{\Gamma, x:A \vdash t : T} \;\mathtt{C}$$
+$$ \frac{\Gamma \vdash t : T}{\Gamma, x:A \vdash W_x(t) : T} \;\mathtt{W}$$
+$$ \frac{\Gamma, x_1 : A, x_2 : A \vdash t : T}{\Gamma, x:A \vdash C_x^{x_1,x_2}(t) : T} \;\mathtt{C}$$
+$C_a^{b,c}(\cdot)$ is 'using up' variable $a$ and binding variables $b,c$.
+I've learned of that idea from one of Ian Mackie's "An Interaction Net Implementation of Closed Reduction".
+With that syntax, every variable is used exactly twice, once where it is bound and once where it is used. This allows us to distance ourselves from a particular syntax and look at the term as a graph where variables and terms are edges.
+From algorithmic complexity, we can now use pointers not from a variable to a binder, but from binder to variable and have substitutions in a constant time. 
+Moreover, this reformulation allows us to track erasure, copying and sharing with more fidelity. One can write rules that incrementally copy (or erase) a term while sharing subterms. There are many ways to do that.
+In some restricted settings the wins are quite surprising.
+This is getting close to the topics of interaction nets, interaction combinators, explicit substitution, linear logic, Lamping's optimal evaluation, sharing graphs, light logics and other.
+All these topics are very exciting for me and I'd gladly give more specific references but I'm not sure whether any of this is useful to you and what are your interests. 
+Here is my attempt at encoding the $\lambda$-calculus using your approach (in OCaml, with several explanations in comments). It is actually possible to define terms as circular values, which means that this representation has a good chance to work well in Coq. Note that it would require a coinductive type in the representation of closures (to account for the Lazy.t the I use below).
+Overall, I think that it is a cool representation, but it involves some bookkeeping with pointers, to avoid breaking binding links. It would be possible to change the code to use mutable fields I guess, but encoding in Coq would then be less direct. I am still convinced that this is very similar to HOAS, although the pointer structure is made explicit. However, the presence of Lazy.t implies that it is possible for some code to be evaluated at the wrong time. This is not the case in my code as only substitution of a variable with a variable may happen at force time (and not evaluation for example). 

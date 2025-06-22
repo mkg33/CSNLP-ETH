@@ -1,0 +1,7 @@
+Whenever a Wi-Fi traffic capture looks like a bunch of different random 802.2/LLC traffic with lots of different random DSAPs and SSAPs, it means your packet analyzer (Wireshark) is trying to interpret encrypted frames as if they were plaintext frames (i.e., as if they were never encrypted or already decrypted).
+In your case, the most likely reason is that you didn't capture the 4-way WPA/WPA2 handshake (the EAPOL-key frames) when the client(s) in question joined the network this time.
+Less likely reasons may be that you didn't enter your WPA/WPA2 passphrase or SSID correctly in the key generator, or you didn't copy the output of the key generator correctly and enter it correctly into the appropriate field in the Wireshark UI.
+WPA- and WPA2-PSK generate per-client, per-session keys, based on a combination of the PSK (which is derived from the passphrase and SSID via PBKDF2 as you know) in combination with the nonces and other information exchanged during the 4-way key handshake at the beginning of the connection. So if you don't capture the 4-way handshake for a given connection, you can't decode any of the traffic from that connection.
+Airodump-ng captures RAW 802.11 frames. You're seeing the 802.11 protocol here. 
+http://www.aircrack-ng.org/doku.php?id=airodump-ng
+You may want to post this to https://security.stackexchange.com in the future. 

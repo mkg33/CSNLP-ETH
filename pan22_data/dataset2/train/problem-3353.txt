@@ -1,0 +1,6 @@
+Following some guidance i found on SO, i added the beginTransaction / commit.  With that, i get .04 seconds (!!!) /1000 records on pre-prod vs .06 on dev.
+the script takes about 3.5 seconds per 1000 records on pre-prod, dev takes .07 seconds/1000 records on dev. 
+To find out why there is a difference, ...  Compare the CREATE TABLE.  Compare SHOW VARIABLES LIKE 'innodb%';.  If those don't point out anything, compare all the VARIABLES.  The likely suspect is innodb_flush_log_at_trx_commit.  Note:  Don't simply look at my.cnf; some defaults are different between versions.
+There must be some obvious mysql setting that explains this rather large difference. I compared both configurations, but cant find anything fundamentally different except 5.7/5.6. Any suggestions in what direction to look?
+tldr; When migrating a stack to its pre-prod environment, i am confronted with a setup script taking 50x the amount of time to execute compared to my dev box. error logs are dead silent !
+Do not insert one row at a time; batch them.  That is, have 1000 rows being inserted by each INSERT statement.

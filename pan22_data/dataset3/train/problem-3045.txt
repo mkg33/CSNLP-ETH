@@ -1,0 +1,22 @@
+mysql may have data cached in memory that needs to forced to disk, either by dumping the database or shutting it down.
+Even if you assign the snapshot area to another PE in the VG, it only contains the data modified since the snapshot.
+VMware VCB works with snapshots as well, btw, albeit not LVM ones.
+Backing up means a copy at least to a completely separate drive as a minimum requirement.
+This -real LV is mapped to both the snapshot volume and the original volume, so it can be used in both places.
+You will need to ensure that the data on disk is in a consistent state before the snapshot is made.
+The wrapper creates a new device (the snapshot volume) from one old volume (the original lv) and a new one (the copy-on-write volume).
+When removing the snapshot, again some renaming and mapping happens.
+Creating a snapshot with lvcreate is not much more than a wrapper to some dmsetup stuff.
+Beneath the smart looking stuff, LVMs is actually 'just' a device mapper trick.
+Even if snapshots hadn't any performance impacts, you have to understand: Snapshots are no more of a backup than a copy to another folder on the same disk.
+LVM snapshots are very useful as part of a backup process (taking a snapshot, backing up the snapshot to elsewhere to ensure the backup is consistent without having to disable updates to the "real" volume, drop the snapshot afterwards), amognst other things, but are not intended as a backup facility on their own.
+Of course if you are aware of and monitor the size issue and the performance issue is not a problem to you, then what you suggest might make a useful addition to other backup processes you have in place.
+The -snap LV shows you the combination of the copy-on-write volume and the -real volume.
+As for in howfar this is a good method of backing up stuff: it can be, if you take into account this will (1) not help for the virtual machines RAM, (2) create a performance penalty and (3) you will need to store images of the snapshot elsewhere.
+Also, IIRC, if the snapshot volume gets full it is simply dropped unceremoniously.
+If the disk brakes, your data and your backup is lost.
+Afterwards, the situation will again look something like
+The copy-on-write volume functions as an overlay to the -real LV.
+Together with that, the original LV is renamed to -real (see below, which is dmsetup ls --tree output).
+So if you do try this as a backup method, be sure to make the snapshot volume big enough to handle all the changes that will happen during the useful life of the snapshot.
+The snapshots are implemented in a copy-on-write fashion so you turn every write into a read and two writes (the block you are updating to is first read from the main volume and stored in the snapshot volume before you new data is place in its place) so you will see some performance degradation if a lot of writing is common on the VMs.

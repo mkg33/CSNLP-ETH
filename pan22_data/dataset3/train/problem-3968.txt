@@ -1,0 +1,33 @@
+FWIW I have experience with up to 92 disks in a single ZFS pool and so far it works fine.
+If you don't give ZFS redundant data to work with (e.g.
+Don't forget that your analysis needs to account for the human element as well (e.g.
+However should you use ZFS on a LUN presented by a SAN?
+Most discussions of ZFS suggest that the hardware RAID be turned off and that ZFS should directly talk to the disks and manage the RAID on the host (instead of the RAID controller).
+There are some "SANs" that actually run ZFS internally, but this is largely abstracted away - the disks are never exposed to a server, instead the "Filer" component of the SAN presents block or network file systems to servers.
+a zpool scrub runs on a 3000 disk pool (but you want to scrub regularly).
+Do the SAN management tools facilitate automated management of this sort of thing?
+The snapshots you can create on, for example, a Linux SAMBA fileserver are vastly superior to what you can do with EXT, these can even be exposed in Windows as "Previous Versions).
+That may mean using ZFS everywhere along with specialized Oracle storage devices (some people do that and have many disks exposed to ZFS without problem, and use Oracle tools to do management), it may mean using only enterprise SAN products, or it may mean using some hybrid (in which case you'll probably have to develop some tools and processes on your own to manage the environment).
+Also the output of commands like zpool status would be unwieldy with such a large number of disks.
+The number of disks involved won't change that fact.
+A scrub probably can't auto heal in the same way that it can if it is doing the disk RAID, but it can still alert you to corruption, helping to prevent bitrot.
+you'll probably get worse dedup results if you're  partitioning as suggested.
+On the other hand you'll need much more memory to hold the dedup hashes of a single giant pool which might not fit into ARC+L2ARC if the pool's too big.
+You have to determine what storage features you need (a potentially labor-intensive analysis) , and then go hunting for the least expensive solution (you can afford) that meets your needs.
+So if you are using dedup the amount of available memory is probably a good indicator for the maximum practical pool size.)
+To answer the first part of the question, I'm not aware of what we would call a "SAN" that would ever expose the raw disks to a server that could run ZFS.
+mirrors, RAID-Z), then you lose many of the benefits of using it.
+To run ZFS, typically you'd be telling the RAID controller to present the disks as a JBOD.
+(Side note on dedup: Notice that although dedup can be controlled at the dataset level it will find duplicates at the pool level.
+A device that presents the raw disks (over SAS or less likely over FC) is a DAS.
+It's an old question but it's just a relevant today as it was 7 years ago!
+But if you're really talking about several hundreds of disks I would consider partitioning them into a small number of disjunct (but still large) pools.
+I've seen SAN shelves that are way more dense than ours, and SAN deployments way larger than ours.
+For example, the enterprise I work for has what I would consider to be a modest sized SAN with 2 full racks of disks, which is something like 400 spindles.
+A SAN by definition only presents block storage (LUNs) or perhaps with something like a Filer/FS presents a NFS or CIFS.
+ZFS vs for instance EXT4, provides a few extra features such as scrubs that check checksums or for running snapshots.
+Do people expose 100 disks directly to big ZFS servers?
+This makes sense on a computer with 2-16 or even more local disks, but what about in an environment with a large SAN?
+However, whether that matters really depends on your environment.
+maybe you have a team of Storage people who have highly useful and specialized training with a SAN product which you would lose if you went to an all ZFS solution).
+Why spend money on all that battery backed NVRAM and those dedicated processors and then offload the work onto the server, whose CPUs I want doing something other than RAID checksums?

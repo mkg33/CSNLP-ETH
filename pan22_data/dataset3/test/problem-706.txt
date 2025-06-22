@@ -1,0 +1,17 @@
+I don't believe their is a workaround in your scenario.
+They then didn't understand why emails weren't being delivered to them.
+The mail servers were canonicalising the fred@website.com into fred@www.website.com.
+I want to be able to send email to any subdomain I like and not have to configure A records and MX records for each subdomain.
+I have NOT setup A records for all the subdomains (and really don't want to).
+..or else create a wildcard CNAME record pointing to the root, if it already has the correct entries.
+If you have no other resource records of any kind for the subdomains, then a wildcard record will work just fine.
+You can either set just the wildcard MX record, as well as an A record if you need it..
+CNAMEs are re-written to the A record they point at by compliant mailservers (canonicalised) as they are explicitly banned in the RFC (see section 5.2.2):
+Ideally I could send an email to test@a.domain.com and test@z.domain.com and not have to configure anything other than my original domain.com.
+I had an issue at work where a client had misconfigured their DNS to have www.website.com as the A record and website.com as a CNAME.
+I have a domain (domain.com) and want to have multiple subdomains.
+I think you're going to need to set up an A records for each sub-domain, with the same IP address of your main domain.
+I have an MX record setup to point to domain.com and all email works fine for that domain.
+You can switch this behaviour off but then you aren't complying with the RFC then.
+This should work as you described automatically if you have correctly set up MX records for the top level domain.com (and it is an A record) and your subdomains are CNAMEs pointing to this A record.
+This assumes that the subdomains don't need different A records from one another, or maybe no A records at all - is this the case?

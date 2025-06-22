@@ -1,0 +1,12 @@
+Since you're generating a heightmap anyway, there's very little to gain from generating the terrain only on the GPU (note that it might be worth it to generate parts of the terrain only on the GPU, such as close-up detail geometry).
+If you want a large world then divide it into chunks as needed.
+So it's great for backdrop terrain (or "far" LOD version of the terrain, assuming you don't need the terrain for some other reason), but not so good when you want a terrain to walk on.
+And even if you don't, rendering the noise to a texture first will save you a lot of noise sampling.
+Collisions and other stuff is usually done on the CPU, so you'd be generating the terrain twice.
+Now, if you generated a 3D terrain (not just a plain heightmap), that's a wholly different beast, but in the end, you'd probably pre-render it somehow anyway.
+Use either transform feedback or the CPU to calculate it once, then store in a VBO.
+Unless you're doing this for a demo, purely-GPU terrain probably isn't very useful.
+Also since the grid is fixed, as the noise 'moves through' the grid, the terrain will wobble around, if using low poly count for the terrain then this would be very dramatic and nauseating.
+Adding things like rocks and trees is basically just doing the same thing again - which is also a lot easier if you have the map in a texture.
+This is usually a bad idea if you want the terrain to be interactive.
+I don't even see how this relates to collision detection.

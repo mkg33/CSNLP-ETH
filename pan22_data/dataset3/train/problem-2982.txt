@@ -1,0 +1,16 @@
+Backticks hurt when dealing with more complex scripting; you need to carefully escape backticks contents.
+xargs has other features that backticks doesn't: f.e.
+To fix this, xargs takes the output of find and combines the ‘words’ (yes, words, not lines, see below) into groups that fit into a single command-line.
+Working together, they can be used to robustly transport any legal pathname from the output of find to the command-line of any other command on any system that supports the two extensions.
+It seems to me that it would be a better practice to pipe and use xargs as stuff could be processed in sequential order.
+So the most robust method is to use find's -print0 and xargs's -0 POSIX-extension.
+I'm curious about the performance ramifications of using xargs vs. backticks.
+On a limited system, if find produces too much output, the shell would not be able to fit it all into the surrounding command line.
+On some systems, the maximum length of a single command-line (actually, environment plus arguments sent to an exec(2)-family call) is limited (see kern.argmax).
+If a file named quux existed in the cwd from which you started, it would be gone when it was all over (and “.//foo/bar quux” would still be there!
+If you are dealing only with a few pathnames that do not contain whitespace, then they are equivalent.
+xargs can take parameters separated by \0 byte to deal with filenames with spaces.
+xargs might call rm multiple times in your example if there is lots of files -- POSIX systems can have upper limit on length of command parameters.
+If find -prints a pathname of “.//foo/bar quux”, rm will eventually see two arguments (“.//foo/bar” and “quux”).
+The robustness comes from the fact that the NUL byte that both extensions use to terminate pathnames is the only disallowed byte in just about all (Unix-oid) OSes.
+Second, both xargs and the shell (via backticks) will split up find's output into arguments for rm by tokenizing the output at every run of any combination of space, tab, or newline characters (this is a simplification since they both have their own quoting rules that are close, but not identical).

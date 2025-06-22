@@ -1,0 +1,29 @@
+As sprites are allowed to contain render code, anything can be an sprite including a health bar that needs no image data and is renderer only with lines of different colors (easy done with canvas calls).
+The sprite representing a tree must contain the data that you need to pass to a render generic function to produce a result that looks like a tree.
+renderer.renderSprite(sprite, posx, posy, rotation, scale);
+I tried to model a render system for an html5 game and learned the following:
+However, wouldn't this lead to a very bloated renderer class, with functions like drawTree(), drawMonster(), drawPlayer(), drawBall() or whatever entity?
+When using the "Each sprite know how to render itself" approach a render system became unnecessary.
+I don't think a method called renderATree() should be in the renderer.
+In javascript this does not look so unnatural, I remember doing something like this:
+We use render code separated from other game code with the intention of change graphic api at any time without having to touch anything except the renderer implementation.
+Also, how would i easily map the entity objects to their corresponding draw functions?
+If you still need a method like renderTree or renderMonster then I would make them part of the sprite or entity.
+Also if you have some object which doesn't need rendering (say it is a game-logic object), then you can just have it have a "noop" rendering method.
+In the first approach sprite was a "structure" that contains data for the renderer renderSprite function and a separate entity "class" that refers to a sprite was needed.
+Having a render system then is only a choice of code organization.
+Canvas is already all the multi platform it can be.
+i have a question on designing a HTML5 2D game renderer.
+The browsers are already responsible of implement the platform specific part.
+What information that is, depends on the kind of object.
+Then I ended with a main loop that used functionality of the scene "class" to efficiently cull the scene and then loop through a sprite array representing the visible part of the scene calling each sprite render function.
+The Tree "class" then share the same prototype of the sprite "class" but define its own render method.
+Instead of the objects drawing themselves, they just pass off the relevant information into the renderer.
+Also note that with the second approach sprites and entities are the same thing.
+I recommend that you do have functions in your renderer called "drawTree", "drawHouse" etc.
+I've read that it's better to not let entities draw themselves but instead put all the drawing functions in the renderer.
+After coding for a bit, I realise that this does have its advantages.
+If this where C++ renderSprite would probably contain api specific calls (DirectX, OpenGL), but being a html5 game, it probably contains only canvas calls.
+For instance, I can have a list of helper functions in my renderer system, like drawRotatedImage(), getSprite(), setFontSize(), plus the context variable etc.
+Would i have to do an if (entity.type == 'monster') this.drawMonster(); else if (entity.type == 'tree') this.drawTree(); kind of thing?
+To call these, you can pass your renderer object into your objects (polymorphic) "draw" function.

@@ -1,0 +1,15 @@
+when you see the graph for connection usage creep towards the max_connections level, you'll have to make some decisions (Do I have enough RAM for more connections?
+If the max_connections setting is not explicitly set, then it is set to the default value, which I think is 511.
+MySQL doesn't handle connections for web apps any different than for any other client.
+The main difference lies in the fact that in a web application connections usually only live as long as the server needs to process a particular page (unless you use connection pools).
+Bonus points if you can also elaborate on how mysql handles conecttions for web apps...
+Often the default values are a good starting point.
+It is a debian machine running apache, php and mysql.
+These graphs are highly configurable, just right-click on one of them and explore.
+What is the best way to determine the best value for this settings?
+When using mod_php on Apache, and assuming you're using persistent connections (use mysql_pconnect if you use plain old MySQL API), then you should have max_connectionst in MySQL set to as many concurrent requests as you expect for your application, with some to spare for administration and such - so that if you expect to have 500 concurrent requests on the web application, then I'd set max_connection to something like 550 or 600.
+This provides a list of all active connections (under "Server Connections") and also graphs showing (by default) connection usage, traffic and numbers of queries (under "Health", first tab).
+In consequence web applications use a lot of very short lived connections (whereas desktop apps use few long-lived connections).
+Obviously other factors play a role here, too, such as whether the hardware can be upgraded, and overall server performance and optimization.
+The way to determine is to collect metrics with Munin or Cacti and based on historical data give yourself a bit of a cushion (25-50% whatever the historical max is).
+You can then monitor the number of connections that are actually alive by using the MySQLAdministrator.

@@ -1,0 +1,8 @@
+I got this problem when I began an explicit transaction in which I created a table in tempdb from a script running in another database (not tempdb).  When I committed the transaction, the commit didn't seem to release the lock on the table I had created in tempdb.
+Excluding Harware consideration, perhaps you need to run the script to check what are the activity withholding the SQL Session, one of the common scenario is not to use an Implicit transactions Option in SQL Server Management Studio.
+Thanks to this page, I USEd tempdb and executed DBCC OPENTRAN and got the SPID of the connection to tempdb that was causing the lock.  Then I KILL <SPID number> to kill it.
+Not very graceful, and I lost all the information in the table I had created in tempdb, but that was OK in my case.
+It was being caused by a perpetual rollback of a transaction.  Had to eventually restart my server cluster
+There are so many things this could be that all I can offer are a few questions to help guide you towards an answer.
+At the end of the day, it sounds like the machine you are hosting SQL Server on is under sized for what you are trying to do.  It's entirely possible that you have finally reached those hardware limits where performance is dropping off radically.  If this is the case (the above questions will help you determine that) then you'll want to move the DB to a server that is properly sized for the amount of data (and queries) you are trying to process.
+As many had already pointed-out, usually there's a long lasting transaction, mostly caused my the miss used SET IMPLICIT TRANSACTIONS ON, which should not be used at all. To see why check Brent Ozar's insightfull article

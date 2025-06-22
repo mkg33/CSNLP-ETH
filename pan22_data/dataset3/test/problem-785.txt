@@ -1,0 +1,11 @@
+My question is, can I use a trigger for insert and modify to keep an auxiliary database with the last 2 states of SYS.database_mirroring??
+My first approach was to have a custom windows service monitoring this table...but doing that I'm doing a LOT of unnecessary selects to the database.
+if they are different I want to modify the last_state with current_state and current_state with the fresh state read from SYS.database_mirroring
+So I though, maybe a trigger would be what I'm looking for... but i stuck with just
+I want to keep track of mirroring_state_desc in SYS.database_mirroring database, so that in case it changes from SYNCHRONISING to DISCONNECTED I'll know its not safe to promote it to principal, but if it changes from SYNCHRONIZED to DISCONNECTED is ok to promote it (I'm working in high safety mode)
+That way you're highly unlikely to have a failure that takes out both your principal AND your mirror database at the same time.
+I have 3 databases, (One principal, one Mirror and a witness) and I'm trying to make this system the most fault tolerant as possible.
+So going down the path you're thinking isn't possible.
+Your best bet to increase fault tolerance is to move your Witness database to it's own server hardware, (not just another instance on the same box even though SQL Server allows you to set it up that way), separate from both the principal and the mirror.
+So I was thinking in doing some extra codding to protect me against the loss of the witness in some cases.
+I have a state_db database with 2 columns (last_state and current_state), and I need to be able to check the current state, with the one in my state_db.

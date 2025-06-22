@@ -1,0 +1,21 @@
+You may be asking as to advisability of using Ethernet Jumbo frames
+defined as packets with more than 1500 bytes of payload.
+Measurements have shown that latency is improved by such larger packets
+for end-to-end TCP performance. However, they may have negative impact
+when passing through low bandwidth links (which nowadays is less likely).
+You may find more information in the above Wikipedia link and its
+I have never achieved much improvement on large transfers when setting
+However, without doing any precise measurements, I believe that
+So I don't believe you should change the MTU from the default.
+If I understood correctly your question of sending all or in parts,
+I would advice to send payloads that completely fill up one
+Remember that the data you are sending is the payload that will then be
+wrapped-up with the protocol headers, which are larger for IPv6 than IPv4
+Sending large data chunks will automatically do that for you,
+as the operating system will cut it up for maximal repackaging by MTU size.
+So send large chunks, but there will be no improvement gains for
+in short: yes size of packets affect the effective speed of transfer
+the bigger the packets the less the amount of packets required and thus depending on protocols used etc the less overhead overall is needed 
+jumbo frames can be used in some cases ( not all medium / hardware support it) to reduce even less that overhead. 
+however there there are other factors that can have an even bigger effect to transfer speed. if there is 100 hops/devices in between you get other issues like routing and packet switching that become a big burden on the transfer speed. At that point not only jumbo frames may not be allowed but its doubtful you will be able to use the full 1500 bytes packets and just the processing alone becomes prohibitive enough that MTU does not matter much anymore. 
+for 1000000 bytes the MTU does not even matter all that much because its only 1mb and that will take about 1 sec to go thru . for 1Tb on a regular basis then you would look into optimizing. even if you "pre segment" the file into multiple will not make it go faster. but actually may make it slower because even if you split into 1 packet files your interface may deem that the packet can be split further.  the connection is calculated by "least available" MTU meaning the smallest "gap"(MTU of a particular link) in the path the packet will take is the size that the connection will be negotiated at. that is if its not fragmented further because of "unseen" overhead by other things like ppp connections , mpls networks , encryption and tunnels etc... 

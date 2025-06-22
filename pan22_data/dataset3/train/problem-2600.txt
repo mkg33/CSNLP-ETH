@@ -1,0 +1,18 @@
+5.Now same process for commit would be followed as above it would be hardened to disk and log record containing commit would be sent to Mirror and then it would harden it send acknowledge and replay transaction logs.
+2.The transaction log buffer would then be written to disk that is hardened and at same time the Log buffer would be sent to Mirror server and principal will wait for confirmation from mirror server.
+When the principal receives its response from the mirror, the principal can then proceed to the next hardening.
+As you can see now commit of transaction is entered into log buffer and hardened but SQL Server still does not confirms this as committed transaction
+1.The transaction Log record from DML transaction would be inserted into transaction Log buffer.
+A very important point failures to commit on the mirror will not cause a transaction rollback on the principal.
+3.The mirror will receive log records in its transaction log buffer and it will write to disk and the notify principal that it has hardened the piece of log record
+please note the commit has still not been given for transaction in Log buffer
+I am talking about Synchronous mirroring and as per my knowledge actually following happens
+I would like you to read Table 9 Section in This Link
+4.Principal would receive acknowledgement and then COMMIT for transaction would be entered in log record buffer
+No this IMO is not correct inference like I said above before sending log records containing commit principal first hardens it on disk.
+SQL Server would not rollback the transaction if it does not receives confirmation from mirror transaction would still be open
+I am talking about database mirroring as I am not sure whether this discussion holds same for AG which I assume it will be.
+Principal waits for the completion of its own I/O and the I/O of the mirror before considering the transaction complete.
+You must say commit instead of hardened.Like I said above hardening of Log records containing commit is done on principal first and at same time it is sent to mirror but transaction actually is considered committed only after principal receives information from mirror that Log records containing commit which it sent to mirror has been hardened.
+Following happens when suppose DML is started on Database principal
+It also records the mirroring failover LSN and then after this it sends acknowledgement to principal.

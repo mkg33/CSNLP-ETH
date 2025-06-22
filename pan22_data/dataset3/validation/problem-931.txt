@@ -1,0 +1,32 @@
+You could change the public constructor to call the internal constructor like this:
+If there aren't any other dependencies (are you newing up anything else anywhere else?
+The key to a successful dependency-injection implementation, is going all the way through.
+Even if you are going to always be using those specific implementations, by newing them up yourself you have ruled out all the advantages of doing DI in the first place, and you have made your constructors much more ambiguous and complex than they need to be, at least from a DI standpoint, where a type's constructor signature is expected to tell us what that type's dependencies are.
+I refactored them into helper classes so I could mock and test them easily, which worked out perfectly.
+You're injecting your dependencies' dependencies: this means your client code must new up things that the object being created doesn't even need.
+), then at the end this should be the only constructor you need:
+If you are having trouble mocking those interfaces it's probably an indicator of some other issue with your design.
+First, having nearly identical code in both constructors is a maintenance pain.
+This is what proper DI allows you to do, when you inject dependencies as abstractions - the class has no clue of the actual implementing type, and doesn't care about it, because as long as the implementing type in question implements the specified interface, how it's implemented is not a concern of that class.
+This way, the DI container only has to know the actual dependencies for the public class to work, while still being very testable.
+That is a very strong assumption you're making here.
+It may be okay every so often, but if you do it a lot it will cause a bug one day when you change one and not the other.
+Poor Man's DI is a replacement for an IoC container, not a reason to introduce tight coupling.
+You really should be mocking the interfaces of the public API instead.
+Are you sure you'll never want to inject a decorator that will, say, report execution time to the debug output?
+Final note: I guess that the public constructor actually uses resourceService and serializer in some code you deleted from it, otherwise, the guard conditions there are also redundant...
+In this case the IResourceService and the ITranslationSerializer.
+This is how I implemented the public class' constructors:
+The public constructor you have, doesn't take the constructed type's dependencies, and this only uselessly blurs things up.
+I had a rather large method in one public class that I refactored into 2 helper classes.
+Perhaps those interfaces can be broken up into a few smaller interfaces, or maybe your unit tests are making the wrong assumptions.
+You depend on two classes that each have their own dependencies, that you're able to provide via an IoC container: there's no reason to new them up yourself, unless there's lack of context in your post or, more likely, unless there's something I missed.
+Second, it's not really ideal to be creating different constructors (or any other code) just for tests.
+Inversion of Control specifically implies giving away that control you're keeping all for yourself - the control over the specific types that implement the abstractions you're depending on.
+You haven't listed your class, but I'm expecting to see this somewhere like right above these constructors you've listed:
+I will even go further and claim that the guard conditions in your internal constructor are redundant because the constructor will only be used by the single public constructor, or by a test which:
+However, the thing is I don't want to have to register my helper classes in the DI container, because I know the public class will always be using those specific implementations.
+Or one that catches and logs (with email notification if you want it) whatever uncaught exceptions that this other code could throw?
+The thing is though, that those 2 helper classes have dependencies.
+I don't see anything wrong with your implementation - if it works for you, and does not interfere with the system - go for it!
+Even if you actually end up using a specific implementation forever, that's not a reason to introduce tight coupling in your architecture.

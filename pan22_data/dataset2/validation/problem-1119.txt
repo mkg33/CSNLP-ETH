@@ -1,0 +1,8 @@
+When I make this change, the entire scene becomes shadowed. I'm sure I'm misunderstanding something somewhere, but I'm not sure where. I have tried varying the constant term (70) between 1 and 70, though this doesn't appear to make a difference. I have no errors reported by KHR_debug
+However, my understanding is that the whole point of this, is that I can move exp(70 * lightDepth) out of this shader, and into the shader when I generate the depth texture at the light. That is:
+I'm playing around in my little toy project to see if I can understand how exponential shadow mapping works. To begin, I have the following two fragment shaders:
+This works fine - I have shadows where I expect them, and I'm using the approximation to the boolean function by taking the product of exponentials, as shown in the ESM paper.
+It is unclear if you can call glClearDepth(INFINITY) or need to clear the depth using a full-screen quad as the ARB_depth_buffer_float extension says "ClearDepth takes a floating-point value that is clamped to the range[0, 1]."
+You are using GL_DEPTH_COMPONENT24 which is a fixed-point format clamped to the range [0, 1] inclusively.
+I don't know how supported it would be to clear the depth with a quad at depth near-infinity regarding clipping against the far plane: The clipping calculation might go nuts with rounding errors.
+Your best bet is to draw a fullscreen quad at a reasonable depth (1.0) with depth-test disabled and FORCE the depth at INFINITY (or a very large non-infinity value) in the pixel shader so this will happen after primitive clipping.

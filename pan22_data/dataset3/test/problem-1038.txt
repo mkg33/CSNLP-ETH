@@ -1,0 +1,16 @@
+We've come close to saturating our gigE  public interface but no where close to the IB bandwidth.
+So, my information is largely the research I've been doing in preparation for the POC.
+Don't forget that you can very easily trunk your 1Gbps Ethernet connections to 4Gbps or 8Gbps (depending on the number of physical ports you can stick in your individual cluster nodes) without taking on more latency in the network stack.
+You can probably team two 1Gb connections (with appropriate hardware of course), or do any number of other tweaks (like Jumbo Packets, or adjusting MTU) before the need for something like Infiniband.
+As Farseeker says, IB is (in the commercial environment) cool to brag to your mates.
+Latency measured in nanoseconds is pretty cool, but is it important for DB?
+If you're more concerned about the cost (to your application) of bulk data transfers for instance-to-instance synchronization, then your current rate of 35Mbps is presently low enough that its very unlikely to be affected positively by moving to a different cluster interconnect.
+I've never used Infiniband in production, but as far as I can tell the only time it might make sense to go to Infiniband is if you find yourself erring towards 10GigE (if I remember price points kind of reach an equilibrium at about 10GbE).
+In the scientific and research community, IB has almost become a commodity for cluster interconnect.
+We've actually just been tasked with building a 5 node Oracle cluster with IB interconnects and a IB -> 10GbE switch proof-of-concept that we're working with Dell on.
+The big difference between IB and 10GbE is supposed to be latency.
+I've a 4 node oltp rac database and a 3 node dw rac database using IB as interconnects.
+That said, Infiniband is very cool if you just want to brag to your mates...
+IB uses a DMA type model with latency in the microsecond range, while 10GbE requires your communication to travel up and back down the stack on both sides.
+All 7 nodes are connected to 2 infiniband switches setup in active/passive failover configuration.
+IB is also supposed to have a higher raw bandwidth than 10GbE, but 10GbE will probably be backwards compatible when 40 & 100GbE come out.

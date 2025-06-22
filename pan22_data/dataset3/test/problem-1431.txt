@@ -1,0 +1,16 @@
+That'll cut out both a .ToArray() and a Select() call.
+Worrying about the small set of items that result in the scope of the other 110 million+ computations that take 6GB+ ended up being quite unnecessary.
+I know it's technically correct, but it makes it a lot harder to parse in your head, and if you ever want to add an extra statement in there, you're going to have to go in and surround it with braces first, or you'll get some really weird errors.
+Not here, you're literally casting it to IEnumerable<IEnumerable<T>> and that's it.
+For your methods, when do you actually need an array?
+Why not simplify the whole affair by accepting IEnumerable<IEnumerable<T>> too?
+Not here, either, Length can be substituted for a call to Count().
+Once I handled unbound look-ahead and follow projection, I reduced that set of ambiguities to those which actually surfaced in the result language and only about 16 actually appear as used.
+After further evaluating the needs of the use case, I determined that there on average very few actual permutations, even on larger languages.
+Length can be replaced by Count() and the one time you're getting something by index, you can simply call ElementAt(x) or, if you must, convert it to a List or an Array here.
+Certainly not here, and cutting out all those ToArray() calls will cut down on execution time.
+A majority of this was obviated due to token precedences.
+Secondly, your calls to ToArray don't make much sense to me.
+All your functions are returning IEnumerable<IEnumerable<T>>, but they all take T[][].
+Firstly, I don't like the absence of braces in your loops.
+'Performance' matters, but only when you're dealing with very large sets, the results I was getting were... under a hundred subsets.

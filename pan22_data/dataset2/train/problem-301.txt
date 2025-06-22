@@ -1,0 +1,20 @@
+Don't be clever - stick to 1GB, it's more than enough. Upgrading to 2GB is entirely unnecessary, may have unintended consequences (with respect to different drive speeds) and will stick out like a sore thumb next time you send a support request to your service center, and they ask for a configuration dump.
+You could save a few bucks on a cheap card but I bet if you have problems Juniper will laugh at you (and tell you to buy their card). If it works, great, if it causes problem, erugh.
+The new third party CF is probably formatted some non-USF way (FAT or something).  If you just install it and try to boot the routing engine, it might hang at that point (hmmm. how do I know that???)
+I have personally upgraded the compact flash cards in M7i routers, which are the baby brother of the M10i. I used a Sandisk Compact Flash, with the words "Ultra II" on it - I have heard negative things about certain routing engines and the "Ultra III" so watch out.
+It looks like modern, high throughput, cards could cause issues though.  I am still interested in hearing anyone else's experiences.
+On replacement, do "request system snapshot partition" and then REBOOT to make sure everything is running from the right locations.
+I was a bit of a novice and had to learn a few things.  Perhaps these notes will help someone like me.
+Enter the shell as root (start shell user root)...you'll obviously need the root password.  You can find root password recovery methods on junipers knowledge base site (hmm...why do I know that now?)
+I had some trouble with the below steps with junos less than 8.5, so I recommend its running 8.5 or higher.)
+Also note that the this command might take 10-15 minutes or even more to complete, and you don't get any realtime feedback..you just wait until it is done.
+Consider doing the hard disk soon afterwards - an 8GB SSD HDD will set you back under $100 and are a lot less likely to fail. Out of four M7is, two have had failed hard disks in under 3 years. It's easy to replace, and follows exactly the same procedure as the Compact Flash replacement.
+Then boot up the RE.  You should see it try to boot from the pcmcia card (nothing in it hopefully), then skip to the internal CF (our new card), and hopefully skip it and proceed to boot from the hard disk drive.
+I have found the following page which states that, with caveats, off the shelf SanDisk cards should work.
+Format the card using dd as follows.  Note, be extremely careful with dd.  Some say it stands for 'disk destroy'. This command basically writes zeros to the entire disk block by block if I understand it correctly. 
+Okay, now youv'e got a CF card that you can install in the internal slot and it won't hang the boot process.  So install it (you can find detailed procedures for this in the Juniper documentation.)
+Note that 'ad3' is what the card showed up as when I plugged it into the pcmcia adapter on the m10i.  It was true for several different m10i boxes I looked at.  But I don't know if it will be the same for you.   Do a 'show system hardware detail' from your master routing engine and see what it shows up as.  Use the correct disk!  If you accidentally point to your hard drive (like ad1 on my system) it will wipe your hard disk clean!
+All the above is unsupported. Keep your old Compact Flash. Test it before bringing any routing protocols or interfaces back online.
+I also strongly recommend that you do this on a lab box, not a production box, and use the backup Routing engine rather than the active one.  I'll explain why later.
+Also note, this might put quite a strain on system resources and cause you some trouble.  Maybe even interfere with normal routing processes.  That is why I recommended earlier that you do it on a lab box, and even on the backup routing engine that is not doing any heavy lifting.
+This will put the correct partitions on the new CF card, and copy the bootable Junos code and configurations from the hard disk drive.

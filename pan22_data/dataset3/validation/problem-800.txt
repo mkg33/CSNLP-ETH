@@ -1,0 +1,9 @@
+we need to declare tempTable again, or it will say tempTable doesn't exist.
+However you have achieved you answer by using sub-queries which are not so efficient because a sub-query has to run for every row to match the value from the result set of tempTable so i suggest you to use cross join with a sub-select instead instead of sub-query in where use HAVING to match results of aggregate function
+so we need to compare salary field with the max salary
+You are using max() an aggregate function over your tempTable result set without providing grouping criteria, when you use any aggregate function with out group by it will assume all rows as one group and will result in indeterminate order like the city your are will will be returned in indeterminate order ,max() will guarantee you the max value from result set but it not  guarantee the associated column value (in your case city is associated column) therefore you are getting city c1 instead of c4 .
+From fiddle demo 1 the max salary was 188000 so for your case if 2 employees has same max salary then return both of them so i have slightly modified sample data with one more row another employee with the same highest salary as (9, 'test', 188000, 'c5') as you can see the fiddle demo 2 is using same query to evaluate for returning both employees with same highest salary
+will not work cause it only outputs the first record of name , though it gives max salary
+The reason it is not giving the correct answer is the same reason if we try
+only once as compare to sub-query in your answer ,in cross join's sub-select just get the max summed salary of employee by ordering in descending manner with limit 1 will give you the highest summed salary and with your query's sum result compare the maxsalary calculated by sub-select of cross join in having clause .
+Benefit of using cross join with sub-select is the sub-query in cross join will be evaluated

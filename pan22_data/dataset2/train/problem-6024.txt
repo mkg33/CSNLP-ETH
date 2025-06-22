@@ -1,0 +1,5 @@
+How can I dynamically make changes to the servers in the backend without terminating existing sessions to the backends I'm not changing if Haproxy won't reload gracefully?
+The problem I'm running into is the app requires session stickiness to a single backend server (whichever takes the original request) but when I make a change to haproxy.cfg and do a service haproxy reload it restarts haproxy as a new process and kills the old process which terminates any existing connections to specific backend servers, meaning any users are immediately logged out of the app.
+I moved one of our SaaS applications off a coyote point hardware load balancer onto a vm running nginx + haproxy with haproxy handling hash persistence.  
+If you define a peer for the server, even if it is only one and it is the local one, at each soft restart of haproxy, the state should be replicated to the new process.
+This is a big problem for us, in that when I need to perform maintenance to an specific backend server, or add/remove additional servers from the backend pool I cannot do it without impacting client experience of the app.  

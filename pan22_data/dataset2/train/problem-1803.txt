@@ -1,0 +1,7 @@
+Active defragmentation (introduced in Redis 4) has been improved in Redis 5. To quote from the AWS announcement about Redis 5:
+If you are using the Jemalloc allocator and fighting with fragmentation, I would recommend to turn the feature on:
+Recycling Redis is impacting for our application (even if we do this with a Sentinel failover after a slave restart).
+Before v4, the only way to resolve it was restarting the process (possibly after making a slave, promoting it and redirecting traffic to it). As of v4, there's an experimental active memory defragmentation mechanism that may be enabled with a simple CONFIG SET activedefrag yes.
+If I restart the Redis service and reload from AOF, mem_fragmentation_ratio goes back to acceptable level (1.06):
+Is there another way to reduce mem_fragmentation_ratio, like a 'defragmentation' process that I could schedule off-peak ?
+If you on ElastiCache Redis from AWS, Jemalloc is the default and active defrag is supported. Running memory doctor also recommends to enable that feature once the fragmentation level becomes too high.

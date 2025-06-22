@@ -1,0 +1,21 @@
+When it comes to rendering this box (probably in a debug rendering situation), you can construct your vertices on the fly, with the following pseudo-code:
+I need collision detection for my 3D racing game but it isn't going well right now.
+How can I use a shape that is constructed with glVertex*?
+If you have a physics structure that you want to render, determine the best way to do so without compromising a representation that is easy for your physics system to digest.
+OpenGL makes everything more complicated than it has to be.
+OpenGL is actually quite unrestrictive when you think about it, because all it requires are numbers.
+Should I create the bounding boxes with some Vector3D class?
+Instead, think of what's easiest for you to work with in the context of physics, and then determine how you want to render that data.
+At the end of your question you're on the right track; object-oriented programming is your friend here.
+You'll want to create various mathematical classes, like vectors and matrices, or use a pre-existing math library like glm to save yourself the pain of mistyped indices or an improper w component.
+From there, you can create various classes that represent your collision structures, probably your standard AABBs and OOBBs, and then write the algorithms for testing for collisions between them.
+Here's an example: let's say you decide you represent your AABBs using four values: the center of the bounding box (as a 3D point), and its width, height, and depth.
+Note that for data like models, things are very different.
+The important thing to remember is that OpenGL is strictly a rendering library.
+I think I understand the concept of testing boxes and generating a response, however implementation part is a nightmare for me.
+Models don't have a functional purpose other than visually representing something in the game world, so their data representation is heavily tied to the rendering engine.
+To put it another way, you don't want to think of how GL calls like glVertex* will factor into the design of your physics shapes, because OpenGL is an entirely different subsystem.
+Hence, models are specified with the very same data that will be pushed to the renderer.
+To give examples, an array of floats for vertex data, texture coordinates, normals, etc; most often an array of floats.
+To sum up, for something that is not functionally tied to rendering - in your case, physics structures - ignore rendering while you design it.
+This means that the other subsystems of your game may take on whatever architecture you want them to; the only restriction that OpenGL places you under is that your data can be easily transferred into a format that OpenGL expects.

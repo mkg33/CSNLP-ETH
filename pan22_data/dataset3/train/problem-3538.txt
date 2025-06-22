@@ -1,0 +1,12 @@
+Keep track of the total elapsed time and use that, rather than reducing all your times towards zero.
+Then pass it into the class as a parameter to the constructor, and store it within the class.
+Also, you should use ++it to increment the iterator, which avoids creating an unused copy of the iterator (which may or may not be optimized out).
+The currActiveProcessID member of Scheduling can be removed from the class, as it is only used internally to calcEndTime().
+The while loop in calcEndTime has an iterator into burstTimeCopy, so you don't need to use burstTimeCopy[currActiveProcessID]; just use *it.
+However the while loop can be rewritten to not need burstTimeCopy at all.
+All of your accesses to endTime result in Undefined Behavior.
+If you leave them as separate vectors, you copy of burstTime can be auto burstTimeCopy = burstTime; without using std::copy (although burstTimeCopy can be eliminated; see below).
+You reserve() some space in the vector, but never actually resize the vector.
+If you use a struct to hold your various time vectors, then your sort can easily be a simple call to std::sort (which will be faster than the sort you wrote).
+timeQuantum should be entered in main (or a helper function) or passed in on the command line, not as part of the class constructor.
+Changing from a struct-of-vectors to a vector-of-structs approach would also simplify other parts of your code (calcTurnAroundTime, calcWaitingTime), since you wouldn't need to index into multiple arrays.

@@ -1,0 +1,15 @@
+The querys can take up to 10x as long as other runs of the same query, and it gets to the point where simple operations like getting the table list in object explorer or running sp_who can take several minutes.
+So much so that MS changed the locking mechanism in later versions to be more like Oracles row level locking.
+If the application is truly only doing reads against that table, blocking should not be a problem.
+For certain types of query, this can absolutely kill performance.
+If you ONLY read, ONLY read once, use a connection marked in a way and a sql statement markeed in a way to NOT leave ANY locks.
+I have a SQL server 2000 instance which runs several concurrent select statements on a group of 4 or 5 tables.
+Can anyone suggest somewhere to go from here to investigate this problem?
+Often the performance of the server during these queries becomes extremely diminished.
+Shouldn't SQL be able to handle multiple selects on a single table without losing so much performance?
+I've done my best to identify the cause of these issues, and the only performance metric which I've found to be off base is Average Latch Wait time.
+What most people totally forget is caring about locks.
+Would be applicable for most asp.net pages - you read, present page... no need to keep locks around for this operation, only when you start writing.
+I've read that over 1 second wait time is bad, and mine ranges anywhere from 20 to 75 seconds under heavy use.
+SQL Server 2000 uses a lock mechanism that upgrades locks to encompass more and more of the schema - ie you may start locking a page of a table, but as you lock more rows, that lock will quickly get promoted to a full table lock.
+Standard connections set full read locks (repeatable reads) which may use up ressources.

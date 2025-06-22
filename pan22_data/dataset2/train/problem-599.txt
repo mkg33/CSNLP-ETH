@@ -1,0 +1,9 @@
+I would like to set up a typical (Postfix or Exim)/Dovecot/etc stack to handle e-mail from a custom domain name. I have done this in the past for a friend.
+That said, I am concerned that I might not be able to send and receive e-mail to/from IPv6-only MTAs.
+If you are using SPF records as a way to prevent spammers from forging mails from your domain, this is a misconfiguration to watch out for. You can still avoid this problem by not using any of the SPF features which rely on A or AAAA lookups.
+For the most part your mails will get delivered even if you run your mail system as IPv4-only. There are still lots of IPv4-only mail servers and very few IPv6-only. There are however some caveats to pay attention to.
+For various reasons though, I currently can't get an IPv6 address to my server, which is a shame since I'd like to reduce my dependency on IPv4 but currently this just isn't an option.
+To my knowledge this is no where near a problem today. If anything, you'll have MTA's which support IPv4 and IPv6, but hardly any (if at all) that ONLY support IPv6. The adoption just isn't wide-spread enough for anyone to solely rely on providing any practical service over IPv6 only. 
+As you can see if a spammer using IPv4 tries to forge an email from that domain the SPF validation will tell the receiver that the source IP is not authorized to send mail from that domain and the mail will likely be rejected or send to the spam folder because of that.
+One risk by running your mail on IPv4-only is that you may unknowingly have caused your SPF records to be invalid. Take a look at look at this live example of SPF validation with an address on a misconfigured domain (with a domain taken from the reject log on my mail server):
+If a spammer using IPv6 tries to forge an email from that domain the SPF validation fails and the receiving server may not understand what that failure means and might proceed as if your domain had no SPF record in the first place.

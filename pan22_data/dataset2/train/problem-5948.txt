@@ -1,0 +1,6 @@
+I am only using PHP so that I can host some mailing list software, I can map it to newsletter.mydomain.com. So my question is, is it possible to run Tomcat on port 80 on 1 IP address and Apache on port 80 on another IP address?
+(More on Tomcat: http://tomcat.apache.org/tomcat-6.0-doc/config/http.html, more on Apache: http://httpd.apache.org/docs/2.0/bind.html)
+You need something on port 80 that can forward requests to Tomcat (and maybe even to whatever you use to serve PHP). For example Apache can work as a reverse proxy. And nginx. And varnish was made for the exact purpose.
+For Tomcat, make sure to configure your connector with the parameters port="80" address="your.second.ip.addr".
+Easily use one IP with port 80 for Apache: Make sure your configuration has Listen your.first.ip.addr:80 (ex Listen 92.12.0.2:80) and not just Listen 80 (since that would listen to ALL the IP addresses of the box on port 80).
+You could also just bind Tomcat to port 80 on one IP, and your PHP web server (apache?) to port 80 on the other IP.

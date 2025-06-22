@@ -1,0 +1,22 @@
+Setting __repr__ on the classes will also help make it clearer - e.g.
+For example, when you do if location_x >= self._width: is fine now, but if the width property later does some validation, or modification of _width your code may start to behave unexpectedly.
+something like the following in the Animate class:
+width then it's a good idea to use it internally as well as externally for consistency, unless you have good reason not to.
+You have a Position class, which has two immutable numbers as its members.
+I've not dug down deeply into the logic behind the various methods, but I notice that Animate has 2 class atributes which are accessed and modified from within this class, and from AnimateManager:
+Splitting is a good idea if the code gets too big, or if you want to only use a subset of a package somewhere (i.e.
+If you aren't going to need more complicated functionality (or even if you aren't sure, I'd go with YAGNI on this one), you can use a namedtuple:
+pylint reckons 1000 lines is too many for a single file - but equally I wouldn't make 20 files, each with 5 lines in, as it makes following the code harder.
+That way you  don't ever do except Exception and catch things you didn't mean to.
+Minor tip, but you might want to consider using pprint instead of print for outputting the terrain while debugging, as it will give a better idea of what the grid looks like.
+Let me know if any of that is unclear, or if you have any questions about anything I've suggested.
+Using exceptions for constraint handling is a good option too - though you don't need to pass after raising them.
+Nice to see some well-written code coming up for review, and someone taking the time to thing about a project before they dive in too deep!
+Just to flag up that this approach to keeping a global id register won't work if you want to do anything with threading later on - see https://stackoverflow.com/questions/1071935/i-need-a-python-class-that-keep-tracks-of-how-many-times-it-is-instantiated#1071939 for some ideas about handling this.
+match has a very good rundown, and I would only like to add one thing.
+You don't need to use enumerate here, since self._terrain[i] and line are the same thing.
+At the point it seems to big, split it, but don't worry too much until it gets there.
+I'd also suggest creating your own specific exception types, e.g.
+This reduces your Position class definition to a single line, reducing code clutter.
+Using @property to make 'read-only' classes is a good idea - it does make the class look 'bigger' but it makes the interface clear and understandable.
+However also be aware that modifying a list while iterating over it is potentially dangerous - you are better off doing something like creating a new list as you iterate, and then doing an overwrite of the original when the loop is complete.

@@ -1,0 +1,19 @@
+This definitely seems to be a bad combination of isolation level, lock escalation, and many sessions each issuing multiple queries inside the same transaction.
+This can also lead to blocking if the application doesn't explicitly close transactions.
+When I opened this deadlock graph in Sentry One plan Explorer, it was scary.
+You need to drastically reduce the amount of time you spend inside those transactions (or get rid of them altogether), collapse multiple queries for different parameter values into a single, point-in-time query, build better indexes so that escalation doesn't happen, stop forcing repeatable read, created a clustered index (if I'm reading the resource descriptor right, that's a heap!?
+Isolation level is set as Read Committed Snapshot.
+I am supporting vendor based application, which is filled with blocking and deadlock.
+This can be set at the connection level, or by calling SET IMPLICIT TRANSACTIONS ON explicitly.
+If you have any control over the application's connection string, verify that they are not turning this setting on.
+This seems like potentially an accidental open lingering transaction.
+Also a slightly less scary way to see this is to optimize layout and use force directed:
+Five minutes is usually way too long to be holding locks - it's a recipe for blocking and deadlocks.
+If you expand the waiter/owner list you see they are all trying to access the same resource (presumably the entire table):
+Deadlocks occur mostly involving two or three processes however I noticed yesterday, it was involving 9 SPIDs.
+Version: Microsoft SQL Server 2014 (SP3) (KB4022619) - 12.0.6024.0 (X64) Sep 7 2018 01:37:51 Copyright (c) Microsoft Corporation Enterprise Edition (64-bit) on Windows NT 6.3 (Build 14393: ) (Hypervisor)
+Also, double check that this isn't set at the server level via sp_configure 'user options (see here for more detail).
+You have transactions that started at 15:25:26 that are still running at 15:30:58.
+Another problem in your XML graph is that you appear to have "implicit_transactions" turned on:
+If you replay the deadlock you will see all of these different sessions holding their transactions open for relatively long periods of time (5+ minutes, which is crazy, though the animation really hides that), and issuing multiple queries intermittently.
+Can somebody please help me in understanding this deadlock graph and solution on how to avoid this.

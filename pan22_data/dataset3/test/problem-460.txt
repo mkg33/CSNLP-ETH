@@ -1,0 +1,26 @@
+Once you call vfork(), your parent process can continue to operate as normal, and your child process, which is a clone of the game universe at the time of vfork(), should no longer process the game and instead take all its time writing out all of the object states.
+Only thing here is, you need a nice set of algorithms or something for Event state cache.
+(1) Only save the really important bits, (2) only save them when they have changed since the last time they were saved, (3) save them individually, and (4) save them via an asynchronous system.
+It can possibly use lower priority, throttle down the IO, etc.
+(Hopefully the state is not so large that making a copy of it in memory causes noticable lag!)
+The clone will still share the same memory pages, as long as they are equal.
+Caching works like restore point - if the player had 12313 Events in last 3 hours, that's a lot of loading time the next time he comes online, so, when it's cached, it would read the cached state from memory and log new Events, that would later also be re-cached and so on and so forth.
+Also, whether using threads or async I/O, there should be some sort of priority knob you can turn to prevent the background work from taking too much time away from the main game thread.
+If your MMO server is running on a Linux/Unix OS, you might be able to take advantage of the inherent copy-on-write properties of vfork().
+I'm in a hurry at the moment, will explain in detail later.
+For Events, you can use either database, text files or whatever storage, it's basically a logging mechanism.
+This trick is used by some database software such as Redis to make consistent point-in-time snapshots without stopping the server.
+Base your game around Events, and log every single tiny Event.
+It wasn't clear to me from your question whether you're already doing this or not, but: do the save in a separate thread (or using asynchronous I/O, available in some OSes).
+When you call vfork() the OS makes a clone of your process, however it does not copy the memory of that process.
+Then your game code can continue to run while the save happens in the background.
+This trick was used in the original Ultima Online, as some of the devs mentioned it in this discussion.
+The OS will create copies of pages as needed when they are modified by either of the process.
+The beauty of this is that all your game state is consistent to the exact point of the fork 'snapshot'.
+Then you can cache current Event state before moving Events to backup for like 1-3 times a day on a separate server or when the load time is less than X%.
+You will not get into a situation where some of your objects got modified after you had begun saving the game, while others didn't.
+The OS already does the dirty work for you (utilizing the hardware MMU, etc).
+Of course, you'll have to snapshot the game state in memory so you're not updating state while you're in the middle of saving it.
+If you think about it, this is your delta compression, except you don't have to write any code for it.
+You are essentially making the OS do all the hard work for you of keeping dirty bits etc.
+Whenever you need to load data or something, just iterate over the related Events and woila everything's back.

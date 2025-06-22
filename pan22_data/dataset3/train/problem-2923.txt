@@ -1,0 +1,13 @@
+Though I will agree that ~/.ssh/config is the way to go.
+Not quite what you asked for, but for the benefit of anyone else trying to connect to a server that doesn't support key authentication, you can use sshpass to type in your password for you even with sshfs.
+Additionally, you will see people list another means of evoking sshfs:
+If you are using a recent Linux distro (ie Ubuntu and others) ssh-agent may already be setup for you.
+You might need to ssh to the server once first to confirm its key, but after that this should work with no manual interaction.
+Setup your system to use the SSH Agent and add your key to the agent.
+Another is to put your key in ~/.ssh/id_rsa, that way it will be detected automatically.
+The best solution would be ssh-agent as Zoredache suggests.
+Then put the password in the filename specified in /etc/fstab:
+Put something like this in it (see manual page of ssh_config for further details)
+Another answer is sshfs -o IdentityFile=/home/me/.ssh/somekey.pem user@host:/path/ mnt/
+sshfs -o ssh_command="ssh -i /home/me/.ssh/somekey.pem" user@host:/path/ mnt/
+For example, if you put something similar to this in /etc/fstab:

@@ -1,0 +1,10 @@
+STEP 1: Search /var/log/maillog for the user's email address.  For example grep -i "someuser@recipientdomain.com" /var/log/maillog 
+I haven't tested that code. You may need to adjust the field numbers, particularly in the section that deletes the id when the "Completed" log entry is found. It can be easily made into a one-liner.
+This will grep out the line for the user you are looking for, then select the 5th item on the line (seperated by spaces iirc). Then for each message ID in that list, will then grep for the lines containing the message ID's. 
+STEP 2: I'll then grab the unique message name (in this case p937blksdh3) and search for that.  For example: grep -i p937blksdh3 /var/log/maillog
+    for i in grep -i "someuser@recipientdomain.com" /var/log/maillog | awk '{print $5}' | sed 's/\://; do grep -i $i /var/log/maillog; done
+Both of those (and the other answers) do the search in two or more passes over the log file. It would be interesting to see if the following one-pass technique would be faster (and faster yet using Perl or Python).
+There's no reason to pipe grep into awk since AWK can do grep's job. There's also no reason to use a for loop since grep can accept patterns on its standard input.
+Occasionally I need to search through sendmail delivery logs to find out what happened to a missing message.  This usually involves two (or more) steps: 
+You can modify that further, removing the need for sort -u (really, sort is unnecessary - you could have used uniq)
+I want to combine steps 1 and 2 into a one-liner and have it automatically perform the same search for other ids.  So in a single command, I'd like to do the following: 

@@ -1,0 +1,16 @@
+and that the strings do not contain | or @ (if they do, use some other characters)
+There is a Split function in VBA that would help you with your plan, but there is no SPLIT formula.
+=RIGHT(A2,LEN(A2)-FIND("|",SUBSTITUTE(A2,"/","|",LEN(A2)-LEN(SUBSTITUTE(A2,"/","")))))
+It will take several passes but you can do it without formula or vba.
+Note, looping through cells like this is not very efficient.
+Then you can choose _ to split apart the file name.
+to separate the extension, then / to split out the directory structure.
+=IFERROR(MID(D2,FIND("|",D2)+1,FIND("@",D2)-FIND("|",D2)-1),"")
+and there are at most 5 pieces to be returned (can be adjusted to cope with more)
+You can set the different columns to Text to avoid Excel treating them as numbers, or set other columns to Do not import (skip) so they are removed.
+You could use Excel's Text to Columns functionality under the Data menu.
+=SUBSTITUTE(SUBSTITUTE("_"&C2&"_","_","|",{1,2,3,4,5}),"_","@",{1,2,3,4,5})
+Since there's no selected answer yet I'll give you another VBA option but this time with the split function.
+However, I suggest using an Excel formula instead.
+Cells D2:H2 as an array formula, brackets successive terms with | and @
+If you have a lot of rows (say more than a few 10,000's), there are better ways

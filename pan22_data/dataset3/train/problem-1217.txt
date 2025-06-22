@@ -1,0 +1,9 @@
+The "impact analysis" button only uses the cube definition to see which partitions "may" be affected, it isn't until after actual processing of the dimension that SSAS knows which partitions "are" affected.
+This however will not render the partition inaccessible, so the measures are still available for querying, albeit slower.
+The logic to process partitions when updating dimensions is this.
+For reference you could visit this link which offers you a script on the $SYSTEM.DISCOVER_PARTITION_DIMENSION_STAT dmv to validate this is what happens: Different Kinds of SSAS Processing in simple words.
+The drop of the aggregation data and bitmap index shows up in profiler as "partition processing operations".
+If ProcessAffectedObjects were set to true, the partitions for which the aggregations/indexes were dropped would have their aggregations and indexes rebuilt (but not the entire partition reprocessed).
+I'm somewhat surprised that your partitions are processed without you specifying "process affected objects" anywhere.
+Maybe you are confusing the output "partition processing operations" with the actual processing of the partitions.
+So I think you are confusing the message "partition processing operations" with the actual reprocessing of the partition, and the customer dimension just takes longer to process than the account partition (possibly because it has more members/hierarchies/relations/...).

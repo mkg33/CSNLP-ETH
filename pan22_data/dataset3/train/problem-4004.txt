@@ -1,0 +1,19 @@
+With routers instead of switches the ring would actually work the way you want it, but without requiring any TTL tweaking.
+Generally, keep the number of parts low and each part redundant in itself.
+With STP active, the switches elect a root brigdge and (simplified) the link furthest away from the root bridge is blocked, breaking the bridge loop.
+If your network is two large geographically, split it in half and use the center-switch approach in each half.
+When there's a loop, frames keep circulating forever.
+Actually, it doesn't matter too much which way your frames go.
+Even with routers instead of switches and IP's TTL, the TTL value does not control the routing.
+Essentially, you always build a tree with switches.
+Without STP (or SPB), the switches form a bridge loop, leading to a broadcast storm, taking down your network.
+If you need to create more than two parts, then you can think about using a ring topology between parts.
+You'd need to fine tune the parameters or decrease the tree depth (see below).
+If you need redundancy, use two center switches and connect all the others to each one (requiring STP, of course).
+A ring is not a reasonable topology with switches.
+Note that not even all datacenter switches can do this and be prepared for a hefty price tag.
+However, that ring of 20 creates too large a tree depth to converge with default STP parameters.
+Elect a center switch and connect all other switches to that one.
+Use physical links whereever possible, avoid chained switches.
+If you really insist on using a ring with all its disadvantages and want the frames to use the shortest path you'd need Shortest Path Bridging (IEEE 802.1aq).
+Even with a high switch latency of 10 μs a near-circular forwarding takes just 200 μs = .2 ms - while this is high for an L2 network you probably won't notice a thing.

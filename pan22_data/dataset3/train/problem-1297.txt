@@ -1,0 +1,22 @@
+I came across this post when doing some research on sessions.
+The reason it is taking so long is due to the giant amount of files it has to sort through to see which ones can be deleted.
+All you have to do is setup php and there will be no code change needed.
+Extra CPU usage is entirely eliminated, this is now an IO-bound job.
+If you're really pulling in two million pageviews per day, then you're going to stack up a LOT of PHP sessions in the filesystem, and they're going to take a long time to delete no matter whether you use fuser or rm or a vacuum cleaner.
+Directories in ext4 store file data in an htree database format - which means there is negligible impact in holding lots of files in a single directory compared with distributing them across mutliple directories.
+Here's the performance graphs after reverting to the Natty / Oneiric cron job which uses rm instead of fuser to trim old sessions, the switchover happens at 2:30.
+The spikes shown in the Disk Operations graph are now much smaller in magnitude, and about as skinny as this graph can possibly measure, showing a small, short disruption where previously server performance was significantly degraded for 25 minutes.
+You can see that the periodic performance degradation caused by Ubuntu's PHP session cleaning is almost entirely removed.
+A lot of the cost of the operation (after removing the call to fuser) arises from looking at files which are not yet stale.
+So, the Memcached and database session storage options suggested by users here are both good choices to increase performance, each with their own benefits and drawbacks.
+Using (for example) a single level of subdirectories, and 16 cron jobs looking in each sub directory ( 0/, 1/, ...d/, e/, f/) will smooth out the load bumps arising.
+While the accepted answer is very good (and the fuser call has been removed from the gc script for some time) I think its worth noting a few other considerations should anyone else come across a similar issue.
+Using a custom session handler with a faster substrate will help - but there's lots to choose from (memcache, redis, mysql handler socket...) leaving aside the range in quality of those published on the internet, which you choose depends on the exact requirements with regard to your application, infrastructure and skills, not to forget that there are frequently differences in the handling of semantics (notably locking) compared with the default handler.
+Congratulations on having a popular web site and managing to keep it running on a virtual machine for all this time.
+Memcache can auto expire these given your session length you set in your code.
+(an unrelated IO job runs at 05:00 and CPU job runs at 7:40 which both cause their own spikes on these graphs)
+http://www.dotdeb.org/2008/08/25/storing-your-php-sessions-using-memcached/
+But by performance testing, I found that the huge performance cost of this session maintenance is almost entirely down to the call to fuser in the cron job.
+The default handler in PHP allows you to use multiple sub-directories for session files (but note that you should check that the controlling process is recursing into those directories - the cron job above does not).
+With that kind of traffic you should not be putting sessions on a dis.
+At this point I'd recommend you look into alternate ways to store your sessions:

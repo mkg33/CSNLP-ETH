@@ -1,0 +1,18 @@
+Any decent compiler will warn you that (uint64_t)offset < 0 is never true (the left-hand size is nonnegative by construction).
+For argformats and opcodes, this isn't really necessary if you're sure that the array contains 256 entries, since on almost all platforms an unsigned char only goes up to 255 anyway.
+-offset : offset) would work too, but it relies on precise knowledge of integer conversions, so I don't recommend using it, especially if you don't immediately understand why it works¹.
+So declare these variables as static in pretty_print.c, and let the compiler compute the length:
+The same goes for NUM_ROUNDING_MODES and for the opcodes array.
+You can use assert to treat such out-of-bounds conditions as unrecoverable errors that need to be eliminated through debugging, or you can introduce an error reporting mechanism if you want these to be recoverable run-time errors.
+I recommend splitting this across three lines to match the other cases.
+You should get rid of that constant altogether, and use C's built-in features to obtain the length of the array.
+In the header file, don't specify their length at all; in fact the header file does not need to declare these variables since only the functions in the file pretty_print.c should be accessing them.
+¹  It works because the value of offset or -offset is always within the intersection of the range of int64_t and uint64_t, except when offset is -263, but in that case the result of the conversion is UINT64_MAX-263 = 264-263 = 263.
+sizeof(array)/sizeof(*array) (or equivalently sizeof(array)/sizeof(array[0]) is a constant expression whose value is the number of elements in the array.
+In the printOp function, I would add a sanity check to make sure you aren't accessing argformats, opcodes or opfstrings outside bounds.
+Preliminary note: I have not tried to integrate your program into a full program.
+There is nothing in your code that makes sure that the length of the array is indeed 32.
+And I only know MMIX by name, so I won't comment on the output of your program.
+You should avoid defining the same quantity in two different places.
+Here, you define NUM_SPECIAL_REGS as the constant 32, and you also assert that it's the length of the array special_regs.
+Commented out code is suspicious, it should probably just be removed.

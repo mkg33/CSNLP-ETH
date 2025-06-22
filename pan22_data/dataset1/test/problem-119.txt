@@ -1,0 +1,10 @@
+One of the things I would recommend you look into would be to update your statistics as from the plans you have pasted they look like they could be out of date.
+For example, if you look at what is happening with the index ExclusionProjectConfigurationIdx2 on table [fundhiveAvivaStaging].[dbo].[ExclusionProjectConfiguration]. The operation is a seek which is great, but when you look at what is happening you can see that the Estimated Number of Rows is 1.17062 but the Actual Number of Rows is 34607. The seek on this index counts for 20% of the total execution time.
+That isn't the only index that looks like the statistics are out of date, if you look near the bottom of the plan the [LanguageCountrySC] index is used more than once and is 17% of total execution time per use. Again, the stats on this need to be updated.
+These two indexes alone account for 54% of your total execution time.
+I would start by running DBCC SHOW_STATISTICS on these indexes and compare the output with the number of rows that are actually contained within the table - if there is a huge variance then I recommend you run UPDATE STATISTICS on the offending indexes.
+I fear that this may not be the entire solution but it is definitely something that you should look into. 
+I am trying to optimize two views but i don't know enough about SQL to make them faster.
+The first one is this one : https://www.brentozar.com/pastetheplan/?id=BJVtbZJQM
+and the second one that uses the first one : https://www.brentozar.com/pastetheplan/?id=SyoZX-1XG
+Could it be possible to know where are the bottlenecks from the plan ? Thank you!

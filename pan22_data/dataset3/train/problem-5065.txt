@@ -1,0 +1,13 @@
+If you extract the input reading to a function that returns the number of characters read, then in sendx you can store that in a variable with a descriptive name, and the logic of the main responsibility of this method will become clearer.
+I recommend switching to using exit, and preferably a message describing the error.
+There are several ways to achieve interprocess communication if you really need this feature (e.g.
+In sendx, the variable i is used for two purposes: loop variable for reading input, and input size.
+In it's current state, this program would crash if the user forgets an argument if optimisation is turned on.
+It would be better to leave main in charge of parsing and validating the command line arguments, and extract the rest to functions with descriptive names.
+It seems like you want to use the run variable to cause one process to stop if the other one stops.
+Those statements will be removed when the code is compiled with optimisation turned on.
+Some of the logic is nicely encapsulated in functions sendx and recvx, but then main disappoints with its lump of code.
+perror is convient for when system calls and standard function fail.
+In main the assert(argc == 3) should come before the first memset: no need to initialize memory if you might not use it.
+But since each process has its own copy of the run variable, it currently remains at value 1 and serves no purpose.
+assert is meant as a "sanity check" for the programmer - use it to test for coding error, not errors in environment or user.

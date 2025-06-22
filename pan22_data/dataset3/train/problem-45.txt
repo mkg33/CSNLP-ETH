@@ -1,0 +1,12 @@
+If the database is that small, consider putting it on SSD?
+This will guarantee that your other databases never poach memory from your "small but very important" database.
+Are you restarting the SQL services or taking the database off/online?
+And this was not a result of out of date statistics as it resulted in no changes in the execution plans.
+It will also mean that you can take the other instance offline and your small DB will remain in memory.
+Or are they being pushed out by caching from other databases?
+Ok - I can't comment on Brent's answer (yet, as I don't have enough reps) - but if you're going to go the defrag route, don't necessarily rebuild the index - as that will build new indexes, possibly growing the database if there isn't enough free space, and guaranteeing that your next log backup is at least the size of your indexes and your log may have a ton of log records in too (depending on recovery model).
+The non-leaf levels should come in quickly after some queries and (depending on fan-out) should be a lot less data than the leaf level.
+Why don't you install a second instance of SQL Server with only that database, and set the minimum memory for that instance to 6GB?
+Why are the database objects flushed from the cache in the first place?
+I've had some scenarios were updating statistics with FULLSCAN on key tables has forced data into cache and made my subsequent DMLs around those tables a lot faster.
+If you're going to do the defrag route, do an ALTER INDEX ... REORGANIZE, which doesn't require any free space (well, one 8k page) but will read the leaf-level into memory and only operate on the fragmented pages.

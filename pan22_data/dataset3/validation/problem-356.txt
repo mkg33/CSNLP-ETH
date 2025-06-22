@@ -1,0 +1,13 @@
+Besides that: You should be able to set it by setting EXTENSION_DIR as environment variable before running PHP's configure.
+and you can change it by setting extension_dir in php.ini:
+I would suggest making /usr/lib64/php/modules a symlink to the folder with the ID.
+I hope this doesn't result in getting module conflicts later down the track as @johanes warns.
+These are the relevant commands from my Dockerfile
+I can change it in my php.ini and move the directory, but when I run phpize and make a new module it still puts it in /usr/lib64/20090626-zts
+Anyway, to solve the issue I had to echo an extension_dir directive to my PHP.ini and ALSO set the PHP_INI_SCAN_DIR env variable.
+I was having trouble getting PHP (under Centos7 running in a docker container) to use MySQL due to directory configuration - although I was using pre-built binaries and not compiling anything.
+This prevents mixing extensions from different versions of PHP in the long run.
+I am compiling php, and its setting my modules directory to /usr/lib64/20090626-zts
+I would like to change this to /usr/lib64/php/modules, but I cannot find a configuration option to do so.
+Although the various pdo and mysqlnd.so modules and .ini files were installed in my container (just using standard yum install php72 and all the other stuff specified in the PHP install wizard), they were not in the default places that PHP was looking for them.
+My issue was not identical, but since this question was the first to pop up with answers that were ultimately very helpful, I will add my comments.

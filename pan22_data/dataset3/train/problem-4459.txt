@@ -1,0 +1,30 @@
+According to Antot suggestions I significantly improved the main design of the class.
+The access via an API should be really really simple something like Nuclides.get(Z,A,I) / Nuclide.get("C14") or equivalent is recommended.
+We need an object that will hold all the Nuclides that we know and provide access to them.
+The key for your Nuclides will be the State, which can be (and should be) implemented as a simple Enum.
+[Remarks] This post is a follow-up question : Initial post
+But, seriously, an external resource is much better.
+When I look at your Nuclide constructor I see a nested set of three classes.
+Especially fields/determineAtomicNumber/determineIsomericState :
+The Nuclide class only contains enough information and does not repeat the static information in the Element.
+So why not creating a single enum that holds constant properties for each chemical element, used as prototype to initialize a Nuclide for any of them?
+He.name() or He.toString() will produce the same, so there is no need to add symbol field.
+The lines might be shortened a bit with static imports, but are still quite annoying:
+In the reviewed solution there is an array to store symbols as strings (Nuclide.SYMBOLS) and enums per each chemical element (H, He...), each wrapping data for nuclides.
+You can call all the relevant Nuclide calculations from the Element or event the collection, thus encapsulating the detail while providing a simple nterface to the user/future coder.
+It also allows you to build a constructor code set that can call information from an external file (noting that you don't want this at this point in time).
+However, the core notion of this system is the chemical element, with a few constant values for different nuclides (symbol, atomic number) and with other fields varying.
+The values associated with the elements are no more than their ordinal numbers, so exactly the same effect would be reached if it were defined as
+Now, after all the refactoring applied since the initial question, let's  try to approach the design a bit differently, with the aim of simplifying the thing.
+This also gives you flexibility to hard code calls to constructors.
+The get(String) method (the former Nuclide.get(String)) does not use reflection any more and it is reduced to three lines!
+Since there are about 3000 nuclides and if you cannot use a resource file (a CSV would be ok...), I'd suggest to split this instantiation in groups per elements.
+And then change constructor and all nuclides enum like this :
+This way, we can remove determineIsomericState and determineAtomicNumber methods and IllegalArgumentException are not needed anymore.
+The ugly part is still the hard-coded data in initNuclidesRegistry().
+I don't know the correct nuclear physics terms, so please excuse misnomers.
+Once more I used Antot suggestion and I significantly improved this method via OOP and Regex :
+Is it worth replacing SYMBOLS and STATES by enums ?
+Each element can contain 0 or more Nuclides (Ok, in real life this would be 1 or more), so I see each Element containing a collection of Nuclide information.
+Is there a much more flexible way to implement the entire thing using more OOP features ?
+[Context] : I'm currently developing a program in nuclear physics and i would like to have a simple access to all nuclides.

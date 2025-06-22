@@ -1,0 +1,10 @@
+For that query as it stands, quite probably (though with the caveat that we don't know what the query is, or the query plan that was used, so it could be that refactoring that would be more useful).
+[1] or possibly sort, as we can't see the query or the full plan we can't know which or why.
+Instead of containing the clustering key each non-clustered index contains the rowid of each record in the heap instead.
+It would likely allow the query to be processed by seeking on that index then performing lookups on the clustered index as needed instead of scanning the whole clustered index, which the planner expects to be a significantly more efficient way around.
+It is trying to filter[1] by section_id but not quotation_id - it can't do this by seeking on an index on quotation_id,section_id so it will have to scan that index (which as it is your clustered index, is the whole table).
+Unless it only needs data from columns in the index - in that case there is no need to refer to the clustered index as all the information is already available without.
+In the case of sorting it will be wanting the index for slightly different reasons, perhaps to replace a clustered index scan and spool to tempdb for sorting by scanning the non-clustered index and pulling the other data out in order more directly.
+It will use seeks on the non-clustered index to find the clustering key value, then use that to find other data needed from the row.
+It would be able to use an index on section_id,quotation_id for this because the target columns are first in the index's key.
+Note that this is essentially the same if you don't have a clustered index.

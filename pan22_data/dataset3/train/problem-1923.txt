@@ -1,0 +1,15 @@
+The IO rate is pretty high and as such its causing a bottleneck to push further requests to the Database.
+There you can see that there are 178k modified pages in the buffer pool.
+I am not able to figure out the reason for these IO.
+This can be seen from the Buffer pool and memory part of the output.
+There have been no deletes to this database in this entire simulation.
+When I check the innodb status and iostat, i can see that the Mysql Innodb engine is busy doing disk operations.
+When inserting data to the database, InnoDB engine first adds the data to the buffer pool, and then writes it to the disk.
+Now, when you stopped your process, there was still data left in the buffer pool that wasn't committed to disk.
+So, what happened here is that when the buffer pool got full, InnoDB started to write its contents to the disk.
+Your InnoDB database buffer pool is about 6,6 gigabytes.
+I am currently doing some stress testing where I am pushing inserts to the database as fast as I can.
+Currently I have stopped pushing any transactions to the database.
+So, InnoDB continued to write data to disk to reach the state when all data is on disk.
+After inserting around 200 million records I found that the inserts were very slow.
+Yet there are so many IO operations to the disk going on.

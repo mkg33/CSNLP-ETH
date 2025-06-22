@@ -1,0 +1,22 @@
+Now I am able to browse the site as 'https://webapp.b2c.com/'
+C:\Windows\System32\inetsrv>appcmd set site /site.name:"site_name" /+bindings.
+You have a wildcard SSL such as *.ipsum.com and the certificate is installed but you can't choose a host name for the site in IIS when you try to add an HTTPS binding because the text box is greyed out.
+cscript.exe adsutil.vbs set /w3svc/websiteID/SecureBindings "ip.ip.ip.ip:443:abc.123.mysite.com
+*.ipsum.com but you can call it anything that beings with the asterix: *foo
+Change those values (in quotes) to meet your requirements.
+In the main window, expand Certificates (Local Computer) then Personal then Certificates and you will be able to right-click the certificate, hit Properties where you can update the friendly name.
+Your wildcard SSL can be used with any subdomain, you just need to make sure you start the Friendly Name of the certificate with *.
+Hostname can be added only when the friedlyname of the selected Certificate will be like hostname *.xyz.com and You can rename certificate friendly name to *.xyz.com from mmc(Snap-in).
+[protocol='https',bindingInformation='*:443:subdomain.domain.com']
+You will then need to delete the old binding if its using port 443.
+Close and open IIS Manager and you can then set your host name.
+I think this KB article will shed some light on the issue.
+I prefer to use the same friendly name as the wildcard domain, e.g.
+What will probably accomplish what you want is to use the SecureBindings metabase key.
+Some machines won't let you edit the host name if the protocol is changed to https or after adding an SSL certificate.
+I gave my certificate the wrong Friendly Name, help!
+On previous versions of windows you will need to do something slightly more convoluted:
+In a nutshell HTTP 1.1 host headers are not supported when you use SSL.
+Since Windows 8 or Server 2012, you can type certlm.msc in the start menu to manage certificates for the local machine.
+The accepted answer here is confusing and I don't think it's correct for the question.
+This Windows command will create a new binding with protocol "https", on port "443", host name "subdomain.domain.com", site name "site name".

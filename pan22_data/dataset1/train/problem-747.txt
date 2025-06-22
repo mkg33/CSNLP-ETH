@@ -1,0 +1,6 @@
+I'm trying to extend a VPN further into an organisation:
+At the main location I have a private network (call it 192.168.0.0/24) which is connected via a Cisco ASA 5510 to a Draytek ADSL router. The remote location also has a private network (call it 192.168.1.0/24) connected directly to their Draytek ADSL router.
+The Cisco ASA and remote Draytek have a site-to-site IPSec VPN configured so that we can talk securely to their internal network devices. This setup is replicated a few times (192.168.2.0/24, etc.).
+Is there a way to bring the remote private networks onto ours via VLANs on the ASA, so that I could have a VLAN-capable switch with port 1 on 192.168.1.0, port 2 on 192.168.2.0, etc. for testing and configuration purposes?
+Through them you have a route from  your local networks ( 192.168.0.0/24 ) to remote networks ( 192.168.1.0/24 ) .
+If you want to propagate a vlan across routers you need to encapsulate layer2 traffic into ip traffic. vtun might do the trick but it will certainly be very disappointing in terms of performance, and the setup will be ugly ( you need to install it on two linux/bsd servers at each point, and bridge the vtap interfaces to your lans .. ). Anyway the ASAs will have no role in this.

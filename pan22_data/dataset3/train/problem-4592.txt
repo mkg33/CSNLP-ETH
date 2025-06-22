@@ -1,0 +1,11 @@
+I was running MaxScale with the readconnroute router.
+I did a quick test with a 1.5GB CSV file and a VM with 1GB memory.
+As MaxScale uses non-blocking IO, some buffering can occur if the client side network has higher throughput than the backend side network.
+When you only had 4G of RAM in your server and your LOAD infile had 5G of data, running out of memory is a reasonable concept.
+This leads me to believe that this is either a bug in MaxScale or an inherent limitation of the way MaxScale buffers data.
+I would recommend opening a bug report on the MariaDB Jira under the MaxScale project to track this issue: https://jira.mariadb.org/browse/MXS
+MaxScale should stream the LOAD DATA LOCAL INFILE directly to the server without buffering it.
+If this happens, it could be that MaxScale is forced to buffer the data until the network buffers on the backend side are emptied.
+Loading the file from the same machine caused a peak memory usage of around 90% for the MaxScale process.
+You may want to implement PRE PROCESSING to split your LOAD infile into multiple smaller files for processing.
+For the time being, I would say that adding more memory seems like an acceptable workaround for this.

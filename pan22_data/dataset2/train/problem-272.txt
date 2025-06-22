@@ -1,0 +1,6 @@
+That or setup the second server to issue private IPs on a different subnet (you'll need to make sure that all your network equipment works on this subnet as well.
+This won't give you fully automatic failover, but in your scenario I don't think that's going to be too big a deal.  Firstly, your DHCP lease duration will prevent clients from abruptly dropping off the network.  Secondly, if your first DC dies I think you're going to have far bigger problems that just not having DHCP, and that you will be aware of it well in advance of any issues with unavailability of DHCP taking effect.
+The bad part is that you'd need to run Linux, BSD, or Solaris to get access to this -- two servers, to get redundancy.
+The ISC dhcpd can do redundancy, where two servers both serve the same pool and keep track of the addresses issued, so that if one fails there is a much lower risk of duplicate leases being issued.
+On the first server, block it from issuing IPs 1-128.  On the new server, block it from issuing IPs 129-255.  (adjust ranges as needed).
+http://blogs.technet.com/b/teamdhcp/archive/2009/02/18/migration-of-dhcp-server-from-windows-server-2003-to-windows-server-2008.aspx

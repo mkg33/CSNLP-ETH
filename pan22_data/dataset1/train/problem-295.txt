@@ -1,0 +1,9 @@
+Part of the purpose of ELB is to survive host outages. Even with auto scaling and CloudWatch if a dead instance needs to be replaced you're looking at possibly several minutes of down time.
+I know that you want to take advantage of caching as much as possible, but you really should spread load across all availability zones. This means having an equal number of instances in zone A, B and C for the region(s) your stack is in (so 3x Varnish). This will of course cost more, but it gives you the ability to survive entire AZ outages*. Cutting this cost will mean that at some point you'll probably need to incur down time. That's your decision to make, but at least you can make it an informed decision.
+Have a two security groups, one for Varnish and one for AppServers. Configure each so that only the associated ELB can access it on the appropriate port.
+For the Varnish config, set the DNS director to have a low TTL. Set it to equal (or half) of the TTL of the CNAME that Amazon provides for the Back End ELB. That should be enough for Varnish to stay up to date.
+* And if you want to go for ultimate availability. use Route53 with multi-region, multi-az redundancy.
+Varnish can actually work as a load balancer. You should try Varnish -> AppServers.
+Just define each app server as a backend in a director in Varnish config.
+You can even add probes to check backend availability, retries to switch to another server when one fails during a request process, etc.
+Where is your Varnish instance hosted ? ASW too ? You could try Varnish hash director and host Varnish on the same servers than apps. Each instance will process requests it's supposed to handle and forward others to the right backend. Each unique URL will only be cached on 1 (available) server and your cache memory will be multiplied by the number of Varnish instances while cache misses will be limited.

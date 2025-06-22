@@ -1,0 +1,21 @@
+Even better, write unit tests and assertions that cover the comments.  Since unit tests are code, failing them produces errors.  Comments that don't match the code require a human being to discover them and act on them.  Unit tests only require running the tests, not line by line inspection.  I can tell you that unit tests written in an interview will usually do more for you than algorithmic cleverness.  
+If somebody were going to craft a special-purpose set of their own, I'd normally expect them to start from std::bitset or std::vector<bool>. I guess if they insisted on starting with a native type to represent their bits, I wouldn't object too terribly much, but I'd be a little disappointed if they chose int for that type.
+I'm working through Cracking the Coding Interview. The first challenge is to implement an algorithm to determine if a string has all unique characters.
+offset and seen are OK, to be ultra verbose you may still extend them a bit like maybe letter_number and letters_seen, but that's already reaching some tutorial level.
+Either of these will work with a much wider range of inputs than you've specified. They will use more storage, but the amount they use is still too small to matter under any normal circumstances.
+If you are already assuming ASCII alphabet-only word inputs, you may do direct int offset = c & 0x1F;, which will yield only 0..31 values, and for 'A'..'Z' vs 'a'..'z' it will produce the same values too (functioning as fake tolower).
+It probably won't matter for this interview, but I would have included the three assumptions in the comments.  You refer to them, but you don't include them.  
+This is part of answer is level golfing advice, i.e. lowering readability and robustness of source for some hypothetical performance gain, not suitable for real world production code ;).
+Can the for work with const auto c? Just for the sake of exercising "putting const everywhere". ;) (I don't believe it will change the machine code produced by compiler). Maybe even reference &?
+Overall this is quite nice piece of source, so only some tiny details here and there (some maybe even ruining it :) )...
+I would hope that anyone evaluating your code would be able to figure out that for (auto c: s) means "for every character in the string".  You shouldn't have to comment that.  If anything, consider giving s a more descriptive name to make that clearer.  Why save letters on a short name when you just waste them on a comment instead?  
+Here's my algorithm and a quick driver. The logic is simple, but I wanted to explain what's going on for sake of the reader.
+As a general rule, try to make your comments relate to the problem more than the code.  You don't need to tell us that you're returning false, we can see that.  Concentrate on explaining what false means in that context.  In this case, that's that there is a letter that appears more than once.  
+There are, of course, variations on these themes (e.g., perfectly reasonable and acceptable to use unordered_set instead of set).
+To make much sense, along with the conditions you gave, I'd have had to specify that minimizing memory usage was absolutely crucial.
+We don't need it for two reasons.  First, we're returning, so we'll never reach the other code when the else would not have triggered.  Second, it doesn't matter.  We can run the last statement regardless, because if seen & shifted is true, then seen == seen | shifted is already true.  We just need to make sure that we test if it is present before we add it.  
+shifted tells what arithmetic operation did happen to the value, which is usually not sought after during reading source. letter_bit_mask sounds to me a bit better.
+I also personally prefer non-else/non-nested if variants (when they make sense), so I would do if (seen & shifted) return false; and the seen |= shifted; would go after that in the for loop block.
+If I'd asked an interview question, and got this as an answer (at least as the first answer) I think my immediate reaction would be to consider it excessively clever.
+I've gone through several iterations, but here's my "final" solution. I've made several assumptions:
+And is_unique itself sounds a bit inexact to me, again a more over-verbose variant like has_unique_letters may be considered.

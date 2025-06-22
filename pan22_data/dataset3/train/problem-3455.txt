@@ -1,0 +1,11 @@
+The host itself has another two interfaces, one ultimately connecting it to Internet and another one to which a WiFi AP is attached.
+Even with a plain REJECT policy for the container IP, I still manage to ping the IP of another container (and nothing else, including its own gateway - which is expected).
+Since this is now layer 3 communication, shouldn't the traffic go though iptables?
+Not an ideal answer if you have lot of containers but you can use the shorewall hosts file with an entry for each host, ie with a /32 network like this:
+My understanding is that the bridge itself works on ISO/OSI layer 2.
+I have several LXD containers which are bound to a single bridge (the default lxdbr0 or another one, it does not matter).
+The data flows are orchestrated by Shorewall (which builds the appropriate iptable rules).
+In that case firewalling would not affect the traffic.
+The problem I have is that inter-container traffic does not seem to be affected by the iptable rules.
+At the same time, it has an IP, which is the gateway for the containers (the containers all have an address from the same 10.20.30.0/24 network, 10.20.30.254 being the IP of the bridge).
+The restrictions I put in place work fine for traffic between the containers to Internet or to the AP network (and between the AP network and Internet).

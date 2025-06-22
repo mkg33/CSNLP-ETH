@@ -1,0 +1,16 @@
+I didn't see any errors during the first install, but it looks like some aspects failed anyway - most notably the missing /usr/local/nagios/bin directory.
+systemd specifies the pid file it is looking for in /lib/systemd/system/nagios.service
+This answer assumes you are installing using yum from EPEL.
+If I create an empty pid file then try starting the service again I get an error saying it contains an invalid value, then it gets deleted.
+Also interesting - I couldn't verify the Nagios config as suggested in those instructions because /usr/local/nagios/bin/nagios doesn't exist.
+Make sure the nagios user has permission to these files.
+Having followed the instructions here http://linoxide.com/how-tos/install-configure-nagios-centos-7/ (but downloading Nagios 4.0.2 instead of 4.0.7 - I have to use that version), I have reached a point where the Nagios service won't start.
+That is the file Nagios will create when it starts up.
+Initially, the /var/nagios directory didn't exist, so I created it.
+This needs to be the same as lock_file in your nagios.cfg, or systemd will timeout and stop your nagios service.
+Older versions might use nagios.lock, or the path might be something like /usr/local/nagios/
+The answer to this appeared to be re-running the various make install-* commands.
+I've tried changing its owner to nagios and I've tried changing its owner to root.
+After that service nagios start hangs for several minutes, then claims to have timed out.
+If you install from source, the files may be in different locations but the ideas are the same.
+If you want to see related messages to this issue, run fgrep 'systemd' messages | fgrep -i nagios from /var/log/

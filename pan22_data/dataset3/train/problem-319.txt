@@ -1,0 +1,16 @@
+My understanding is that the OS never actually stores the old passwords themselves, but their hash codes instead.
+Am I right in the guess that it can work only if the passwd program asks you explicitly at the same time also for your old password?
+Another option would be to brute-force the old one.
+I am wondering how the password policy "your new password must differ at least n characters from your old password" works.
+The administrative user can usually manipulate the password database directly, so effectively all password policies can be ignored by that user.
+For instance root can provide a hashed password (with usermod -p) that will be set verbatim, or edit /etc/shadow and set the hashed password there.
+The passwd program does not ask for the old password and allows you to override rules like a minimum length at your own risk.
+The policy check is done from the tool and it works since the tool asks you also for the old password and then checks the differences against a set of policy rules.
+Such policies are usually implemented by applying them when asking for the old password.
+When you input your new one, a modern computer has no problem to brute-force all passwords which differ by 2 characters from the new one.
+If passwords are stored as hash, there's absolutely no way for the operating systems to know how the new password differs from the old one.
+That is yet another reason why administrative users  should be held to a higher standard and train themselves to use a password generator when assigning passwords for users.
+The usual approach for root changing passwords is to assume that the superuser know's what he's doing.
+And there is no way of knowing in how many characters the two strings differ if you have only their hash codes.
+And is the consequence that if a root user changes someone else's password, the "number of different characters" policy simply cannot be applied here?
+As far as I know this is not used in the normal authentication in typical linux distributions but possible some PAM modules implement this.

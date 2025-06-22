@@ -1,0 +1,45 @@
+You'll have to pore over the manual or contact the manufacturer/vendor of the RAID card to find out.
+In terms of non-customisable servers, if one has a situation where a hardware RAID controller is effectively cost-neutral (or even lowers the cost of the pre-built server offering, since its presence improves the likelihood of the hosting company providing complementary IPMI access), should it at all be avoided?
+Typically you should never run ZFS on top of disks configured in a RAID array.
+Further, there's some evidence to suggest that the very different manner in which ZFS talks to LUN's as opposed to more traditional filesystems often invokes code paths in the RAID controller and workloads that they're not as used to, which can lead to oddities.
+Hope i let it very clear... ZFS over any level of Raid is a toal pain and a total risk to your data!
+Where ZFS is good is in detecting Bits that changed when disk where without power (RAID controllers can not do that), also when something changes without been asked to, etc.
+In-short: using RAID below ZFS simply kills the idea of using ZFS.
+— Because it's designed to work on pure disks, not RAIDs.
+However, virtually 99% of people run ZFS for the RAID portion of it.
+If one happens to have some server-grade hardware at ones disposal, is it ever advisable to run ZFS on top of a hardware-based RAID1 or some such?
+That is a weakness on ZFS... VDEVs fails implies all data get lost for ever.
+With the hardware RAID functionality turned off, are hardware-RAID-based SATA2 and SAS controllers more or less likely to hide read and write errors than non-hardware-RAID controllers would?
+You could just run your disks in striped mode, but that is a poor use of ZFS.
+Raid never read again because a fail (except hardware impossible read fails)... if Raid can read it thinks data is OK (but it is not on such cases)...
+Flat out, if there's an underlying RAID card responsible for providing a single LUN to ZFS, ZFS is not going to improve data resiliency.
+Jump onto IRC Freenode channel #openindiana ; any of the ZFS experts in the channel will tell you the same thing.
+ZFS should only be connected to a RAID card that can be set to JBOD mode, or preferably connected to an HBA.
+Hardware Raid and Software Raid can not detect spontaneous bit changes, they do not have checksums, worst on Raid1 levels (mirros), they read not all parts and compare them, they supose all parts will allways have the same data, ALLWAYS (i say it loudly) Raid suposes data has not changed by any other thing/way... but disks (as memory) are prone to spontaneous bit changes.
+With the hardware RAID functionality turned off, are hardware-RAID-based SATA2 and SAS controllers more or less likely to hide read and write errors than non-hardware-RAID controllers would?
+Again - if your only desire to use ZFS is an improvement in data resiliency, and your chosen hardware platform requires a RAID card provide a single LUN to ZFS (or multiple LUN's, but you have ZFS stripe across them), then you're doing nothing to improve data resiliency and thus your choice of ZFS may not be appropriate.
+If one happens to have some server-grade hardware at ones disposal, is it ever advisable to run ZFS on top of a hardware-based RAID1 or some such?
+Ask your hosting provider to provide JBOD mode if they will not give a HBA.
+It is strongly preferable to run ZFS straight to disk, and not make use of any form of RAID in between.
+In terms of non-customisable servers, if one has a situation where a hardware RAID controller is effectively cost-neutral (or even lowers the cost of the pre-built server offering, since its presence improves the likelihood of the hosting company providing complementary IPMI access), should it at all be avoided?
+Should one turn off the hardware-based RAID, and run ZFS on a mirror or a raidz zpool instead?
+Should one turn off the hardware-based RAID, and run ZFS on a mirror or a raidz zpool instead?
+The risks are there... such failures conincidences may occur... so the better answer is:
+I do want to add an additional concern - the above answers rely on the idea that the use of a hardware RAID card underneath ZFS does nothing to harm ZFS beyond removing its ability to improve data resiliency.
+Most notably, you'll probably be doing yourself a favor by disabling the ZIL functionality entirely on any pool you place on top of a single LUN if you're not also providing a separate log device, though of course I'd highly recommend you DO provide the pool a separate raw log device (that isn't a LUN from the RAID card, if at all possible).
+If, however, you find any of the other ZFS features useful, it may still be.
+Like other posters have said, ZFS wants to know a lot about the hardware.
+But, hey, most people do not know all of this and never ever had a problem... i say to them: wow, how lucky you are, buy some lottery tickets, before lucky goes away.
+If your only reason for going with ZFS in the first place is data resiliency improvement, then you just lost all reason for using it.
+Some very much do, yes, especially if 'turning off' the RAID functionality doesn't actually completely turn it off.
+Most of this can be negated with proper tuning, but out of the box, you won't be as efficient on ZFS on top of large RAID LUN's as you would have been on top of individual spindles.
+It is the same problem as when a bit in a RAM module spontaneously changes without being asked to... if memory is ECC, memory corrects it self; if not, that data had changed, so that data will be sent to disks modified; pry that change is not on the UDEV part, if the fail is in the VDEV part... the whole ZPOOL looses all its data forever.
+This is entirely dependent on the RAID card in question.
+Hope i could give a little light on ZFS against Raid, it is really a pain when things go wrong!
+However, ZFS also provides ARC/L2ARC, compression, snapshots, clones, and various other improvements that you might also want, and in that case, perhaps it is still your filesystem of choice.
+For all of you... ZFS over any Raid is a total PAIN and is done only by MAD people!...
+Raid only try to read from another disk if where it reads says "hey, i can not read from there, hardware fail"... ZFS read from another disk if checksum does not match as also as if where it reads says "hey, i can not read from there, hardware fail".
+Whether or not a system that effectively requires you make use of the RAID card precludes the use of ZFS has more to do with the OTHER benefits of ZFS than it does data resiliency.
+How to simulate such fail... power off the PC, took out one disk of that Raid1 and alter only one bit... reconect and see how Raid controller can not know that has changed... ZFS can because all reads are tested against the checksum and if does not match, read form another part...
+There are various tuneables and assumptions within ZFS that don't necessarily operate as well when handed multi-disk LUN's instead of raw disks.
+Never ever use a ZFS on a non-ECC RAM and never ever use ZFS on raided disks, let ZFS see all the disks, do not add a layer that can ruin your VDEV and POOL.

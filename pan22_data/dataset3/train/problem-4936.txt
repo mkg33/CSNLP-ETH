@@ -1,0 +1,33 @@
+We generally use RAID5 or 6 for backup disks as it gives the best bang-for-buck once you ignore RAID 0 :-) so I'd go for that rather than JBODs
+http://technet.microsoft.com/en-us/library/cc753321.aspx
+If a drive fails, it doesn't kill the performance of the entire volume while the whole thing rebuilds... but rather only the performance of the one raid-set.
+At that point, all of the data is available on-demand as per usual.
+You also may wish to consider using mirroring rather than conventional backups if the data is only being written once - there are quite a few software and hardware storage systems that allow that to be set up and you may also get the benefit of failover in the event of your primary storage failing.
+It would be better to have smaller raid-sets and join them together to form a bigger volume.
+With Windows and huge file systems, if you do decide to break a filesystem up, but want to retain the same file structure as you would have had, look at mounting these drives to folder paths.
+One thing you might consider is buying your disks in separate batches rather than all 20 at once as if there is a manufacturing defect in a batch, they may fail at similar times.
+Another point to add to what everyone is saying here.
+Data is initially stored on disk but almost immediately archived to tape (which is much cheaper per byte).
+The setup sounds sound-enough, but in the event of a drive-failure... having a single-volume that is 24tb will take FOREVER to rebuild.
+I've installed several HSMs ranging up to 150TB of disk and 4PB of tape.
+The migration to and from tape is transparent to the end user - the files still appear in the filesystem.
+With a tape library, the staging process only adds about a minute to the retrieval time.
+Archive policies can be configured to store multiple copies on tape for extra safety, and most people take a second copy offsite.
+The idea is that an HSM manages the lifecycle of data to reduce the overall cost of storage.
+For example a Backblaze Pod (a bit of do-it-yourself/unsupported, relatively) or a Super Micro server (we use Silicon Mechanics.
+new files are written to the backup-server.. but nothing is ever read from it), I highly recommend using rsync in *nix flavored environments (linux/unix/etc...) or if it's IIS (windows) based use something like synctoy or xxcopy.
+(ever tried to read 3tb of data split across 9 other disks?)
+can also dictate what tools you use and the configuration you use.
+I'm surprised nobody has suggested using MogileFS (github).
+If you ever have a catastrophic disk or filesystem failure, you can just find some more disk and restore a recent backup of the filesystem metadata (a tiny fraction of the total data volume).
+If you need a LIVE copy (0 delay between when a file is written to when it appears on other server) you'll need to provide more information about your environment.
+Honestly, I think $5k for the drives is a bit steep... but that's a whole other subject.
+MogileFS will mirror data on different servers automatically and each disk is just a "JBOD" dumb disk.
+Linux & Windows work completely different, and the tools are 100% different.
+For stuff like that, you'll probably want to look into clustered-file-systems and probably should look more towards a SAN rather than host-based storage.
+There are many production installations with many TBs (100+) of data.
+One huge benefit of an HSM is the recovery time if your disks fail or if you have filesystem corruption.
+When the end user requests the file in future, the data is automatically staged back from tape and served to the user.
+One option that would fit well with your use-case, especially if your requirements keep growing, is an HSM (Hierarchical Storage Manager).
+I believe at wordpress.com they use regular 2U Dell servers with MD1000 enclosures for the disks.
+For the server hardware there are many options for "lots of disks in an enclosure".

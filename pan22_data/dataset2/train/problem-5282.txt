@@ -1,0 +1,9 @@
+I'm working on a project for which I don't have the toolchain configured on my own machine and I'm thus developing remotely. My workflow right now looks as follows:
+The problem is, the remote machine only does password authentication, so I have to enter the password twice in each cycle. Can't I build and download in the same ssh session?
+You can insctruct your make command to read your password in one variable, then you can use sshpass to make the two connections..
+while combining the two remote tasks into two sessions may be possible, in this case the sftp mount of the remote file system can be used. Instead of using scp, you can use gvfs-move for make get:
+I think SSH session sharing would be useful in this situation. It allows you to open multiple sessions over a single connection so that you only have to enter your password once. In your .ssh/config:
+since the mount is already established, it's likely faster than scp, even without having to enter the password.
+So you could open one terminal, SSH into your server, and run your editor. Then you could open another terminal, SSH into the same server using the shared connection, and run make and scp from there. More info:
+Since sshfs keeps an ssh connection open, I don't need to enter the password at all while working, and no special handling in necessary for the binary (which is why I skip the install target). The additional upside of having a plain mountpoint is that I can use git as with any ordinary project.
+Mount the remote side using sshfs and work 'locally'. After running your remote make, you will see the result in your local mount point without explicitly copying it.

@@ -1,0 +1,7 @@
+Also, both physical interfaces will respond to ARP reqests for both IP addresses, which again will mean the result will be random (which packet arrives first to the requestor).
+If you want to have multiple IP addresses to the same LAN IP subnet, you should use logical IP subinterfaces (eth0, eth0:1, eth0:2, etc) on the same base interface (ethX in case of a single physical interface, or bondX in case of a link-aggregated set of interfaces).
+This randomness is usually not a good thing, and may cause problems with some networking equipment.
+And which interface gets used will depend on random factors (like, which interface was brought up first/last).
+Normally, if you want multiple physical interfaces (eth0 & eth1 for example) connected to the same LAN segment (the same VLAN in a set of switches), you should use layer 2 link aggregation (in Linux, it's called bonding), and not two separate interfaces each with its own IP address.
+The basic problem is that you'd have identical IP routes for the same targets on both interfaces, but the kernel will only use one of them to send outbound packets, regardless of which source IP address you're trying to use.
+As for your original setup, there are multiple problems with having two separate physical interfaces connected to the same VLAN and IP subnet, each with its own IP address from the same IP subnet.

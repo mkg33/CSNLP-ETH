@@ -1,0 +1,16 @@
+Is there a way to replicate just some tables to another database server.
+Are you sure that the application needs to scale out?
+It involves some work regarding connection requests (specifically adding a READ_ONLY in the connection string so that the broker can redirect properly).
+Since the 90% of data doesnt change, we don't want to setup any full database replication.
+If you are looking at going to SQL Server 2012 you can look at AlwaysOn, but this is an Enterprise Edition feature so the licenses will be pretty expensive.
+If you are 100% positive that they don't need read access to all the data, you can use SQL Server replication and use filters on the articles so that you only need to replicate some of the data.
+With this, you can set up read-only (synchronous or asynchronous) slave servers, and use the new connection broker to automatically route read requests to one or more servers.
+For what reason are you trying to scale the application?
+I have a database which has 90% of read only tables.
+We need to scale the ASP.NET application.We need to add more users who will not be writing to the database.
+We are thinking of adding another server and routing the users who need read only access to that server.
+I would like to object to the "we don't want to setup any full database replication", as there is a pretty nifty feature in SQL Server 2012: AlwaysOn.
+If your users need read access to the data, they'll need read access to all the data.
+Are you totally sure that the indexes are properly setup so that the reads are as fast as possible?
+It's an extremely easy method to scale out to up to 4 SQL servers (one primary, 3 read-only).
+Usually making a single server bigger is cheaper than the SQL Server licenses needed for a second server.

@@ -1,0 +1,12 @@
+In fact, the slave server should receive the zone file from the master to ensure it is serving the exact same information.
+I was thinking in this problem and "found" a possible solution that I'm sure is not valid because I haven't found it published anywhere (and my network knowledge is low).
+(as you can see, both are registered with kimsufi)
+The failure in that scheme is that DNS in a master/slave setup can not actually serve different records for a single domain.
+So if you try a dig with this you'll get something like:
+The idea is to add a DNS server in each server and configure the slave as a backup server in case Master cannot resolve.
+I haven't tested it, it's just an idea (currently I only own a server at kimsufi).
+More or less the idea is to setup in the register domain.com something like this:
+With these servers and without an additional IP address, my purpose is host a www.domain.com with Master and in case it fails transfer the control to the slave (I know there is software like Heartbeat that allows this but needs a virtual IP, it is, an additional IP address and Kimsufi doesn't allow that ).
+Then, the Master server will be configured as usual, pointing his bind9 service to the Master server:
+I have two replicated LAMP servers, one as slave and the other as master:
+The idea is that as Master is the primary name server, it will process any query for domain.com but if it is offline, Slave do the job.

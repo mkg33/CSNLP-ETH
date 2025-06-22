@@ -1,0 +1,17 @@
+This only affects layer-3, and it has absolutely no affect on any traffic within the network, even if the network extends across multiple switches (a bad practice, by the way).
+I can't recommend administrating the vast majority of switches directly beyond very small implementations.
+You seem to be trying to add more complexity to a scenario that could be simplified.
+Instead, you might consider abstracting their interfaces away via an SDN solution such as OpenDaylight (there are many others - this is just an example).
+In addition to that, CM platforms like SaltStack or Puppet have switch support that may work well for you.
+This won't give you as complete an experience that an SDN platform would, but it's a step in the right direction.
+If all the customer network are in 10.100.0.0/16, you can have a single ACL that will block one customer from the other customers' networks.
+This is so far what you are doing, please correct me if I'm wrong:
+Simply apply it inbound to the layer-3 switch on the layer-3 interfaces (SVIs).
+In small stacks it's fine, but yours sounds too big for those shoes.
+An SDN system will use "drivers" to render your standard and friendly configurations into configurations that the given switch will understand.
+My point is to not route traffic between VLANs by default.
+It is extremely easy to deny traffic from a network to all the other networks contained within a supernet.
+This will prevent any traffic destined for the 10.100.0.0/16 network from entering the router (layer-3, not layer-2) part of the switch from the customer networks.
+L3 and even some L2 services (such as DHCP) are not just a pain to administrate on any given switch directly; they're typically dangerously clumsy.
+It appears that you are using some type of Cisco layer-3 switch.
+This can vastly help you to standardize your control plane in a safe and highly effective manner.

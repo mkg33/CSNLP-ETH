@@ -1,0 +1,14 @@
+If you only have a handful of clients connected over 100Mbit/s this isn't necessary, so calculate what the maximum demand you expect is.
+If you're using RAID1/2/3 this shouldn't interrupt service to clients.
+Accessing more than one such disk over a single Gigabit link will saturate the link and make your network the bottleneck.
+15k RPM disks can transfer up to 105MiB/s, which is 840Mbit/s.
+You want to export each physical disk as a separate LUN so that ZFS has full visibility into the physical layout.
+When the iSCSI target comes back ZFS should start using it again, assuming that the initiator automatically reconnects.
+Note: I haven't actually done this, so take this with a pinch of salt.
+This is necessary for it to make the right decisions about IO scheduling and replication.
+This does of course assume that you want the maximum performance possible out of the ZFS server.
+I have seen mention of this while reading about ZFS, but can't find these references now...
+Bear in mind that the bandwidth to the disks is slightly higher than the client bandwidth if you're using RAIDZ1/2/3, and of course, if the server accesses the disks over the same NIC as the clients access the server, this bandwidth needs to be shared.
+If you've configured a hot spare ZFS will start resyncing data to it.
+It depends on the speed of the disks, how many disks there are, and what performance you want to achieve.
+Find the maximum speed of the disks you want to use, multiply by the number of disks, and you'll get the network bandwidth you need to support that.

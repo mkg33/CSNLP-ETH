@@ -1,0 +1,6 @@
+Setting the spec.hostNetwork option pushed the pod into the node address space, 10.240.0.0/16 for which the VPN worked fine.
+If IP address 10.248.0.26 belongs to a GKE node, then for doing ping between the GKE node and your remote node you will need to add a firewall rule on 10.248.0.26/24 network to allow incoming traffic to GKE node or all targets in that network from your remote source.
+As far as I can tell, when you create a GKE cluster, there is some "magic" networking set up for the pod address space, which appears not to have correct routing as regards VPNs.
+It is possible that Karman is correct, but I can find no way to declare an explicit virtual network for the pods to stick the firewall rules on.
+Creating a new non-legacy network does not help as GKE refuses to create a cluster with pod address in an existing virtual network and GCE SDN refuses to create virtual subnetworks for an address space that GKE has already claimed.
+Simply sticking them on the default network does not seem to help.

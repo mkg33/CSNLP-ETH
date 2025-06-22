@@ -1,0 +1,10 @@
+Also as Lennart Poettering pointed out - systemd has a native capability to provide sysfs settings via dropping a snippet in /etc/tmpfiles.d/
+If it were me, I'd probably create an /etc/sysfs.conf, and an /etc/init.d/sysfsutils init script.
+With an init script, it could be managed and handled using the standard idioms for managing services and configurations through SysV init scripts (including service sysfsutils [start|stop|reload|restart|status] on RHEL/CentOS (with a little extra work)).
+Grabbing those two files from a Debian/Ubuntu box (or the Debian source package for sysfsutils) would probably be a good way to start for replicating it yourself.
+Even if I didn't bother with the /etc/init.d/sysfsutils script, I'd still put the options into /etc/sysfs.conf and then call/process the contents of that file from a separate script (/etc/rc.local, as a last/lazy option).
+already do this, and ship an /etc/sysfs.conf config file and init script with their sysfsutils package.
+Note: Debian and Debian-based distributions (Ubuntu, etc.)
+For sysfs parameters, create a [sysfs] stanza in your configuration file, and provide a line per variable that you want to set and have persist across reboots.
+Then I could keep all of my sysfs related configs and options separate from everything else.
+For Fedora/RHEL/CentOS - the default method to configure sysfs and have it persist across reboots is to use tuned.

@@ -1,0 +1,9 @@
+Are you able to use a socket?  You can bypass this issue given...
+I don't know the specifics of your environment, but this should get you on the right track:
+[host]# docker run -d -v /var/run/my_app:/var/run/php-fpm my_org/my-php-fpm-container
+Your container should put a socket under /var/run/php-fpm such as /var/run/php-fpm/php-fpm.sock.
+Then in the corresponding nginx config, you can use fastcgi_pass unix:/var/run/my_app/php-fpm.sock;
+This allows you to not even expose the port at all.
+This works because if you expose an entire directory to docker it doesn't create any files, only the directory.  If you put a file into that directory inside the container, it is exposed on the host.  Sockets are just special files, so they get exposed the same as anything else. :)
+You could technically do the reverse here too, which would be running php-fpm on the host and running nginx in a container (I don't suggest this, though)!
+I would map the container port 9000 to an open port on the host, and you can setup nginx to proxy straight to the host and port.  This way it doesn't matter what IP address is assigned to the docker instance.

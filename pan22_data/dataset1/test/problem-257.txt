@@ -1,0 +1,7 @@
+Well, I think you could run Ceph on the host, and have the client mount things via that, as ceph uses btrfs for the file system on the host, it could be made to work. 
+But do you really care, I mean, how much stuff is used by the OS and programs, a GB or five?
+And yes, while Ceph is a cluster file system, you can run it on one host.
+@ignis is correct. No, you cannot use a btrfs snapshot subvolume of a host on a guest. btrfs merges the filesystem and block layers. A subvolume is not a block device; it is a filesystem.
+In the LVM world you take snapshots of block devices and these snaps are block devices as well. Such a snap could be used as a root device for a guest (as long as the snap isn't mounted on the host).
+You could mount the snap subvol on the host and export it via NFS and boot the guest with an NFS root but that would be awkward.
+Based on your usage scenario I recommend looking into Linux Containers (LXC) (and Docker). LXC will provide the isolation and identical-file re-use you are looking for.

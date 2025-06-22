@@ -1,0 +1,14 @@
+While I don't know why your problem started occurring, I would suggest splitting your DHCP up by having the remote devices handle a designated segment of your overall DHCP scope.
+The tunnel negotiation would succeed a few seconds later, the tunnel would be strong on both ends, but the remote clients would have invalid IP addresses.
+To diagnose, I would grab one of the computers with the problem and renew the IP address while monitoring the firewall log.
+8 hours is 28,800 seconds, or the default lifetime of an IPSec tunnel.
+After more investigation, I concluded that the remote clients lost their IP addresses precisely 8 hours after the last time I rebooted their firewall.
+This renegotiation would take more than 2 seconds, and the remote firewall would think the tunnel was broken and try to hand out a local IP address to its clients.
+Or simply check the firewall log around when the users arrive, or when the systems renew their DHCP lease.
+The remote office firewall was configured with conflicting settings.
+The 169.X.Y.Z APIPA addresses would only be appearing as a result of a lack of connectivity between your computers and the DHCP server.
+Basically, every 8 hours, the two firewalls would renegotiate their encryption.
+A quick workaround (but not without issues) might be to simply configure static addresses while you diagnose the problem.
+On the one hand, it was supposed to acquire and distribute IP addresses from my corporate DHCP server through the firewall.
+This would also provide some backup in the event of connectivity issues between sites, at least as far as keeping the remote networks running.
+On the other hand, it was configured to supply local IP addresses in the event the tunnel failed.

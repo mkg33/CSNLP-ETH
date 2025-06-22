@@ -1,0 +1,28 @@
+An address is located at a postal/zip code, which is a geographic location.
+If an event can host many authors, then you need an author_event junction table.
+A person could play the role of author or attendee or both.
+Your current schema does not enforce this, but I suppose you could do it in your application.
+Or you could have an on-insert trigger on event_authors that first checks that the time duration of the new event for this author does not overlap any other events for the same author for different events.
+And came up with something like this for my database.
+As for One Author Can Only attend One Event at a time., this one is a little trickier.
+Of course, you'll have to remove the author_id reference from events.
+ERD Diagram http://img24.imageshack.us/img24/6614/entityrelationshipdiagr.jpg
+An event occurs at a facility, which is a type of address.
+I would greatly appreciate any feedback, any pitfalls that I'll face in the future .. etc?
+An author is a legal person, same as an attendee, so you could put them in a Party table, and give them a Role, such as "author" or "attendee".
+Also, this design does not allow for One Event Can Host Many Book Authors.
+An address is also located in a city (or other geographic area), which is also a geographic location.
+Cities and postal codes do not have a hierarchical relationship.
+You could make it optional if you don't want to force it on people, but if the event starts at 4 pm and someone shows up at 11 pm they will be disappointed that they missed the event, and your app was not obviously clear enough that the even ended at 9 pm.
+I am building a simple database driven web application, but from reading so many books on the subject, I know that if my database is messed up, then my application too, will most likely be messed up.
+So I thought I would check with the database design professionals, and get their help in reviewing what I have come up with before proceeding further.
+You might also want to add a notes field that's just some text that anyone can add for special info for the event.
+Ok, so based on the above, I know that my event table must contain some geographical information, so I read this.
+You might become the subject of their criticism (whether or not it's rational is a different matter).
+If you make this table have a composite key of event_id and author_id, it will allow you to have multiple records with the same event and different authors.
+From your diagram, it looks like one event can have exactly one author.
+I figured, people read a lot (me one of them), and enjoy reading, and it would be nice to have a website where users can go:
+A website that will make available [ Event Information ] to the End User on a Google Map.
+There's more than one way to represent this in your database: either store an endTime, or a duration.
+I realise that this is a simple database design, but my application (for now at least) has a really simple aim, and that is to display event information on a Google Map.
+(Note: author_event.event_id should be integer not varchar)

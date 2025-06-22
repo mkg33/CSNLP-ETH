@@ -1,0 +1,13 @@
+UUID=partitionId /media/totok/Data ntfs rw,nosuid,nodev,noatume,allow_other 0 0
+UUID=partitionId /media/totok/Data ntfs-3g rw,nodev,exec,nouser,async,suid,uid=1000,umask=022 0 0
+If a program opens the file for writing right away (even though it should only read at that point), it needs more permissions than a program that only reads.
+Without this, they are clustered in their directory and have only access to the home directories.
+I created an NTFS partition to share my data between my two OS : Kubuntu 18.04 and Windows 10.
+With all these configs, I have read/write access to the partition with the user totok (uid 1000), but when I want to open a file with a software, i've got an Access Denied error.
+Then there is the need to create a lockfile or a temporary file (in the application's native format).
+Wierdest thing : it happens with some softwares, but not all (eg : happens with Gimp, installed with snapd, but not with VSCode or Kate)
+UUID=partitionId /media/totok/Data ntfs-3g defaults,user,rw,umask=000,dmask=000,fmask=000,uid=1000,gid=100,windows_names 0 0
+You may lack permission to write to some locations.
+I will continue to use snap for programs that didn't need to access data partition / that can be installed with --classic option (eg.
+So, I figured out that the programs that didn't have the permissions were snap programs installed without the --classic parameter.
+The only workaround I found was to remove these applications and install them manually with apt / with the *.deb packages.

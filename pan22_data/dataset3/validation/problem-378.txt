@@ -1,0 +1,34 @@
+First of all, you'll want to tag hands with their class, as numerous answers have suggested - most of your comparisons of 'is hand X better than hand Y?'
+First, you need to know the rank and suit of all the cards; trivial but necessary.
+You can, quite naturally, combine several of these checks:
+Royal flushes and straight flushes can be found similarly to straights.
+a simple way to find pairs, double pairs, toaks, full houses, pokers etc is the following:
+With one, if there's also a three it's a full house, otherwise it's a pair)
+For instance, if you have a full house, strength 7 of 9, then you also have a three of a kind, strength 4, and a pair, strength 2.
+This leads to a straightforward outer comparator function that works for all classes of hands with the already-given function:
+A hand of two pair would be stored with the higher of the two pairs first, then the lower, then the 'kicker' (so, e.g., A9977 would store as 97A97); three of a kind would be stored with one card of the three first, then the kickers, then the other cards (e.g., A7772 would be 7A277); a full house would be stored with one of its three and then one of its two (e.g., 99777 would be stored as 79779); and straights and flushes can both be stored in 'direct lexicographical' order since they're both compared just like high-card hands are.
+to speed optimise this: it's not needed to run the j-loop up to 5, it can be run to i-1.
+For each card, check if there is one higher, and repeat until five consecutive cards are found or not.
+You're checking a tiny handful of players every half minute or so, not checking thousands of hands per second.
+Better methods exist but may take more time to code, and you likely have more important things to spend time/money on that'll make for a better game from players' perspective besides cleverness and efficiency of an algorithm.
+To supplement the excellent answers this question has already gotten, I thought it would be helpful to offer one of the most straightforward ways of comparing hands once the basic classification technique in place.
+Royal flushes have some extra conditions in that lower valued cards can be ignored.
+For each card, check if there is one or two or three others with the same face to check for pair or three/four of a kind.
+There are a few shortcuts and fast outs, but overall it's not really that expensive to just run all the checks.
+These are linear operations and you can do both operations for each card for only one set of traversals.
+You can then determine whether any of the following hands exist by simply examining each histogram for buckets matching the criteria, and/or a simple follow-up test:
+(So, for instance, a hand like A9772 would be stored as either 77A92 or, better yet, 7A927; the hand A9972 would be stored as 9A729, and comparing with the above code you'd start by pitting 7 against 9 and find that A9972 won).
+Now, the good news: it turns out that this lexicographical ordering, suitably tweaked, works for comparing two hands in any of the classes, as long as their class is the same.
+As the baseline case, consider the situation where both hands are 'high card' hands; in this case, you'd compare the two highest cards first, then (if they matched) the next two cards, etc.
+For the rest, you'll actually need to compare on a card-by-card basis, and it turns out that a little bit more work in classification will make this easier.
+Then, spin through these 7 cards and create two histograms; one by rank (using an array with 13 indexes, all initialized to zero and incremented by 1 if and when a card in the hand with that rank is found) and one by suit (using an array of four elements constructed similarly as for rank).
+the comparison "i!=j" can then be removed, the values for match are then halved (1=pair, 2=2pair etc.)
+For instance, since the way of comparing pairs is to compare the pairs first, then the other three cards, you can sort your hand to put the pair first (or even one card of the pair first!)
+You can do poker hands relatively easily with a simple iterative approach.
+For flushs, check each suit to see if there are five of the same suit.
+Yes, this approach is inefficient, but for most poker games, that is irrelevant.
+compare each card with each other in a nested loop like this one:
+If you assume that each input hand is sorted from highest to lowest card, this approach leads to code that looks like this:
+Or if you find both a pair and three of a kind that aren't the same face, flag a full house as found.
+Basically, if the answers to these yield any hand, set the resulting "hand strength" value to the strength of the hand found, if the value is not already higher.
+can then be done just by comparing the two hands' classes and seeing which class is better.

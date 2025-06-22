@@ -1,0 +1,21 @@
+Only one service should be trying to manage time within the VM.
+Since you have the ntp daemon installed, make sure it is started, and then verify that it is actually running by using the ntpq -p command.
+This is the same approach recommended by racksapce.
+If your hypervisor is trying to do time-sync then you should get rid of ntp.
+If you have an agent for your hypervisor installed, and NTP running at the same time, then badness will result.
+I see a few old notes about time & ntp problems on VMware, didn't find anything either current or relating to MSoft VMs.
+This will permit it to ignore clock jumps that wouldn't normally happen on physical hardware.
+If you have a stock ntp.conf from the you may want to look adding the tinker panic 0 option to your ntp.conf.
+Is this just a layer over ntpdate, any reason to use it instead?
+(The underlying Windows machine clock seems stable).
+Seems to have been some install problem, I reinstalled ntp and it seems to now be corrected and ok.
+I run Debian on several systems, and their times do not seem to stay in sync.
+The package you are looking for is ntp, which provides daemon and utilities for time synchronization.
+I can run ntpdate manually, but I thought that I should have an ntpd running that would automate that.
+This command will report which peer was selected, and some stats about NTP.
+Associated, two of my machines are virtualized on a MSoft VM, how is it that their clocks drift, and both to different values?
+I did check with apt and apt-cache but don't find any ntpd (or associated ntpq), not any such names in my system (locate...), but ntp-doc does still describe them.
+So, why are they missing, do I need them, how do I automate time updates?
+I don't know how it went wrong before, since ntpdate was there, but not the others.
+Looking around I see that there is an ntpdate-debian command, and it uses /etc/default/ntpdate for servers (instead of the standard /etc/ntp.conf), but  even thought that file is there and has "yes" indicated to use ntp.conf, it fails with "no servers can be used", although ntpdate works fine.
+Anything I did see says just to use ntpd, but as above, ...?

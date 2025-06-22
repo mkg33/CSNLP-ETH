@@ -1,0 +1,9 @@
+There's a stack of system related questions here.  We don't know what the hardware looks like for your master or slave.  Maybe you're lacking RAM on the slave, or any number of other differences.  
+The master is probably receiving bursts of updates in parallel from many client connections, and for whatever reason, the slave can't keep up since all replication is done in serial.  
+If you have a lot of InnoDB activity on the master, you can probably disable InnoDB on the slave and gain some speed that way.  That option and a few others are given here:
+16.4.4.7: How can I use replication to improve performance of my system?
+http://dev.mysql.com/doc/refman/5.0/en/replication-faq.html#qandaitem-16-4-4-1-7
+Or there could be configuration tweaks in my.cnf that could help you.  I'd start by looking at your memory usage on the slave, and looking up buffer and memory related options for innodb and/or myisam depending on which of those engines you're using (or others).  
+You can also look through your binlogs with the mysqlbinlog tool to see what database and tables have the most activity.  Then start working with your application developers and start chipping away at the problem.  
+Also check your mysqld error log on the slave.  There might be clues in there.
+Try ROW based replication. It reduces slave load significantly. But keep in mind that your bin-log files will grow a lot faster than with Statement based replication

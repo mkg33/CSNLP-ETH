@@ -1,0 +1,7 @@
+You might also be able to get a LAN side "internal only" proxy to work in this situation if your service can be put behind one.
+Going the VPN route - On 192.168.1.44, run an OpenVPN server, creating a virtual "tun0" interface.  Setup a client that connects to it on 192.168.1.2 - this will also set up a virtual "tun0" on its side.  
+To address performance concerns, if you aren't concerned about security on your LAN, you don't have to enable encryption - and you can set the authentication to be a password which you include in a boot script (though you do need a server cert at the very least) and just have it be a straight tunnel.
+I think the way to go about what you want to do purely in iptables is to set up a second NAT between 192.168.1.2 and 192.168.1.44.
+You'll then put these virtual interfaces on their own network (like 192.168.99.0/24).  "tun0" on the server side will default to 192.168.99.1, and the other side will likely default to 192.168.99.6 - but you can use a "client configuration directive" to assign it a fixed IP.  Tell any services needing to be visible on the Internet to listen on 192.168.99.6.  A simple REDIRECT target in your PREROUTING table ought to make a specific port redirect to 192.168.99.6.
+It's probably going to be easier and less of a headache to do something like a proxy or VPN tunnel if possible.
+So you have no default gateway on 192.168.1.2, and presumably cannot specify one.  So traffic outgoing from here to random hosts on the Internet will not know where to go.

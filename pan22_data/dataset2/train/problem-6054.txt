@@ -1,0 +1,9 @@
+You may also want to take a look at who it is, it may be an open resolver (like Google, 4.2.2.2-.4, etc). Banning them doesn't ban the real "attacker". You can do a reverse lookup on the IP with something like dig -x 4.2.2.4 and see if that helps.
+In some cases where this was problematic, I've contacted the domain owner (check their Whois). Let them know of the issue - they may be able to fix it for you.
+fail2ban is not "for http", it's a framework for taking actions (like banning IPs at the firewall) based on log entries. Here are the relevant configuration options from my DNS server:
+In really tough cases, I have actually setup records and provided results. As a result, this domain was routed to a site I selected. While this is stepping toward the black hat side of things, the issue stopped in 8 hours. 
+If your DNS server is configured correctly, it should easily be able to handle a few queries/sec without too much impact on performance.
+Note that this is a FreeBSD box using IPFW (firewall). You'll want to use action iptables and name the rule appropriately. 
+For UDP packets, I would suggest using the limit or hashlimit functions of iptables. I tend to have good success in getting packets to stop when I reject them using --reject-with icmp-admin-prohibited. (NTP server experience).
+Limiting to 10,000 a day should let past all but the most unusual edge case of legitimate user on your external interface and keep the one-per-second thing from happening.
+You may also need to change the log paths, depending on your installation. Note that in my example there are different paths because BIND is running in a jail (chrooted to /var/named). Running in a jail makes things more complicated, but not bad once you get used to it.

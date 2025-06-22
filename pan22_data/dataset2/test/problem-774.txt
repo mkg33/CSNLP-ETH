@@ -1,0 +1,5 @@
+I am not sure the Linux proxyarp implementation can easily be tweaked to accomplish your goal. Have you considered using a subnetting/routing approach?
+To complete the configuration, each wireless client gets a netmask of 255.255.255.252 and a default gateway of 10.0.0.X-1 (where X is the last octet of the client's IP address). On the router, the ip command can be used to add the IP addresses to eth1, as follows:
+What you want is actually possible, but requires a pretty recent Linux kernel (>= 2.6.34, or a backport).
+Each /30 has 2 usable IP addresses, one of which is assigned to a wireless client, and the other is assigned (aliased) to the eth1 interface of your Linux router. To be concrete, let's say we assign wireless clients addresses from this series: 10.0.0.6, 10.0.0.10, 10.0.0.14, ..., 10.0.0.250. And we alias the following series of IPs to eth1 on the router: 10.0.0.5, 10.0.0.9, 10.0.0.13, ..., 10.0.0.249.
+Here is the idea: Allocate, say, a /24 address space for your wireless network. To match the example of your question, I'll use 10.0.0.0/24. Now carve up that /24 into 62 /30 subnets: 10.0.0.4/30, 10.0.0.8/30, 10.0.0.12/30, ... 10.0.0.248/30.

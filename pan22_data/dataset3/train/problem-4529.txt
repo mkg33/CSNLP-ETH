@@ -1,0 +1,9 @@
+If replication is that busted, then there's not a lot of good that can come of leaving it up for any length of time - why not just turn it off, burn all memory of it from the domain (also known as a metadata cleanup) and seize any roles that it has left?
+In the meantime, I'm trying to resolve an issue with group policy processing.
+Strip its A record from the domain.local name in DNS, and then modify the settings on its DNS service so that it doesn't put it back.
+This will only be a temporary band-aid until we are able to decommission the malfunctioning DC.
+I've moved the PDC Emulator and other fsmo roles to a new DC and we're working on decommissioning the virtualized DC.
+Some workstations, when attempting to process policy, are resolving "domain.local" to the IP address of the virtualized/malfunctioning DC.
+We have a domain controller that was virtualized a while back; this caused issues with replication that we're now seeing fallout from.
+What I'd like to do is safely remove this DC from the list of DFS servers that serve this domain (\domain.local\sysvol).
+When they try to download GPOs from this DC, they are not available due to replication issues.

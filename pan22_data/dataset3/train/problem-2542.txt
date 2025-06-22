@@ -1,0 +1,20 @@
+The problem is that your certificate does not match your server's hostname.
+Alternatively, you could use the svn+ssh access method and private key authentication for the cron job (may be a security risk).
+Once accepted, run it through cron and I believe it will work like a charm.
+using the above, I was able to run the script once via sudo su, accept the certificate permanently and subsequent cron runs worked.
+This is just to pre-assemble the pieces for other linux noobs like me.
+Before running it from the cron, run it manually and accept the certificate permanently, using "p".
+config-dir could be anything where you want to store the certificate information.
+I'd only go this route if you can't fix the problems with the certificate, or aren't tied to https webdav access though.
+If you add that switch you can never permanently accept the certificate.
+You need the CN field in the certificate to match your hostname.
+You need to regenerate your certificate with the correct CN value.
+I dont know if will solve your problem but I saw this recomendation at Version Control with Subversion book.
+otherwise the home directory and other variables won't be as when it is run by cron(root)
+First, you could create a new webdav virtual host in Apache that does not use this certificate (plain http).
+This will simply accept the certificate without bothering.
+There is one more option (if previous option doesn't work by any chance), which is kind of risky in other environments, but in your environment, it should be fine.
+The answers to this question helped me assemble the pieces needed to solve a similar problem i was having.
+In yuor case, your hostname is "server" and your certificate's CN is "Tom".
+This is not advised in the production environment because this is kind of a security risk, but in your case, where you are using self made certificate, you can use it.
+There's a couple of solutions to get around the problem that come to mind.

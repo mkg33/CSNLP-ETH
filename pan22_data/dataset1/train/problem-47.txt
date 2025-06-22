@@ -1,0 +1,7 @@
+First, get the TOC list of objects to be restored:
+Then, you can see the TOC list line by line and compare the output of verbose or query pg_stat_activity to see where in the TOC list is pg_restore in.
+It is just a rough estimate though. First because each item from the TOC list may take really different time to load (for instance, schemas are fast, but loading data of big tables and building indexes are not), and if you use -j you'll have an item being restored before a previous one has finished. Also, I'm not 100% sure if pg_restore follows TOC list precisely if you don't use -L, but I think it does.
+The Pipe Viewer (pv) utility can be used trace the backup progress.
+The pv animates your shell with details about the elapsed time and transferred bytes.
+Below is the example of dumping using the pv and split utilities to keep the big dump files in small chunks. It might be handy to transfer it later to another location.
+The drawback - this approach doesn't work, if the pg_dump -Fd option (dump to folder) is used.

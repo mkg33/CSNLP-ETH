@@ -1,0 +1,11 @@
+To isolate matters I've reset the router to factory settings, turned off my mac's WiFi and then connected the Mac to a Lan port on the router. Now I can view the router's admin page at 192.168.1.1. Great. 
+So adresses from 192.168.1.1 to 192.168.1.49 will be reserved for devices such as routers, desltops and network printers for example.
+I'm adding another router to my home network to extend my WiFi range. (Linksys e2500.) I'm trying to change its IP from the default 192.168.1.1 so that it doesn't conflict with my primary (dhcp) router.
+Now I change its local IP to 192.168.1.3 and leave the subnet as 255.255.255.0. The router reboots and after several minutes is inaccessible at any IP I try (still hardwired to the Mac with WiFi off). Ifconfig doesn't show the router and the only way I can get it back is to factory reset it again.
+(The important bit is to connect the new router on the LAN SIDE, not the WAN SIDE, and ignore the WAN side on the new router.)
+The fix was to plug the new router into the main LAN after changing its IP. That allowed my Mac to get an IP address from the main DHCP router. 
+Can you do a diagram (even an ascii art one) showing how you are linking the routers - this will help work out whats going on - as I can think of at least 2 valid configurations with different requirements.
+For example with a subnet like 255.255.255.0, you could set DHCP assigned adresses starting from 192.168.1.50 to 192.168.1.255 
+Ok I've figured this out (or at least, it's working again). Because I was turning off DHCP in the process of changing the router's IP, after restarting the router it was no longer assigning my Mac an IP. And since my Mac was disconnected from the main LAN, it wasn't registered with any router and therefore unable to see the router at 192.168.1.3.
+IF two routers are in the same network, they need a protocol to communicate with each other. For home networks, I think RipV2 is the one to go with. You can't access the new router because your default gateway is set to your old one (which can't communicate with the new one).
+DHCP, then turn it on and define the range later on.  (You don't strictly need to do this, provided your DHCP is correctly set up, and you avoid the range of IP's it can hand out, but it eliminates variables).

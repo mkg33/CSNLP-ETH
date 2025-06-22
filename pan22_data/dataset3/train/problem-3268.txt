@@ -1,0 +1,12 @@
+FATAL: Could not open '/boot/System.map-2.6.28-17-generic': No such file or directory
+rmdir: failed to remove `/lib/modules/2.6.28-17-generic/volatile/': No such file or directory
+You should review carefully what those lines are doing and try to manually do what they attempted to do.
+I have not been able to install new packages in Ubuntu since the linux-restricted-modules-2.6.28-17-generic package is broken...
+Once you've removed the offending package, run apt-get -f install to finish any package management operation (install, configure, remove, …) that was waiting on the removal.
+update-initramfs: failed for /boot/initrd.img-2.6.28-17-generic
+ subprocess installed post-removal script returned error exit status 1
+update-initramfs: Generating /boot/initrd.img-2.6.28-17-generic
+When a package's prerm or postrm script fails, often your best bet is to edit the script in /var/lib/dpkg/info and comment out (or sometimes tweak) the failing lines.
+E: Sub-process /usr/bin/dpkg returned an error code (1)
+dpkg: error processing linux-restricted-modules-2.6.28-17-generic (--remove):
+In your case, you've already deleted the files that the script is trying to delete, so comment out the failing lines in /var/lib/dpkg/info/linux-restricted-modules-2.6.28-17-generic.postrm and run dpkg --remove linux-restricted-modules-2.6.28-17-generic.

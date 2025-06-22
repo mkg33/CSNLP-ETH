@@ -1,0 +1,56 @@
+I've been thinking this over for a few days. After thinking about it for a while, I think I'd make a fundamental change in how you're dealing with the health in a "stack".
+At least as you seem to be using it, a "stack" of  basically just represents a "pool" of health points. For example, if you have a stack of 50 Xs, that basically means you have 50 times as much health as if you only had one. An individual unit, however, doesn't really seem to have much meaning beyond the health points it contributes to the stack.
+Assuming that's correct, I think I'd structure the "stack" a bit differently -- specifically, instead of having a number of units with a specific amount of health apiece, I would (at construction time) convert the number of units and health points per unit into a single pool of health points. At the conclusion of the battle, convert the remaining health on the winning team into the number of units remaining.
+This simplifies what you store for a stack, and (especially) the computation for "takeDamage". At construction you do something like health_pool = max_health * num_units; and takeDamage simplifies to something like: health_pool -= dmg; Since you can now take an arbitrary amount of damage at a time, you can eliminate loseUnits entirely (it becomes a side-effect of takeDamage -- if you damage you take exceeds the health of an individual, then you lose some units).
+I have written this basic Heroes of Might and Magic 3 Battle Simulator.  I am decent at procedural, C-style code and I am trying to get better at Object Oriented Programming.  (I know procedural code be better suited for this problem, but I am comfortable with this material.) 
+Any and All critiques are appreciated (Speed Optimization, style, readability, maintainability, etc.).  I am especially interested in comments on how i could improve the object oriented design and implement the Standard Library (or another library) better.
+For those unfamiliar with the game, a quick example is given here.  (although ignore the "If the Attack skill is lower, then damage is reduced by 2% per point of difference" bit because i believe the correct number is 2.5%).
+const double ATTACK_ADV_MULT = 0.05;    //View Ecoris's 2nd comment
+const double DEFENSE_ADV_MULT = 0.0025; //http://heroescommunity.com/viewthread.php3?TID=11801&pagenumber=2
+    unitStack( string name, int speed, int attackSkill, int defenseSkill, int minDamage, 
+        int maxDamage, int maxHealth, int curHealth, int numberOfUnits, int numberWins/*=0*/, double dmgMultiplier/*=0*/);
+    int m_curHealth;            //fluctuates in combat, must be altered after damage/unit lost from stack
+    int m_numberOfUnits;        //fluctuates during one fight, must be reset after each of the NUM_FIGHTS fights
+    int m_numberWins;           // Starts at zero, can be increased up to NUM_FIGHTS
+    for (int n=0; n <= this->getNumberOfUnits(); n++)
+        rawDamage += (rand() % (this->getMaxDamage() - this->getMinDamage() + 1)) + this->getMinDamage();
+    return damage = int(rawDamage * this->getDmgMultiplier());
+        this->setHealth(this->getCurHealth() - dmg);
+        dmg = dmg - this->getCurHealth(); //One unit gone from stack, top unit is at max health is at MaxHealth (reflected in next two lines)
+        this->loseUnits( 1 + (dmg/this->getMaxHealth())); // Lose top stack unit, and then floor of dmg/MaxHealth more
+        this->setHealth(this->getMaxHealth() - (dmg % this->getMaxHealth())); //Start at max (since top stackUnit is removed).
+void unitStack::setDmgMultiplier(int enemyDefenseSkill)
+    if (this->getAttackSkill() >= enemyDefenseSkill)
+        double dmgMultiplier = ((this->getAttackSkill() - enemyDefenseSkill) * ATTACK_ADV_MULT ) + 1;
+        m_dmgMultiplier = min(dmgMultiplier, MAX_DMG_MULT);
+        double dmgMultiplier = 1 - ((enemyDefenseSkill - this->getAttackSkill()) * DEFENSE_ADV_MULT );
+        m_dmgMultiplier = max(dmgMultiplier, MIN_DMG_MULT);
+    //To-Do; add functionality so user can choose creature,numberOfUnits
+    unitStack stack1("hobgoblin",7,5,3,1,2,5,5,219,0);
+    unitStack stack2("centaur captain",8,6,3,2,3,10,10,100,0);
+   cout << "\n\nSo, the matchup is " << stack1.getNumberOfUnits() << " " << stack1.getName() << "s versus "
+        << stack2.getNumberOfUnits() << " " << stack2.getName() << "s\n\n";
+    cout << "Welcome to the Heroes of Might and Magic III battle simulator!\n\n";
+void ReportResults (unitStack * p_stack1, unitStack * p_stack2)
+    cout << "The " << p_stack1->getNumberOfUnits() << " " << p_stack1->getName() << "s win " 
+         <<  p_stack1->getNumberWins() << " times out of " << NUM_FIGHTS << "\n";
+    cout << "The " << p_stack2->getNumberOfUnits() << " " << p_stack2->getName() << "s win "
+         <<  p_stack2->getNumberWins() << " times out of " << NUM_FIGHTS << "\n";
+//Faster unit Attacks.  If slower unit is still alive, CounterAttack.
+void oneTurn (unitStack * p_stack1, unitStack  * p_stack2)
+    if (isUnit1Faster(p_stack1->getSpeed(), p_stack2->getSpeed() ))
+        p_stack2->takeDamage(p_stack1->attack(*p_stack2));
+            p_stack1->takeDamage(p_stack2->attack( *p_stack1));
+        p_stack1->takeDamage(p_stack2->attack(*p_stack1));
+            p_stack2->takeDamage(p_stack1->attack( *p_stack2));
+bool oneFight (unitStack * p_stack1, unitStack * p_stack2)
+    while (p_stack1->getNumberOfUnits() > 0 && p_stack2->getNumberOfUnits() > 0)
+void CombatSim (unitStack * p_stack1, unitStack * p_stack2)
+    int maxNumUnits1 = p_stack1->getNumberOfUnits();
+    int maxNumUnits2 = p_stack2->getNumberOfUnits();
+    p_stack1->setDmgMultiplier(p_stack2->getDefenseSkill());
+    p_stack2->setDmgMultiplier(p_stack1->getDefenseSkill());
+        //To-Do, Add vector of ints to "unitStack", find mean, median, other stats for remaining units after win.
+        //e.g. Centaur Captains won 996 out of 1000 matches.  On average, they had 55.56 units left.
+        //(*p_stack1).numUnitsLeft[i] = tempStack1.numberOfUnits;
+        //(*p_stack2).numUnitsLeft[i] = tempStack2.numberOfUnits;

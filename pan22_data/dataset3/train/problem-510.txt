@@ -1,0 +1,14 @@
+This is probably the most efficient way there is to manage large texture data sets.
+That said, if you are really serious about optimizing your terrain renderer, you'll probably want to do some research on Virtual Texture Mapping (sometimes referred to as "Megatextures").
+From the options you suggested, I would stick with splitting the mesh into sub-meshes sorted by material/texture.
+Your color channel will determine how much these will show through.
+Instead of glActiveTexture you could bind a texture array and sample as many texture you like...
+OpenGL draw calls might fail due to out-of-memory conditions, though you'd have to push it really hard to make it happen.
+That it's expensive, if you have 16 layer, you will read 16 sample and then probably only one or two will be predominant.
+Basically, you need 3 sets of UV data, rather than the usual single set.
+If you're creative with what data you pack into your verts, you can build a texture atlas.
+You can bind a texture array and then specify the index of the two (or three)  most predominants textures and the sampling weight.
+Sampling weight and index can be other textures or parameters passed by vertex.
+With a voxel field, you can work out this blend through distance from the vertex.
+This might actually be faster to render if your data set is really huge.
+Each represents the mapping for one of the 3 textures used by that triangle.

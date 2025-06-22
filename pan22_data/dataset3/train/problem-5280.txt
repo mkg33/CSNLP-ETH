@@ -1,0 +1,20 @@
+I think I can easily find out which floor tiles will be affected by shadow (I will calculate them during projection of the mesh onto the floor).
+easily fit into 1-2 KB), I just would have to rewrite the floor texturing algorithm - but if it was a faster solution, I could do that.
+Basically, render stuff as fast as possible - e.g.
+Considering the above limitations, I have chosen the technique of transforming the character mesh (a low-poly version of the original mesh) onto the floor plane (from the position of the light) and drawing the shadow mesh on the floor (with black color).
+Anything - that merges the two approaches into one which will be faster than rasterizing a floor and then overdrawing majority of it with black shadow- is a win.
+The most amount, I could theoretically spare, from the tiny cache (10x faster access than from main RAM) is about 1-2 KB for a temp buffer.
+The biggest performance bottleneck of the platform is memory read / write(e.g.
+Obviously, it is not enough to cover all shadow texels at given resolution, but it could perhaps prove useful for some other algorithm.
+in least amount of instructions (and least amount of RAM access).
+It's a next-gen engine for the platform, so there are no known or proven approaches.
+I am not looking for some generic shadowing solution (I wrote few for PC/XBOX-using Shadow Volume and Shadow Mapping, so I have an idea how shadowing works).
+I am alright with writing multiple codepaths for multiple scenarios (e.g.
+The floor (basically one large rectangle) is internally divided into multiple square tiles (anywhere between 10-100 tiles per room).
+Question - how can I easily merge the floor texturing routine with the shadowing ?
+This should result in the desired sharp shadows without any pixelation effects (unlike shadowing methods based on projecting a shadow texture).
+As of right now, I can only think of span buffers as the best solution for the overdraw.
+But it will provide an effect of shadow being very large initially, and as character walks around, the shadow shrinks (until he is right below the light source) and then the shadow grows again.
+There are just two choices - either it is a floor texel or black (the shadow).
+The RISC can do almost all instructions in 1-3 cycles (except division), but anything requiring access to main RAM is 10x slower (than from small cache).
+I am working on a SW rasterizer for a quarter-century old console (think sub-100 MHz RISC CPU, no dedicated 3D HW, couple megs of RAM) and am approaching a stage where I will be adding dynamic character shadows.

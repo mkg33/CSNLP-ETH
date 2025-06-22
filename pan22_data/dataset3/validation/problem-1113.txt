@@ -1,0 +1,16 @@
+The volume mounts perfectly fine on my Mac OS X 10.5.8 machine and Disk Utility on the mac reports no issues with the volume.
+Normally it should be a multiple of your physical sector size (like 512, 1024, 2048 etc.
+However when I connect the drive to my Ubuntu 9.10 Karmic system, the partition does not mount.
+I would prefer not to have to completely reformat the disk if possible because it contains about 280GB of data I would rather not have to find a temporary home for.
+There's so surprisingly few useful info on this error at the web and so much noise that it became quicker to look into the source code for answers.
+It seems that fat32 has a backup boot sector at sector 6.
+I backed the drives up on my mac and reformatted the drives on lnux using mkfs.vfat and they were then usable.
+(If anyone has any other ideas, answer this question and I'll try them, and accept your answer if it works!)
+You could always try to replace sector 0 with that sector and see if it helps you out, but I would probably try the chkdsk route and see if that helps you out at all.
+This has happened a few more times... it seems to be a problem specific to drives formatted as FAT-32 under Mac OS X 10.5.
+You could dig into the bytes yourself and see how badly it's screwed up (be careful!
+Not an answer to my question, but I wanted to close this, so I'm just posting what I did.
+Logical sector size is written at offset 0x0B of your partition, little-ending, 2-byte size.
+Googling "vfat Logical sector size is zero" produced no consensus as to the solution.
+First, I would try to get access to chkdsk.exe if possible and run that on the drive just incase there is a problem with the filesystem and linux is just being much more picky about it.
+I have a 320GB USB drive with a single large FAT32 partition.

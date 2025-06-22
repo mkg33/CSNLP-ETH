@@ -1,0 +1,13 @@
+That would probably show as lots of system% in top, but anyway, take a look at vmstat 1 and watch the in and cs columns.
+There's one possible thing completely left out from the details as I type this.
+Perhaps something triggers lots and lots of context switches and/or interrupts?
+Use the output of hdparm -t /dev/sd{a,b,c,d,e,f} to diagnose the issue (this command will take a while).
+You're actually using both a physical storage controller that exposes your disks to the Linux kernel (whether or not you're using its built-in RAID capabilities) and software RAID.
+Assuming you don't have a hardware RAID controller with lots of memory, then deadline's probably the most sensible option, but try CFQ if you've currently got deadline configured.
+Double-check that your storage controller is well-supported and try to replace /dev/sda as quickly as possible.
+(I don't see anything here that looks like an LVM device) snapshots kill performance on LVM.
+Check your irqbalance is running and distributing interrupts sensibly across physical cores (not hyperthreaded ones).
+How have you configured the disks (for ide/data what does hdparm tell you - check the accoustic settings, DMA, readahead and cache)?
+Looks like you've checked the obvious things - it's a bit of a puzzler.
+Since you see some inordinate slowness on /dev/sda, I'd suspect disk failure or controller failure.
+You can't rule out the possibility that your storage controller is poorly-supported.

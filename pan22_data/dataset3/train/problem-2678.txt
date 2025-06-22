@@ -1,0 +1,36 @@
+You mention there is only 7GB of memory available to SQL Server.
+As Alex_l mentioned--the smallest possible transaction is ideal here.
+The rest will require work in order to get your application to scale.
+If you can reduce the time that you hold a lock on that high-demand table, it could help.
+You might also consider memory, but that should come after a design and performance review is done and the needed changes implemented as adding memory right away will mask your issues.
+I would checkout Kimberly Tripp's blog entries regarding indexes here.
+Reducing the number of database round-trips within the context of a single transaction would be a very good thing to pursue.
+Absolutely follow the suggestions Marian has outlined.
+Locks/blocking come from poor indexing because of all the time spent scanning tables end to end.
+Finnaly, if you can to make your transaction as small as you can - do it.
+(Granted, if you've got 5 tables, that's probably not the case, but just a thought.)
+While in the application, the associated active transaction could block other requests from processing and cause request time-outs.
+If you have poorly performing indexes (Too many indexes, incorrect indexes, or no indexes) then this will cause the system to page more of the database into memory for various requests then if there are appropriate indexes.
+As for solution, first you should e sure that your main problem is CPU.
+Are you taking out table-level locks when you are only updating a single row?
+You might consider suggesting a row-level lock to SQL Server.
+Add the two above issue together and you start to have a nasty case of performance headaches.
+As a quick fix, check for missing indexes using the information in this article: http://blogs.msdn.com/b/bartd/archive/2007/07/19/are-you-using-sql-s-missing-index-dmvs.aspx
+If everyone is blocking on a particular table, can you move the logic for that table to the end of your transaction?
+Another thought is that I would also take a look at your locks.
+After the Index section, looking at the other categories might be helpful to you situation.
+To answer your question regarding 2-CPUs handling 25 requests:
+If you start with a poor design of your application and database then you will fail at load (think scaling).
+Can you break apart some of the transactions into multiple bits?
+The issue worsens if the application is not able to return to the database in a timely manner.
+Also, using the Missing Index DMVs requires using what you know of your application and database and not just implementing each recommended index.
+Your problem is most likely poor query performance caused by
+If your Java/Hibernate update of 5 tables in a single transaction is doing the updates via multiple round-trips to the database, then you are leaving yourself open to contention (Blocked CRUD requests).
+I would say you have found yourself a wonderful challenge and wish you a great success!
+Can you pull some of the queries out of the transactions?
+I would caution going hog-wild creating indexes as the wrong ones will also hurt you as each has the potential to require an update in the course of a row update (Create-Update-Delete) operation.
+Try to read this issue to find the source of your problems and to get appropriate solution.
+Finally, I would take a look at your tables that you're using.
+My first thoughts are to reduce the number of transactions and reduce the amount of blocking.
+I have a 2-CPU system which supports about 750 user connections and a running average of 4K Batch Requests a second.
+Several items are important for me: Design, Management, and Tuning.

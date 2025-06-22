@@ -1,0 +1,11 @@
+I've not really used XNA so I can't really speak to the exact nature of that error.
+It sounds like the texture is still selected into the GraphicsDevice (or at the very least in use still as the GPU is allowed to lag behind the CPU to achieve the best performance).
+A better solution would be to create two textures and double-buffer their usage, so you write to Texture 1, then render with it, the next frame write to Texture 2 instead, render with it, switch back to Texture 1 again, etc.
+I've tried just calling SetData() on a Texture2D object using a screen-sized array of Color values, but it complains with:
+For drawing lines and such I've just used a 1x1 white texture and scaled/rotated it.
+If I wanted to fill my game screen with individually coloured pixels, how would I do this?
+Not sure if that will be any faster, but it is an option
+That way you can ensure the GPU won't be using the texture still and should also solve the problem you have now.
+However, if you do this with a single texture and managed to fix the above problem you would most likely incur a costly peformance bottleneck which requires the CPU to sit around waiting for the GPU to finish using that texture before it can lock it again (the CPU would be blocked from continuing until it could lock the texture knowing it was safe to do so).
+Or better still... is there an alternative, better, efficient way to fill a screen with arbitrary pixels?
+For example, if I wanted to write a 'game of life'-type game where each pixel was a cell, how would I achieve this using XNA?

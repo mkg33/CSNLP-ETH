@@ -1,0 +1,18 @@
+I have a SSL certificate setup for a domain e.g www.abc.com, this domain is customer facing.
+So can I some how use the existing SSL certificate to view admin.abc.com even if that means accepting a warning of a mis-match from the browser?
+UCC Certificates are beyond your needs, and are usually very expensive, so I'd not recommend that over wildcard certificates.
+As htpasswd is not really secure I want to be able to view admin.abc.com using https (unless there is an alternative).
+Skip the wildcard certificate and save a little money for now.
+SNI in Apache Httpd only works on some more recent versions, e.g.
+Get yourself a free cert for the subdomains at http://www.startssl.com/.
+This might be cheaper than getting a wildcard certificate, but a wildcard certificate if you're willing to pay for, is the easiest to set up.
+On the same server (linux) I want to setup a subdomain that is private for site admin, admin.abc.com.
+Other options that would not require you to deal with an SSL certificate mismatch:
+If you are able to get more than one IP address added to the virtualhost, then you can use two SSL virtualhosts, with each using one of two SSL certificates.
+If only www.domain.com only needed to support older browsers, then you could still do this, as if the www.domain.com SSL certificate is the first one loaded, then users without SNI browser support can still get that certificate.
+Unless you verify the certificate every time you would likely accept a different mismatched certificate that could be a man-in-the-middle attack and not even know it.
+Relying on an untrusted certificate especially if the traffic is going over the public internet is a horrible idea.
+The virtualhosts would each need to identify which IP address they should be using e.g.
+SNI (Server Name Indication) isn't supported on all browsers, so although this would allow you to serve multiple certificates using only one IP address, if they both need to be accessible in these browsers, it's not suitable.
+The process is a pain in the butt, but free certs are free certs.
+You simply configure it like you would configure a certificate if it was valid for that hostname.

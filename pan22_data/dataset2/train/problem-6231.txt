@@ -1,0 +1,8 @@
+I was left with the impression that if I set the systemd's unit's user to 'kenny', systemd will take care of the rest, or I don't know what I was thinking.
+Considering systemd is only running bash as the interpreter of the webpack.sh script (in fact, it doesn't even know that bash is involved, the kernel executes it as the interpreter from the #! line), then it's not an interactive shell, and no startup files are read.
+When you're logged in as kenny, use which yarn to print the path to yarn, then make sure to use that when referencing it in the script.
+This isn't accurate. It just means that yarn isn't installed in a location referenced by the PATH variable used by systemd, and is likely in a custom location, or location outside of the default PATH variable.
+My user is called kenny. kenny has a tool called nvm installed that manages nodejs versions. That tool adds a directory to the PATH env variable by editing '~/.bashrc'.
+bash will only source ~/.bashrc if you're running it as an interactive shell, it won't do that if you're simply running bash for a script.
+Instead of trying to 'reference a user's PATH variable', you should either define PATH manually, or more appropriately, use the full path to the binary.
+You can work around that by sourcing ~/.bashrc explicitly at the start of your webpack.sh script, assuming everything in there is safe to run in a non-interactive shell. (It should be fine.)

@@ -1,0 +1,7 @@
+if possible, also do a iostat -xCzn and grep for any HW or Transport errors on the disks or controller.
+However, is there any package already made that does this, or specifications on how I can get some performance metrics from this array?
+This is all fine, but I'd like to automate a way to check every once in a while to make sure my pool is error-free.
+this also assumes that 'zpool' will be in the path of the zabbix user, and that this user will be allowed to run zpool. if not, specify full path and use sudo. another catch might be a default shell that doesn't support used syntax, in which case you can either rewrite the userparameter, or force it to use bash.
+now, in zabbix add an item with key "zpool.status", create a trigger against it (using a function like ".last(0)=0") and you're done - trigger will fire whenever that string is missing from the zpool status output.
+I have cacti, and zabbix available at my disposal. I suppose I could also write a program that greps that output and if it doesn't find the phrase "No known data errors", send me an email. 
+I set up ZFS on Ubuntu (via fuse) for a storage array at home and it has worked great for almost a year now, despite its 'beta' status. I log in and check the array every once in a while using:

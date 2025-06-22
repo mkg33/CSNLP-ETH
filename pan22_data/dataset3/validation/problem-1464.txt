@@ -1,0 +1,21 @@
+If there are only very few attributes we store about car, 2) might make sense.
+Ownership of the car is an attribute of the student, which would be your foreign key to the car table.
+2) "Embed" car's attributes into student entity type with a boolean flag has_car.
+1) Put car into it's own entity type and create a student-car relation (store car's primary key in student).
+Is it possible to calculate the correct solution by calculating the space the car's attributes take?
+As I'm reviewing the lecture material, there are two transformations available for this:
+With 2) there's no need for reaching into foreign tables.
+If you're starting to get too many tables, and you have to do a lot of joins for your typical queries, you might keep your data denormalized for tuning ... but as you mention, some databases (but not all) will have to allocate just as much space for the record having lots of null values as it would've if there were values in there, so normalization typically reduces the storage size.
+This is where tools like NORMA come in useful to capture these relationships and constraints in plain English.
+In a more general situation, how does one decide which transformation to use?
+Basically, the issue is that the attributes of the car are attribute of the car and not the student.
+If you want to actually track cars, such as if a given car were sold to a different student, you'd obviously need to uniquely identify each vehicle, and so it'd make sense to normalize it.
+If there are very few students with a car, 1) makes sense.
+If a car can exist without a student, I'd consider a many-many table carstudent with a constraint on carid to allow zero or one owning student
+I'm not going to claim that there's ever only one "correct" way to handle things -- but what you're proposing in #2 would be considered a violation of Third Normal Form.
+I'm currently taking a university course about databases.
+Consider the following modeling scenario where a car exists only in the context of its owning student:
+Could car have a huge amount of attributes and 2) make still sense?
+However, getting student with a car requires the car's attributes to be fetched from a foreign table.
+With 1) the student table and over all database size is smaller because only a NULL is saved to car_id.
+However, the database and student table is now bigger because we are saving all of the car's attributes even for student's with no car.

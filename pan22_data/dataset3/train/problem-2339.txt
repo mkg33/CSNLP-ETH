@@ -1,0 +1,20 @@
+That proxy can then be configured to forward the request to the correct internal host based on the hostname.
+This should work unless I'm misunderstanding your question.
+If your existing web site is already running apache, you could even just setup an additional virtual host there and enable the proxy.
+Is there a way with my router to transfer port 81 to look like it is port 80 to the wordpress install?
+This allows you to have a single port forwarding rule on your firewall (port 80), allows you to run multiple unique web sites internally, and allows your web site visitors to connect as they would with any other web site without having to specify the port number in their browser.
+I was able to overcome this using a reverse proxy in IIS, that works like mod_proxy and translates everything after the / to the internal site using the HOSTS file and mapping the domain to the internal IP.
+Then use your hosts file to send  livesite.com to one IP and wordpresssite.com  to the other IP address.
+Use an IP based virtual host approach:   http://httpd.apache.org/docs/2.0/vhosts/ip-based.html
+The problem you may have is that the wordpressmu install may output absolute URLs.
+Also, from the outside world make the domain resolve to the correct IP.
+I have 1 server that is already taking up port 80 (a live site), and I have another server running wordpress mu that can ONLY run on port 80.
+Make Wordpress run on one of the IP addresses and the livesite run on the other IP address.... both on port 80.
+I've never tried this but this should work without needing to restart the network adaptor nor taking down the live site for any reason:
+Why not run both sites on port 80 and use host headers to differentiate the two?
+If it does, they will not include the correct port.
+You could setup a HTTP proxy that you forward port 80 to.
+I run 6 unique web sites on my home server this way.
+Are you using the stock firmware or something else else like ddwrt?
+The problem with the methods mentioned so far is that the solution is either more complicated than it needs to be (proxy, multiple port forwarding settings) or puts the burden on the client (alternate port).
+To make it work, bind your network card to 2 internal NAT IP addresses  by adding the second IP in the network properties.

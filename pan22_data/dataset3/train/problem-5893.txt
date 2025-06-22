@@ -1,0 +1,19 @@
+Instead of following the messy include files, is there an easier way to get a list of the authorative zones inside BIND?
+The above shows a list of all master domains in the _default view.
+I'm wanting to get a list of all the zones currently loaded into BIND.
+You can run rndc dumpdb -zones to create a file called cache_dump.db.
+I'm trying to migrate a dns server that has several thousand zones loaded on it.
+JSON format may also be available, so something analogous should be possible with jot.)
+The /v3/ format used above is only available since bind-9.10, April 2014.
+Another alternative is to use bind's own XML format statistics, if you have enabled the statistics-channel and have zone-statistics enabled (e.g.
+serial number), as well as statistics per-zone of course.
+The named.conf file has about 17 different includes, and some of those files also has includes in them, and lots of commented out etc.
+In my case, i discovered that there was 2 seperate bind instances running on the same server (don't ask), one doing forward dns and one doing reverse dns.
+(This statistics facility is available since bind-9.6.0, December 2008.
+This file will contain all authoritative zones and will be created in BIND's data directory.
+The above shows all zones in CSV form: zone, view, type, serial.
+Adding -all does the trick for me (on Ubuntu Ubuntu 16.04.2 LTS (xenial))
+Without specifying the PID, it attached to the one only doing reverse dns and only showed me that.
+I looked at rndc dumpdb but it doesn't show me just the zones.
+This method also lets you easily select/show views, zone types and zone data (e.g.
+For newer versions of BIND9, as of 9.12.0a1; there also named-checkconf -l that can list the zones in an easy format, including master/slave status and views.

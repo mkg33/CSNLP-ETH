@@ -1,0 +1,13 @@
+I host two domains on my webserver. One uses HSTS (HTTP Strict Transport Security), the other does not. My webserver was misconfigured for a short period, thereby accidentally setting HSTS on the wrong website. 
+I just ran into this problem.  Clearing the browser cache and "forgetting" the site did not work for me.
+@Spike's answer did work for me with Firefox (I up-voted it).  Watching the SiteSecurityServiceState.txt file helped me test this solution.
+You need to close all tabs for the site that you wish to forget first, otherwise the tab itself seems to remember.
+If you have access to the web server set the max-age to zero, it will clear the HSTS cache for the site(s) for Firefox/Chrome.  In my case, I had to open the site, close the browser and then reopen the site after this web server setting was enabled.
+This has caused my Firefox to get all confused, and it insists on accessing the site using HTTPS, which is no good. 
+Changing end-users browsers is not really a good option if you mistakenly applied the "Strict-Transport-Security" HTTP Response Header to your web site/server.
+I found additional HSTS data that was not deleted via "Forget About This Site" or clearing the browser cache in a file SiteSecurityServiceState.txt in my profile directory.
+It is a text file you can open with any text editor and remove lines of HSTS data about a speficic host. Or clear the whole file.
+Hint: If you are looking for a temporary fix, opening a private browsing window will not import Firefox's saved HSTS settings, so at least you can access the site during that private session.
+For the sole reason that I just had the same issue (and not because I really like resurrecting old questions!), you can also open the History browser, find an entry for the site in question, right-click the and select Forget About This Site.  
+In chrome I can inspect the HSTS status for any given domain by going to chrome://net-internals/#hsts
+This will remove your history entries for that site only (including the HSTS setting), without affecting your other history settings.

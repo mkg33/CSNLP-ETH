@@ -1,0 +1,13 @@
+Following standard Monte Carlo sampling, I was expecting the code to randomly sample an appropriate lobe, then set the $pdf = pdf_{picked}/n$ where $n$ is the number of lobes of the appropriate type.
+The part I'm not understanding is why it adds the pdf's of all the matching lobes on top of the already calculated pdf.
+Then with a for loop, we add the pdf for A and B and divide by 2.
+Each lobe sets a bitflag representing what kind of lobe it is.
+The summation doesn't include the BxDF that was picked for sampling.
+Here bxdf is the one that was sampled earlier, so when it iterates to that one it skips it.
+I'm investigating how PBRT implemented sampling a BSDF for an input direction, wi.
+This seems like it would double count the pdf of the picked lobe.
+In pseudo-code, it looks to be doing the following:
+In PBRT, a BSDF is represented as an array of BxDF lobes.
+For example, if there are two matching lobes, called A and B.
+Should it be resetting the pdf, similar to the f calculation code below it?
+(Specular, Diffuse, Reflection, Transmission, etc.)

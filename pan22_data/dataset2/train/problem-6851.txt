@@ -1,0 +1,10 @@
+I've assumed all the workbooks are in the same folder, and the extract folder is also in the same folder. You can modify if needed.
+In my example I have I created 10 workbooks, and ran them, at this point I should see in the process explorer, 10 excel sessions, each trying to get processor time. Sadly I only have 2 cores, so the manager sheet is taking one process, and I can only run one other process. But if you have 4 or 16 processors, you could extract 3 or 15 excels at a time.
+then we run ExtractCode which is the code to extract your workbook. I leave it to you to implement how you want to extract a workbook.
+The shellout method, calls the VBA Shell method, which runs the string provided and opens a new excel session in a new process, and in that excel opens the runner.xls book, and the next book in your list, both as readonly.
+Now you have a multithreaded excel application. but don't tell anyone that, because excel is actually single threaded, and actually we've just spawned multiple excel processes to run on any free cores.
+waitForNewWorkbook does as it says. Wait untill the myExtractBookX.xls is open and returns the name of the file.
+Now that each of the excel extracts 'runner.xls myExtractBookX.xls' is opened the runner.xls will have started the auto_open method.
+The shellout method will not wait for the excel session to die before returning to the manager, so the manager will just "spawn" as many excel sessions as there are books in the list. You can modify this behaviour to check the number of concurrently running excel session in the processors if you want.
+Runner.xls will do you work of extracting the code; there is a bit of management code to identify when a book to extract is available.
+To answer your original question.. How to make it go faster. Since you say you are having to take this over, and there is a wider program involved, here's an interesting solution to add to your environment.

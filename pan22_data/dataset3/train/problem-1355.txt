@@ -1,0 +1,23 @@
+When there is no more data from ps, then grep also exits because all of the commands are tied together; it doesn't make any real sense to have one of them executing when another has finished.
+For example, ps ax | grep foobar returns the grep process, but ps ax | grep 'fooba[r]' doesn't, because fooba[r] isn't the same thing as foobar when compared as a plain string.
+In your first example, grep's standard output isn't tied into any other process, so by default it is printed to the terminal.
+First, when you run ps ax that gives you a list of all processes that are running on the system, and (some of) their command line arguments.
+This is perfectly expected behavior, but perhaps somewhat confusing if you don't know exactly what the commands involved actually do.
+As you can see, there is no rogue nginx process running on your system evading your attempts to find it; there's only grep, which is started repeatedly, once for each time you look, which finds itself.
+When you pipe the output of grep through awk into xargs kill, what happens is that xargs builds a list of what it is going to do, but doesn't actually do it until the end.
+As a result, this line is printed by grep to grep's standard output, and all other are suppressed.
+Instead of ... | grep 'foobar' | awk '{ print $2 }' for some preceding command ..., you can simply use ... | awk '/foobar/ { print $2 }' to have awk perform both duties.
+This is most often encountered with cat, where it is called Useless use of cat, but the concept generalizes well to other commands as well, such as grep in your case.
+Second, when you run grep "nginx" that will read from its standard input (as you did not provide a file to be used as input) and output any lines that contain the string nginx.
+In turn, grep looks at each line, looking for the string nginx, because that is what you told grep to do.
+Such a line appears once: the grep process itself with its command-line arguments!
+As an aside, it's almost always unnecessary to first run grep and then awk without anything else in between.
+Hence there is no process to send a signal to, and kill notifies you of this fact.
+([r] matches any one of the characters r, so only r.) Note that in order to do this you probably have to escape the argument to grep.
+Second, ps is started with the argument ax, and its standard output is tied to the standard input of the grep process.
+I will try to explain what's actually happening here.
+As ps runs, its output is fed to the standard output of ps, which is the same thing as the standard input of grep.
+You can avoid this by using character groups somewhere in the search string, because that won't find itself.
+So, here's what happens: First grep is started, with the argument nginx.
+In the shell of a Unix-like system (such as Mac OS X), pipes are generally implemented in a way that, very basically, means that commands are started from right to left, but data is transported from left to right.
+So by the time xargs gets around to invoking kill, the grep process -- which had the nginx among its command line parameters -- is already gone.

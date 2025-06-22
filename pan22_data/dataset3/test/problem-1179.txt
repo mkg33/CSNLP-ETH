@@ -1,0 +1,21 @@
+Recently I have found out that GPIO should not be working with 5V, in fact I could have damaged the GPIO.
+I have used the following ultrasonic sensor with Raspberry Pi 2, which works at 5V.
+This suggests that you may be okay if the current is less than half a milliamp.
+I use something like a 20k resistor on the echo line when I can't be bothered to use a proper voltage divider.
+This is a standard technique for protecting digital circuits PROVIDED THE CURRENT IS LIMITED.
+You provided less than that, so it never turned on.
+But my question is, how did I turned out okay and did not end up damaging the GPIO?
+As Joan explained this is usually OK if the current is limited.
+At the time I was not aware that Raspberry Pi 2 GPIO is not 5V tolerant so I did not have a voltage divider circuit, but it still worked pretty fine.
+The GPIO are believed to be able to tolerate higher than 3V3 provided only a little current flows.
+Of course I have used a voltage divider now, just in case.
+I'd only use a single resistor if I didn't plan to leave the set-up running for very long.
+The easiest way to ensure a limited current is to use a large series resistor.
+In other words what property of HCSR04 could have saved my Raspberry, is it output current capacity?
+This prevents the actual circuitry from exceeding 3.3V + a diode forward drop.
+The reason is that the GPIO have clamp diodes to 3.3V (and 0V).
+The substrate diodes on the SOC would have limited current carrying capacity and can be easily damaged, so you should not rely on this for protection.
+You can use external high speed or Schottky diodes to provide more rugged and transient protection.
+The party line has always been and will remain: never expose the GPIO to more than 3V3.
+Not enough supply voltage isn't normally a problem - just don't put more than 3.3V into a GPIO and you'll be fine.
+I just want to know to understand the entire picture and make sure I do not do something as such again.

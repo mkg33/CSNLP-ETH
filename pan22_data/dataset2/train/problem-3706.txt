@@ -1,0 +1,9 @@
+MongoDB replica sets use a basic leader election algorithm.  If you have 3 nodes then you if you have atleast two functional nodes then you have a "quorum" and the cluster continues to operate fine. If you loose two nodes then you dont have "quorum" and leader election cannot proceed and the surviving replica is a in a read only state.
+A two node + arbiter set behaves just like a three node set, so if any one node (including the arbiter) fails, it can elect a primary.
+According to Mongo documentation in order to safely deploy a replication set, you need at least two active and one arbiter because election of the a primary needs the majorities of the votes.
+In testing, there seem to be other factors which are not as transparent, I have tested a 3 nodes replication set, and upon stepping down (and shutting down the nodes also), the nodes tend to take turns, first 1, then 2 then 3.
+It's important to realize that a set with only two voting nodes is running without write redundancy. You wouldn't want to create a set that always runs like that (hence, the arbiter), and you also want to recover a third node as soon as practically possible in the event of an outage.
+If the elected primary fails I end up with TWO nodes, where both of them has the same "power" level: for me this seems to be the must-aviod situation described at the deploy.
+Can someone unfold why is it not a problem to elect a primary in this situation when it is if the initial setup is the same?
+Electing a primary in a two node set isn't a problem as long as both nodes are available. The rule is that the majority of the set needs to be up to successfully elect a primary.
+Let's say I'm able to have three machines, therefore deploy three full-blown mongo instances, no arbiter.

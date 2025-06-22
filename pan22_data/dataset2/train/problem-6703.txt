@@ -1,0 +1,8 @@
+I've never used LVM mirroring, but the info you've dug up seems reasonable from what I know of LVM.  I'd stick with MD RAID-1, myself.
+In one setup I partitioned a disk into one main physical volume and another tiny physical volume for the LVM log. If I ever lost that disk I would of course lose the mirror log, but that's OK because when the volume degraded to unmirrored it would no longer need the log.
+Write cache disabling is always required if you want to minimise the chances of data loss when you have a power cut. It doesn't matter if you have md RAID, LVM, or nothing at all.  Your drive can have 16 - 64 MB in the cache on a modern device, and it will dissapear.  
+https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Logical_Volume_Manager_Administration/LVM_overview.html
+Browsing the history, raid4/5/6 seems to appeared in the kernel in 2.6.38 and raid0/1 sometimes between that and 3.1
+Barriers are a kernel techniue to try and improve the chances of data getting to disk.  Up until 2.6.29 LVMs ignored them.  Now LVM honours barriers (if and only if you have a linear target and a new enough kernel) so if you want the flexibility of LVM and barrier support your best bet is barrier-on-md RAID.
+RAID mirrors are for providing a safeguard against single-drive hardware failures.  It's essentially meant to "keep your data from being lost if a disk dies".
+LVM mirrors are for replication of a logical volume to a different physical volume.  It's essentially meant to "move the data to a different disk".  The mirror is then broken and the old location of the data freed for use; the existing data is utilized at the new location instead.

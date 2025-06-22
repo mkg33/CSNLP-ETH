@@ -1,0 +1,9 @@
+You seem to believe that maxconn counts concurrent visitors, while it really is concurrent connections.
+You'll also observe that many servers perform better with lower maxconn values, and you might be tempted by lowering the value to improve performance.
+concurrent visitors with only 100 concurrent TCP connections.
+However, excess connections are not rejected, they're queued and forwarded to the server as soon as it releases another connection.
+Don't lower it too much though, as you want to be able to cover the situations where your server serves slow responses (eg: waits for a database server).
+There are two queues, one in the backend for any incoming connection, and another one at the server dedicated to connections explicitly aimed at this server (requests with cookies).
+The server maxconn applies to concurrent TCP connections to the server in order not to overload the server.
+The maxconn is analog to Apache's MaxClients setting and should be
+So what happens is that connections from new visitors are queued at the backend and picked by any server, while connections from already seen visitors are queued at the server and picked by this one only.

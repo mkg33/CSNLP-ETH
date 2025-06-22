@@ -1,0 +1,9 @@
+Most likely you had a disk IO error. Check /var/log/messages. Look for messages about aborting the journal and re-mounting read-only.
+The problem with your diagnostic steps:  if your root filesystem is read-only, /etc/mtab is also read-only. Guess what mount reads to get filesystem status :)
+Disk errors capable of triggering a remount-ro are generally a Bad Thing. Hope you swapped your drive.
+And now, the filesystem is writable again. Hooray. Except, why did it do this? Here is the mount now:
+Pretty much the same thing... any ideas what would cause this or what logs I should look into to find what the problem was?
+Assuming /var/logs was writeable, or you had offline syslogging enabled, you should find the event logged as well.
+The solution is to check /proc/mounts, which is a dynamic kernel file that shows the true filesystem state.  If you'd have done so at the time you had this problem, you'd very likely have found your root filesystem was remounted read-only. Know your utilities and where they get their data from.
+I just came across an instance where my /storage directory was supposedly a read-only file system. I get the error:
+Note the "errors=remount-ro" option.  In the event of any filesystem errors, the root filesystem is remounted in read-only mode.

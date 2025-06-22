@@ -1,0 +1,13 @@
+I know you are doing this to emulate a long running operation.
+The reason why you are doing this is because of your second requirement.
+What this means effectively is that all threads calling refresh will be blocked by at least a whopping 5 seconds.
+However long running operations should never execute within concurrent control, specially if it's running one at a time.
+However you can implement both of your requirements using only one synchronization object which would make your code simpler (hopefully).
+You will also have to change your main a bit, so your program doesn't exit immediately.
+So in fact you are using not one but two synchronization objects, a semaphore and a monitor.
+For a thread that will do the process this moment will be when the process has finished, for all others this will be almost immediately.
+Ideally the synchronization logic would be implemented in a generic class that would be able to handle any use case.
+So obviously you have to implement your refresh method as a process that runs on the background.
+Meaning that you will be returning a Future that may complete at any given moment.
+So I would advise you to use a ReentrantLock instead, for instance.
+A mutex is arguably a better synchronization object choice when you only need one thread at a time.

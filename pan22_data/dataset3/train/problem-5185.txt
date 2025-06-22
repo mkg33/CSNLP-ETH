@@ -1,0 +1,13 @@
+In IIS, you can do the same thing with a virtual directory.
+That uses just 1 cert, so it can work with a single IP.
+Here are two ~10 minute videos I put together regarding SSL headers that you may find useful while you plan out this project: The SSL Binding Issue and SSL Sites in IIS
+I have 50+ sites on my server and they all need a way to access them via SSL.
+EDIT: As the other answer notes, https://www.domainA.com will still not work.
+In Apache, I'd alias the document root of DomainA (Say, /var/web/DomainA) to Secure.mydomain.com with an alias:
+And I cannot afford to buy a unique IP for each site.
+If you go the way you have proposed, anybody entering https://domainB.com into their browser will get an error message at best.
+You can get an SSL cert for all 50 sites if you own all 50...
+It's called a UCC or SAN cert, and will likely be expensive with that many on it.
+The only issue that I could foresee is in the application pools themselves, which would likely have to be reconfigured under the "secure" web server to recognize the new URL paths.
+The clients would have to integrate the https://secure.mydomain.com/DomainA URL into their code.
+You may also want to take a look at mod_rewrite if you need to mess with sites that use absolute URL references.

@@ -1,0 +1,8 @@
+tungsten, Percona) saves a lot of pain but needs additional effort / software to set up.
+Depending on the number of slave nodes, you might also want to designate a fanout node to propogate the changes.
+That way you can easily switch over in the event of an outage, or for maintenance tasks such as rebuilding indexes, backups, schema changes.
+In terms of managing escalations, scheduling scripts to collect data etc, there are lots of tools available which do this - I use nagios, so do lots of other people.
+If the network between ndoes fails, then the processes can all be running be fine - but will be unable to transfer data - you need monitoring on each node to check it can contact the upstream node.
+1, 3 and 4 can be captured usingf SHOW MASTER STATUS / SHOW SLAVE STATUS on the relevant nodes, although the replication delay only has 1 second accuracy and only across each hop.
+The Percona toolkit has scripts for getting more accurate replication lags.
+Best practice would be to designate one of the slaves as a master too - bi directional replication.

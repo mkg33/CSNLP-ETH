@@ -1,0 +1,15 @@
+I'm currently trying to time different parts of my rendering to see how long it takes.
+I don't understand what you mean by "do the queries in the shader code".
+If the query is wrapped around the ID3D11DeviceContext::VSSetShader function will this tell me how long it took to set the vertex shader?
+Or will the tell me how long it took to call the function in c++?
+My question is where should I actually start and end the query?
+The timestamp queries measure time on the GPU, not the CPU.
+Actually, everything in the ID3D11DeviceContext class works this way, including queries.
+So if you wrap them around a VSSetShader call it's measuring the time required by whatever that call translates to on the GPU.
+You use multiple sets of queries to get data about all frames (i.e.
+The typical way to use queries would be to fire off a bunch of them in one frame and then reap the results two or more frames later.
+I actually wrote a detailed article about using GPU queries for timing, which explains all this in detail and includes sample code.
+The GPU pipeline may not actually start running until you call Present.
+Doing a draw call probably doesn't make the GPU do anything immediately; it queues up a command into an internal buffer, which is not actually handed off to the GPU until required e.g.
+I am trying to query the GPU and as far as I know the pipeline isn't executed until I call the ID3D11DeviceContext::DrawIndexed function.
+I've got the queries working and I'm getting some results.

@@ -1,0 +1,9 @@
+You can also temporarily turn off sql_log_bin for your session and CREATE/ALTER the user before turning the variable back on again.
+You can use --Replicate_Ignore_table=mysql.user, because while modifying, creating, deleting user it modifies mysql.user table.
+For row-based replication, if --replicate-ignore-db=foo_db, any direct change to a table in foo_db would not be replicated to the slave.
+But MySQL always uses statement-based logging for statements that indirectly change the tables of mysql database(GRANT, REVOKE, SET PASSWORD, ALTER, DROP, CREATE), regardless of the value of binlog_format.
+For statement-based replication(the default for mixed binary logging format), --replicate-ignore-db=foo_db works only when foo_db is explicitly used as in USE foo_db.
+Is there a way to stop the slave from replicating users?
+So, to stop replicating any changes in mysql database to slave, you can set binlog-ignore-db=mysql in your master's configuration file to stop logging any changes in mysql database.
+I have set --replicate-ignore-db=mysql in MySQL slave, but still it is replicating any users I create on the master.
+In a GRANT or REVOKE statement, USE mysql is not executed, as can be seen from the binary log.

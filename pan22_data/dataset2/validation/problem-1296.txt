@@ -1,0 +1,9 @@
+The question can be restated as "should a less trusted network be allowed access to a more trusted network, given that the only protocol is syslog"? 
+You need to weigh the cost / benefit of placing your syslog server on the inside. I'm personally a proponent of having the syslog server residing in the internal network - it's actually a rather high value asset. 
+Is there any way to transfer theese logs safely without exposing a path to my admin network form the DMZ?
+I assume the syslog server must be on the admin vlan asit contains vaulable and sensitive information I do not want on my DMZ. 
+Or you could have two separate DMZ subnets via your hardware firewall. DMZ1 -> DMZ2 <- Admin where DMZ2 contains your syslog server. 
+For example you could have your syslog server physically reside in the DMZ. From there iptables can allow syslog from any host both DMZ and your admin network and then restrict SSH and web access if required from only your admin segment. 
+I have a firewalled router that connects to two virtual Lans. The first lan is an administration network and the second a DMZ. My virtual machines in the DMZ need to send syslog messages to a syslog vm in the admin vlan. In order to do this i must enable a rule from the DMZ to my admin network for syslog. This implies that if a DMZ server were compromised it could be used to attack the syslog server on the admin lan.
+I personally think that a breach of a syslog server is pretty low in likelihood but there are a lot of ways of doing this with different combinations of hardware and software firewalls. 
+The question then becomes the likelihood of an attack breaching specifically via the syslog daemon. If you think that your syslog server can be breached you want to isolate it from your admin network. 

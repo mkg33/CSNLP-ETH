@@ -1,0 +1,29 @@
+have the scripts already successfully run via cron?
+in the filename of a cron job stored in /etc/cron.(d|daily|weekly|monthly).
+the cron environment can be different to your testing environment (PATH, ...).
+Did you double check that the jobs are actually failing, and not that there's a communication issue with emails notifying you of completed jobs?
+The --lsbsysinit or --regex options to run-parts allow you to change which filenames are considered valid.
+I have a Debian GNU/Linux 4.0 box (that cannot be upgraded) running 24x7.
+What happens if you watch the processes run at the times they're supposed to be running (i.e., if they are scheduled to run at 4:00PM what does the system look like in the process list and logs at 4:01?
+I have tried rearranging the jobs in /etc/cron.daily, with no effect, and I've recently removed anacron, since this box should "never" experience downtime.
+I've just added the backup script to /etc/crontab manually to see if it runs properly.
+Bart nailed about everything I would look for, except maybe disk space.
+Can you find anything happening during those times that they fail but not other times (you said this is a no-downtime system...is it doing something where the scripts are overlapping so they can't complete?
+Are the logs for cron showing any errors, or that they're running at the specified times?
+The problem turns out to be that Debian does not allow '.'
+This morning, I ran the cron directory manually (nice run-parts --report /etc/cron.daily) which is seen in both /etc/anacrontab and /etc/crontab.
+Are the jobs running as the proper user context, with permissions to do things needed?
+Either all at once, say 5:00, or individually, 4:00 / 4:30 / 5:00 / 5:30 / etc...
+may kill a process if the load is too great or processor/ram quota goes too high, etc.
+Is there something else happening at that time that might put a big, temp load on the drive space?
+Running any of the jobs individually seems to work fine.
+When the jobs all run together to they run out of space?
+I noticed several weeks ago that the backup script was not running with any regularity.
+I got an email for logwatch, but not for any of the other jobs.
+Silly question, but you said you get emails from logwatch but not for any other jobs.
+Another reason to see if someone can keep an eye on it through a ssh session at a point when the server should be running the job.
+Is there anything configured on the system that kills processes at a certain load level?
+Our backup scripts, specifically, have a large amount of output, and take a few hours.
+is it possible to add logging to your backup scripts with logger or echo commands?
+Another thing you might try, if you can, is to run them at a different time.
+It has several jobs in /etc/cron.daily, including our backup scripts.

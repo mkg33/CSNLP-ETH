@@ -1,0 +1,5 @@
+I have tried labelling /var/git/.ssh/authorized_keys as sshd_key_t, but this has no effect. Thanks in advance!
+I had a heck of a time debugging and figuring out the right context.  audit.log didn't show much.  I also double checked the /etc/selinux/targeted/contexts/files/file_contexts.homedirs and it didn't auto-create the context.
+I would like to connect a user account I have created for git in /var/git using authorized_keys. However, SELinux prevents this with the following AVC message
+I don't use Git so I could be wrong, but if I get your problem right, you probably created the user entirely by hand (i.e. editing /etc/passwd), not letting the system know that /var/git is a user home directory. It normally puts the relevant directories in /etc/selinux/targeted/contexts/files/file_contexts.homedirs. For instance, I have the same setup but with /Var/svn, added with useradd, and here's an excerpt of that file, added automagically:
+I'm new to SELinux administration, but I understand that this message states sshd is not allowed to read anything under /var. How can I relabel to allow it access to /var/git? (without putting sshd in permissive mode)

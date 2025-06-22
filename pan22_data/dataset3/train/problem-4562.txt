@@ -1,0 +1,30 @@
+The answer is simply that its dependent on context.
+The exact solution depends on how do you plan to handle extreme distances in the engine -- do you plan jump gates, or time compression?
+If you didn't yet, you should definitively check out the Planet Rendering tutorial on GameDev.net.
+As for space division, one solution is to keep two separate position variables -- one macro scale and one micro scale.
+One of the reasons is that floating point arithmetic is "good enough" (or at least it has been), it produces fairly accurate results quickly.
+While floats get less accurate the larger the value becomes, a fixed point value will simply overflow and wrap around at some point.
+It's simply a matter of what is easier in practice.
+In an FPS context, fixed-point values might actually be a liability.
+It is only over large distances fixed-point becomes more preferable.
+This means that it is at least as accurate as a 24-bit fixed point value for any given range.
+As long as you are aware of the limitations of floating point arithmetic and change your algorithms to cope with them (see Andrew Russell's answer) then you'll produce code that "works".
+If you will allow me a shameless plug, I'll give you an example from a real game I'm working on (YouTube video link).
+After a few hundred meters of game space, precision issues start to arise (and get progressively worse the further from the origin you get).
+I would like to see your faces when your world suddenly wraps around to -2^31 due to fixed point overflow.
+The game has an infinite, procedurally generated world on a physics engine.
+It also uses floating point numbers and employs a hack to maintain stability.
+In something like a galaxy you can use frames of reference.
+Using this system you can have your cake and eat it, so to speak, and its not difficult to envision.
+Another important point to make is that floats aren't so inaccurate as people here seems to think.
+Even the language itself is designed to work with floating point numbers -- writing and (more importantly) reading 0.5f is far easier than 0x80000000L.
+The physics engine I'm using uses it, XNA uses it, the data that gets loaded onto the graphics card is formatted as single-precision floating point.
+Every 200m or so I move the entire world back by 200m towards the origin (if you care to find and try one of the prototypes on my site, and bring up the [w]orld debug overlay, you can see this happen).
+Not just in space but also in time (time acceleration plus orbiting bodies - don't want them to fall out of the sky, now).
+And finally another example - Orbiter is game (simulation, really) that really needs to care about precision.
+IIRC, the dev on Infinity stated that he was continuously iterating around scale issues in one of his interviews.
+A 32-bit float has 24-bits of full integer precision.
+64-bit floating point values have 53-bits of integer precision, so they are really accurate.
+Because everything else is using single precision floating point!
+Use a huge scale for the solar systems and then use the center of the Sun (or similar point) as the point of origin for anything inside the system.
+And the clear winner is being aware of floating point precision issues and writing fairly simple "move-the-world-back-to-zero" functions (or implementing space partitioning or whatever suits your game).

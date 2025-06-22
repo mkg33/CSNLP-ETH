@@ -1,0 +1,12 @@
+We have a midsized server with 48GB of RAM and are attempting to import a list of around 100,000 opt-in email subscribers to a new list management system written in Perl.
+It's hard to debug without seeing code, but you may be reading the file to the memory, instead of processing it line by line using foreach $line (<FILE>).
+When investigating the error logs, we see that the script ran out of memory.
+From my understanding, Perl doesn't have imposed memory limits like PHP, and yet we are continuously getting internal server errors when attempting to do the import.
+Also, if you add this to a variable or array, it's the same.
+That said, running a batched import script as a CGI is probably not your best choice - even if it doesn't run out of memory, most web servers don't enjoy long-lived CGI scripts, and you may end up terminated anyway.
+Many factors could apply here (kernel memory parameters, selinux, CGI sanity checks by the web server), but ulimit is probably the most likely culprit; start with /etc/limits.conf.
+Since perl doesn't have a setting to limit the memory usage (as far as I can tell) why are we getting these errors?
+This is a CentOS machine with Litespeed as the web server.
+That kind of script will run best from the command line, ideally with checkpointing or at least logs so you can see how far you've made it through the import in the event that the script dies before completion.
+I doubt a small import like this is consuming 48GB of ram.
+We have compromised and split the list into chunks of 10,000, but would like to figure out the root cause for future fixes.

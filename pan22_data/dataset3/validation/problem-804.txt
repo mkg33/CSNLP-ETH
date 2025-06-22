@@ -1,0 +1,17 @@
+For me, diagnosing packet loss usually starts with "it's not working very well".
+Then comes the fun of comparing the two packet captures...
+The only sure way of finding that is to do simultaneous captures on both ends, either by using WireShark (or equivalent) on the hosts or by hooking up sniffer machines (probably using WireShark or similar) via network taps.
+If I cannot see loss, the next two steps tend to be "send more pings" or "send larger pings".
+From there, I usually try to find kit as close to both ends of the communication (typically, a workstation in an office and a server somewhere) and ping as close to the other end as possible (ideally the "remote end-point", but sometimes there are firewalls I can't send pings through, so will have to settle for a LAN interface on a router) and see if I can see any loss.
+I fixed it by restarting it but it could also be a cable or something internal that needs replacing.
+For target I used the first few IP addresses from tracert google.com
+One of the devices further down the chain had terrible packet loss (>60%) for large packets but 0% for small.
+I am a network engineer, so I'll describe this from my perspective.
+If that doesn't find anything, it's time to start question your assumptions, are you actually suffering from packet loss.
+Pings may not show packet loss unless you send large pings!
+If that doesn't sort give an indication of what the problem is, it's time to start looking at QoS policies and interface statistics through the whole path between the end-points.
+I will start by using packet capturing tool such as: wireshark (on Windows) and tcpdump (on Linux terminal).
+Sometimes, what is attributed as "packet loss" is simply something on the server side being noticeably slower (like, say, moving the database from "on the same LAN" to "20 ms away" and using queries that requires an awful lot of back-and-forth between the front-end and the database).
+I had packet loss on my network that was invisible until I upped my ping packet size.
+If I can see loss, it's usually a case of "not enough bandwidth" or "link with issues" somewhere in-between, so find the route through the network and start from the middle, that usually gives you one end or the other.
+I will also check the firewall configuration (host firewall as well as network firewall).

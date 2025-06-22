@@ -1,0 +1,9 @@
+Even if you could hold the UNDO that long, formulating the flashback query would be a major challenge since you couldn't specify a timestamp.
+I would tend to suspect that Oracle would use that mapping to determine which UNDO segments are old enough that they should be purged and that you would start to encounter problems if you exceeded that limit.
+I'd tend to expect that the older UNDO would be gone but it might work.
+You could potentially maintain your own (more long-term) mapping between SCN and timestamp by writing an automated job that would capture both every few seconds and hold them for weeks or months at a time and then specify AS OF SCN in your flashback queries.
+Although I haven't tried it, I would tend to suspect that you'll run into problems when your UNDO_RETENTION exceeds the length of time that Oracle maintains its SCN to timestamp mapping.
+I would tend to suspect on my system, therefore, that if I tried to retain 8 days of UNDO that Oracle would generally have a problem complying.
+It would take a week to verify one way or the other but if I had to wager, I would tend to wager that trying to hold more than a week of UNDO would fail.
+If memory serves, that is roughly 1 week (well, if memory serves, it was 1 week in the 10g days and I'm not aware of anything that would have changed that in 11.2).
+On my 11.2 system, for example, I can convert 7 days ago to an SCN and then back to a timestamp but not 8 days ago

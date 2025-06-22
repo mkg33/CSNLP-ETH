@@ -1,0 +1,16 @@
+The computer where the script is executing is in the one domain, I'll call it internal domain. Users which are tested are in the other (external) domain.
+I made a script to check if user exist in both domains.
+Here is a snippet from the script which doesn't cause the problem.
+Before I tried executing the third line like this which caused the problems:
+The problem I'm having right now is that some users from external domain are not shown properly in Windows.
+The good example is file properties security tab. The user is shown as
+DOMAIN\username@domain.com instead of just DOMAIN\username
+This causes all sorts of weird things, such as users who want to access that folder to lose permissions on it.
+Is there a way to get the normal behavior back? Restarting the machine is not an option unfortunately.
+From what I've figured out I needed to tell the server to get the SID's again and not use the cashe.
+Using this support link from Microsoft solved the problem right away without the restart and the one remaining user with the faulty username fixed it self.
+It is probably safe to enable it again after the problem is solved.
+You're calling two different constructors Vladimir. The working one does just what you expect: set the domain and user from two separate strings. The second constructor, which takes a single string, expects only a user name, and probably uses the domain of the machine the command is being run on as default msdn documentation is somewhat lacking on this. 
+The problem is that for all intents and purposes their username is username@domain.com, which is where the problem is. 
+Getting the normal behavior back? either try changing the user name or (gasp) recreating the account object.
+If you mean normal behavior as in executing the third line with a single string input then try

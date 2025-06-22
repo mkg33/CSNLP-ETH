@@ -1,0 +1,8 @@
+Their packages outright remove that part of systemd.
+But systemctl --user doesn't really want autolaunch – it expects to find systemd at a specific location, /run/user/$UID/bus and /run/user/$UID/systemd/private – so launching a new bus would be useless as it wouldn't have systemd there.
+The error message really says "[systemctl couldn't reach systemd at the private address, so it asked libdbus to use the session bus, but] there was no session bus address explicitly set, so libdbus tried to autolaunch one, but couldn't do that either".
+Now, if you were trying to use D-Bus session autolaunch, then just setting $DISPLAY wouldn't be enough – it would expect an X11 server like Xorg to already be running at :1 or such (in which case, $DISPLAY would already be set).
+(Notice how there's no user@.service, among other things.)
+That said, the libdbus' autolaunch error message is misleading, and your $DISPLAY is wrong.
+I'm trying to run systemd user mode on CentOS 7.0 server (no X11 installed).
+So recent versions no longer use autolaunch (or libdbus for that matter).

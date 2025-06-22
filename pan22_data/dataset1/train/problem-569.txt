@@ -1,0 +1,12 @@
+I have a 3D heightmap drawn using OpenGL (which isn't important). It's represented by a 2D array of height data. To draw this I go through the array using each point as a vertex. Three vertices are wound together to form a triangle, two triangles to make a quad. To stop the whole mesh being tiny I scale this by a certain amount called 'gridsize'.
+This produces a fairly nice and lumpy, angular terrain kind of similar to something you'd see in old Atari/Amiga or DOS '3D' games (think Virus/Zarch on the Atari ST).
+I'm now trying to work out how to do collision with the terrain, testing to see if the player is about to collide with a piece of scenery sticking upwards or fall into a hole.
+At the moment I am simply dividing the player's co-ordinates by the gridsize to find which vertex the player is on top of and it works well when the player is exactly over the corner of a triangle piece of terrain.
+How can I make it more accurate for the bits between the vertices? I get confused since they don't exist in my heightmap data, they're a product of the GPU trying to draw a triangle between three points. I can calculate the height of the point closest to the player, but not the space between them.
+I.e if the player is hovering over the centre of one of these 'quads', rather than over the corner vertex of one, how do I work out the height of the terrain below them? Later on I may want the player to slide down the slopes in the terrain.
+Trying to interpolate across the triangles and working out which triangle to use was working, but it was strangely jittery if I used the data to move a player across the surface of my heightmap.
+A bit of Googling turned up this page http://www.gamesandcode.com/blog/xna-project/rolling-the-ball which shows some XNA code for rolling a ball across a heightfield.
+In that the code uses bilinear interpolation to work out the height based on the whole 'quad' which is accurate enough for what I want (and now I think about it, is probably what OpenGL is doing to draw these pieces of geometry anyway).
+(position.x and position.y are the player's co-ords, gridsize is the width of the 'quads' in GL co-ords)
+Lerp is a simple function that interpolates from a to b in steps of t (0 ... 1):
+Sounds like the intersection of a line and a plane. The plane is that defined by the the vertices of the triangle underneath the player position. The line is parallel to the vertical axis but rooted at the player position. If you look up the intersection of a line and a plane, you should be able to get on the right path.  :-)

@@ -1,0 +1,7 @@
+I ran into the same problem (on an EC2 instance running Ubuntu Lucid Lynx) and figured out the solution via a comment at the top of the plugin code.
+I ran into this problem as well.  It is actually an issue with iostat not returning information about the state of the devices in the system.  If you run iostat from the command line, you should see something like this:
+If the second step fails, it's often because of that munin runs as specific user (munin), and some plugins need uid 0 privileges so edit /etc/munin/plugins.d/munin.conf (or is it munin-node.conf?), and enter for example:
+Of course you also need to have made sure you have iostat available on your system (running iostat at the commandline should tell you). If not then it's pretty easy to install (on Ubuntu):
+If the first step does not work, it's usually because of syntax errors, or it was written for another platform or so.
+If all that works, go to the munin-graph.log (and munin-fetch.log) of the munin server to see what actually happens. tcpdumping can also tell you alot.
+Basically the plugin by default skips all hard drives which have a number in them. To avoid this you need to add the following lines to the plugin config file (/etc/munin/plugin-conf.d/munin-node for me - I needed to edit it as root):

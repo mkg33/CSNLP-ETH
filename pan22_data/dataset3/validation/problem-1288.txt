@@ -1,0 +1,18 @@
+According to the MySQL Documentation on sync_binlog
+However, the flushing on the log file takes place once per second also when the value is 2.
+If the value of innodb_flush_log_at_trx_commit  is 0, the log buffer is written out to the log file once per second and the flush to disk operation is performed on the log file, but nothing is done at a transaction commit.
+When the value is 1 (the default), the log buffer is written out to the log file at each transaction commit and the flush to disk operation is performed on the log file.
+InnoDB's crash recovery works regardless of the value.
+According to the MySQL Documentation on innodb_flush_log_at_trx_commit
+With a value of 2, only an operating system crash or a power outage can erase the last second of transactions.
+The default value is 1, which helps keep InnoDB ACID Compliant.
+If you do not mind possible data loss (up to 1 second's worth) then you can use either 0 or 2 at your own risk if the rewards (faster write speed) are worth it.
+You can lose up to one second's worth of transactions.
+Note that the once-per-second flushing is not 100% guaranteed to happen every second, due to process scheduling issues.
+In My opinion using innodb_flush_log_at_trx_commit to 2 should not be an issue.But to use 1 is the safest.
+With a value of 0, any mysqld process crash can erase the last second of transactions.
+The innodb_flush_log_at_trx_commit is used with the purpose as ..
+You can achieve better performance by setting the value different from 1, but then you can lose up to one second worth of transactions in a crash.
+Based on this, values other than 1 put InnoDB at risk of losing 1 second's worth of transactions, or a transaction commit's worth of data.
+The default value of 1 is required for full ACID compliance.
+When the value is 2, the log buffer is written out to the file at each commit, but the flush to disk operation is not performed on it.

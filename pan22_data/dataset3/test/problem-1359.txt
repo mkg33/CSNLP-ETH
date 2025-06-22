@@ -1,0 +1,19 @@
+Here's a how-to apache & mod radius: http://www.wikidsystems.com/support/wikid-support-center/how-to/two-factor-authentication-for-apache-2.2-or-higher
+You can even have the auths go from SSH on linux to AD using the MS Radius plugin.
+Have a look at Free IPA for nice set of wrappers/UI around the lower level tasks of user management.
+Steep learning curve, as I've actually just experienced, but after you get past that, it works wonderfully.
+Apache, Subversion and trac could live in a little private network that can only be reached by ssh'ing onto a server at the front that does the authentication.
+Here's a how to on ssh & pam-radius: http://www.wikidsystems.com/support/wikid-support-center/how-to/how-to-secure-ssh-with-two-factor-authentication-from-wikid.
+Its wildy popular, and can be integrated into all of the services you mentioned above.
+Add in SSL/TLS security (possible, not required) and you're all set.
+The systems I'm working with, and some examples of how I'd like to use auth, are:
+SSH is a nice option to go for, but if you're looking to implement any more services that depend on centralized authentication, I'd suggest you look at some kind of LDAP implementation, like OpenLDAP.
+Essentially, any other service like SVN, you want to use PAM and have pam handle the auth via ldap, radius or local accounts.
+Here's one that uses apache * ldap for a automated scanner, but you get the drift: http://www.wikidsystems.com/support/wikid-support-center/how-to/how-to-add-two-factor-authentication-to-the-seccubus-automated-vulnerability-scanner
+I'd like there to be one password per user for all of these systems, and authorization does not need to be terribly fine-grained.
+Plus, its easy to add new users and have them available anywhere you need them, as long as whatever you're needing to integrate it with has an LDAP plugin.
+I'm trying to find the easiest/best way to manage a handful of users (four, right now) and authorization to multiple applications on my Fedora server right now.
+From there, users could open port fowardings to the other three services.
+The key difference is that Radius will proxy to a 3rd party server so you can add two-factor auth down the road.
+LDAP should work for all of those, or PAM and thus LDAP, but you might also think about RADIUS.
+Would LDAP (which I've never worked with) be the best choice for this?

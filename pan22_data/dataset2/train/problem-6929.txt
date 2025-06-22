@@ -1,0 +1,9 @@
+Or am I just missing something and a list container would know when an object is destructed and reduce its own size?
+While when adding i could be pushing back the new entity, i could have the need to remove anywhere in the container. To avoid searching the element to find its position for removal, what choices do i have? 
+I know the right way would be something like List.RemoveAt(whereToRemove); but what if only the entity knows when it should die?
+in some cases you need a list to iterate over all the objects in your game. this list could be simply a link list where inserting and removing objects from it will take exactly O(1) time.
+I Guess you could use smartpointer idea to handle deallocations for you, in that case there won't be a need to keep a list of all entities inside your code.
+even to increase your speed more you can use some static array (possibly a vector). in that case you'll need to keep track of 2 linked lists inside same vector, one will iterate over valid objects and one will iterate over free objects. whenever smartpointer marks some place to be deleted you simply remove that pointer and add it's space to free spaces list. and whenever you add some entity you only need to remove first freespace fill it with entity pointer and then add it to valid objects list.
+You're definitely looking for a HashMap/HashTable. A hashtable is a map that matches a key to a specific value. The key can be anything (such as the Entity ID).
+I tought that i could store the entity id as being its position in the container, creating a path for direct removal, but wouldnt that generate some kind of mutual dependency 'disorder' ?
+Imagine a game world where loads and loads of entities are dynamicly loaded all the time, I would represent that as a list of entities perhaps, but what about removing them? 

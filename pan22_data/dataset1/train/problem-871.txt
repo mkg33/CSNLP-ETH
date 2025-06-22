@@ -1,0 +1,12 @@
+I've read a ton over 300 pages of db setups in the last day but I feel a little overwhelmed with all of the potential options and lack of documentation on how PostgreSQL triggers function across replicated databases.
+Thus I'm reaching out to the world experience pool before I set db presence. If I've completely screwed this up I'm totally open to new ideas.  Thanks! 
+Refer to http://i.stack.imgur.com/HiewA.png while I try to explain what I'm trying to accomplish. 
+All of my on-site client locations and offsite db's are running PostgreSQL 9.0.5.
+I have "location terminals" (red boxes) connecting to each database for their location.   Our database programming is pretty intense as we have lots of triggers that push data across sockets to all the connected terminals (red boxes). 
+I would like to be able to replicate (as close to real time as possible) all this data from our "client locations" to our "offsite DB".  Each "client location" would have it's own database on our main server. 
+There are times when "remote users" (orange boxes) need to connect to my "offsite db" to access/change data.  Changes that are taking place on "offsite db" can start database triggers that need to be reflected back to the "client location DB".  Triggers occurring n the "client DB" need to be pushed to these remote users as well.  
+Keeping all the data between the remote db and the site db consistent is important - keeping calculated fields like unique id's and primary keys the same on each database is extremely important for optimization/performance. 
+I would also like to have some kind of streaming replication running on the offsite database to have a backup in-case anything goes down.  Having HA isn't critical but if it's easy to implement I'd like to do that as well.
+I'm trying to do this with the least amount of 'moving parts' to keep maintenance support costs as low as possible.  
+Streaming replication fires the triggers on the master only.  The slaves never see the actual table writes, but rather re-run the recovery logs from the master.  Because this is essentially a recovery situation, it means that the binary tables are guaranteed to be brought up to a consistent level.  No triggers are necessary.  Triggers may be possible with Slony or Bucardo but I am not 100% sure.  My initial thought suggests these should allow triggers in downstream databases but you don;t want to run the same triggers on both databases!
+In current releases you can't cascading replication outside of Slony.  In 9.2 streaming replication will allow for cascading.

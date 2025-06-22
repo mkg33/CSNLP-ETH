@@ -1,0 +1,24 @@
+A reverse proxy will take incoming web requests for e.g.
+After getting a copy of Crypt-LE from the Do-Know/ZeroSSL GitHub repository and ensuring that you can reach your subdomain(s) in a browser, run Crypt-LE (le32.exe or le64.exe) with the following options:
+However, I would thoroughly test access first with them disabled.
+They issue certificates through an online API available from a number of sites and command line utilities, including ones provided by ZeroSSL.
+Also, this obviously does not address blocking e.g.
+While I demonstrate one way to install an SSL certificate below, be aware that the actual steps in obtaining and installing a certificate may be quite different depending on who issues that certificate.
+Regarding blocking access from other ports, you would likely want to firewall http://my.domain.name.com:port_number from outside access and use localhost:port_number for your reverse proxy entries instead.
+Windows Server 2016 typically runs IIS 10, so you are likely going to need URL Rewrite 2.1 and Application Request Routing (ARR) 3.0 to reverse proxy web requests.
+You may or may not need to enable the Outbound section of the rewrite rules above.
+https://jenkins.my.domain.name.com as a reverse proxy, do the following:
+While ZeroSSL does have a web interface for obtaining/renewing Let's Encrypt certificates, I am going to focus on Crypt-LE, the command line utility provided by ZeroSSL.
+If you want to entirely block access from port 80 (HTTP), simply remove the HTTP 80 binding.
+Depending on the Windows Server 2016 image your VPS provides, these may or may not already be installed.
+To bind your installed SSL certificate to your subdomain, do the following:
+Let's Encrypt is a free SSL Certificate Authority which issues SSL certificates valid for 3 months before (free) renewal is necessary.
+That is, the URL would become (only) https://jenkins.my.domain.name.com.
+It's also probably worth mentioning that you should keep Enable SSL Offloading checked as a rule.
+Once you have a valid certificate contained in a .pfx file, you are ready to import it into IIS.
+As noted in the comments, you will want to set up a reverse proxy.
+Once you are happy that your Crypt-LE command is working as desired, erase any generated .csr, .key and .crt files and add --live to the end of your other options above.
+By default, the commands above are run on test servers for Let's Encrypt, which do not issue valid certificates.
+Note, however, you will likely need to re-add it when renewing any Let's Encrypt certificate.
+For these examples, I am assuming you do not have any SSL certificates available.
+Be aware that while you can erase any generated Let's Encrypt account key (the first option), this isn't necessary and you can specify the path to it in any subsequent commands you issue.

@@ -1,0 +1,22 @@
+In order to do this, you need raw access to whole RaspberryPi's memory.
+If a driver exports gpio to /dev/gpio and that file is writable by group gpio how would that be any different from group callout being able to use the serial port?
+There is, however, /sys/class/gpio directory, which makes very similar case.
+By default the directory and it's content are all owned by root user and root group and only root can write to them.
+If you have access to this file, you have access to whole memory, including every memory mapped peripheral in your system.
+You can also use GPIO using it's hardware registers (this is what kernel driver is doing for you) which are mapped into memory.
+As already mentioned, Linux driver exports /sys/class/gpio directory where you can find couple of files and sub directories that you can use to control GPIO.
+Again, you can configure your system to allow other users to access this file but it is much more insecure than giving access to the /sys/class/gpio directory.
+It is also only available for root by default since it is very insecure to give access to the memory to any nontrusted user.
+You can also pre-export some individual GPIO pins and allow them to be writable by any user.
+I mean there are a lot of low level stuff that a user can get access to.
+So it could be a security hole if someone could use GPIO pins directly (for example before the driver is loaded).
+Also it is sometimes possible to break the system when directly using GPIO pins - on RaspberryPi it is possible to disconnect Ethernet card this way, for example.
+The other one is to bypass Linux kernel drivers and talk to memory mapped hardware registers directly.
+But that's only one way to interface with GPIO on RaspberryPi.
+This default setting is reasonable since if you have direct access to GPIO pins, you are able to directly interface with external hardware connected to them.
+There is a driver for that in Linux - it exposes the memory by /dev/mem file.
+Some libraries/applications can only use one of this methods while others can be configured to use either of them.
+Having access to the memory means you can access to all kernel data structures so one can easily bypass any system security.
+It's just not enabled by default because of the reasons I already explained.
+In Linux, the usual way to talk to hardware is using kernel provided drivers instead.
+That being said, there is nothing that stops you from configuring you system so that this directory is writable by some trusted users.

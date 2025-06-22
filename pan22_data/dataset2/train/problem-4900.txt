@@ -1,0 +1,7 @@
+Because of this, and also the fact that in such a small index that fragmentation is typically negligable, you really should only be rebuilding indexes with a certain page threshold.  It is best practices to rebuild fragmented indexes that are a minimum of 1000 pages.
+I have used ALTER INDEX REBUILD to remove index fragmentation. In some cases REBUILD does not seem to remove this fragmentation. What are the reasons why REBUILD does not remove fragmentation? It seems that this happens especially with small indices.
+To work around a very large index that won't defragment, the BEST solution is to pre-size a new database and move all your objects to that DB, then recreate your indexes there.
+If an index is very small (I believe less than 8 pages) it will use mixed extents.  Therefore, it'll appear as if there is still fragmentation remaining, as the housing extent will contain pages from multiple indexes.
+I have struggled with this for sometime and like JNK I though the problem was continues free space and physical fragmentation on disk. However, what do you do about that on a SSD SAN? 
+I have now found out that it may be a good idea to only include index_level=0. This is how it is done in Ola Hallengren's script. 
+I had some indexes on a table with around 700m rows that I couldn't defragment below around 30%.  The issue was not enough contiguous free space inside the database to arrange the index consecutively.

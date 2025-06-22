@@ -1,0 +1,17 @@
+A ping response only happens if the phone is awake.
+My router has reserved the first 19 ip address and I may have about a half dozen address that DHCP will assign, including my phone, starting at address 192.168.0.20.
+There are checks to validate the ip address and return to the first inside loop if corrections are required.
+If the Pi is rebooted and the phone is in sleep mode, multiple pings will place its ip and mac addresses in the arp table, with 100% packet loss.
+the first inside loop would be to do a ping on a range of ip addresses, multiple times, that would be possible for my phone.
+I just learned that the arp command is obsolete, ip neighbor is used now.
+I will ping a dozen ip address once, in background mode, wait one second for response, and throw the results away as junk.
+After testing, my solution would be to have two loops inside of a forever loop.
+I will wait eight seconds on the arp table, and run the ip neighbor command, grep the mac address for the ip address.
+With three ping 'FAILED' in a row, the phone is not at home.
+The arp table will remain in the Pi, but will change states from REACHABLE, STALE, and FAILED from pings and time.
+The second inside loop will ping and check the arp table every five minutes to determine if the phone is at home.
+One 'REACHABLE', when phone is not at home, will make the phone return home (do something).
+Why not add a reservation to your phone/s ip address and simply do a ping via a cron job every few minutes.
+The router and phone will keep this same ip address unless something unusual happens.
+I accomplish this on my rpi using fhem, it has a built in presence detection module that lets me set resident statuses that can be queried to influence home automation tasks.
+My phone acts differently, as all phones has some difference.

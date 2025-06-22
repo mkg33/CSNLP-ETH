@@ -1,0 +1,12 @@
+It seems unnecessarily cumbersome to have to explicitly initialize an empty Graph this way: g = Graph([]).  I think a better implementation would be something like
+Instead of nested comprehensions, just do [0] * v.  Also, if you don't care about a variable (such as x or y) use _ to identify it.
+Note that if someone adds edges to the list manually, or does other weird things, then the caching won't work.
+Similarly, I think the parameters for add_edge could use work. For one, it isn't a list of edges that you're passing it - it is a single edge, encoded as a list/tuple/collection of some kind.  I also find it a little annoying that I have to create a tuple/list/whatever to actually add the edge to the graph - I'd rather just pass in the two end-points.  I'd prefer something like this:
+Almost anytime you want to do something, you probably want to use someone else's code to do it.  In this case, whenever you're working with graphs in Python, you probably want to use NetworkX.
+You can split up iteration variables in a for loop - for src, dest in self.edge_list is cleaner than for e in self.edge_list: src, dest = e.
+Then, instead of searching through an entire list to find a given edge, you just have to perform a quick dictionary lookup for one of the endpoints, and then a theoretically smaller iteration over a (hopefully) shorter list.  I've also seen versions that use nested dictionaries very effectively.
+At this point, however, I have to ask why you're representing your graph as a list of edges - to me, the most intuitive way to think of a graph (and how I've implemented one in the past) is to use a dictionary - to use your example, I'd probably encode it like this
+Additionally, it seems like adj_mtx should just be called adjacency_matrix, and I would rather it be a property (potentially with caching) than a function.  Imagine something like this:
+Overall you could use more descriptive names in this function.  I'd probably write it something like this:
+You could clean this up a bit.  You don't need to initialize v where you do. It would also be easier if you kept the nodes in a set and added them whenever you added an edge.
+In general, prefer xrange in Python 2, although that makes compatibility trickier - I generally use a library like six to handle things like that, although if you don't need everything you can write your own file (good name is usually compatibility.py) that has only the changes you need.

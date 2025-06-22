@@ -1,0 +1,34 @@
+Every day, calculate aggregate information for the day's data.
+The de-normalize query will need to be more frequent -- perhaps every few minutes.
+For serving up your front end data, unless there are gobs and gobs of inserts all the time, you really can't beat using triggers to insert into materialized views which are kept in sync with the back end but optimized to serve the data.
+One strategy I've used is to queue these inserts/updates into an intermediate table and then send them along later every minute or so.
+Hopefully someone with a lot more database expertise can give me advice.
+I want to be ready to scale reasonably well without having to re-architect everything later.
+Of course, you need to keep joins, etc, etc, to a minimum in these triggers.
+MySQL will never, ever be able to match that sort of speed, but if tuned properly and used correctly it can come within an order of magnitude.
+It's a lot easier to send one record than 4 GB of records.
+With a relatively large number of users, but nothing like Facebook numbers, I expect to have a DB that looks like this:
+Try 250M or 500M like you're expecting you'll need to handle and see where the bottlenecks are.
+I consider myself a software developer, not a database expert.
+Smaller tables, with much smaller indexes, tend to perform better.
+From a hardware perspective, you'll need to test to see how your platform performs.
+If you can partition it you won't have one table with a whole pile of rows, but potentially many significantly smaller ones.
+I know I'm not Google or Twitter, but my app uses a fairly large amount of data for each user and thus has fairly high data requirements.
+You'll need to pay close attention to your CPU usage and look for high levels of IO wait to know where the problem lies.
+An RDBMS can do a lot of things if you pay careful attention to the limitations and try and work with the strengths of the system.
+I plan to run each of these expensive queries on a batch back-end database that will push its results to a real-time front-end DB server which handles requests from users.
+What I want to do -- two relatively expensive queries:
+What you'll want to do is investigate how your data can be partitioned.
+Do you have one big set of data with too much in the way of cross-links to be able to split it up, or are there natural places to partition it?
+The best is to profile it with the kind of data you are expecting on the kind of system you are wanting.
+One of these tables is used for storing averages -- its schema is bigint(20) id, varchar(20) string_id, datetime date_created, float average_value
+It really depends on what you're doing with the data.
+You can use MySQL Cluster if you're feeling brave, or simply spin up many independent instances of MySQL where each stores an arbitrary portion of the complete data set using some partitioning scheme that makes sense.
+For some batch processing jobs, you really cannot beat flat files, loading the data into RAM, smashing it around using a series of loops and temporary variables, and dumping out the results.
+Have you tried piling more data and benchmarking it?
+4 GB of data takes a long time to stream even if you can find the records you are looking for quickly.
+Whenever possible, split your data across multiple systems.
+Each of these queries currently runs in a few seconds in MySQL on a very low-end machine with a dataset with 100K records in the “big table.” I am concerned about both my ability to scale and the costs of scaling.
+They're exceptionally good at some things, and terrible at others, so you will need to experiment to be sure it's the right fit.
+The average query could be done perhaps once per day.
+I’ve created a web application that I would like to be able to scale reasonably well.

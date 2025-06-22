@@ -1,0 +1,11 @@
+A: I'd use normal SQL Server full and transaction log backups on the primary.
+Do restores with standby when you restore the logs so that you can run queries against them, and after each restore job finishes, query your most transactional table looking for the newest record.
+In a perfect world, you'd only attempt to restore log files that haven't been restored yet, but if you're in a rush, you could restore all of the log files every time - SQL Server will automatically skip logs that have already been applied.
+Rather than focus on the files, I'd focus on the data.
+(Granted, this only works for databases with decent change rates, like adding records every few minutes - if you don't have that, then some DBAs add a dbo.LastUpdated table with a datestamp in it, and have a SQL Agent job that updates the only record in there every 5 minutes to set the datestamp to current.)
+What you're doing is beyond what the built-in tools are normally used for.
+Q: How do I alert when files aren't being restored?
+That example will restore all of the files, though, not just some of them - you'll need to adapt it to only restore log backups in there.
+Q: Do I use SQL Server's built-in log shipping or roll my own?
+If it's older than X minutes, your data may not be coming across.
+On the secondary, start with MSSQLTips' script to automatically restore backup files from a folder.

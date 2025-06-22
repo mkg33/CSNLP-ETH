@@ -1,0 +1,38 @@
+1)  First of all, I know that GPU memory is quite limited as compared to the CPU and it's one of the reasons we don't see GPU path tracers that much in professional industries like Film industry etc.
+How can I gradually improve my image by increasing samples (1,2,4,8,16...) and each time blit the FBO to the default FB?
+I'm not an expert on path tracing, maybe someone with more experience can come up with a better answer, but I'll have a go at answering your questions.
+The current state of the art for production path tracers is probably Disney's Hyperion.
+Or is there any other efficient way of doing this?
+Again can the local memory hold such amount of data?
+The only thing I can think of at this moment is to relaunch the kernel, compute a new color value for a specified pixel and then take the average of this new one and the old one.
+2) The second part I'm confused with is that, you usually hear that you turn on the path tracer and leave it for a few minutes and the Image gradually starts looking better and better as the samples are increased.
+Smarter approaches bias the sampling towards the more significant directions then remove the bias when summing the color.
+For your second question, that is more or less the way it's done.
+so I am currently in the middle of implementing a path tracer for my bachelor thesis.
+I don't understand yet, how should I be implementing this feature from coding point of view.
+Good write up on it here including a technical PDF.
+As far as I have planned out, there will be a single main kernel that will loop over the Image (shared between openGL and openCL) sending out a fixed number of rays (suppose 8) per pixel.
+If you haven't seen it already, Ray Tracey's blog has some good tutorials on optimizing path-tracing for GPU.
+Note that I'm using OpenCL and will be using OpenGL-OpenCL interop for rendering the path traced image to the window created by openGL.
+They mitigate the coherence problems by first generating rays en-masse, then sorting them into bundles with similar position and direction, so that consecutive ray solves are likely to touch the same part of the scene and utilize the cache.
+I'll be loading model files and sending this whole model data to the GPU probably in a data structure (K-D tree etc).
+How is the GPU supposed to store that much amount of data?
+So I was thinking to use a memory barrier and once all the work items have reached it, I can copy the whole K-D tree from global to local memory for faster processing ofcourse.
+Even so, they're bound by memory and I/O speeds, not compute power.
+This can introduce a lot of branching and cache misses if not handled carefully, and negate a lot of the advantages of running on GPU.
+This is a CPU path tracer that runs on absolutely enormous scenes (think San Fransokyo in Big Hero 6), that are potentially too big to fit into even main RAM, and need to be streamed in from disk on demand ('out-of-core' rendering).
+Now these models will probably contain millions of triangles.
+What I am interested in, is there any way to know the exact amount of memory available?
+Secondly I also read that accesses to global memory within a work-group can be coalesced/combined if they are done at the same time.
+Even my crappy 5-year-old midrange laptop card has 2GB, and modern cards have significantly more, so i doubt you're gonna exhaust VRAM with model data.
+As for the local memory question, short answer is no.
+Firstly, for the purposes of a college-project scale path-tracer, VRAM capacity shouldn't really be an issue.
+You just accumulate the light from consecutive passes onto your colour buffer, and divide by the number of passes to normalize - you probably want to use 32-bit float colour channels for this.
+Since ray directions are chosen at random, each group of shaders processing a nearby group of pixels can end up sampling radically different parts of the scene, and hence memory.
+One of the main issues with path tracing is coherence, which is what makes it difficult to do on GPU.
+Group shared memory for shader cores is tiny, you shouldn't be allocating more than a few KB per shader group, so there's no way you'd get your acceleration structures in there.
+And so far I have understood and mapped the general flow of the program except for 2 things.
+Naive path tracers (which is probably what you're building to start with) just choose a truly random sample distribution and weight each sample by its probability.
+After this kernel finish executing I can either blit the opengl FBO to the default or draw the texture on quads whichever is faster.
+A vertex with position, normal, tangent and UV fits in 48 bytes, so with a GB of buffers you can hold ~20 million vertices, not counting the space for your index buffers and kd-trees of course.
+For example, for a diffuse surface, you could (a) pick truly random directions in the hemisphere and weight each sample by $N.L$ or (b) sample in a cosine distribution (more samples around the normal and less around the horizon) and apply full weight to each sample.

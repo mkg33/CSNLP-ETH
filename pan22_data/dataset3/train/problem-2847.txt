@@ -1,0 +1,29 @@
+You just have to download and install it yourself.
+I think AWS should provide a nice framework for attaching EBS, mounting FS from them, etc ...
+http://www.quora.com/Cloud-Management/What-is-Cloud-Management-and-what-areas-does-it-cover
+I work at Scalr, an open-source cloud management software competing with RightScale and I would like to share my experience.
+puppet and chef could be of some help, but that's very involved for deploying a simple LAMP application ...
+Unless you need to self scale/heal/do CDN type stuff, then EC2 is absolute overkill.
+Basically we provides "roles", which are AMIs with a specific behaviour.
+AWS deployement usually involves writing scripts that are run at boot time on your image.
+They provide a lot of scripts that allow to tailor images to your needs, dynamic dns updates, backup scripts, etc ...
+RightScale provides ServerTemplates while at Scalr we handle things a bit differently.
+Let's say I have a simple requirement, a web server and a database server.
+For example, we provide MySQL+Centos, or MongoDB+ubuntu or whatever you want.
+There are 11 Million howtos out there on setting up a lamp server.
+If you want to launch a LAMP server for example, there is a role for this as well.
+If you are interested to know what Cloud Management is more precisely, there is a very interesting question on Quora dealing with this:
+The main thing you would have to watch for is that local disks attached to images aren't resilient.
+Currently the (almost) only way i've seen to achieve that is to have your private key stored on your image, which is really far from being safe and sound.
+For the setup you describe, your best bet would be to use rightscale.
+If it's stopped, the data is gone, so for databases (and static website data), you'd need to add EBS to the loop, or replicate the data from S3 at boot time ...
+From the previous answers, I have read some people recommend using a cloud management platform  and some other disagreeing with it.
+Anyway, no matter the cloud management tool you'll use, it will solve the AMIs problem easily.
+There are images available for the machine types I need already, so do I really need to worry about imaging my servers down so I can re-use them, or is it safe enough to use the pre-built images all the time?
+It's also costly in comparison to less hardy alternatives.
+In addition to that, cloud management softwares provides automations tools like automated backups, auto-scaling, server configuration software support (like Chef or Puppet).
+Unless of course you really do need the ability to scale up replicated servers to churn data, but that is not evident from your post.
+My advice would be to get a virtual server from someone like Slicehost or Linode.
+I do believe cloud management softwares will help you setting up your infrastructure.
+If you cannot afford a cloud management software, RightScale does provide a free account and Scalr is released under the Apache 2 License.
+What are the issues that prevent a nice simple easy to manage deployment?

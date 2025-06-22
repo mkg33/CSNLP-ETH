@@ -1,0 +1,26 @@
+We also tried connecting an external monitor per DigitalRoss, but we never got anything to display.
+The kernel's console driver is considerably less ambitious and less prone to failure than the Xserver driver.
+So the bottom line is that I'm not on the latest nvidia drivers, but at least I didn't have to downgrade anything else.
+At least if you can get going in console mode you have a chance.
+Another way would be to boot up into text console mode rather than X, which I believe can be done by having GRUB boot into "recovery mode".
+(And I should add a note: it looks like I have blamed Xorg, but really the problem is the secrecy surrounding the video chips.
+The package manager downloaded and installed these drivers.
+I got the help of a friend and here's what he ended up doing:
+Because they are afraid of patent wars, they publish no interface info.
+If you've already done that, it most likely is a bug.
+(I didn't have to try that due to the external monitor.)
+Fixing your Xorg Xserver is going to be painful and it deserves a separate SO question so I don't have to answer it.
+The problem you are having is not precisely with Ubuntu, except in the sense that they take some responsibility for setting up Xorg and for including drivers for the text-based consoles.
+The F1 to F6 keys will get you to separate text consoles, and Ctrl-Alt-Fn-F7 will get you back to the GUI.
+I ultimately found out that the issue was that the Dell firmware was providing bogus data on frequency ranges and so xorg was rejecting all the workable modelines.
+Edited /etc/X11/xorg.conf and changed "nvidia" to "vesa".
+This allowed us to run the desktop GUI without getting the problem.
+He then went to the list of available display drivers under the "hardware drivers" menu and we selected a previous version of the nvidia proprietary drivers (just previous to the latest).
+I was able to make the system usable for debugging by plugging in an external LCD to the VGA port.
+On a cast-off Inspiron 8000, notorious for not running Linux (unless you have never-"up"graded firmware) I managed to get Ubuntu 9.04 working after some pain.
+It's really a pity they don't make an exception for the tiny part of the chip that does the 2D stuff, and it's unfortunate that the patent court and other influences have made the USA such a legal minefield.)
+We then changed "vesa" back to "nvidia" in xorg.conf, rebooted, and everything was good.
+What you really need to do is find an /etc/X11/xorg.conf that works.
+The reason I couldn't drop out to a shell from the start was that the video problem seemed to kill the keyboard too.
+Check this thread on UbuntuForums if you want to mess with the NVidia VGA driver.
+If there is a Fn key on your keyboard, you might want to try Ctrl-Alt-Fn-F1 to get to the text console.

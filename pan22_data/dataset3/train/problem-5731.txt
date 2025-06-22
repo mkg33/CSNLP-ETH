@@ -1,0 +1,25 @@
+Note that java.util.List and java.util.Set, in addition to imposing various requirements that the compiler is capable of enforcing, also impose various requirements via Javadoc.
+So I made a class with both Set and List interfaces.
+So, for example, new HashSetList<Object>().equals(new HashSet<Object>()) must return true and must not return true.
+There is a whole bunch of throws UnsupportedOperationException in your code.
+This is efficient neither in memory nor computation.
+In particular, take a look at the definitions of equals.
+In Java, the natural interface for a class that implements both Set and List might be SortedSet, since it would presume that there is some ordering to the elements that would support element access by index.
+I think you should consider dropping that class entirely and use LinkedHashSet or TreeSet, which I think should be sufficient for you.
+Since you said you needed the subList() method specifically, and if you don't mind a slight performance impact, I will suggest extending from ArrayList and overriding the add() methods to do a contains() check first so that you do not have two Collections sitting in a custom class.
+Essentially, the Set interface mandates uniqueness of elements, and the List interface mandates some ordering.
+Because essentially, those List-specific methods are not supported.
+The other critique I have of your implementation is the duplication of elements in collections within the class.
+Otherwise, perhaps a secondary 'light' Set<Integer> storing the hashCode() values of the List elements might be enough to act as a simpified, slightly better-performing (borrowing your words, 'caveat emptor' :p) duplicate values checker.
+I'd also be interested in general comments, if anyone cares to offer them.
+I needed a collection that was ordered, but also guaranteed duplicates did not occur.
+More specifically, everything that has to do with specific indexes seems to be unsupported.
+There's probably lots of ways it could be made more fancy.
+I think what you are looking for is LinkedHashSet which is a Set that preserves the insertion order of elements that are added to it.
+This is a fairly simple implementation, designed to meet my immediate needs.
+I'm interested if there are better ways of doing this, maybe in the standard API or some library.
+The source code of ArrayList and HashSet are both available, it would be instructive to study those if performance is a concern.
+All this makes me wonder: Should you really implement the List interface?
+If your implementation does not satisfy those two requirements, then it is not adhering to the contracts of the interfaces.
+Your class does not satisfy those requirements, and in fact it is not possible for a single class to satisfy the requirements of both interfaces.
+I concur with @Simon, using LinkedHashSet or TreeSet might be a better fit if you wanted more of the Set semantics.

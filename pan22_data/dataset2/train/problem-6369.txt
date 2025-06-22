@@ -1,0 +1,14 @@
+These can be applied at the group level, so you need to ensure all the users you wish to affect with this new policy are a member of the appropriate group.
+If you're running on Windows 2008 or 2008R2 then you can still use Fine-Grained password policies, but it's not quite as easy to manage. To be honest, my advice at this level would be to think about upgrading but there are some guides around that might prove useful here too.
+I tried "Create a GPO in this domain, and link it here" directly on the OU, but it look like the GPO is not overriding the default one.
+You apply a GPO to an OU by simply linking to the GPO you've created at the appropriate level/OU in the Group Policy Management Console.
+The GPO I want to create is pretty simple, it just set the minimal password length. Given that I don't want all the users to have the same password policy, I want to apply the GPO to only users that are inside a specific OU. 
+This page  has an example powershell script that will run as a scheduled task and update the members of a group to include only the members of an OU.  That will keep the group and OU in sync as you add/remove people from the OU.
+Secondly, if you want more than one OU To have the GP applied, you can select the OU and link existing GP fro the console.
+However, this will not work for what you're trying to do. GPOs pertaining to Password policies can only be set at the domain level. In order to apply a policy to a subset of domain users then you need to use Fine-Grained password policies.
+As of Server 2008, there are Fine-Grained Password Policies that can be used to set password requirements only for specific parts of the domain:
+Hoping that you have created the Fine grained password policy, In the GPMC console, you have to create a new GP under the OU where you want to apply the GP.
+Once you have defined he GP, select Link Enabled, if there are any Sub-OU's, you can select "Block Inheritance". So Ideally only the OU, where you have applied the GP will b linked.
+To do this on a Windows 2012 domain, do the following from a DC or Windows 8 workstation with RSAT installed:
+If your DCs are running an older version of Windows (or you're running newer DCs but the domain functional level hasn't been upgraded) then you've got no choice about upgrading at that point.
+Even then, you can't directly apply them to an OU.  They apply only to users or groups - so you have to create a group with all the people you want it to apply to.

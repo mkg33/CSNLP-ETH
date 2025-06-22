@@ -1,0 +1,23 @@
+If you have an enabled, validated, NOT NULL constraint on col, and your predicate is col is null, the database knows that column can not contain NULL, so it will return 0 rows without actually executing the related steps.
+https://docs.oracle.com/cd/B19306_01/server.102/b14200/sql_elements005.htm#i59110
+If you have an enabled, validated constraint on a column, the NULL$ column in the COL$ dictionary table for that column is set to 1.
+The database can skip entire steps while executing a SQL statement based on a constraint.
+But if your actual query is more complex than you posted (otherwise do not bother with this), and have transitive predicates, you could try the workaround written in this, and disable this behaviour by setting event 10195
+This will not help me, because I corrupted the dictionary myself.
+There was a bug in 10g that caused wrong results with the optimization for CHECK constraints with NULL on transitive predicates:
+It is possible to define constraints that are not validated (existing data isn't checked when the constraint is created) and/or disabled (not enforced by the database when inserting/updating).
+It is fairly simple to reproduce these wrong results by corrupting the data dictionary manually, but I do not know what caused it in your environment just from this information.
+Since the optimizer assumes there no NULL values, it may choose a plan that would not find them.
+No FILTER this time, and the table was accessed (Starts 1 on Operation Id 2 - TABLE ACCESS FULL).
+These constraints can also be marked as RELY which means the optimizer assumes that they apply.
+Returns 0 rows, the table was not accessed at all (Starts = 0 on Operation Id 3), because of the FILTER on Operation Id 2: NULL IS NOT NULL, which obviously to FALSE.
+Also, WHERE col = '' will never return results, because it is basically WHERE col = NULL.
+I do not think this caused by how data is stored, rather just something about the constraints.
+If you use NVL(col, 'N') instead of col, then the database is not able to use this kind of optimization, will access the table and return the correct result:
+The proper method for enabling that constraint should be (which obviously fails):
+As already mentioned in comments, in Oracle databases, empty/zero-length strings are treated as NULL.
+You generally only want this situation on a datawarehouse / reporting environment where you can be sure the data conforms to the constraint any you don't want to incur the overhead of checking it.
+It is possible that the load mechanism has been disabling the constraint, loading/appending data, then re-enabling it with the novalidate setting.
+You might want to look at the constraint definition.
+Bug 5462687 - CHECK constraint can cause wrong results (Doc ID 5462687.8)
+But even with a disabled, non-validated constraint, corrupting NULL$ is enough for the database to return wrong results.

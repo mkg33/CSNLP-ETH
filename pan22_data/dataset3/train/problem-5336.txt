@@ -1,0 +1,24 @@
+Instead you check every frame if the ball is partially inside the wall.
+When this script tells a ball to move based on the last collision, then it may be moving to penetrate into another ball, which will then send the ball back to collide with the first.
+You can modify the mass of the objects to help with this.
+That will cause them to jump back slightly less drastically, or reduce the speed in which they collide in the first place.
+This code is taking the collision between two spheres and moving them based on their masses and velocity.
+Step 2 may have moved Ball #B into Ball #A, causing interpenetration.
+Here's a really basic illustration to show why there is penetration between a blue ball and a green wall.
+At frame 4 there is no penetration, but frame 5 will have penetration.
+The problem with that is you need to know what direction to check.
+SphereCollisionImplicit() gets called after the spheres have moved.
+There's no way of knowing that frame 5 will collide so you can't just say stop when it gets to the wall.
+There is interpenetration because every time a ball's position and velocity is changed, it needs to be checked to see if it has collided with any other ball that was checked earlier in the loop.
+The alternative is to check each frame how far you are from colliding in a certain direction.
+That movement could have ended up with collision & interpenetration, this method resolves that.
+You should read up on Speculative Contacts for catching when collisions will happen before you end up with this kind of penetration.
+In this scenario, Ball #B bumps into Ball #C, richocheting Ball #B into Ball #A, richocheting Ball #A into Ball #C!, which hits Ball #B again....
+Do you also need to re-check against all the walls after each richochet also?
+The ball is moving at 1 foot per second and you are running at a framerate of 1 frame per second.
+This would not work in your situation so the route you are taking is the right one.
+To fix, I think whenever a ball is moved, it needs to be re-checked against all the other balls, whenever it is moved.
+The drawback of this approach is the jitteriness that you are probably experiencing.
+This is how most collision detection algorithms work.
+If it is, move it back by the amount of penetration and apply the reflective velocity.
+In this example the center of the ball is 5 feet from the edge of the wall.

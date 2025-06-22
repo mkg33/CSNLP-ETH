@@ -1,0 +1,18 @@
+a kind of "flashlight" always shining straight into the camera direction), you don't really have to transform it at all.
+Basically N would be the normal vector and V is vector pointing towards camera in view-space and it is calculated as:
+I am a bit confused in terms of directional light calculation in OpenGL.
+the sun as the directional light example par-excellence), you just have to transform it into view space (e.g.
+It just depends on which space your light directions are actually specified in.
+I tried both and they don't seem to make a difference ...
+You compute both your normal and view vector correctly in view space in order to perform your lighting computations in view space.
+If so, is there a performance hit to having multiple lights that results in having array of varying variables being set to the fragment shader?
+And if it's local to some specific scene object (more appropriate for point light sources, though), you transform it by that object's modelview matrix.
+Usually it's best to transform the light direction into view space before uploading it to the shader (from whatever space it's originally in in the scene, likely some kind of object space local to a certain light source, but in case of a directional light maybe already in world/view space).
+by multiplying it with the camera/view matrix) right before uploading it into the shader (i.e.
+Here's part of my fragment shader that does lighting for directional light:
+Generally we care about the direction of the directional light and we use it with the normal and view (toCamera) vector to calculate lighting.
+Let's say I do my calculation in view-space ... would I need to multiply the direction of the directional light with ViewMatrix (and then normalize) ?
+So it depends on how you actually transfer your light direction into the shader.
+So you need your normalized light direction in view space, too.
+So what you do depends on the space in which your light direction is stored in the scene.
+Should I be multiplying my dir of directional light in the vertex shader?

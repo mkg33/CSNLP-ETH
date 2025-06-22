@@ -1,0 +1,15 @@
+You need at least a 3.0 kernel and glibc-2.14 for this to work.
+"ln -s /proc/1/ns/net /var/run/netns/default"  <----- Is not recommended at all.
+Newer distros/kernels support the nsenter command which, should do what you want, providing you are root when you do it.
+Personally I always ssh to the main namespace, then I can always get back to the default by typing exit and then re-entering the namespace if required.
+As a last resort so the ln as above, but I would suggest removing it as soon as it is done, and before any changes occur to any ns.
+You can get the pid form doing 'ps aux' or even a top if you wanted.
+If you have ssh to a netns, then ssh to the interface of the default ns and do what you need to do there.
+Otherwise the counter will be corrupted and cause issues.
+If you are in a separate PID namespace as well, returning to the default namespace is not as simple.
+The counter for the code that outputs the "ip netns show"
+I don't know if there is anything distribution specific about the approach.
+I found that you can return to the default network namespace with two simple commands:
+RHEL 6.5 provides support for persistent namespaces but not support for moving existing processes into new namespaces.
+This method obviously assumes that you can see processes outside your own namespace through the proc file system.
+if you have exec a bash shell, simple exist out of the bash, exit.

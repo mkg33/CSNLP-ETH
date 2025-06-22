@@ -1,0 +1,10 @@
+I figured getting Cacti to monitor the Memory usage and Load Average would do the trick, but the graph being generated seems to bear no correlation to reality.
+According to top my load average right now is hovering at around 5, but cacti is graphing it at 0.1!
+cacti has a bad default graph which stacks the 3 values from load average.  The total is meaningless, and that is what you are deceived into looking at.  Change the default graph to use lines rather than stack and you'll see something better.
+I've just set up cacti to monitor CPU and memory usage on a server that I think needs to be upgraded, but to be able to make my case for funding I need hard facts.
+You might want to look at Munin, which is very easy to setup, especially if you're just running it locally.  It will let you quickly start tracking CPU load and other resources without having to mess with SNMP and remotely grabbing resource data.  There are packages for RedHat that should be quite simple to install.
+I suggest you stop thinking on a technical solution and start building a business case around a different indicator, preferrably one that has a correlation to an economic or customer satisfaction indicator -- e.g. maximum response time. Most likely this will get your message through to the people that manages the money.
+Bear in mind that load (e.g. /proc/loadavg) can be averaged on different intervals (tipically 1, 5 and 15 minutes). Add the fact that averaging these figures once again over a time series tends to lower the overall indicator, and you may have a hard time making your case for  getting an upgrade.
+This will make your 1 minute average a semi-transparent block, with your longer averages neatly trailing behind. The final result looks like this:
+How can I get cacti to monitor the real load averages on the server? The server to be monitored is running RHEL5 and using net-SNMP as the SNMP deamon.
+I'm assuming you're talking about the ucd/net - Load Average template. The reason for wrong values is that it displays 1/5/15 averages separately, and then adds them together. The values are technically correct, but look weird. This is how you would correct the issue:

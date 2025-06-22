@@ -1,0 +1,18 @@
+I'm mostly familiar with MySQL and MS SQL, so I can't speak to the performance of PostgreSQL on multi-column indexes.
+If this is true, the usual thing to do would be to 'normalize' the data.
+If that property changed to allow users to join more than one group, you would delete the group_id column in the users table and create a new 'mapping' table with two columns: user_id and group_id
+Would it be faster to have a multi-column index and query for both, user and group, instead of just using a single-column index and querying only for the user?
+Whenever I query for a user, I also know his group.
+Each user is in exactly one group, not more, not less.
+In this case, you could move the relationship between users and groups to a different table.
+I have a table that has a field user and a field group (among others).
+This assumes the property that you mentioned, where one user is a member of only one group.
+You haven't specified whether the user or the group is the most tied to the row in your current table, though I'll guess it's probably the user.
+However, my guess is that as long as the number of users is small (< 100,000), a single-column index on user would work well.
+If your data is organized this way, then user names and group membership can change without modifying all matching rows in the data table.
+A table layout with users, groups, and data would usually look like:
+I also thought about separating users and groups by putting them in different tables but as both numbers can grow indefinitely, I couldn't think of a way to do that without having an indefinite number of tables.
+Here is a more in-depth explanation of DB normalization:
+https://www.essentialsql.com/get-ready-to-learn-sql-database-normalization-explained-in-simple-english/
+It sounds like the user and group values are repeated in your table.
+My idea was, that searching for the group first and then searching for the user only in those results would be fastest, but I'm not sure if any of the index types can actually do that.

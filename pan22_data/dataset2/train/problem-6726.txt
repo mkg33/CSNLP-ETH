@@ -1,0 +1,9 @@
+While checking the routing tables of the four routers, focus on the network mask of the routes and if the router ist able to route "classless". 
+"TTL expired in transit" is related to the TTL value of the packet; every router it passes through lowers it by one, if it hits 0, the packet is returned to the sender. It prevents infinite loops, where packets travel in circles forever.
+On older Ciscos you need to explicitly enable this, otherwise they will route whole classful networks instead of your subnets. E.g. configuring 10.20.30.0/24 will result in a route like 10.0.0.0/8.
+You've got a circular route in your networking configurations, check your routing tables on the involved devices.
+IP packet has a TTL flag. This one is decreased by 1 each time the packet is routed. When the value become 0 the router drop the packet and send an ICMP message Time-to-live exceeded in transit.
+You make no mention of protocol, but I find that the overuse of static routes leads to the error quite often. Using a dynamic routing protocol should solve this with little effort from the administrators. 
+This is done to prevent packets to be routed infinitely when there is routing problem on networks. This is your case here, you have a routing loop so that the packet never reach is destination and is finally dropped by one of the router because the TTL reach 0.
+I would simply say to start at layer-1. Makes sure the router is on, and that the port linking it to the network is up up. Then map your route from your ICMP source to the destination router, examining the routing table at each hop along the path.
+Using above commands on all the four IPs that are repeating you should see which routing table is wrong. One of the four devices / hosts involved should ideally route traffic to destination you are pinging using some other gateway. 

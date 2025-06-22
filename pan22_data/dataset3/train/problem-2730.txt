@@ -1,0 +1,22 @@
+So, yes, "useful," but it isn't possible to say whether it is sufficiently useful to justify the cost in this particular geographic region.
+It only supports the REST interface, not the web site hosting feature, but this is fine if you aren't using features like redirects and index documents.
+From a performance perspective, yes, it is likely useful.
+For request rates below 100 req/s, no special considerations are needed.
+In Mumbai, this is $0.04/GB + $0.1093/GB for downloads.
+We expect thousands of users to access these files only from India.
+When S3 Transfer Acceleration is used, the DNS logic that CloudFront uses to send requests to the nearest edge is instead used to determine the best way to connect a given viewer back to the S3 region -- so it may connect the user directly to S3 (in which case, you won't be charged the $0.04/GB bandwidth fee for the acceleration feature for that request), or it may route it through the Edge Network (in which case, you will).
+The advantage here is that the browser is potentially connecting to a server in an edge location, which proxies the connection from there back to S3.
+When you enable this on a bucket, you also change the bucket endpoint to bucket-name.s3-accelerate.amazonaws.com.
+(Hot keys and index hot spots are not as easily scalable as well-distributed keys).
+Given your geography and the peculiarities of the bandwidth pricing there, this may be a good place to start.
+S3 has best practices guidelines for buckets that anticipate request rates in excess of 800 (peak) or 300 (sustained) GET requests per second when CloudFront isn't also used.
+The service will scale beyond these values, but following the guidelines helps it scale more effectively.
+However,  there is a premium cost on CloudFront of $0.17/GB downloaded from edge locations in India, compared to $0.1093/GB downloaded directly from S3 in Mumbai.
+Would the latency be reduced if we are using CloudFront?
+(When using CloudFront + S3, the S3 bamdwidth charge doesn't apply).
+An additional option is S3 Transfer Acceleration, which selectively routes requests over the AWS "Edge Network" (in other words, the CloudFront transport network) without any actual caching.
+We are serving videos from a S3 bucket(in Mumbai) to users in a single region(India).
+Can S3 handle the bandwidth if we are not using CloudFront?
+CloudFront has 5 edge locations in India currently (Chennai (2), New Delhi (1), and Mumbai (2)) so this would suggest that lower latencies are achievable using CloudFront simply because your content is likely to be closer to the users (depending on their geographic distribution)...
+The idea here is that the feature automatically bypasses itself for requests where it will not likely help, based on the geolocation of the requester relative to that of the bucket.
+This causes the traffic to travel on the AWS network for as much distance as possible before being handed off to the public Internet, which can significantly improve transfer times by optimizing the transfer and handling packet loss at an intermediate location closer to the viewer.

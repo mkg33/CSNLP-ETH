@@ -1,0 +1,14 @@
+I read that the HFS+ filesystem I'm using has no limit in depth, but maybe there is a limit in path name length ?
+If the deepest directory path were /Users/danielbeck, the result would be 2
+I searched on Google and forums but couldn't find anything conclusive.
+EDIT: Someone tried by filling up the fs but it's a dirty solution...
+So I need to know how many levels of folders there are between / and the deepest folder.
+Short version: Is there a command and/or set of commands and/or utility to know what is the maximum depth of folders on my filesystem ?
+Long version: I'm on Mac OS X. I'd like to know what is the deepest folder there is on my system (I don't care for access rights).
+This is because I want to launch a command on the root / and it will be recursive and I don't want it to hang (unexpected results).
+find / -type d | sed 's|[^/]||g' | sort | tail -n1 | egrep -i -o / | wc -l
+The following traverses your entire file system looking for directories only, removes everything that's not a forward slash (path item delimiter), and prints the longest trail (at least on my system, sort behavior may depend on locale).
+Count the resulting slashes, which is one for every directory except root, so if the deepest directory path were /Users/danielbeck, the result would be //.
+Actually, finding the maximum depth on my actual system would be enough without testing out the limits.
+Based on Daniel Beck's answer but for those who like counting machines
+Of course, there could be files in that directory.

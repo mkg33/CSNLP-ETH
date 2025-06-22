@@ -1,0 +1,7 @@
+I want to allow connectivity between two hosts which reside on two different networks. Each network is individually managed, so they may have conflicting IPs.
+My understanding is that NAT is the textbook way of doing this, so to the best of my understanding I should have a machine that has two interfaces, one on each network, like so:
+Now, 1.1.1.1 wants to communicate with 2.2.2.2:8080 by redirecting 1.1.1.0:1111 to network B's 2.2.2.2:8080.
+So the NAT machine has eth0 connected to network A and eth1 connected to network B. Suppose that the NAT machine's IP on network A is 1.1.1.0 and on network B it's 2.2.2.0.
+If I understand the chains correctly, then when the a packet to 1.1.1.0:1111 arrives on eth0, its dest IP will be changed to 1.1.1.1. At that point, the packet has to be routed, but since 1.1.1.1 exists on both networks, how will the NAT machine know which network to route the packet to? Can I force it to route such packets through eth1? How do I set up my routing table to do that?
+What happens, however, if the IPs on both networks are identical (as can happen since the networks are independent)? The above turns to:
+I suppose that the routing logic might guarantee never to route a packet back to its incoming interface, but this won't be good enough if I want to use the same NAT machine to connect network A to networks B and C (i.e. have three interfaces): in that case, the incoming interface would be eth0, and the outgoing interface can be either eth1 or eth2: how can I choose the one I want to use?

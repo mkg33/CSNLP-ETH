@@ -1,0 +1,11 @@
+I realize that I could protect the entire site with ssl, but the only thing I'm really concerned about are the credentials themselves.
+See, e.g., pubcookie http://www.pubcookie.org/ or Apache2::AuthCookie http://search.cpan.org/~mschout/Apache-AuthCookie-3.15/lib/Apache2/AuthCookie.pm
+Our intranet use mod_ldap to authenticate users to our internal Active Directory server as follows:
+Really, though, what is the problem with using SSL everywhere?
+Once the user authenticates with basic authentication, his or her browser will send an Authorization header with each subsequent request, containing his or her password in the clear (only Base64 encoded).
+You can solve this problem by using cookies rather than basic auth.
+You will never be able to use digest authentication with LDAP because digest auth obscures (via MD5) the password so it cannot be compared with the ldap password.
+Note: I've tried substituting "Digest" for "Basic", but that doesn't work.
+So the only way to protect the password is to force HTTPS on the entire site, at least after they authenticate.
+What is the best way to protect my AD credentials without using https:// for the entire site?
+We want to allow our users to hit our site over the internet, but unfortunately Basic authentication is done in plain-text, which would expose our AD credentials on the net.

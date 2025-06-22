@@ -1,0 +1,8 @@
+Again, mysqltuner is for reference, if you don't see  performance issues you don't need to blindly follow the suggestions.
+So there's tuner's logic, if the (Created_tmp_disk_tables/Created_tmp_tables)*100 is more than 25(%) then increase your tmp-table size (upto max 256M).
+I use MySQL version 5.6.25-0ubuntu0.15.04.1 on 64-bit Ubuntu 15.04. I have 2GB RAM and the disk is SSD (so, in my mind, writing to disk isn't that costly). I currently have databases for just two small Wordpress blogs. I wasn't trying to get too deep into optimizing this but I encountered what I consider to be strange behavior.
+There is a page in manual covering internal usage of tmp tables. I will try to give a short overview:
+Also note that tmp table has nothing to do with InnoDB vs MyISAM (if you mean that in your last line). You might want to read about internal temporary tables.
+Do not use any suggestions from mysqltuner unless you understand what they mean - mostly they are unfortunately nonsense.
+My problem is the tmp_table_size (and max_heap_table_size). Every week I've been increasing it and MySQLTuner keeps suggesting larger. (As you can see, it now proposes >128M.) I can see from the above output that it's writing tables to disk, which I assume is the reason for the suggestion. However, in my understanding, this only relates to the MyISAM engine, while all of my Wordpress tables are using the InnoDB engine. I assume there are some internal MySQL tables that may be using MyISAM, but I still don't know why MySQLTuner thinks I need such a massive table size just for that minimal stuff.
+Probably Wordpress uses such queries and tables that MySQL has no chance to actually use the MEMORY engine in most cases.

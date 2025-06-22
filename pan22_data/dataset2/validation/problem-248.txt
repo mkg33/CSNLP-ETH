@@ -1,0 +1,6 @@
+When you restore the backup in an emergency, you don't want to wait for the indexes to rebuild, and you're going to suffer abominable performance until you do.
+Honestly, you really don't want to do this, even if you overcome the other issues others raise here.
+Then you stagger your backups so that you're doing filegroup backups of the primary every night, and transaction log backups every X minutes.
+If you switch over to full recovery mode, you can do this with filegroups, but it's really, really clumsy.  You leave the data in the primary filegroup, and put the indexes in a separate (non-default, that's the key) filegroup.
+I can't think of a situation where you'd want to restore a backup without indexes, so in all cases you'll really want to back them up at the same time.
+When disaster strikes, you restore the primary filegroup by itself.  The data is suddenly online, but the indexes are not.  However, to get back to normalcy, you'll need to export that data into a new clean database and add indexes from there.  You can't bring the database completely online without restoring all of the filegroups, and you can't say "I don't need that other filegroup anymore anyway."

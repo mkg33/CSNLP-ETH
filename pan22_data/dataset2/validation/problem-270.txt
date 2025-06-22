@@ -1,0 +1,11 @@
+Personally I probably would be cautious when using it on a production machine where having a 100% reliable firewall is important. But it's worth a look nevertheless.
+In the interest of continued evangelism of the cause, I suggest leveraging Puppet to do your lifting. There isn't presently a good script for handling iptables 4 and 6 rules, but it wouldn't be too much of a challenge to write one either once you adjust to the language.
+The ultimate bonus at the end of this is that the firewall rules for a service can be written into the service definition and automatically deployed and removed when a service is deployed or removed.
+While looking into this question I stumbled across ufw (Uncomplicated FireWall) from the Ubuntu folks.  With IPV6 enabled in the ufw configuration, ufw will manage iptables and ip6tables rules in parallel.  This means you can do something like this:
+Ufw also supports application profiles, which allow you to create named groups of ports.  You can do this:
+Mediawiki's public git repository is a fantastic mine of configuration patterns and includes an iptables class that will provide a good base to start with. You could edit it to apply rules to both stacks at once by default and have a flags for different rules when you're basing things on IPv4 or IPv6 rules.
+Since it is still missing from the list: Shorewall is a widely-adopted and regularly updated feature-rich packet filter configuration tool. It had IPv6 support for a while now.
+Additional documentation can be found at the official FireHOL documentation or at the additional Readme about IPv6.
+I was also recently confronted with creating iptables-rules for both, IPv4 and IPv6. After some searching I ended up using the IPv6 FireHOL branch by Phil Whineray.
+Firewall Builder has exactly what you need. You can create one rule set, mark it as "combined ipv4+ipv6" and place your ipv4 and ipv6 networks assigned to the same segment (such as "database network" etC) in the same rule. The program then generates two separate iptables configurations one for ipv4 and another for ipv6. This chapter of the Users Guide illustrates this, although it uses Cisco routers access lists as an example. It works exactly the same for iptables.
+Unfortunately the official version lacks support for IPv6. But Phil Whineray has added support in an unoffical branch.

@@ -1,0 +1,17 @@
+So if your hardware is lowest-bidder-specials be careful in your testing before deployment.
+I have to disagree with both existing answers sorry, Linux doesn't come with any cluster-aware filesystems enabled as standard, some don't come with one at all in fact, and if you have two systems that think that they have exclusive access to a disk device then you will get corruption on that disk unless you use a cluster-aware filesystem.
+http://en.wikipedia.org/wiki/Fencing_%28computing%29#Approaches_to_fencing
+You'll be fine as long as you don't run into SCSI reservation conflicts.
+Can I make two partitions and mount the first on one server and the other on another server?
+I want to use half of it on one server and the other half on the other server, but I cannot modify anything on the storage.
+I have two Linux servers which have connection to the same disk device, on a fiber channel connection (I didn't configure that, it was already there).
+Unfortunately the servers also don't see each other so NFS is also not an option.
+So either ask your storage people to give you exclusive LUNs for each server or use a cluster-aware filesystem.
+Just be sure you do your partitioning from only one host and then only mount the partitions from consistent hosts and you will be fine.
+And just to clarify, even partitioning this will be of no long-term benefit, one machine will at some point do something and corrupt the other partition.
+I can see on both servers the disk showing up as /dev/mapper/something.
+The strict answer is that as long as the two partitions (A and B) are only accessed from their own server then you will be fine.
+That said this configuration is very common, but again you need to use a cluster-aware filesystem such a OCFS2 or similar.
+(Or, as @caskey posted, it's controller that can properly handle IO from different devices to the same target.)
+Devices can issue SCSI reservations on targets that prevent other devices from doing IO to that target.
+Note, some Really Cheap San disk controllers don't accept multiple simultaneous different source hosts.

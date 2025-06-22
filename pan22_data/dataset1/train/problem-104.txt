@@ -1,0 +1,7 @@
+After days of researching I haven't found the reason at the lowest meaningful level but slightly higher than tat.
+The script worked when the user it was logging in as was already logged in interactively on the machine. If I sign out of the machine, then the script stops working.
+This was a problem with WinRM and one of the workarounds was to use CredSSP instead. Another way to resolve this problem is to change the whole solution to an HTTP service or a message queue consumer.
+I had an error which was similar to this, and when I searched for it nothing relevant except this came up, so I just wanted to post my solution in case anybody else comes by here with my problem.
+The difference is the error code which is "(-2146893792/0x80090020)" instead of the one in the original post.
+The issue turned out to be when I converted from JKS to PFX for the certificate store. I used an older version of Java Keytool to do the conversion which did not warn me that changing the keystore password is different from changing the private key password for the certificate. So I ended up with different passwords and most tools (including SignTool) assumes that the passwords are the same.
+Doing a new conversion making sure to set both private key and store password to the same thing solved the issue. 

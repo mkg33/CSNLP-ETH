@@ -1,0 +1,11 @@
+But then I needed to override my 587 to not do the filtering -- so I added -o smtpd_sender_restrictions= to clear it:
+If this server is the only legitimate source for email from your domain example.com, you could simply block all messages using from the domain, unless from own networks or an authenticated user, using check_sender_access.  I personally put everything in smtpd_recipient_restrictions to get more details in the logs before rejecting the connection. For main.cf:
+To test, use 587 to send email to someone in your domain, then telnet to port 25 and see if you can hand spoof one:
+Your email client is showing the time and date provided by the Date: header rather than the time the server has actually received the mail. You can look at the Received headers to see the dates added by the servers the message has gone through, but the email client trusts the Date: header.
+That is pretty common spammer tactic. You can limit it by requiring all senders to be permit_mynetworks and permit_sasl_authenticated this is set via thesmtpd_sender_restrictions 
+The /etc/postfix/access/sender_access is a lookup table (remember to postmap) of white- and blacklisted MAIL FROM addresses, domains etc. For blacklisting mail from this domain, e.g.
+This means you have methods for rejecting such messages right after MAIL FROM (or RCPT TO, as I do). Regarding the headers like From: and Date:, they can be spoofed and contain anything. Additional spam filters like Spamassassin can perform tests against these, but that's another story.
+The methods aren't in order: the first one is easy to add, but the second one is better in every way.
+If you have other sources for mail, you can't use the previous method. Also, SPF is something you should really implement to prevent your domain to be used for sending spam. First you add a TXT record for your domain listing all the authorized senders. See SPF Introduction and Record Syntax.
+One more thing that I've seen : according to my inbox, the above email has been received today at 12:40 pm even though I received it at 10:15 am. Is it also possible to forge the received time in the email ?
+My environment already has an outward facing port (25) for incoming mail and an another port (587) for authenticated sending.

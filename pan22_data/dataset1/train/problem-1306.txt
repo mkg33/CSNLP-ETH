@@ -1,0 +1,27 @@
+Immediately I'd ask if there's any specific style guide that allows
+these vastly different names, otherwise I'd suggest following IDE hints
+and/or a linter and rename the variables and methods to be more
+Also, "stuff" is not a great name for anything ... what stuff are we
+talking about?  In fact the first line of CreateStuff already shows
+that there's a better name, tableName for the parameter, probably
+createTable for the method.  yrmnth is especially bad too, three
+vowels saved from yearMonth and in the process made the name
+Seems like the spark session is created twice and the comment even says
+so - I'd suggest passing the variable into the method, that's fairly
+straightforward by either passing it as a parameter, or extending App
+The SQL queries are created by concatenating strings and there's usually
+columnCount is unused, selectColumns2 has 2 as the suffix, even
+though there's no 1, that can just be selectColumns.
+The loop for columnStack could be in its own method so it's a little
+small section that could be tested on its own too, returning what is now
+collist, formatColumnsList(columns: Seq[String]): String perhaps.
+Again, if a query builder could do all this it would be a bit cleaner
+The construction for yrmnth is pretty convoluted for what it does, I'd
+That would require a recent Java for java.time.LocalDateTime and
+java.time.format.DateTimeFormatter.  But even without there should be
+better ways.  If everything fails the whole section should at least be
+in its own method, e.g. formatDate(calendar Calendar): String.
+The bottom part of unPivotDF uses a temporary table - is that the best
+way to go, or could the data be inserted directly?
+tablename doesn't need to be a var, it's never mutated, and it appears to be totally unneeded. Use the method's passed parameter directly.
+column_stack is also unneeded. You can go directly from selectColumns2 to collist without an intermediate variable or dropRight() adjustments.

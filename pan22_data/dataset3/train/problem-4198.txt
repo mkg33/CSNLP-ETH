@@ -1,0 +1,14 @@
+No matter what file/IIS permissions I set, the web servers can't get access to the images.
+I have 2 web servers load-balanced, trying to access images from a 3rd server using pass-through authentication.
+The user must be added to the IIS_WPG group on each server.
+It's possible that you will still get Code Access Security (CAS) errors.
+Then make sure that impersonation is set to false, or isn't set (false by default).
+Some things run as the website's anonymous user account, which is IUSR_computername, and if you set impersonation="true" then most things will run as the IUSR_computername.
+This means that the computername$ account is seen across the network.
+By default, most ASP.NET functions run under the app pool identity, which, by default, is NETWORK SERVICE.
+If you can place your site in a dedicated app pool, my recommendation is to create a custom user for your app pool, using passthrough auth as you suggested, with the same user/password.
+Just what user does an anonymous asp.net website run as in IIS 6?
+If you create a new user with the same username and password on all three systems, and set that as the identity for your app, you should be able to access the files on the backend server without issue.
+The user IUSR_computername, which is a member of the Guest group.
+The servers are in a workgroup as my host does not support domains.
+If so, you'll need to grant the UNC path access using the caspool tool.

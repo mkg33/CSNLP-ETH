@@ -1,0 +1,14 @@
+The only way to fix this problem is to get a new certificate that has both domain.com and *.domain.com listed.
+That part is working properly for both http and https - it does the rewrite - but it doesn't quite solve the issue that I wanted fixed.
+This means that the only way for you to solve this, is to get a certificate that is also valid for domain.com.
+SSL negotiation always happens before HTTP request is started, there is no way to avoid that.
+However, in my experience, people rarely type https:// in their address bar, so if you just make sure that http://domain.com is redirected directly to https://www.domain.com, there is no problem.
+As Tero already pointed out, SSL negotiation happens before mod_rewrite kicks in.
+Is there a proper way to send traffic to https://domain.com over to https://www.domain.com before attempting to do the SSL negotiation?
+(that's the one for 443; the one on 80 just omits the 's' in 'https').
+If they choose to accept the certificate and continue, the rewrite goes properly and the normal lock icon replaces the angry lock icon.
+Specifically, when someone goes to https://domain.com, they'll get a certificate warning because the wildcard certificate for *.domain.com doesn't match just domain.com.
+I have an Apache 2.2 server and a wildcard SSL certificate for *.domain.com and have set up a mod_rewrite ruleset for both 80 and 443 that will properly redirect requests for domain.com to www.domain.com:
+It looks like mod_rewrite is doing it after the fact.
+Because Apache supports SNI, it can present a different certificate for a different hostname, so you may just get yourself a cheap or free additional certificate at a company like StartSSL.
+The problem is that they get the warning in the first place - they have to choose to ignore the certificate warning before the rewrite is done.

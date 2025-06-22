@@ -1,0 +1,16 @@
+So even if you attempt to ping something in Network 1 that is not part of Network 2 (something in the range of 192.168.10.9-192.168.10.127), the return traffic from Network 1 to Network 2 will never reach Network 2, as Network 1 believes Network 2 (192.168.10.0/29) is part of its directly attached network (192.168.10.0/25).
+Endpoints get an IP address, subnet mask, and default gateway (and usually DNS servers).
+Router 1 will need to have a static route for the 192.168.10.0/29 network and R2 will need to have static routing for the 192.168.10.0/25 network.
+From my experience the problem with people learning static routing is that they forget that routing is a two way process.
+There's no sens and value  in configuring the settings via the Packet Tracer GUI.
+In case of multiaccess networks like Ethernet it's not recommended to specify the outgoing interface because this will create a directly connected static route, so the router will try to ARP ALL destination devices.
+But the obvious thing I see is that your two subnets overlap.
+Once you've got the link between the routers working, you need to apply IP addressing to the endpoints (not the switches).
+Like everybody else said, we need to see your configs.
+So in your type of configuration you could go for either the next hop ip or outgoing interface.
+First, validate that you can ping from one router to the other.
+Typically this is automated using DHCP which can be configured in the routers.
+Configuring the routers you can specify either the Next hop IP address or the outgoing interface.
+It can cause performance issue and if ARP proxy is disabled on R2 all ARP requests  coming from R1 will fail.
+All you need in terms of routing on the default gateways is a static route on each one, telling it the LAN facing subnet which is accessible across the router-to-router link.
+Network 2 (192.168.10.0/29) is part of Network 1 (192.168.10.0/25).

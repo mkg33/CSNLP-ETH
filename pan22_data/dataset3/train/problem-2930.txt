@@ -1,0 +1,35 @@
+So cars shouldn't register themselves to the scoreboard.
+carSpawned is subscribed by the sender and carFinished is subscribed by the receiver.
+I haven't seen your Car-class, but when it's the main game-object your game is about, it's quite likely already has more than enough responsibilities.
+To glue two objects together with event subscriptions, there must be some object which knows both of them.
+Option C: This option is the one I personally like best.
+Such a system usually scales pretty well, because new features can often be added by simply using already existing events without having to do any changes at the objects which already send/receive them.
+Observers don't subscribe to Observables, they subscribe for a specific event on the eventSystem.
+A solution which I prefer is having objects communicate only through a global  EventSystem object.
+An event system is a great way to achieve loose coupling, because objects are able to post events without knowing anything about which objects are going to process them.
+In the ideal case, they would not even know that objects exist which are not relevant to their primary functionality.
+Unfortunately there is no perfect solution to this conundrum.
+The factory doesn't know about the scoreboard (it just knows something subscribed to carSpawned) and the car doesn't know about the scoreboard (just that something subscribed to carFinished).
+You wouldn't need that detour via the event system in the first place.
+Another concern is trying to always do things the same way.
+However, for games with a very limited scope, such an event system can be overengineering.
+So the logic for setting up event subscriptions fits there quite well.
+The eventSystem is then responsible for routing events to every object which subscribed to them.
+Does the factory really need a dependency on every one of these features?
+It also adds a layer of indirection which can make debugging harder and can cause performance problems when you overuse it.
+First of all, any of the three options is a valid solution.
+Whichever convention you pick, it can be useful to try to stick to it throughout your code-base.
+Anything you can move somewhere else will likely keep it from mutating into a bloated god-object.
+I would in fact try to make them completely oblivious to the existence of the scoreboard.
+If they know about the scoreboard, they would also be able to notify it by itself when it finished the race.
+Option A: A factory is one of the few classes where tight coupling with its product can not be avoided.
+There is never just one right way to do something in software engineering.
+Otherwise you might get confused about when and where you set up your subscriptions and end up subscribing to something twice or not at all.
+Option B: Do the cars need to know that the scoreboard exist?
+What if you add more things which process car-related events?
+But the question is, does the car factory need to be coupled to the existence of the scoreboard?
+Who is responsible in your system for subscribing and who is responsible for unsubscribing?
+The only thing I don't like about it is that there is no clear concept of for who is responsible for setting up subscriptions.
+However, I would recommend the option which results in the least coupling between car and scoreboard.
+Loose coupling means the less objects need to know about other objects, the better.
+Observables don't post events to their Observers directly, they post them to the eventSystem.

@@ -1,0 +1,14 @@
+If you issue an explicit commit OR you log off of sqlpus, then the transaction will commit.
+If you commit inside of a stored procedure, you are limiting its reusability because a caller that wants the changes the procedure makes to be part of a larger transaction cannot simply call the procedure directly.
+When it completes it automatically logs off, which will cause an automatic commit.
+The reason why you get an automatic commit on #2 is because it creates a session to run your script.
+I wonder to know if it is necessary to write commit after insert/delete/update in function/procedure?
+A function that manipulates data cannot be called from a SQL statement (barring the corner case where the function itself is declared to use an autonomous transaction which is almost never appropriate).
+You probably already know this by now since the post is 2 years old.
+If you are in sqlplus and run your code manually, it will not commit the transaction right away.
+The whole point of having both functions and procedures is that functions can be embedded in SQL statements and can be more freely granted to users because they do not change any data.
+Those sorts of transaction control decisions should be left to higher-level code that knows when a logical transaction is actually complete.
+The reason #1 requires a commit and #2 doesn't is because the default database setting in Oracle is to commit a transaction when a session ends.
+If you use dbms_scheduler, dbms_scheduler assumes that a job is a logical transaction and commits at the end of the job assuming it was successful (dbms_job does the same thing).
+If you call a procedure interactively, you will have to explicitly commit or rollback the transaction because Oracle has no idea if you intend the procedure call to be a logical transaction or if you intend to compose a larger transaction involving multiple procedure calls.
+Functions should not manipulate data in the first place.

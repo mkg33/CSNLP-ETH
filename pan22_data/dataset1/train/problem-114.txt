@@ -1,0 +1,5 @@
+There are multiple layers of buffers/caches involved.
+For your application, it is sufficient for the data to be registered in the kernel buffers (the actual data may still live in CPU caches at this point, and might not have been written to main memory): the "echo" process terminates, which means that any in-process buffers must have been flushed and the data handed over to the OS, and when you start a new process then, it is guaranteed that the OS will give the same data back when asked.
+If the application doesn't have any internal caches, then the changes will be immediately written to the file. The same for your example. The file is a logical entity in memory which will be immediately updated. Any subsequent operations on the file will see the changes made by the program. 
+However, this does not mean the change was written to the physical disk. The changes might linger in the OS filesystem caches or hardware caches. To flush the filesystem buffers, use the sync command.
+You shouldn't run into any practical problems here.

@@ -1,0 +1,13 @@
+Building them incrementally can lead to thrashing in the "buffer pool" (see innodb_buffer_pool_size).
+If you don't have an explicit PRIMARY KEY, that is bad.
+Hence, the data is sorted by the PK and stored on disk in that order.
+Generally it is better to load an InnoDB table with nothing more than the PRIMARY KEY.
+Plan B:  Disable FKs while doing the ALTERs, then enable them.
+I think that implies that you define UNIQUE keys up front, rather than afterwards.
+But, the foreign keys can be a problem because of dependencies.
+Plan A:  ALTER one table at a time, but in an order such that there cannot be any FK issues.
+Building such an index separately can involve a unix sort -- more efficient for really big indexes.
+So, it is best to have the PK defined, and to supply the data to the loader in PK order.
+I would call 9M rows rather big (90th percentile), but not huge.
+Another caution:  UNIQUE keys need to check as they are inserted.
+Then do one ALTER TABLE to add all the indexes and foreign keys.

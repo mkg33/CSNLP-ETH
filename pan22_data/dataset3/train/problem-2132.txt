@@ -1,0 +1,16 @@
+RPKI is not the way forward as it does not protect against route leaks.
+If you need configuration help I suggest you create another question asking for specific configuration help.
+We usually find that most of the common route leaks are not in the 1-2 digit range.
+Ask your peers what AS macro they will be announcing and build filters for them using IRRToolSet or rpsltool or irrpt.
+A lot of this information is available on the RPKI Wikipedia page.
+At the moment (until RPKI is more widespread), we generally just filter common bogons and apply a max-prefix filter to exchange peers.
+That's very hard to catch anyway, unless you filter all your peers by building a prefix/ASN list or filter by radb, etc.
+More specifically Route Origination Authorizations are used to validate a prefix to an AS.
+At some point you just have to trust the routes you're receiving.
+Most leaks end up being closer to 10k-100k+, which is easily caught by a fairly low (100-500) max-prefix filter.
+It's also worth noting that RPKI won't work for everything, because not everyone is using it.
+Encourage them to have correct information published in an IRRdb.
+We also filter certain ASNs, ones we are certain will never show up in most peering sessions, such as Level3 or Cogent, or should not be transited over an exchange.
+Your assumption that using RPKI is the way to go is absolutely correct.
+Obviously bogons will not be valid because they're not assigned to anyone, so that problem will take care of itself.
+Don't forget to update your own aut-num object in your nearest friendly IRRdb to reflect the adjacency.

@@ -1,0 +1,8 @@
+Instead of copying, just make the existing virtual drive file larger then boot the vm ( possibly from a livecd ) and add/extend partitions.
+Then I wiped out /dev/sdb1 with gparted (reformatted the whole thing as ext4) and restored the archive file with
+I first tried this guide, but after dd'ing the contents of /dev/sda1, gparted couldn't tell that there was a smaller partition on the larger disk. But, I did have all of /dev/sda1 copied to /dev/sdb1, the only problem was that /dev/sdb1 thought it only had 8 GB, not 32.
+If it matters, I have XP host and Crunchbang (based on Debian statler) guest, VirtualBox version 4.1.2r73507.
+And according to df, I think that worked. It shows roughly the same number of blocks used, but a much smaller % used. But, when I go into the virtual machine settings and switch the larger drive in as Primary Master, I can't boot (not even GRUB)
+My overall problem is that I filled my current virtual hard drive, so I want to move everything over to a larger VDI file and boot from that one instead.
+To make things worse, I decided to boot the machine from a LiveCD, clear /dev/sdb1 again, recreate the archive (this time from the real /dev/sda1), and restfs /dev/sdb1. Unfortunately, I wasn't paying attention, so I wiped /dev/sda1. Without Guest Additions on the LiveCD, I can't access the fsa file in C:\temp to restore the image to either VDI file.
+Then I discovered fsarchiver, which claims to be able to restore archive files to larger partitions, so I created an archive of /dev/sdb1 with

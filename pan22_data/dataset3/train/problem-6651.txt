@@ -1,0 +1,11 @@
+When you did gluster volume create did you list the bricks like server.167/brick0 server.167/brick1 server.55/brick0 server.55/brick1
+If I create a bunch of small files at once, I can see that they distribute out between brick0 and brick1.
+All AWS EC2 instances are running Ubuntu LTS 16.04 AMD64 HVM EBS.
+server.167/brick0 server.55/brick0 server.167/brick1 server.55/brick1
+I set up AWS EC2 instances as a Gluster volume, and a third EC2 instance that mount the Gluster volume.
+And sure enough, the volume gets fills up if I write 2G to it.
+The Gluster volume is set up with replication factor 2, with the intention that the two servers hold 4G of identical data.
+Here is the output from querying on one of the Gluster servers:
+But when I mount the volume on the third server, the volume shows that it only has a capacity of 2G instead of 4G:
+Problem: A Distributed-Replicate Gluster volume only has half capacity.
+If it's the first case, with the replica set being on the same server, I'd wager the storage is cut in half on the server not the pool, becuase the server can't replicate more than 2GB.

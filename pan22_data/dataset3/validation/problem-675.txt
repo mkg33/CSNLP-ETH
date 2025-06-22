@@ -1,0 +1,13 @@
+Mostly just a few little mistakes, the biggest of which is the ambiguous declaration of category_id.
+To eliminate this ambiguity, you can alias your table.
+However, MySQL will also complain about this because you can't update a NEW column in an after-insert trigger, as the write has already completed: It's already done.
+With those changes, you may end up with something that looks a little like the following:
+As per natural law, for every opinion there is an equal and opposite opinion, but in this case, I'm right.
+It drastically improves readability and serves to avoid little bugs like this one.
+To make this work, it's necessary to change the trigger from an after-insert to a before-insert.
+This statement says to insert the [ (null), (null), category_prefix ] tuple into the asset table.
+In addition to likely not being the actual intent, as your trigger is an after-insert trigger, if the trigger were to actually perform this operation it would infinitely loop.
+This statement is selecting value of the DECLARE'd category_id ( which is the DEFAULT, null ), into the DECLARE'd category_id.
+This renders the following branches unreachable, as they will always evaluate as false.
+The next issue with the trigger is a discrepancy between what you have said ( insert a value into the asset_type column for each row ) and what you've coded ( insert a row into the assets table for each row ).
+What you need to do is to set the value of the NEW column:

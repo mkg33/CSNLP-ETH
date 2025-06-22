@@ -1,0 +1,7 @@
+This potentially opens security issues, as the rather large and complex GnuPG application (with a larger chance of vulnerabilities) gets access to the passphrase and thus the private key, which would otherwise be limited to the gpg-agent and pinentry implementation.
+When you want to use GUI pinentry, start GnuPG as normal; for command line operations, call gpg21 --pinentry-mode loopback instead (which of course could be an alias for gpg21).
+To do so anyway, add a line allow-loopback-pinentry in ~/.gnupg/gpg-agent.conf, killall gpg-agent (so it is restarted with the option enabled on the next time GnuPG wants to use it).
+Pinentry loopback will have gpg-agent query gpg for the passphrase instead of the out-of-band pinentry password query.
+The only clean possibility to enable such a feature is probably writing a pinentry "switch" implementation, deciding which actual pinentry to call depending on whether called from a command line or the GUI (for example, depending on what DISPLAY or tty variables are set).
+An alternative would be to use the loopback pinentry feature, which is disabled in gpg-agent by default for security reasons.
+GnuPG's gpg-agent could be configured to use different sockets before GnuPG 2.1; you could have used different gpg-agents running in parallel with different configuration (pinentry implementations).

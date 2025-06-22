@@ -1,0 +1,8 @@
+In Active Directory we have multiple sites defined in AD Sites and Services and I can see the site is correctly assigned by verifying the value of HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\DynamicSiteName. 
+I've built proxy servers in each AD site and I want to use group policy to configure the computers in each site to use the proxy server in the same site.
+When I link the group policy to an OU it's properly applied to the computer. When I link the group policy to a site, it's not applied. It doesn't even show up in gpresult after running gpupdate /force. 
+Does the group policy need to be linked to the domain and the site? What else could be wrong? 
+A Site-level GPO would need to be linked at the site (which you have done).
+Then - as you have multiple sites - you would have to wait a period of time (potentially a long period of time, if using default site replication intervals) for the link to replicate to the site (if it is not in the same site as the PDCe).
+Then, you will need to ensure that the setting is not countered by any other GPO that may contain the same settings as the Site GPO.  A GPO linked at the site is among the first that are evaluated, and therefore most easily reverted by a later-evaluated conflicting policy linked to the domain or OU.
+Just looking at your screenshot, you have the GPO link enforced - the one at the OU level - so you're never going to see the site GPO because it will always be overwritten by the one linked at the OU.

@@ -1,0 +1,13 @@
+If you want to know more about MAM, take a look at IBM's LTO-8 SCSI Reference that explains this in detail (section 6.5 starting on page 355 contains the interesting stuff).
+One of the attributes is "REMAINING CAPACITY IN PARTITION".
+If you need a starting point on how to implement this, maybe you should take a look at maminfo or this issue in sg3_utils issue tracker.
+Recent versions of LTO (LTO 5 and newer) tapes can be partitioned (LTFS uses two partitions).
+If your tape was partitioned, each of your partitions will have an amount of free space and you will need to loop over all partitions to get each partitions free space information.
+Maybe it is only update on unmount which would make retrieving accurate information even harder.
+The information can be read using SCSI command "READ ATTRIBUTE" on the tape drive while the tape is loaded.
+This contains the amount of bytes that can be written to the current tape partition.
+I'm not sure this information is updated immediately after a write to the tape.
+I'm also not sure how this behaves when you overwrite the tape.
+Which leads to the question: what is a tape partition?
+There is a chip in the tape cartridge that offers a wide variety of information.
+You'll probably have to figure this out on your own.

@@ -1,0 +1,8 @@
+The partition wasn't set up with large databases in mind, so I would like to put my 2+GB PostgreSQL database on the /home partition.
+Here's what I did to move my pgdata folder off the root partition, loosely based on instructions from linuxquestions.org.
+The first piece of advice I ran into was the initlocation command, but this is apparently for older versions of PostgreSQL.
+I'm running Ubuntu 10.10 and have a separate partition for my root directory.
+The files that describe the default cluster, called main, are located in the directory /etc/postgresql/8.4/main for 8.4 on my ubuntu 10.10 machine.
+That command initdb should be located at path /usr/lib/postgresql/{version}/bin/initdb (propably not included in your PATH), however you could use pg_createcluster wrapper, especially with -D option:
+Just stop postgresql, copy your data dir over to the new dir, set perms (700 on the root dir, and owned by the postgres user) edit the line in postgresql.conf that points to your data dir and restart postgres.
+Then I ran into the initdb command, but this doesn't appear to be available on Ubuntu 10.10... for some reason.

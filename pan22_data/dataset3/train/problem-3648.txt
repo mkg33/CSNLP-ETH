@@ -1,0 +1,16 @@
+Thank you for your answers as for Dan's answer I understand that I will be erasing every single bit of the HDD  that's exactly the point, as for my Live CD it's Kali Linux, and as for Jermal's answer it sounds kinda freaky answer, because I really want to erase every single bit of my HDD and try something new in my life :p
+Before you can format it, you'll will need to recreate the partition table and repartition the drive with the correct partition type and size.
+the Hitachi HDD is the only HDD on my old PC and I have no files I need on the HDD and I can't use it as a USB to format it via another PC
+I'm just going to assume that you have no need for a GPT partition and that /dev/sda is the actual drive in question.
+The partition table, all partitions and all the filesystems.
+Is it safe to perform a dd if=/dev/zero of=/dev/sda bs=512k to an 80GB Hitachi HDD via a bootable linux cd?
+When you do the dd with /dev/zero to the entire drive, you erase everything.
+I prefer parted to fdisk, so that's what I'm describing in this answer.
+To create a new NTFS partition  instead, do: parted /dev/sda mkpart primary ntfs 1M 80G
+just do parted /dev/sda and you get the parted command prompt with help and everything.
+Note that neither of these would be set as a bootable partition, so if you need that, you'll need to do parted /dev/sda set 1 boot on
+To create a new ext4 partition on the whole disk do parted /dev/sda mkpart primary ext2 1M 80G
+You can change the cluster size (also called the "allocation unit size") of the file system this way.
+No big deal as Jermal S. pointed out, but you will have to start from scratch to get a usable filesystem back on the drive.
+Not sure which live linux boot cd you are using, but the new ones should all have GNU parted available.
+To create a new partition table do: parted /dev/sda mklabel msdos

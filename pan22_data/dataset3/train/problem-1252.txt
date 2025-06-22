@@ -1,0 +1,21 @@
+Currently we are using a setup with two EC2 instances behind an ELB and an RDS instance, all of them in US-EAST (Virginia) region.
+Running in a multi-region environment is much more complex and usually giving back performance due to the inherent latency between US and EU.
+The easiest way is to set up a dedicated RDS server in EU and share nothing between these instances.
+https://aws.amazon.com/about-aws/whats-new/2013/09/05/amazon-rds-new-data-migration-capabilities-mysql/
+I have copied the desired AMI, setup the new instance, setup a same ELB configuration (required for SSL termination) and configured latency-based routing in Route53.
+Do you have any suggestions on how to properly speed up the whole setup while using the single RDS instance?
+Nevertheless, I am open to suggestions (I guess the next idea would be to host our own MySQL servers).
+RDS is great for single-region deployments because of the low latency, but it becomes a different story when you start expanding to the different regions.
+If you want to keep the RDS instance, you could set up your own MySQL server in the EU region and do replication.
+Even if you move out of RDS and try to replicate your data between regions, either asynch or synch, you will get latency issues that will give bad performance to your users.
+However, this is only a small step towards a true multi-region setup.
+I'm trying to scale our web application (PHP, MySQL, memcache) in a multi-region scheme.
+Also, any ideas in general on how to scale things up?
+You should think carefully why you need to have the same data in both US and EU.
+As far as I know Amazon has not yet enabled RDS multi-region replication.
+Ideally we would like to continue using the RDS technology for various reasons.
+This is due to the fact that the EU EC2 instances connect to the US-based RDS instance.
+RDS replication to EC2 running mysql in a different region.
+We would like to have a presence in the EU (Ireland) region as well.
+This means at least a new EC2 instance there (identical to the others, serving the same application).
+Recently, AWS made a move towards the direction I had previously asked about in my question by announcing cross-region RDS read replicas.

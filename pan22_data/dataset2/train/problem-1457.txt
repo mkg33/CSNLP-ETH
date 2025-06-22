@@ -1,0 +1,8 @@
+I was hoping the line return  301 https://example.com$request_uri; would solve this problem, but it isn't working. Chrome displays following error:
+You should separate that into two blocks. One block handles the named domains and another handles all of the non-existent domains:
+All only accessable through HTTPS. When someone enters https://test2.example.com or any other non-existent subdomain, they get served the standard NGINX index.html file. Instead, I want them to be redirected back to https://example.com.
+You can segregate the sites, and only use one certificate, by creating one or more server blocks in nginx.
+Many of the ssl_xxx directives can be placed above the server blocks (within the surrounding http block) so that they are inherited by both - or you can copy them into each server block (your choice).
+What is working, is the URI int the address bar changes from test2.example.com to example.com. Im just having an issue with too many redirects. Or maybe there is a better way to do this?
+In Nginx your server_name could be *.example.com (but not .example.), so all hostnames test.example.com, test2.example.com, prod.example.com can be served by one website if you want.
+If you apply for a wildcard DNS SSL certificate, then you can use https on all websites under example.com.

@@ -1,0 +1,8 @@
+I am thinking that the problem is linked to permissions, because the authorized_keys file is owned by developers (-rw------- 1 developers developers 2033 Nov 11 22:55 authorized_keys
+However, you're doing it wrong anyway. You should create different users for each developer and put them in a common group. If they need to work on the same files, you make them writable by their common group and put them in a directory that has the "set group ID" flag set, so whatever they write to it will belong to the group.
+Unfortunately I am on a production box atm and I cannot test any of the solutions... I am also looking for a 3rd option if possible since due to our team setup I cannot change the home directory permissions... (bad model - I know)
+I have created a common /home/developers account, and multiple users (developerA,developerB ...). All developers have been delegated the same home folder (/home/developers).
+You only have one user. So it's not a multiple users problem. Make sure the .ssh directory has mode 700.
+Does anyone have a solution to this problem, or how to go about multiple-user passwordless ssh without creating a home folder for each of them.
+From this post you can see that SSH will refuse to use .ssh folder in a home directory that is shared. In my case, looking at /var/log/messages I see:
+Having many users with one home directory is a Very Bad Idea. Users will hate you and programs will hate you. Don't do that.

@@ -1,0 +1,9 @@
+Also, I don't now PowerShell as well as I should at this point, but can you edit [0] and have it 'add' an entry?  I bet that you need to do something else to actually add a value to an array.
+I'm more than open to an alternative script that provides a better way of setting this value as above assumes there is already at least one header present.
+However, one more thing to watch for is that that replaces the first value rather than adding a new value.  I'm out of time today to figure out how to do with with my limited PowerShell expertise, but it's going to be something along the lines of:
+Your code example saves the value to the metabase but it saves to the root object (w3svc/1) instead of the root vdir (w3svc/1/root).
+I've also tried Set-WmiInstance -InputObject $website instead of $website.Put() but that made no difference.
+There's a casting error so it's not quite right, but hopefully that points you in the right direction.
+Try outputting the current value first while you're testing.  Then you can know that you properly bound to the site that you expected.  For example, for the line after $headers=, do a Write-Host $headers[0].Keyname. Or do a Write-Host $webSite.ServerComment.  
+The script seems to work fine, no errors generated, and the resultant $website object correctly shows the updated HttpCustomHeaders value.  When I look at that site in IIS, though, the values have not been updated.  This is also verified by visiting the site and looking at the headers in Firebug - the values are not saved.
+I have the following Powershell script which uses WMI to update the HTTP custom headers on a website in IIS 6.

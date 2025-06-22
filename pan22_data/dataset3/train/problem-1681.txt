@@ -1,0 +1,15 @@
+For some protocols/applications, there's further refinement like cookies, keys, etc.
+Each end of the connection has its own IP address and port.
+When the different clients send new data to the server, how does the server distinguish between them so that it can route the data differently?
+The "client" (it's not a client as TCP/IP is peer to peer; it's the initiator) has the source IP and source port on its own system, to which packets are addressed.
+I believe that on the server, the different sessions are distinguished by having different sockets, one for each session, though I could be wrong about that.
+Read up on TCP - that's what creates and tracks sessions.
+But if that is the case, when a particular user enters a new command during their SSH session, how does the server know which socket to route that command to?
+This is something I've never quite understood: A service offered by a server can be uniquely identified by its IP address and port, for example 1.2.3.4:22, but multiple clients might connect to the same port at the same time.
+For example, when a server allows SSH connections, it will open port 22 by default.
+Multiple SSH clients can connect so that multiple people can be using SSH at the same time, and they will all be using port 22.
+The user's computer doesn't have access to the socket descriptor, they only have the IP address and port, so I don't see how they could send enough information to the server to allow it to distinguish between their session and another session.
+https://en.wikipedia.org/wiki/Transmission_Control_Protocol#Resource_usage
+Does the server distinguish based on the IP address and port of the client, or does it do something else?
+The connection is defined by all four of the source IP, source port, destination IP and destination port, which makes it trivial to disambiguate connections.
+The client will be identified by its IP and sending port, so that's at a minimum.

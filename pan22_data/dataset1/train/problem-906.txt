@@ -1,0 +1,8 @@
+It looks like a 'slow DoS attack' using tools like slowloris. In such type of attacks, the attacker tries to keep alive (open) legitimate connections to the server until the server hangs.
+We use SPA ( https://www.cyberxnetworks.com/index.php?cmd=website&aid=242 ) to stop such type of attack.   
+We have a cluster setup of 3 server, on all 3 servers weblogic is running to host website. On the top of weblogic using Apache as load balancer.
+Last year I had upgraded Apache http server from 2.4.9 to 2.4.29. Before upgrade things were working fine but post upgrade after every 2-4 weeks Apache hangs. Website becomes inaccessible, on checking the server we don't see any error in fact the moment when apache hangs it stops logging too.
+We monitored and found no abnormal memory usage, no suspicious type of request to website, no suspicious process running before the issue occurs.
+After exploring over the internet, I found that problem could be related to MPM configuration. Apache was using event MPM but I found that event MPM configuration was not declared in apache configuration, I think during upgrade default configuration was replaced by old configuration.
+So we have modified MPM configuration to use below event mpm configuration and this change worked. We did not face this issue for next 6 months.
+We thought it is fixed but now after 6 months Apache hangs again, only symptoms we can see increasing closed_wait connections from 20 to 550 in next 1 hours, no accessibility of website, apache stopped logging to it's ssl and error logs, we don't see any abnormal behaviour in different running process data, memory usage, also don't see any suspicious request before issue occurred.

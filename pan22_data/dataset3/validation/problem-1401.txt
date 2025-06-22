@@ -1,0 +1,28 @@
+The networking is managed by systemd-networkd on both ends.
+The question is, can all of the above be done in a simpler manner?
+Depending on your networking configuration, your host should have an interface with an IP address, that is on the host side, but reachable from containers.
+Luckily, all the containers share the same base OS image, so it's not that hard to do.
+The bridge should be already setup and assigned an IP:
+This config has proven to be working, but requires additional bridge configuration and is generally problematic when it comes to external network access for the containers.
+Since you are in control of your host-side IP address, you can put an entry into /etc/hosts, as you did.
+Keep in mind that firewalling and masquerade might also play a significant role.
+Most databases are network-based, they listen on a specific port on the host.
+I've tried the following most common private network modes of systemd-nspawn:
+Seems like it's assigned a random address from 169.254.0.0/16, and two static addresses 10.0.0.1 and 10.0.1.1.
+Additionally, both methods (bridge and zone) require configuring static /etc/hosts entry, as systemd-resolved and friends (mymachines, myhostname and resolve NSS modules) are not very helpful here:
+Once connectivity is established, make sure your database server is listening on the given interface as well.
+-n, --network-veth creates a pair of connected virtual ethernet adapters per container, one on the host side, another inside the container.
+I've got a set of containers managed by systemd-nspawn.
+If you are using systemd-networkd, then configuration files come from configuration files with a .network extension.
+--network-bridge= does mostly the same, but adds virtual adapters to the specified bridge.
+--network-zone= does the same, but manages the bridge interface automatically.
+/etc/systemd/network or /run/systemd/network or /usr/lib/systemd/network - the later is the default if you did not modify anything in /etc.
+But it's unclear where these addresses come from, and I'm not sure this won't change in the future versions of systemd.
+To make sure, we can assign an additional static IP to the bridge interface:
+You may have a DHCP server on your network, and depending which networking mode you use, IP addresses might get assigned from that DHCP server.
+The host is reachable from the containers by these two addresses.
+Seems like this is of little use, because it is not clear which address the DBMS should listen on and which address the containers should connect to.
+The containers should be (semi-)isolated from the external network, but at the same time should be able to access non-containerized services like DBMS, running on the host (see diagram).
+I'm not aware of any simpler solutions, or any external solutions.
+Or should I wait until systemd-nspawn gets some magic option like "make the host accessible in the containers by the <foo> hostname"?
+This works well, doesn't pose problems with external net connectivity, but also requires additional monkeying with the bridge configuration.

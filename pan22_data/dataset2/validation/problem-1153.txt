@@ -1,0 +1,13 @@
+All of which can be gleened from the fine manual. It took two tries to find out simply using "" (empty destination mailbox) was what we really wanted ;-)
+The letters FS after the comma mean Flagged and Seen. To mark the message as "unseen", either remove the S flag...
+Maildir actually uses a unique format that makes this quite easy. Simply place the mail in new/ directory inside the mail users mailroot if you want it to show up as new. Otherwise it goes in the cur/ directory.
+The Maildir format consists of a series of directories - matching the IMAP folder structure, within which are the emails, one file per email.
+The new folder contains any emails that have not been seen by a client, and the cur folder contains current emails.  The tmp folder should be empty if the mail server is not operating.
+This shows the INBOX folder (cur, new, tmp) and another folder called "personal".  Note the dot prefix showing that this folder is hidden, so this should be accounted for in your transfer.
+I tried the accepted answer and it failed - the dovecot versions in play are probably too far apart and we also switched the underlying MTA. So here is a more robust solution: doveadm import
+Assuming you're hosting emails for the domain hosted.tld and an account exists for the login local.account@hosted.tld (or maybe simply ruth) and the backup from the previous server is in MailDir format and available inside a folder structure like /tmp/TRANSFER/domain/account/Maildir then you can import them to your new dovecot hosting with
+In order to copy emails from one email system to another, you can simply copy the directories and files, and ensure the permissions for those directories and files are correct at the destination.
+The migration went fine, I just wanted to know how I could "show" all the old mails in UA Clients. I mean, is there any dovecot index file or such that could be re-created, destroyed, so that all old mails are "flagged" as new ?
+It's already running for other users, I just want to merge old accounts from the old server to the new one.
+I'm migrating my mails from an old server to a new one, the configuration is good (mysql virtual accounts & imap only), with dovecot and postfix.
+You may even have more luck than us without needing to transfer the files beforehand - if old and new server are running at the same time and your accounts are set up appropriately using doveadm sync. 

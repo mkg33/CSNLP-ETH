@@ -1,0 +1,16 @@
+Locate the timeout configuration and adjust it to fit your server.
+It may be that you have a thread or two that stays open causing the value to revert.
+If I have understood everything right, the MySQL command line client causes mysqld to use interactive_timeout instead of wait_timeout.
+As for MySQL, have you tried looking to see if there are other my.cnf files that may be overriding the base one?
+MySQL is currently set to a wait_timeout of 28800 on our server which I understand to be the default.
+I'm afraid you might have run into one of the several gotchas of MySQL.
+Apache isn't involved with this process so you can skip anything dealing with it.
+The my.cnf seems to be the only such version of the file that I can find.
+However, if I wait a minute or two, it reverts back to 28800 again.
+Here's what I've tried while logged into Linux as root and MySQL as a database user:
+SELECT @@global.wait_timeout, @@session.wait_timeout;
+2) Editing the my.cnf file under /etc and adding the following line to both [mysqld] and [mysqld_safe]:
+When I try #2, the option doesn't seem to take at all, even after restarting Apache and MySQL.
+Also, instead of restarting actually shutdown the MySql server and then start it.
+When I try #1 and choose to show the wait_timeout variable right after, it shows correctly as 60.
+I've been attempting to change this to 60 as recommended by a consultant, but the changes don't seem to take for long.

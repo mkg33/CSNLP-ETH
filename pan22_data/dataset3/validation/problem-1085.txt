@@ -1,0 +1,9 @@
+If there are no histograms and you ask for the range between 20120101 and 20120731, the optimizer will expect that you're going to retrieve 730 of 40,000 possible values or 1.825%.
+You'd need to do a 10053 trace to see exactly how Oracle is computing its estimated cardinalities.
+I would assume, though, that Oracle's cardinality estimate for this particular range is too low leading it to use an index where a partition scan would actually be more efficient.
+You can probably also resolve it by gathering a histogram on dt_key.
+Assuming that is the case, I would guess that the problem comes from storing date data in a numeric data type.
+If you used a date to store your date data, however, Oracle would know that there are only 4*365=1460 values and that you're actually retrieving 212 of them or 14.5%.
+If Oracle knows that a particular partition has a min(dt_key) of, say, 20100101 and a max(dt_key) of 20140101, it is going to believe that there is a range of 40,000 values.
+Without knowing the actual range, these are just example calculations, of course, but they show the principle that using the wrong data type can lead to the optimizer getting confused.
+Assuming this speculation is correct, you can probably resolve the problem by changing dt_key to a date.

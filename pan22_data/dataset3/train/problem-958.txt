@@ -1,0 +1,17 @@
+As mentioned in one of the other answers, this documentation (http://www.postfix.org/postconf.5.html#smtpd_sasl_path) states that the default is smtpd.
+The documentation for this config option is a bit scattered.
+see http://www.postfix.org/postconf.5.html#smtpd_sasl_path.
+Also, if I don't specify smtpd_sasl_path, there is default config located?
+The meaning of smtpd_sasl_path is specific to your SASL implementation; with Dovecot it points to a socket that Postfix can use to communicate with the IMAP daemon.
+As for the Cyrus configuration file, have you tried setting cyrus_sasl_config_path in main.cf?
+If it doesn't exist there, it will look for the file in /usr/lib/sasl2/
+Then, to find out what this actually means, take a look here -
+But when I connect to SMTP I get unexpected CRAM-MD5 mechanism
+You should not set the full path "/usr/lib/sasl2/smtpd" for "smtpd_sasl_path" here,only "smtpd" is ok,this pespective need an application name not a path for cyrus to deside the configuration file used by the postfix.
+I'm not sure exactly what it means with Cyrus, but you can find its default value (as well as the default value of all the other Postfix configuration variables) by running:
+But actually I had no config at this location by default.
+According to http://www.postfix.org/SASL_README.html
+Then, you can check where Postfix will actually look first for the sasl config file, which can be found (For debian based distros) in /usr/share/doc/postfix/README.Debian
+http://www.postfix.org/SASL_README.html#server_cyrus_location
+http://www.postfix.org/SASL_README.html#server_cyrus_name
+Putting that all together, defining it as smtpd (or leaving it as default), it will look for smtpd.conf in the /etc/poostfix/sasl directory.

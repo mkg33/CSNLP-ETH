@@ -1,0 +1,15 @@
+Your code isn't really ECS though, but I just wanted to throw this out there.
+One thing I noted about the functions/abilities thingy though is that your FunctionsList only contains one thing: instance.functions.
+It seems to me like it would be better to not call the addTaunt method but instead to assign the card taunt through the constructor.
+You can make it return a single function and violà, it will have reduces table nesting.
+Right now you are mapping cardId --> function name in CardFunctionsList:functionNamesForId(id) and then you are mapping functionName --> Actual function.
+You seem to be grouping properties together instead of cards.
+When I started refactoring this to skip the name I realized that you really need it that way, because of the doAbility function.
+I managed to re-write your FunctionsList code to this:
+FunctionsList:functionForName always returns a table.
+Even though the code for assigning strength and health to a card is not complete, it seems like you are assigning functions/abilities on one place, assigning strength/health at another place... And I'm not so sure about the methods to assign a card some abilities that you add when you create the card.
+Can be greatly simplified simply by checking if the index you are looking for exists or not:
+A comment about that would be helpful so that I don't try refactoring it again :)
+When I read that I instantly thought entity-component-system, which works a little like this.
+And then you of course have to make the related changes in Card.lua, primarily the doAbility function which I wrote like this:
+You're defining all functions for all cards at one place, will you then define all strengths and healths for all cards at another place?

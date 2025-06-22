@@ -1,0 +1,7 @@
+Window functions aren't permitted in UPDATE statements because UPDATE isn't compatible with SELECT or ORDER BY. 
+There's no inherent downside to using a CTE or other subquery as a workaround to get an UPDATE to use a window function. That's the common practice advocated by T-SQL experts like Itzik Ben-Gan. (See page 29 of his book, Microsoft SQL Server 2012 High-Performance T-SQL Using Window Functions where he covers this exact scenario.)
+Window functions are like scoped SELECT statements that re-examine the relevant rows and apply conditions like PARTITION BY and ORDER BY. In addition, many window functions require an ORDER BY clause (ROW_NUMBER, LAG, and FIRST_VALUE, for example).
+UPDATE statements use SET instead of SELECT, so SELECT is not allowed anywhere in the same query level. Any SELECT appearing with UPDATE must be contained in a subquery. 
+My question is, are there any reasons why this is not permitted in an update statement, should I avoid using an updatable cte as a workaround?
+Disallowing the ORDER BY makes sense considering an UPDATE statement is indifferent to the order in which it updates rows.
+My concern is that there are issues when using window functions with update statements and therefore I'd like to understand if this is an acceptable method or should be avoided.

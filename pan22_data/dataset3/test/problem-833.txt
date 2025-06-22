@@ -1,0 +1,18 @@
+Also, a misconfiguration of the switch could lead to a security hole.
+You should probably have a good look through their various specifications and choose the one that gives you the right feature set.
+Now your firewall has exclusive access to all the tags and can enforce ACLs that prevent one subnet from accessing any other DMZ subnet.
+Depending on your security needs, if you have a good modern switch you can make each dmz a vlan and just use one port, and then have the rules separating each dmz on the router.
+You need a switch that also speaks 802.1q vlan tagging.
+If I had to guess, I'd say to choose the 5520 or 5540 models..
+You might be able to save some money by having the DMZ ports on a VLAN which is then distributed by a managed switch.
+One of the Cisco 55xx series ASA hardware firewalls should be what you're after.
+(It's difficult for me to do this, not knowing your exact set up currently).
+Also choose one which will  give you room to expand in the future.
+There are arguments against this though, there used to be ways to bypass vlans (vlan hopping), but I think there is nothing current.
+Now, add all those tags to one interface on the firewall (thus creating a "VLAN trunk") and run that "trunk" to a switch that also has those VLAN tags associated with that port.
+Now -- configure each of your DMZs and associate each DMZ with a different 802.1q tag, lets say the tags are 10, 20, 30, and 40.
+You need a firewall that understands 802.1q vlan tagging.
+Now, put several other interfaces untagged on each vlan and connect those untagged ports to the host computers.
+Ideally it will have at least one gigabit interface.
+If you want High Availability, you'll need 2 of these, that support Active/Standby configuration.
+That way, you could  trunk multiple DMZs traffic over a single port, with a virtual interface (You could do this on your FreeBSD box too, might save you having to have a quad port server NIC.)

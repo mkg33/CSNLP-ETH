@@ -1,0 +1,9 @@
+The trouble with all these lovely window function-based solutions is that if you write them as pseudo-code you get something like this:
+Do something across ALL the IDs, then work out the sequence, then aggregate...
+You also can't inject the ID at any point as it invalidates the window range.  Even @JulienVavasseur's solution which uses an ID variable, will scan 999,999 rows in a 1 million row table where the @ID is 2.  Basically these solutions do not scale well.  So if you have 1 million or 1 billion rows in your tools table, well the query will take a long time, 4+ seconds versus 0-50ms in my simple test rig (see below).  Now maybe you might have only 10 rows but it's a bad habit to write code that doesn't scale IMHO.  You might know the volume today but you might not tomorrow.
+More traditional set-based solutions can often work best, even recursive CTEs (under certain conditions) and these were the first two that occurred to me:
+Plugging the other solutions into my test rig does not end well for them:
+In my tests, my recursive CTE solution (which normally would be thought of unfavourably as RBAR) performs the best with short sequences (< ~10,000), although this dips with really long sequences;  My subquery was best with these.
+I would be interested to see if a window-based approach could out-perform either of these two, even with different indexes eg I was surprised not to see a LAG / LEAD solution here.  Does anyone know Itzik? : )
+The base idea behind it , is to use COUNT(*) OVER(PARTITION BY T.[TAG] ORDER BY T.[ID]) =  count the records that respect the condition. 
+This is the output (intermediar output) of the CTE

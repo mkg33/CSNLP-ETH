@@ -1,0 +1,10 @@
+Firstly I do not know what you mean by "non zero unit matrices", but definitely you should not be initializing fully connected layers to 0.
+For instance using a sigmoid activation and a high learning rate will result in almost no weight update value.
+I would venture that the problem you are having is at least due to bad initialisation, and it could also be a bad learning rate or activation functions.
+I recommend using a random initialisation for both the Conv kernels and Dense kernels, and zeros for any biases.
+@feynman Because Batch Normalization do not let weights vanish or explode, it normalizes the batches in between every layer. Since each activation function will have inputs from the previous layers as close to zero, the effect of the increasing/decreasing weights of the previous layers will be suppressed; avoiding the snowball effect.
+The reason for this is because if all neurons in that layer have the same value, they will all behave very similar if not all exactly the same (depending on the network). This will produce very similar features that do not bias the network well.
+Thus, gradient is vanishing till it reaches initial layer of neural network and in turn very little change in weights.
+I would expect for data scaled from [-1, 1] the update magnitude should be around 1e-3 for the first layers and 1e-4 for the last ones. (Off the top of my head)
+Secondly, your activation functions are not stated, but if you are using an activation function with a gradient that is sensitive to learning rate vanishing, then this is also a problem.
+You mentioned that you are initializing conv kernels to "non zero unit matrices" and "fully connected layer weights as 0's".

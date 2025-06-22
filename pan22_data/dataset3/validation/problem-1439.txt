@@ -1,0 +1,14 @@
+Another thing is, sometimes every server is restarted.
+When it happens, if the buffer pool is simply emptied, your queries will be slower after restart - until hot data are cached again.
+In this way, your buffer pool will be (partially) written to disk on shutdown and reloaded at startup, so your queries should be fast even after a restart.
+Well, there is no way to make the query faster the very first time it runs, as it needs to read from disk.
+As another answer highlighted, Query Cache is not the only cache.
+After your first query, some indexes and data are cached, so next time they will be read from memory.
+But InnoDB buffer pool contains indexes and data accessed frequently.
+But then, if your buffer pool is big enough, your query will always be fast.
+Keep in mind that a big buffer pool is very important for MySQL performance.
+Probably some data/index pages are accessed only once per query, in which case you should be able to see a slighter difference between second and third execution (first time these pages are not cached).
+Its use is not even advisable in most cases - in fact, it was removed in MySQL 8.0.
+How to avoid the difference between query execution times?
+The general recommendation is to keep it 75-80% of total memory.
+The reason is that it has scalability problems (it's governed by a global lock) and it invalidates data far too frequently to be useful in a normal workload.

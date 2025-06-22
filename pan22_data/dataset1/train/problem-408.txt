@@ -1,0 +1,10 @@
+If you have enabled HTTPS on the interface and still have the default allow any firewall rule for the HTTPS management service then remote management should be configured.
+If you have enabled the SSLVPN you will probably have changed the management port to something else... generally 8443 but you can check this in the System -> Administration menu. you should see the port setting in the HTTPS administration port setting.
+If its not working then check that you are trying to connect to the correct IP address. you need to connect to the interface IP address.
+Also check the logs of the firewall after trying to login. If its being denied it should tell you and hopefully give a useful reason why. if you still have problems please port the logs and I will have a look.
+Detailed answer for the people who are interested or want to know...
+The problem lies in the fact that my ISP uses a /31 subnet. When we first set up the Sonicwall, it did not allow us to apply this ip as a static ip as it came up with a configuration error. 
+I brought this to the attention of SonicWall/Dell and after fighting with them for so long that I was not trying to apply a broadcast IP/network IP to the interface and showed them RFC 3021, they finally gave in that the firewall does not support it.
+Anyway, that was almost (if not longer than) a year ago and we managed to do a workaround in that it applied the /31 fine via DHCP... and, everything worked great - until I wanted to do remote management!
+GerryEgan was very helpful, but, after he finished trying to help, I noticed that my computer was transmitting to the SonicWall but not recieving anything back - however the statistics on the Sonicwall for TX on the HTTPS rule were going up and RX remained still.
+I just had an idea that maybe this /31 subnet goes much deeper in the firewall and after changing the subnet from /31 to /30, I confirmed everything worked fine - so confirmed that the issue is due to SonicWall not supporting /31 subnets - even if it successfully applies via DHCP.

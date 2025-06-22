@@ -1,0 +1,6 @@
+I found this post and this post helpful, but like others have mentioned, it can be difficult to calculate the overall progress of vacuum, since the process involves a few separate operations.
+I use this query to monitor the progress of vacuum's table scanning, which seems to be the bulk of the work:
+However, this won't include the index scanning, which happens afterwards, and can take just as long, if not longer, if you have a ton of indexes. Unfortunately, I can find no way to monitor index scanning/vacuuming.
+This gives me rough idea on how many bytes are processed (read) every minute by the VACUUM. I presume that the VACUUM must read through the whole table (including indexes and TOAST), whose disk size I know from the step 1.
+I presume that the table is large enough so that the majority of it's pages must be read from disk (they are not present in Postgres shared memory), so the read_bytes field is good enough to be used as a progress counter.
+Everytime I did this, the total bytes read by the process was no more than 5% from the total relation size, so I guess this approach may be good enough for You.

@@ -1,0 +1,17 @@
+This also has the advantage that you can stop replication while you do the backup and get a consistent snapshot of your data across all databases, or all tables in one database without impacting the database server.
+I've recently come up with a solution to this that's working great for me at tsheets, and figured I'd share it.
+As a nice bonus, you now have a read-only slave you can use for slow long-running queries.
+Adjust the bandwidth with the -t paramater to whatever value will allow your environment to perform the backup without impacting your customer's experience.
+Andy, by now I'm guessing you've had plenty of time to find a solution.
+cstream is a general-purpose stream-handling tool like UNIX dd, usually used in commandline-constructed pipes.
+you can as well look at ionice and run mysqldump with it.
+if you use innodb you can try xtrabackup with the --throttle option.
+This is the set up I always recommend for backing up MySQL if you have the resources.
+If you have a spare server around that can cope with the write load of your server, you can set up replication to that server, and then backup from the slave server.
+Assuming you're backing up a database that uses all InnoDB tables, the above command is safe (won't affect other queries) and will do your mysqldump while limiting it's disk reads to just one megabyte per second.
+or maybe you want to enable binary logging in mysql and run full dump once per week / night, while copying bin-logs to safe location every 1-2hours.
+This means you can limit the disk IO of your mysqldump command with a simple command like this:
+The thing that makes cstream useful for us is that it allows you to specify the maximum bandwidth for all input.
+Put your MySQL data on an LV, and use a niced mylvmbackup job which takes a snapshot of the LV and tars up the MySQL data files.
+and.. read-only slave for backup-only purposes is an option as well.
+This way you don't lock the tables, minimising the impact on your applications to just the IO load.

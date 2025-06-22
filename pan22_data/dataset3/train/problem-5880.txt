@@ -1,0 +1,19 @@
+There is most probably not any reason to abbreviate it to ErrCode.
+I agree in a lot of thoughts from Quentin Pradet and mariosangiorgio.
+My personal rule is: If in doubt, create a variable with a good name.
+I do not like to return error codes, but this are probably just the results of bad experiences from C.
+Which starts to be clumpy, which is a good sign to refactoring as mariosangiorgio suggested.
+2b) I would use the new variable final int phoneNumberLength = phoneNumber.trim().length(); This describes what we have.
+It is not so obvious from this small example, but will easily count on more complex code.
+if (checkStatePhoneLen(...)) could not be read in a normal way, because you have to look up what is the expected result.
+2a) I would not use a new variable for trimmed state.
+If ErrCode is an enum and you do a comparison like if (checkStatePhoneLen(...) == ERROR) then you should name it getErrorCodeForPhoneNumberCorrectnessForState.
+If you put everything together, it could be something like this:
+This reduces branches, which reduces time finding out in which branch we are and what is the current state.
+It is always a bad sign if your indentation is somewhere in the 5. or 6. level.
+And try to find method names, where you could "read" the source code.
+It is not directly clear from phoneNumber.trim().length(), one have to think what is happening here.
+Instead of stateTmp use trimmedState or stateTrimmed.
+Even more, if you have only 2 error codes, you should continue using boolean and if you have more complex things, it could be interesting to use exceptions.
+If you use a name like isPhoneNumberCorrectForState, you will have if(isPhoneNumberCorrectForState(...)) which is completely clear for the reader.
+Temp or tmp is one of the worst choices (behind data).

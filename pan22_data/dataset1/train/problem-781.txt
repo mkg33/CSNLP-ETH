@@ -1,0 +1,8 @@
+You might want to explicitly forward the Set-Cookie header with a  proxy_pass_header Set-Cookie. 
+In general when trying to determine the impact of a load balancer I often find it useful to have it  "load balance" over one worker, rather than bypassing the load balancer completely by connecting directly to the worker. 
+Only when the load balancer works as expected with a single worker, then as @user1279647 mentioned you can determine if you need sticky sessions or not by testing with multiple workers.
+I have an Nginx load balancer load balancing two nginx servers serving PHP content (Moodle) up. They share the same database and use the same sessions directory using an NFS share on a separate server.
+I am running PHP 5.4.1 and the latest version of Moodle.
+Right now the load balancing works just fine, and I am able to access both worker nodes using the proxy. However, when logging in to Moodle, I get an error saying that cookies are disabled. They obviously are not, and logging into one of the worker nodes works just fine. When accessing the nodes individually, the MoodleSession cookie gets set, but when accessing it through the load balancer, no cookie is set at all.
+I have tried changing the cookie mode to use the MySQL database, but this does not work, either.
+What can I do get multiple worker nodes to set cookies that the server is storing in a common directory (NFS)?

@@ -1,0 +1,11 @@
+When using Apache with SSL, does the entire certificate specified with “SSLCertificateFile” directive  get handed to the client?
+Additionally - You can sign your own certs and have your users (like in an AD Domain) trust you, but you have to make sure all your users's machines trust your "signer."  That's next level...
+So now you send that mashed up data to some web browser when he hits your page, the browser uses your public key to decode that info.  If the public key is the right one, the browser sees (common name, city, state, etc.) and knows the guy it's talking to is legit.
+Well, a private key pretty much mashes that info all up, and the only way to unlock it is to use the public key.  You can give that out like candy, but you don't give out the private key.
+Also - the browser uses public keys from the person that signed your original key (say verisign or godaddy), cause those are well-known and trusted sources...  They do that to make sure their talking to the right person too.  That's why you're usually getting your certs from someone like Verisign.  
+You've seen those CSR's you send to get your csr, right? With the info (common name, city, state, etc.)
+The private key is never sent to the client that would defeat the whole point of encrypting the communication.
+If the private key was some random server out there, that mashed up data would decrypt to more mashed up data.  Total junk.  The browser at that point knows it's talking to an imposter.
+Only the public key is transmitted to the client.  The SSLcertificatefile specifies the public key and the directive SSLcertificateKeyFile directive is for the private key.
+If you wish to see exactly what is transmited you can use openssl to connect and see the certificate.  A command like this openssl s_client -connect www.google.org:443 will connect to google and you will see the public certificate and some details about the certificate.
+The public key gets sent to the client which encrypts the data using that public key only the private key can then decrypt the data.

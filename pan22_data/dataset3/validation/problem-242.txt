@@ -1,0 +1,12 @@
+That does beg the question of why the firewall happily allows the (late) returned packet in, without subsequently letting the ICMP error back out.
+Why you get this message for 8.8.8.8 Googles public DNS, not shure.
+It may be a program that has been terminated while having open session to the DNS server.
+You could try the following, from most likely to least likely:
+Then, after a couple of these errors are logged (if I recall correctly, this is the syntax):
+When a PC/Server is running torrent, it sets up a lot of NAT sessions.
+Here is one reason why we do see this message in our ASA:
+BIND picks a random(ish) port for each outbound query, and it's possible for a long-delayed response to arrive long after BIND stopped listening for the response on that port.
+If none of these things fix the issue, try setting up captures as follows:
+ICMP Port Unreachable is being returned by your DNS server, probably in response to a late received packet.
+This looks like a mismatch in the firewall's NAT state-table timeouts and the DNS server's own timeouts.
+When the user then close/terminate the torrent client we do get lots of this error for a long time.

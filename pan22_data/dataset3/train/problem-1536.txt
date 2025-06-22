@@ -1,0 +1,37 @@
+You will only notice it when running applications that hit the disk and tax the CPU a lot.
+But when you're in this scenario you have to evaluate what is optimal to cover your needs.
+So, my first advice if you need to use virtualization is to put a bunch of memory in your machine, whatever the OS you use natively or within a virtual machine.
+Launching the extra layer of VMware will cost you ~ 300 Kb and the CPU loads will climb up to ~ 20%.
+VMware's memory management techniques (especially transparent page sharing) can eliminate the memory overhead almost entirely if you have enough VM's that are similar enough.
+It seems Microsoft has done some benchmark testing using BizTalk server, and SQL Server in different configurations in this regard.
+So I guess it is a cost equation of how valuable your time to configure VMs verses just buying and hosting a new server.
+Here's an example of a discussion on how a VMware Clustered implentation can be faster\better\cheaper than a bare metal Oracle RAC.
+KVM's maturity isn't quite up to Xen (or VMware) at this point but I see no reason to think that it would be noticeably worse than them for the example you describe.
+While this is all useful the real issues in terms of Server virtualization tend to be centered around management, high availability techniques and scalability.
+For specific use cases though the overall\aggregate "performance" of a virtual environment can exceed bare metal \ discrete servers.
+I've been using VMware Workstation for a while mainly on Windows XP, Windows Vista and now Windows Seven native systems to run different Windows flavors as well as Ubuntu.
+In my experience virtual machines are always a lot slower than physical ones OUT OF THE BOX.
+The main problem isn't that much the CPU load but the physical memory lack.
+You can deal with the performance hit by selecting a slightly faster CPU as your baseline, or by adding more nodes in your clusters but if the host can't scale out the number of VM's it can run, or the environment is hard to manage or unreliable then its worthless from a server virtualization perspective.
+In the other side, if you need flexibility, scalability (and all other virtualization benefits :P) deploy a VM.
+A 2-5% CPU performance margin is not as important as being able to scale efficiently to 20, 40 or however many VM's you need on each host.
+Let's say you've a Windows Seven 64 Ultimate running on a 4 Gb system that when idle needs almost 1.5 Gb and uses ~ 10% of the CPU.
+http://msdn.microsoft.com/en-us/library/cc768537(v=BTS.10).aspx
+That is pretty much consistent in my experience for modern Guest OS's running under VMware ESX\ESXi, Microsoft Hyper-V and Xen where the underlying hardware has been appropriately designed.
+If the sum of the amount of memory you've set for that virtual machine plus the amount of memory needed for your native system is above the amount of memory of your native system, then it's your native system that is going to swap, slowing down both the native and virtualized system.
+If you need only one system and you need it to be fast, then install it directly to the hardware.
+I have run many databases and webservers on virtual machines and as an end user and the feedback from other endusers (ie: accessing the app from a remote web browser) there is quite a big lag when using virtual machines.
+The typical experience for a general purpose server workload on a bare metal\Type 1 Hypervisor is around 1-5% of CPU overhead and 5-10% Memory overhead, with some additional overhead that varies depending on overall IO load.
+For 64 bit Server operating systems running on hardware that supports the most current cpu hardware virtualization extensions I would expect all Type 1 hypervisors to be heading for that 1% overhead number.
+Obviously a virtual machine is slower than the physical machine.
+For me virtual machines are NOT ABOUT PERFORMANCE, but about being easier to manage and for hosting several low performance VMs of course.
+The important thing in all these cases is that the performance\efficiency benefits that virtualization can deliver will only be realised if you are consolidating multiple VM's onto hosts, your example (1 VM on the host) will always be slower than bare metal to some degree.
+Then you'll see the CPU load ~ 60 % if the virtual machine is Ubuntu and ~ 80 % for any flavor of recent Windows OS.
+If a virtualized app needs a huge CPU load, and a native app needs also a huge CPU load, your native system will have to manage the priority and balance the CPU charge between its different apps, the virtualized system being nothing but an app but that phenomenon is a classical CPU load problem that you can trick with app priorities.
+Of course a properly configured virtual machine may come to 80% (I don't know the real number) or whatever of the physical machine's speed, but you end up having to really dig deep into what the application is doing and how the virtual machine works.
+If the amount of memory you've set for that virtual machine is not enough, the virtualized system will start to swap, then dramatically slowing down its overall performance and responsiveness.
+Now, you'll start different apps within that virtual machine.
+Then launching a virtual system within VMware will request at a minimum the amount of memory you defined for that virtual machine that is a minimum of 1 Gb for any decent system.
+Yes, a virtualized environment is slower than a native system and that may be in a range of 5 up to 100 %.
+So, it first depends of the balance of the memory needed for both the native and the virtualized machines.
+It will be slower, but IMHO in some cases it's justified and the performance is not significantly  slow.

@@ -1,0 +1,24 @@
+But there is insufficient data to figure out why at the moment.
+Setting the serverlimit much higher than the maxclients doesn't make much sense.
+Certainly there's a lot of writes going on and the pattern of data suggests lots of very small chunks of data (and similarly your HTTP traffic looks strange) but without knowing a lot more about what's going on here its impossible to advise.
+Ideal numbers, however, can only be measured through testing the specific application under the specific machine.
+It looks like the application workload is evenly distributed.
+It looks like something is constraining the number of apache threads - we'd need to see what your core settings are from httpd.conf
+For websites in general, you want iowaits to be under 1% to be well responsive.
+iostat, part of the sysstat package can measure io performance.
+iotop is a pretty good tool to understand the IO usage in your machine and what all processes are doing it.
+You'd be in a real pickle if apach decides to shoot up server count for any reason.
+You're saying there's a problem here - but without knowing what the problem you are trying to solve is, it's difficult to give any advice.
+If you want to find out which specific process is taking the io, you can also use iotop (available through EPEL repository -- though, I'd guess it would say "apache").
+Why doesn't your server have lots of idle workers?
+As Peter says there is rather a lot of IO going on here - but I don't think that's the only problem.
+Lastly, if you mean maxclients by "maximum server" setting of your apache.
+Basically, your max server * amount of memory each server uses should be equal to your total ram available (not including swap since you don't want to hit swap all the time, also total as in total available for apache, i.e.
+You should never use apachectl to measure the performance of the system.
+I don't think even those half a million dollar system would be able to handle that many apache processes.
+From iostat, you want low as possible util% which in turn give you a very low await value.
+Although not part of what was asked, you should familiarize yourself with using top as your most basic diagnosis tool of the system as it will give the overall glance at all aspects of the system.
+The most important part of the top output is available at literally the top of the output (which you ironically left out in your pastebin).
+That is from apache's point of view, which may be completely wrong with respect to how the rest of the operating system performs.
+You are also using fairly high system based usage in ratio for a typical apache environment.
+As Peter says, you should start by looking at top.

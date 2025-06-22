@@ -1,0 +1,13 @@
+As a developer (not a sysadmin), this seems ludicrous to me but I readily admit to not being a security expert.
+As an alternative, I've proposed that if we can't have direct DB access, then we could have an intermediary layer that accepts structured requests and generates DB queries and returns the data.
+Cron/daemon from internal network connects OUT to application server and fetches queued db requests
+If not, what would use to back up your argument if you were asked to implement such an architecture.
+Is the proposed backwards proxy approach really that much more secure that its worth the time to build it?
+Management's response is that this is suboptimal (but it is still at least open to debate).
+Cron/daemon writes new data into db or reads old data from db as requested
+I assume this type of argument has played out lots of times in lots of places but I haven't seen anything that specifically addresses the pros or cons of their proposed architecture.
+Application writes new signups into temporary local cache (could be filesystem, temp db, memcached, etc)
+Cron/daemon pushes back result to application server
+Our company currently has a customer facing cluster for our signups and customer account management which have direct access to the live database (one master plus several read only slaves).
+The idea (coming from management) is that the production servers should not have direct access read or write to the database but that instead something should run from either the database server or some other internal server that connects out to the production servers and requests information from some temporary queue existing there.
+We have had some discussions recently about improving the security of this setup (beyond existing firewalls).

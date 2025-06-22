@@ -1,0 +1,20 @@
+It has two Ethernet ports identified as lan and wan and in the OS.
+And I'd rather not have it eating up cpu cycles and memory on link-local traffic that's not a threat.
+Will internet bound traffic from lan clients always use their global unicast IPs as the source ip even with the client's gateway being configured to a link-local ip?
+I've implemented a netfilter based firewall protecting the lan and the gw from the wan side for both IPv6 and IPv4.
+One point of interest is that I am using Stateful DHCPv6 on my lan for assigning the globally routable v6 IPs.
+I configure the client to use the gateway's link-local IP as it's gateway for IPv6 traffic as per the common recommendation.
+The DHCPv6 daemon (ISC DHCPd) is on the gateway and makes use of a v6 Prefix also automatically assigned by my ISP.
+Obviously, there are link-local v6 IPs for each client and each Ethernet interface on the gateway as well.
+All lan clients, as well as the lan interface of the gateway, have globally routable v6 IPs as well as private (rfc1918) v4 IPs.
+This matters because I will be setting up snort using nfqueue and will need to be able to configure it with the ip ranges it needs to protect.
+Everything else is handled via DHCPv6 with address pools and even some static IP assignments.
+I have a small ITX computer running Arch linux on an old Intel Atom D525 configured as my network's gateway.
+Both lan and wan are dual-stack with a globally routable v6 and v4 IPs on the wan side.
+Both wan ip stacks are automatically assigned IPs by my ISP (DHCP and RA).
+But I also don't want to introduce a security hole that can bypass snort.
+For example, assume I have a client and gateway each with globally routable v6 IPs in the same subnet on the lan side.
+However, one thing I've read, time and time again, is to use the link-local IP of the gateway when configuring a gateway for clients.
+I'm still wrapping my head around the finer points of IPv6.
+I still use router advertisements to assign a v6 gateway address to clients but that is the only thing assigned via RA.
+It just hasn't been a priority to mess with it much and I didn't have the personal interest until my latest little project.

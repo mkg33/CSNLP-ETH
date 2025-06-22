@@ -1,0 +1,18 @@
+However, since you can't remove active directory properly, you have to force it to be removed from the server then cleanup manually on a good domain controller.
+Repromote the problem server and configure site settings like you would a brand new DC.
+Domain controller was setup, then taken offline for longer than the tombstone limit.
+Managing the network session with DC1.mydomain.com failed "Logon Failure: The target account name is incorrect."
+Everything was working great, so I shut down and got it ready to take out.
+Most of the KB articles I went through about fixing replication after reaching the tombstone life got stuck because of the "The target principal name is incorrect" error.
+The attempt to establish a replication link for the following writable directory partition failed.
+This leaves anything else on the server untouched.
+It seems the easiest way is indeed to remove active directory and reinstall it, and it can be done without wiping out the entire server.
+But things kept getting delayed for over 2 months, and now dc2 won't replicate properly.
+This indicates that the password used to encrypt the kerberos service ticket is different than that on the target server.
+The kerberos client received a KRB_AP_ERR_MODIFIED error from the server host/exchange.mydomain.local.
+Commonly, this is due to identically named  machine accounts in the target realm (MYDOMAIN.LOCAL), and the client realm.
+netdom resetpwd /s:dc1 /ud:domainadmin /pd:domainadminpassword
+In preparation for setting up a remote site, I setup a domain controller called dc2, running Server 2003 R2, and configured separate sites in AD Sites and Services, and configured replication from dc1 to dc2.
+At the main site, I have two domain controllers (which we shall call exchange and dc1).
+On dc2 (identical error messages exist about both exchange and dc1):
+I even had it the correct subnet for the remote site by connecting it through a router (this was before the site was connected to the VPN, so no IP conflicts).

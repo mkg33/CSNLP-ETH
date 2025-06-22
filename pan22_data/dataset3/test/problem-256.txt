@@ -1,0 +1,16 @@
+Then you can use that new link as your default gateway.
+And I don't really understand this use of ipfw and redsocks.
+Your remote server must have PermitTunnel yes and the client must request a tunnel using the Tunnel directive.
+Everything seems to work so far, all TCP traffic on my OSX system is done through the ssh tunnel, but the problem is with UDP traffic and because of that DNS queries are not working.
+I use redsocks to create an http proxy to my ssh-tunnel (so that i can forward all tcp traffic to it via ipfw), redsocks.conf looks like this:
+Besides what you are already using, sSH permits tunneling all IP traffic, independet from the employed layer 4 protocol.
+I want to setup my OSX system such that all network traffic is done through an SSH tunnel.
+Subsequent versions of SOCKS do support it, so you could look at that.
+It's also a good idea to add set -x (for debugging) and set -e (to fail immediately if any of the commands fail).
+I've written a small script for this purpose, and these are the commands executed by it:
+How can I get DNS on my local machine to work through the SSH tunnel?
+It is not restricted to UDP, though that is the preferred transport.
+UDP over TCP inordinately adds latency to the applications that are normally making use of it.
+Programs that make use of UDP should have full control over their own reliability and congestion control, such as is the case for RTP.
+However I would point out that SOCKS4 doesn't support tunneling DNS, so I'm not surprised you're having problems.
+sshuttle claims to handle DNS and TCP correctly, without this amount of fiddling - just the --dns option.

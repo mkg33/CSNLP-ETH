@@ -1,0 +1,28 @@
+However, many practical implementations have limited block/window size to save memory, making them also unable to utilize large-scale repetitiveness.
+I'd recommend reading Knuth's "Art of Computer Algorithms" section 3.1 for general introduction to pseudorandomness and 3.3 on statistical tests for streams.
+If you get about 8 bits/byte (or more), then the sequence is random in respect to the data model underlying the compressor.
+Its main weakness is that it cannot utilize large-scale repetitiveness such as identical repetitions of a long random sequence.
+As other answers mentioned, the decision version of this problem (like the Halting problem and a number of other problems like the Tiling Problem) is undecidable.
+Entropy is defined for distributions and it's problematic to apply it to unbounded bit string.
+In the first two cases, 8 bits of entropy per byte or n(1 - 1/256) runs for a sequence of length n mean fully random data.
+You define your distribution to be $(i_1/n,\ldots,i_k/n)$ and compute the entropy of that.
+In practice, we apply about half a dozen different kinds of statistical tests to a sequence, and if it passes them satisfactorily we consider it to be random - it is then presumed innocent until proven guilty."
+Using this notion, it is impossible to measure the randomness of all strings.
+There is no single correct algorithm for measuring randomness.
+Instead of compressing the sequence, you could also compute some measure related to the data model of the compressor: high-order empirical entropy for PPM, the number of equal letter runs in the BWT, or the number of phrases in the LZ77 parsing.
+But how do you define "events" when you get a string of length n?
+Another possibility is to compress the byte sequence and see what happens.
+In practice, there's no universal test for stream randomness, instead there's a series of tests, and if your stream tries k of the best tests and passes them all, we can be reasonably sure it's random...until someone invents k+1'st test that breaks it.
+http://www.phy.duke.edu/~rgb/General/dieharder.php
+Various statistical tests are one possible approach, as the others have already said.
+You could define your events to be "observed bit 1" and "observed bit 0", or you could have events of the form "observed string x" where x is some string of length n. In latter case, your entropy is going to be 0.
+Standard practice here is to run the data through a series of randomness tests, like the Chi-Square test.
+Normally if you have k possible event types, you observe n events, with p'th event occurring $i_p$ times.
+Compression methods based on the LZ77 parsing or the Burrows-Wheeler Transform (BWT) perform well, when there are many repeated substrings in the sequence.
+"If a sequence behaves randomly with respect to tests T1 ,T2 , ..., Tn, we cannot be sure in general that it will not be a miserable failure when it is subjected to a further test T(n+1).
+Of the standard compression methods, PPM uses an explicit statistical model to predict the next character based on the preceding context.
+Kolmogorov complexity is one way to measure the randomness of strings and it is algorithmically uncomputable.
+However, I believe you are asking about practical ways to measure the randomness of a collection of bits.
+Here's what Knuth says about it in "Art of Computer Algorithms, Vol 2"
+The existence of such algorithm could be used to solve the halting problem.
+Yet each test gives us more and more confidence in the randomness of the sequence.

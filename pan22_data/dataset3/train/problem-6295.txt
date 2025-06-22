@@ -1,0 +1,14 @@
+Why bother negotiating if the end result is to create an etherchannel.
+It also gives you protection against plugging the link into the wrong port.
+The 3750 will still see link on both ports (because the direction from the 2960 to the 3750 is fine) and it will still try to use the failed path because it does not know that the 2960 has lost link.
+Now lets say one of the links from the 3750 to the 2960 fails but in only one direction, say the direction toward the 2960 (lets say the fiber got kinked and only one of the two strands has broken).
+If you accidentally plug the link into the wrong port, LACP will fail, the 3750 will not bring that link up, and you have protected yourself against a problem that is difficult to troubleshoot.
+The only advantage to using LACP is if you want to connect to non Cisco gear, which is not what you are doing.
+Yes, it is good practice to use mode on in my opinion.
+So -- using LACP gives you protection against unidirectional link failure.
+LACP gives you a significant advantage in that it verifies connectivity in both directions over each link.
+For example, imagine you have the links configured in "mode on".
+This is like statically setting a port to access or trunk and not using DTP.
+You can think of it as also combining the features of UDLD with link aggregation.
+If you configure "mode active" the LACP packets must flow over the link in both directions between the 3750 and the 2960.
+If the link fails in one direction, LACP fails to work and the 3750 stops forwarding over the failed link even though it still has light from the 2960.

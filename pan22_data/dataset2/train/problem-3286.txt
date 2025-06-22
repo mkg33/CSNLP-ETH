@@ -1,0 +1,7 @@
+Creates the home directories, copies skeletons, etc - at least on the CentOS 4 box I do that on most frequently.
+This is also a nicely scalable approach because it will continue to solve this problem if you ever switch your user repository over to a directory service like LDAP in the future.
+I thought about creating the directories, chowning them to the corresponding user, copying all the skeleton files and chowning them to the corresponding user. but if there's a command like useradd -m that doesn't create the user again, but create the directories, it'd be better.
+You can use something like pam_mkhomedir to prevent this from ever being an issue with any users in the future. pam_mkhomedir is a PAM module that automatically creates a user's home directory on login if it doesn't exist, and populates it with files from /etc/skel (or whatever skel directory you specify).
+That way, you will execute the command as john, that can be useful if you made the mistake with more than one user.
+In my case, the home volume was corrupted and I decided just rebuild it from scratch since not much data involved but I want to keep users' login information, so I recreated the home directories manually with this script:
+and I forgot to specify the parameter -m to create the home directory and to have the skeleton files copied to each user. now I want to do that, and I don't want to recreate all users (there must be an easier way). so, is there any way to create the user directories and copy the skeleton files?

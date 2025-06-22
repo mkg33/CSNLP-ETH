@@ -1,0 +1,17 @@
+From what I can tell this does the same thing as sdelete however it can cause a spike in disk I/O as well as take a while to run.
+I have found that i can run "fstrim -v /" on the root but I would really like to know how much space is there. 
+Being able to run fstrim on the / partitions would be the best solution however with they way your ESXi is configured it would not be possible.
+I try to do the same thing couple week ago and I don't find how to. I share the official statement on the Redhat support portal.
+As a possible work around in some environments, thin provisioned LVM volumes can be considered as an additional layer below the XFS file system.
+If the VM's are eager thick provisioned VMDK, which means that there is nothing to reclaim when you are attempting to trim (technically speaking; SCSI UNMAP) your volumes.
+What i am trying to figure out is how much "white space" is left over when deleting files within our Redhat servers. On our Windows server we use sdelete and that clears up that problem, however with Linux i am struggle to find a solution. 
+Also i am trying to figure out being that theses are production system is fstrim I/O intensive, should it be run in off peak hours?
+If the back-end storage is running thin provisioning then you also need to use lazy zeroed VMDK files in order to reduce the storage and make it possible for the backend to cache/dedup the warm data.
+Trying to reduce to size of a partition or logical volume with the xfs filesystem cannot be done this is a known bug with fedora. If you are interested in this functionality please contact Red Hat support and reference Red Hat bugzilla 1062667, and provide your use-case for needing XFS reduction / shrinking. 
+One thing I will point out is when it comes to Linux I know enough to be dangerous but am not a super user.
+    As a possible workaround in some environments, thin provisioned LVM volumes can be considered as an additional layer below the XFS filesystem.
+What you might be able to do is setup an affinity rule for all linux VM’s and use option 1 from above.
+After many hours of googling i found this, I think it is showing me how much "white space" is available to be cleared up.
+Either option is not the best but reformatting every VM to get ext3 or ext4 does not sound feasible.
+It is currently not possible to reduce the size of a partition or logical volume with the xfs filesystem. If you are interested in this functionality please contact Red Hat support and reference Red Hat bugzilla 1062667, and provide your use-case for needing XFS reduction / shrinking.
+I am defining "white space" as the sectors? left over that are not zeroed out that SSD drives have to first zero out before they can write to it.

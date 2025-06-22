@@ -1,0 +1,15 @@
+To get a normal integer from a hex string you can use the built-in Integer.parseInt(String, int) which simplifies things to Integer.parseInt("AB", 16);
+Your hexToDecimal method is not checking for invalid input.
+Note that lowercase a-f are unsupported, and thus fail in that manner.
+Until then, it's just a signed 32-bit number, not in any particular base.
+Imagine if I put some code in the same package and did HexToDecimal.hexRep = ""; Now I broke your program!
+Also, the string should be converted to uppercase inside the method to also support strings like "7a8d".
+An exception should probably also be thrown if it goes outside the valid int range.
+It's PrintWriter.println(int) that actually converts it to base-10 notation.
+The actual parsing code can be simplified by knowing that "AB"*16 == "AB0" this allows you to do away with the pow operation:
+(Well, the Java Language Specification doesn't say so, but you know that your computer works in base 2.)
+Strictly speaking, your method does not convert the hex string into decimal.
+Therefore, if you wanted to reinvent the wheel, you should rename your function to
+There are a number of reasonable behaviours in the face of unexpected input, but this is one of the least expected failure modes.
+Calling hexToDecimal("7G") causes incorrect results, without any kind of warning or indication that an error occurred.
+You don't do any validation, so any unexpected characters would be interpreted as a -1 hexdigit, since that's how String.indexOf() behaves.

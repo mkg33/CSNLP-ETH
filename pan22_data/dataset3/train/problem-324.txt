@@ -1,0 +1,12 @@
+Recently the Amazon S3 had a major outage in the us-east-1 region.
+We're using jobs in jenkins to trigger deployments.
+As @bradim said using your CI/CD tool to initiate the deployment instead of hand based commands is usually good step forward, as is adding tests in your pipeline that actually test your deployment scripts on your staging (or a freshly created) environment, where you can pick up bugs earlier.
+It's certainly not foolproof, but it's been a nice improvement over running ansible playbooks by hand.
+It ensures that no matter who does the deployment, the ansible command that is run will be the same.
+You can put a shell script wrapper around ansible-playbook to look like:
+But what are some other ways you use to improve the safety and reduce a chance of error causing a major outage for your company.
+I would also add that instead of calling your ansible scripts directly, you can also add tools like Ansible Tower into your flow, which will let you track the changes that have been run more easily, and can give you an additional step of security into your flow.
+For larger/riskier changes this should ideally be combined with some form of change management so changes are made only after another person/team reviews the change and the approach to the change to help identify and resolve potential issues early.
+Additionally it never hurts to have a teammate who understands the change you're making be present and watching while you make big changes so they can watch for and help prevent mistakes in the execution of the change.
+A nice bonus is the build logs record when deployments were triggered, who triggered them and what exactly happened during the deployment.
+It looks like it was likely caused by a spelling error when running a maintenance playbook in Ansible or a similar tool.

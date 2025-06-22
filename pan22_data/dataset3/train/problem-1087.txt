@@ -1,0 +1,20 @@
+The MITM angle as an argument against it is a red herring.
+It is completely pointless, and probably actively harmful, to refuse email from encryption-incapable peers.
+As long as your server is set up to do opportunistic encryption with any peer that offers it, you get the best of both worlds: encryption when it's available, and email over plaintext when it isn't.
+And as others have pointed out, encryption on-the-wire and end-to-end encryption are two completely different things, addressing different threat models.
+Due at least partly if not mostly to the fact that it will still encrypt the traffic protecting against the casual observer.
+Generally when TLS is enforced for inbound & outbound, it's done for a limited set of domains which are agreed upon by parties to fulfill a need (for example, business partners might have an agreement to encrypt all mail between their companies).
+As a result of this and possibly other factors, it is even arguable that until both you and the rest of the world has implemented DANE/TLSA and DNSSEC, that while running opportunistic TLS it is better than not to also have anonymous diffie-hellman (while also using PFS) enabled as well.
+As such, I would say that his words on the matter carry quite a lot of weight, probably more than those of most.
+After all, as MH mentioned in a comment, even a "legit" SMTP with TLS connection can be MITM'd and the end user be none the wiser due to the vast majority of mail client's not bothering to validate certificates coupled with the vast majority of MTAs out there doing TLS are using self-signed certificates (at least if yiur not using DNSSEC and TLSA/DANE.)
+In further support of this configuration (with a much more elaborate explanation than mine,) please see the comments by Viktor Dukhovni in this post in a postfix forum: http://postfix.1071664.n5.nabble.com/Disabling-Anonymous-Diffie-Hellman-td67965.html
+Unless such an agreement is in place, don't turn on enforcing mode.
+However if security is your top requirement then encrypting the email itself before sending it is the most secure option (for example with PGP).
+From an email marketing perspective, the use of TLS is good practice and secure when you know that it is implemented through the entire chain of delivery.
+I do have to concur on the idea of using opportunistic TLS.
+Although, I do have some to add to the idea as well.
+Once everyone does support it, there's no difference between opportunistic and mandatory encryption.
+Some will likely be disturbed by the suggestions, however, as my suggestions here are not made lightly and without due consideration, before casting judgment, I ask that you please read the full discussion from the attached link.
+As to why one might take Viktor's suggestions over that of others, well, he wrote the TLS code as well as the DNSSEC, TLSA/DANE code for the Postfix MTA in addition to having been the one to have written the IETF drafts on both DNSSEC and TLSA/DANE.
+As long as there are servers who don't support encryption, mandating it simply means they can't talk to you; that's bad.
+Using opportunistic TLS is by far and wide the best solution.

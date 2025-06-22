@@ -1,0 +1,9 @@
+As autossh does not meet our needs (it exists with error if it can't connect to the server at the very first attempt), we've written a pure bash application: https://github.com/aktos-io/link-with-server
+I've used the following Bash script to keep spawning new ssh tunnels when the previous one dies. Using a script is handy when you don't want or can't install additional packages or use compiler.
+If I could at least monitor the tunnel automatically, I could restart the tunnel when it hangs, but I haven't even figured a way of doing that.
+I use an SSH tunnel from work to go around various idotic firewalls (it's ok with my boss :)). The problem is, after a while the ssh connection usually hangs, and the tunnel is broken.
+It creates a reverse tunnel for the NODE's sshd port (22) on the server by default. If you need to perform any other actions (like forwarding additional ports, sending mails on connection, etc...) you can place your scripts on-connect and on-disconnect folders. 
+There can still be issues with the connection but since the tunnel will be more tolerant any ssh session will feel a short holdup rather than being disconnected.
+The solution was to configure a VPN connection over UDP(I was using OpenVPN). This connection was more tolerant to whatever caused the disconnections. Then you can run any service through this connection.
+I've had a need to maintain an SSH-tunnel long-term.  My solution was running from a Linux server, and it's just a small C program that respawns ssh using key-based authentication.
+Note that this requires a keyfile to establish the connection automatically but that is the case with autossh, too.

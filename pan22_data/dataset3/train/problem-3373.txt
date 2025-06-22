@@ -1,0 +1,24 @@
+Is there a way to detect memory fragmentation on linux ?
+In either case it probably isn't exactly what you wanted.
+It's more useful with a nice output format, like this Python script can do:
+The challenge of swapping in huge pages in the face of memory fragmentation is exactly why they remain pinned in memory (when allocating a 2MB huge page, the kernel must find 512 contiguous free 4KB pages, which may not even exist).
+Be careful with the number, because it will prevent your kernel from allocating anything outside of that memory.
+Memory in the "movable zone" is not supposed to be pinned, but a direct IO request would do exactly that for DMA.
+All of your other memory then becomes "movable" which means it can be compacted into nice chunks for huge page allocation.
+Whenever the kernel needs more 2M pages it can simply remap 4K pages to somewhere else.
+This is because on some long running servers I have noticed performance degradation and only after I restart process I see better performance.
+Once in memory, they are pinned there, and are not swapped out.
+I want to know whether there are any better ways(not just CLI commands per se, any program or theoretical background would do) to look at it.
+Any memory allocation that has to be "pinned" for slab or DMA is in this category.
+Using huge pages should not cause extra memory fragmentation on Linux; Linux support for huge pages is only for shared memory (via shmget or mmap), and any huge pages used must be specifically requested and preallocated by a system admin.
+I noticed it more when using linux huge page support -- are huge pages in linux more prone to fragmentation ?
+If /proc/sys/vm/nr_overcommit_hugepages is greater than /proc/sys/vm/nr_hugepages, this might happen.
+For huge pages you want some free fragments in the 2097152 (2MiB) size or bigger.
+Either you cannot get any huge pages, or their presence causes the kernel to spend a lot of extra time trying to get some.
+And, I'm not totally sure how this interacts with zero-copy direct IO.
+For transparent huge pages it will compact automatically when the kernel is asked for some, but if you want to see how many you can get, then as root run:
+Servers that need a lot of socket buffers or that stream disk writes to hundreds of drives will not like being limited like this.
+There is one circumstance where memory fragmentation could cause huge page allocation to be slow (but not where huge pages cause memory fragmentation), and that's if your system is configured to grow the pool of huge pages if requested by an application.
+Also yes, huge pages cause big problems for fragmentation.
+Add the kernelcore=4G option to your Linux kernel command line.
+Now transparent huge pages can really take off and work as they are supposed to.

@@ -1,0 +1,8 @@
+I want to add mod_pagespeed or nginx pagespeed in the mix. Any ideas where to add it? Should I look into adding pagespeed to Apache or to Nginx?
+I would probably add PageSpeed to Apache. That way the pages are optimised once, cached in Varnish, and served out by Nginx. This will be more efficient, reducing CPU use, if you put PageSpeed on Nginx it may have to do it on every request.
+Add pagespeed to nginx, making pagespeed use the cached pages from varnish / apache and executing on the fly
+Add pagespeed to Apache, and configuring it in such a way that the pages get cached based on user agent / screen resolution.
+To use the Nginx PageSpeed module, you have to recompile Nginx to install it, and then keep recompiling Nginx each time there is an update to PageSpeed or Nginx that you need to make. By contrast, Apache can load the PageSpeed code as external module, making the Apache route easier to manage.
+The pagespeed extended cache has some kewl features and I think they can be integrated in to the mix with varnish.
+I just went through installing Nginx PageSpeedd. Adding it with the default settings only bumped our PageSpeed Insights score by 4 ports out of 100.I decided it wasn't worth maintaining custom packages for the relatively modest gain. Also, the Nginx PageSpeed module caused a /slowdown/ in delivery noticed by the PageSpeed Insights tool, presumably due to the CPU overhead of the content filtering that it's doing. I had to install a Wordpress caching plugin to mitigate that. 
+If I understand correctly, the artice I point out above refers to the second option. It might be easier to set up the first option though I think?

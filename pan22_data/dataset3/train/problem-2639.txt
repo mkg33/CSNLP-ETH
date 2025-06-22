@@ -1,0 +1,24 @@
+having the transfer start on an LBA where the lower 3 bits are 0, and end on an LBA where the lower 3 bits are 1:
+The following site gives a pretty good breakdown of the common file systems and their stats on performance vs. block alignment on different file systems:
+From an end-user perspective, your best bet is probably to make sure your drives are using the best file system for whichever mapping your drive uses and to make sure it's aligned correctly.
+http://www.ibm.com/developerworks/library/l-linux-on-4kb-sector-disks/index.html
+I've seen a few 4Kn SATA drives working in the hard drive validation industry, but I wasn't aware they were shipping any to customers, due to the limited hardware and software support for them and lack of customer demand.
+I have a 4 TB hard disk that has 4k physical sector size (Advanced Format) and I attached it to two SATA host controllers (one internal and one in a USB enclosure).
+This would require the drive's firmware to detect whether the host controller supports (desires?)
+If the manufacturer is claiming the drive is 4Kn, the older controller may providing an emulation layer, like read-modify-write, for older applications and hardware, as older systems simply don't support the 4Kn format.
+Operating systems (and admins) can ensure that partitions are aligned such that (small) write commands can be grouped so that the disk can overwrite full sectors instead of falling back to writing to part of a physical sector, where it needs to read the remainder of content first.
+I presume they emulate 4k over 512e so allow for MBR partition tables so that large drives can be used on legacy/embeeded devices (Smart TVs and what not) that only support MBR+FAT32 usb mass storage.
+However, seeing "4k native" behavior on a drive (USB enclosure) was new to me and my initial thought was the enclosure is emulating 4096B addressing on top of the drive's emulated 512B emulation.
+It doesn't look like SATA drives can support emulation on-demand, per se, but if the drive is indeed using 512e, instead of 4Kn, performance optimization is maximized by the driver (or possibly USB SATA controller) limiting reads/writes to 4K boundaries, e.g.
+There are two competing mappings for physical vs. logical sector sizes.
+I could not find anything about this in the public documentation of SATA standards.
+On the (older, about 2010) it comes up as 512B logical sector size, but reports its physical sectors are 4096 bytes.
+So, basically, there's no "switch" that can tell the drive to start or stop emulation.
+The "internal" controller shows behavior I had previously seen, which is usually called "512e" where the drive's firmware emulates 512 sector LBA addressing even though it does not physically write sectors that way.
+512e), though they are not necessarily mutually exclusive.
+After contacting the manufacturer, they claimed the drive is actually operating in non-emulated (native) 4k mode, the USB SATA controller is also doing no emulation at all.
+The only occurrences of this that I could find with a Web Search where USB storage facilities that registered with 4k logical sectors.
+In the recent USB enclosure, it is reported as having 4096B logical and physical size:
+4Kn), and the Long Physical Sector feature allows a device to have multiple logical sectors per physical sector (e.g.
+The sg_sat_identify command from the sg3_utils package would probably give you the information you need (check words 106-108 for Physical sector size/logical sector size information).
+The Long Logical Sector feature allows a device to have logical sectors longer than 512B (e.g.

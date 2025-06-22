@@ -1,0 +1,27 @@
+Also, we run bunch of VMware virtual machines and sometimes we move machines around using VMware converter.
+We develop applications for IPv6 so we run IPv6 in parallel with IPv4 in our development network.
+I can, quite freely, pick any IPv6 addresses I like.
+(Or provide answers that only explains why it is a bad practice manually setting these IPv6 addresses...)
+I have in the past setup small ad hoc LANs which were totally disconnected from the internet and when assigning addresses to the hosts, I could pick whatever made communicating the addresses between humans as easy as possible (and as easy as possible to remember in your head).
+Personally, I'd go for the simplest possible option: FD00::1, FD00::2, etc for a test/demo network; use a /64 prefix so your network is FD00::/64.
+I ended up setting up radvd server for auto-configuration and it assigns IPv6 addresses based on link local prefix and MAC address.
+I know this question is a bit academic and probably not something you would run into in a 'real' deployment of IPv6 (be it business or hobby usage).
+All you really need to do is assign your network as a /48 out of that, and start addressing.
+As a result, they change their MAC address and we need to manually update DNS after these motions, which is annoyance.
+Then I add them to DNS and always use names after that.
+As far as keeping track of IP addresses goes, I suggest you use either a wiki page or some similar document.
+Not surprising, one of my favourites were to give hosts numbers like 10.1.1.1, 10.1.1.2, 10.1.1.3 etc.
+While waiting for various parties (enterprises, ISPs etc) to deploy IPv6 (and thus provide a real incentive to use IPv6 in the real world), I'm a bit keen on trying it out by on a small (minimalistic?)
+(Ok, I had almost total freedom on how to choose my addresses.
+Or a DHCPv6 server that hands out statically assigned leases.
+I'm investigating if enabling dynamic DNS updates may help, but so far I did not spend much time on this.
+This works fine however we add addresses to DNS manually and every now and then someone forgetting to update.
+I would recommend using addresses in FD00::/8 rather than in FC00::/8 for this, FD00::/8 is allocated as locally assigned ULA, where FC00:/8 is intended to be used for centrally assigned ULA, ie each organisation wanting ULA will be allocated a 40-bit prefix (presumably by IANA and/or the RIRs, though no assignment mechanism has been defined and no assignments have been made).
+I could of course not use 127.0.0.1 for any of the ethernet interfaces, or use any subnet addresses or broadcast addresses)
+I'd recommend using the SixXs registration and use the block you are allocated... there's lots of information there as well if you don't want to say "who you are".
+Still I'm curious about the best way to "handcraft" convenient IPv6 addresses, so please don't provide answers which only provides me with a solution which "saves" me from the need to create these IPv6 addresses manually.
+Very easy to communicate, and very easy to keep in your head.
+I cannot pick ::1 as the address of any LAN interface for example, as that is reselved for the loopback interface.
+scale, simply by repeating the task by setting up a isolated LAN but this time relying on IPv6 to communicate between the hosts.
+And given all the different ranges of IPv6 addresses that are reserved for all kinds of uses and purposes, I wonder: in this isolated LAN context, what is the best way to pick easy to remember, easy to communicate verbally IPv6 addresses?
+I know there's a MUST for using a pseudo-random method for creating a ULA prefix, but I would just ignore that for a test/demo system that I'm never going to connect to anything else and will be taking down at the end of the lab.

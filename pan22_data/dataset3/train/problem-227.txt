@@ -1,0 +1,11 @@
+It is recommended that your FULL backup go before the DBCC CHECKDB so that you know exactly which FULL backups don't contain database corruption if DBCC CHECKDB ever fails due to corruption.
+But a DIFF after the last successful DBCC CHECKDB could have database corruption, depends when the DIFF occurred and when the corruption occurred.
+There is no need to take a FULL backup before and after running DBCC CHECKDB.
+Pick the FULL backup from before the last successful DBCC CHECKDB.
+Recently someone told me I should take a full backup before dbcc checkdb and one after checkdb, even in full recovery.
+LOG backups do not contain data pages, so they do not have the corrupted data pages in them.
+The FULL backup before the last successful DBCC CHECKDB is one without corruption.
+If there was a DIFF before the last successful DBCC CHECKDB, then you can use that too.
+I thought a full backup before checkdb was unnecessary (in full recovery) because I can always restore last full backup + diff backup + t-log backups.
+To recover from corruption, you can use the FULL+DIFF+LOG chain or FULL+LOG chain.
+Thus, you can recover with no data loss if you have the entire LOG chain and the tail of the log after the non-corrupted FULL or non-corrupted FULL+non-corrupted DIFF.

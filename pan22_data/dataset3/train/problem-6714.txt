@@ -1,0 +1,17 @@
+There are other iterative model fitting techniques that can give you a final model, which can be interpreted and allow you to see which input variables (i.e.
+Have a look at this thread on Cross Validated for more detail and some code snippets.
+It is only available in R as far as I know, but it isn't very difficult to get working, using the example code in that tutorial.
+So after fully training the model, each coefficient's magnitude encodes it's relevance in predicting the next value - that is exactly what you are searching for.
+you can have a look at component-wise gradient boosting.
+You have a time-series dataset, with 24 "lags" and want to predict ahead with a horizon of 1.
+It will tell you how well correlated each points it, pair-wise, with each of the preceding 24 lags.
+Given that you are tlaking about physical properties (position and momentum), I think it will always be the case that the most recent timesteps are most relevant, but you can verify this statistically.
+Each vertical line tells you how correlated that particular lag is with the next value in the series ($x_{25}, v_{25}$).
+If I understand correctly, you are trying to understand how many of the previous pairs affect the next pair ($x_{25}, v_{25}$).
+Here is a tutorial with some theory and examples..
+This equates to an edogenous auto-regressive model - a model that uses past values of itself to predict the future.
+It essentially only updates the coefficient (seen as "importance") of a single lags at a time.
+Given this context, you can try running a Partial Autocorrelation Function on your data.
+which of your 24 past data points were most important in fitting the model).
+(exogenous models could in your model include other variables, such as air humidity, viscosity surrounding medium, wind etc.)
+Doing so in Python, using the statsmodels package will give you a nice plot like this:

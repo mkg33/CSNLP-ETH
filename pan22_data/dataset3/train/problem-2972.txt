@@ -1,0 +1,13 @@
+You can read in more details, however in general /tmp is cleaned when it's either mounted or /usr is mounted.
+Sorta-tempy files that you do not want cleared on boot go in /var/tmp
+On RHEL 6.2 the files in /tmp are deleted by tmpwatch if they have not been accessed in 10 days.
+In /etc/default/rcS you have TMPTIME set, which is used in the above init script to feed the two find commands at its end - basically controlling file deletion based on their times (modified, changed, accessed).
+On CentOS (and I assume Fedora), there's a job in /etc/cron.daily called tmpwatch.
+This behaviour can be disabled by issuing systemctl mask tmp.mount and reboot (and reenabled by issuing systemctl unmask tmp.mount and reboot), and then /tmp will be mounted on the / filesystem and can be controlled by /usr/lib/tmpfiles.d/tmp.conf settings.
+The file /etc/cron.daily/tmpwatch defines the way tmpwatch is called.
+On Ubuntu 11.10 which I'm using, there's an upstart script in /etc/init/mounted-tmp.conf.
+This runs /usr/sbin/tmpwatch, which will delete files that haven't been accessed in the specified number of hours, i.e., the default behavior is to examine the atime for the file to evaluate if it's been used recently.
+The 2nd to last argument is the time to wait after the last accessed time.
+This regularly happens on boot, so this /tmp cleaning runs on every boot.
+Other distros (and installations) may have /tmp mounted as tmpfs, which is an in-memory filesystem.
+See http://fedoraproject.org/wiki/Features/tmp-on-tmpfs and man tmpfiles.d for more details on each case.

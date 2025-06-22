@@ -1,0 +1,10 @@
+The processes with negative values don't seem to have much in common, and it's strange that PDU DISPATCHER and IP SNMP would be using the most memory.
+I've found an article suggesting you can subtract CISCO-PROCESS-MIB.cpmProcExtMemAllocatedRev and CISCO-PROCESS-MIB.cpmProcExtMemFreedRev (Cisco process memory usage) but that doesn't seem to result in sane values.
+The output of show processes memory on a switch shows the same results that I see via SNMP (insane values if the allocated - freed logic is correct), but it also shows a Holding column that looks like it has what I need.
+I wrote a script to snmpget all of the values to prevent timing issues, and sorted them by Allocated - Freed :
+I think it might be down to shared memory and the original OIDs pre-dating modern memory management in IOS.
+Often the values are the same (resulting in a zero) and sometimes the freed is greater than the allocated (resulting in a negative number)- though I think this is probably to do with memory being freed between when I pull the allocated results and when I pull the freed results.
+I can't find any references to Holding in the CISCO-PROCESS-MIB and I've had no luck searching on the internet.
+I can't find any other Cisco MIBs that contain better data, so I don't think there is a reliable way to get this information.
+I've just spent a good half an hour looking at this, and I don't think there is a way to get an accurate number from SNMP.
+This is the data available from the 3 tables in cpmProcess (there are many more OIDs, but they don't seem to be populated on the devices i was looking at)

@@ -1,0 +1,8 @@
+You could try something like this, which I wrote to roll my nginx logs. I looked for some details on the tux userspace process but couldn't find any way to get it to reopen it's logs, so you may have to resort to stopping and starting the process.
+If it only corrupts one entry I can live with it - my fear is that the whole log file could be lost.
+rotatelogs can handle time or size based rotations for you, if you don't send the logs to a central logging server I'd use that, if you do send to a central logging server I'd send it to syslog, just let syslog create another socket which tux will write to (preferrably /var/log/tux), and syslog should handle the rest for you...
+I am considering Tux as the web server for a new CPAN mirror I'm building.  I've got it running and it's very fast but there is one big catch: how am I supposed to rotate the log file?
+Before I suggest something "TUX has never been an integrated part of the official Linux kernel". Are you sure you want to maintain kernel patches on your own?
+Personally I'd try to create a pipe which tux writes to and then use rotatelogs (from apache) to handle that stuff. Maybe even logger so that it uses syslog directly.
+I'm a bit curious here: What do you expect of incoming requests per second since you need a HTTP engine running inside your kernel? Isnt tinyhttpd fast enough?
+The logrotate application can do that for me but since the log file is binary I am concerned that this might lead to corruption at some point.

@@ -1,0 +1,5 @@
+I've recently taken an interest in analyzing commit history to find files with a lot of churn. The idea being that high churn files are likely targets for refactoring. Right now it's a simple console app that returns the number of times a given file was committed. (Renames are not currently followed. It's a known area for improvement.)
+The basic design is to have a visitor walk the commit graph and raise events for a listener to gather information about them. Currently there is a single listener that diffs each commit with its parents and caches those diffs. This should be flexible enough to create another one that, say, collects committer stats though. 
+Well, having your abstract class rely on its inheritors like that makes it pretty much useless. This should be declared like this. 
+This is the class performs a diff that is roughly equivalent to a git log --stat and caches them for later use. 
+Git's commit history isn't a tree, it's a graph and we don't want to visit any commit more than once, so this class needs to keep track of the commits it's already visited. 

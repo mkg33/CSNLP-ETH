@@ -1,0 +1,34 @@
+I have attempted to implement the Sieve of Eratosthenes in C. It works rather quickly with values tested up to ten million: time ./soe.out 10000000 returns real: 0m0.218s (this is of course, not including the result printing at the end which takes the majority of the time).
+If you want a 0 / non-zero integer type that avoids the possible inefficiencies of bool (Boolean values as 8 bit in compilers.
+on Linux, perf stat -d ./soe to show CPU hardware performance counters for cache misses.
+Is my code the most efficient it could be, and would implementing a segmented sieve instead be a good idea for improvement?
+list[i=1] corresponds to the primality of 3, so we need to mark 9 as composite (stored in list[4]).
+To optimize the bit-setting for Sieve, you can make a bit-mask to AND or OR and rotate it instead of re-creating it for each word of the bitmap.
+Anyway, all of this is going well beyond what you were aiming for with your implementation.
+(set them to false in a startup loop instead of memset(true)).
+Make sure you compiled with gcc -O3 -march=native, or with optimizations enabled for whatever other compiler you use.
+It's not usually useful to write your own string->int functions in the first place.
+But maybe the library isdigit is slow and you don't want it to check if a locale is set or any nonsense.
+Note that you can store your bitmap as 0 means prime or 1 means prime, so you can choose whichever is more efficient: generating a value with all-but-one bit set, or a value with only one bit set.
+If you want a proper bool in C that works like it does in C++ (guaranteed to only be 0 or 1), #include <stdbool.h>.
+for (int i = 2; i <= max_sqrt; i++) is a good start (only going up to sqrt(max)), but you can skip the even numbers.
+BTW, the C standard does guarantee that the integer values of '0' through '9' are contiguous and in the expected order, so '0' + single_digit_number works.
+typedef unsigned char bool; is technically legal in C, but very bad style.
+This is a very low-readability way to write isdigit(inp[i]).
+If you start with i=3 and do i+=2, you avoid wasting time testing list[i] for even numbers.
+for some benchmarks on this, specifically in the context of a Sieve.
+Use character literals like this to make it more readable:
+Note that C++'s vector<bool> is a bitmap, but you can implement one yourself in C with shifts.
+See Is using a vector of boolean values slower than a dynamic bitset?
+As a bonus, now your code is portable to EBCDIC or other non-ASCII C implementations.
+One major thing for large data sets is using a bitmap (8 true/false elements per byte) instead of only one per unsigned char.
+So we still do j += 3, but it really means we're skipping the even multiples.
+You can compact your list by not even storing the even numbers in it.
+(Making it portable requires using CHAR_BIT if you don't want to assume 8-bit char).
+Much has been written about prime sieving, it's always possible to make an implementation more complicated to gain some performance.
+More complicated indexing is possible to bake in other small primes like 3 and 5.
+If you're curious about performance, profile your code.
+This requires a read-modify-write to only clear one bit, so it only pays for itself with a large enough max that you start to get cache misses with the per-byte version.
+(Hard-coding 48 and 57 would be useful if you explicitly want to work with ASCII, regardless of the native character set of the C implementation.)
+Hard-coding ASCII constants is still usually not the right way to go.
+But there are other times where you want to work with characters.

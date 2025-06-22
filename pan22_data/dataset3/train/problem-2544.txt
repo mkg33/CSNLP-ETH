@@ -1,0 +1,27 @@
+If the hard drive already has a working installation of the target OS, you can usually just restore over the top of it and reboot, although you do have to make sure that the grub.conf and /etc/fstab do not have drive labels or UUIDs in there (if they do, it's usually easier to just specify the device name in case you have to restore again later).
+If the system is already bootable you do not need to install GRUB again, if it's a new hard drive that hasn't had a full installation on it you need to ensure it knows where to find the kernel, so a simple grub-install hd0 (or whichever hard drive) should do it.
+For Linux the thing most likely to break for servers without a GUI is storage.
+I would exclude /boot from the restore (and possibly also /etc/fstab to avoid the above).
+Then restoring your system becomes a two-part process: 1. installation of the operating system on the new machine, preferably using an automated installation method like Kickstart, followed by 2.
+Restoring the needed user and application directories from the backup medium.
+Systems used for desktops are a bit trickier since the video/sound/wifi devices tend to be less well supported, but even then the system still will be pretty easy to get booted, you will just have to adjust the configuration for software that uses those devices.
+If the new system accepts the same type of drives, then you could probably just move the drive over and most things would work without any other work.
+Another solution would be using an Initial RAM disk or InitRD.
+On a newish server, this might not be a problem, but if your system is some old piece that was once set up by that guy who is no longer with the company and that nobody has dared touching the last two years, that can be a serious issue.
+this solution needs recompiling the kernel which might not be trivial.
+You could completely reparation the new drive however you like and adjust your boot-loader and fstab on the new system after you have copied files and to reflect your new partition structure.
+This avoids the drawbacks of bare-metal, but comes with a drawback of its own: you'll have to be able to define the backup directories.
+The above mentioned procedure is what we have been using at work for a year now.
+It isn't, it is just there to make the partitions on thew new system identical.
+The procedure described in that thread is usually called a Bare-Metal Restore.
+As the name says, it means restoring the original system (often on completely new hardware) starting with an empty harddisk.
+Alternatively, you can choose to restore only non-OS directories, for example all home and application directories.
+If you are as lazy as me :D you can use the following procedure:
+You can list needed drivers (which are kernel modules) and make an initrd that contains these drivers.
+To my knowledge, the only problem when restoring a server on another one (even Physical-to-Vistual or Vistual-to-Physical) is booting the system.
+If you move the drive from one box to another then  things will probably just work.
+It has some advantages, most notably that you get an exact copy of the original, including files in more exotic directories that you might otherwise overlook.
+when the system is booted up, everything is the same as before and all of the applications and servers, should work properly.
+In order to boot up the system, you can built necessary drivers, which are mostly related to storage (SCSI, RAID, filesystems like ext4, etc.)
+So if your old box was IDE, and your new box is SCSI, or SATA then your fstab, boot-loader and so on needs to be changed to reflect the new partitions.
+Maybe,  Keep in mind that if you use a stock kernel as part of most major distributions then the most  hardware usually will be supported out of the box.

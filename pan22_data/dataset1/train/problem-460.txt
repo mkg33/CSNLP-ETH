@@ -1,0 +1,10 @@
+Using Apache you can simply set up your staging server's Allow and Deny directives to restrict access to authorized IP addresses.  Alternatively you can put the entire thing behind HTTP Authentication (username/password, or client certificates if you want to get really fancy).
+Bonus points for using a custom "unauthorized" error page to redirect people to the production site .
+Configuring Apache to serve the staging site on a different port is also an option, but this is just "security through obscurity" like using the stage.domainX.com domain -- it doesn't stop anyone from finding the staging site if they go looking.
+Note that changing the port IS NOT something you do with DNS - it's a webserver configuration thing (See the Apache manual for details). DNS has NO CONCEPT of port numbers, it's just a name-to-IP (or IP-to-name) mapping* -- pet peeve.
+* There are some limited exceptions, like SRV records, but we're talking about Address and CNAME records
+I have a staging server and production server that hosts multiple sites (using Apache2.2). Currently, I have the DNS pointing stage.domainX.com to the staging server and *.domainX.com pointing to the production server.
+Everything seems to be working pretty good, but I would like to be able to secure the access to the staging server. So, unless it is the right person, someone trying to enter stage.domainX.com should be disallowed (and, if possible, go to the production server).
+And, I wanted to use a domain name instead of an IP because I want the clients to be able to more friendly view the staging site (instead of memorizing an IP address).
+Is there a good way to handle this? Or, am I handling the staging domain name process in an unusual way?
+P.S. I've actually wanted to manage this through ports, but I haven't figured out a way to do it. Like, domainX.com:80 (standard) goes to production and domainX.com:9000 goes to staging. Haven't found a way to do this in DNS though (using GoDaddy's nameservers/zones).

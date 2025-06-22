@@ -1,0 +1,11 @@
+After some research, it is my suspicion that since users are now being authenticated during the creation of the https connection, and not by subversion, that information is not being passed with their revision changes.
+Previously the users connected using tortoise-svn over http, and when committing, would have their revision associated with there user by the svn:author property.
+Which, as it turns out only requires a user to be validated if and only if a user is provided.
+However I have not found any way in tortoise or further down the software chain to provide this information directly.
+However now, after the move the users connect using tortoise-svn over https, and revisions no longer have associated authors.
+Causing the svn user to no longer be prompted for authentication.
+The cause of my problem was that svn users were not authenticating at all.
+I just migrated an existing svn repository to a new server.
+After the initial setup of svn/apache, I added a rule to the http.conf file allowing access to users on the local network that also applied to the svn location.
+I did not notice this at first, because I thought my credentials were being cached by TortoiseSVN.
+I was further confused because within the svn location block I was specifying 'Require valid-user'.

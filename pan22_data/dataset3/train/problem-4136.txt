@@ -1,0 +1,12 @@
+Is there a way for a user to make a command run upon restarting the daemon, rather than a reboot?
+Sounds like you have a race condition where cron is scanning its tabs and not finding a valid user for some of them because the network/LDAP server can't be reached -- You need to make sure your user list is accessible before cron starts up.
+We discovered that if an LDAP user has a crontab with an entry marked to be run @reboot, the command will not actually run upon the reboot of a machine.
+Or is there a better solution to this overall problem?
+We were able to fix one part of this problem by adding the following line to /etc/crontab:
+Most of the people who log on to these computers are users from an LDAP server, and not local users.
+Try adjusting your RC sequence so cron is not started until after the network is fully up (either by re-arranging rc.d or marking in the cron script that it requires networking to be started first).
+That fixes the problem of crontabs not being read at all for LDAP users.
+Thus, when cron starts back up upon a reboot, it waits for networking to get up, then restarts the cron daemon.
+However, since it's the cron daemon being restarted and not the computer, @reboot entries are ignored.
+In fact, cron will ignore LDAP users' crontabs entirely after a reboot until that user runs crontab -e again and saves, or until the cron daemon is rebooted.
+I'm pretty sure that this is because the cron daemon starts before networking is fully up, so the crontabs of any LDAP users aren't loaded and run or checked for @reboot.

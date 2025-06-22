@@ -1,0 +1,10 @@
+If your app needs to be launched from a startup script (root context)
+My suspicion is that your manage.py runfcgi has dropped privileges to a different user to make sure that you are not running scripts as root - a very dangerous thing to do.
+Best practice is to launch your app with the same user as apache or the other apps that need to share files with it.
+I suggest you make nginx use the same user as your app, your can do this by adding
+If you are running this from a startup job root will own the process, which is bad because files and logs it writes will not be accessible to other users and processes and leaves no permissions sandbox for you app.
+If that is the case, the solution is as simple as editing the configuration for however you are managing your fcgi instances and having it use www-data:www-data as the user and group that it drops privileges to instead of nobody.
+You mentioned the user 'nobody' - this is the default user nginx saves files as.
+My django app saves images and they're being saved as nobody:nobody instead of www-data: like they previously were under a different server.
+Running django in fastcgi must be stopped and started by user code, if you call ./manage.py runfcgi your user will own the process.
+nginx is setup as user www-data and I ran the manage.py runfcgi as root so permission shouldn't be an issue.

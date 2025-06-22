@@ -1,0 +1,15 @@
+so far I haven't found a way to tell sql server release any unused memory to windows.
+Regarding your questions about "low memory notification" and "aggressive working set trimming", the SQL Server will try to trim back to the minimum amount of memory as defined.
+As I said before unless you know how frequent server is going to need specific amount of memory no need to set anything higher than Default.
+"In case of aggressive working set trimming by windows -- would it leave SQL server's memory usage to 48 GB setting a "floor" for SQL's memory usage?"
+but my guess is it cannot force SQL server to reallocate acquired/committed memory.
+I see setting min value only if we know that every day there is a load/activity going to happen that will require high memory so that when activity happens SQL SERVER does not have to request more memory every day.
+SQL server will not go below min value if it has already acquired that.
+i have seen the server becomes unresponsive due to the inappropriate MAX value for SQL server and then there is nothing left for server itself to operate.
+Starting from SQL Server 2019 CTP3.1 you could set up MIN and MAX memory during setup and utilize the Recommended values:
+As for recommendations for min memory, 50% should be a good base, but it depends on the server and what sort of load it has.
+According to the documentation, SQL Server cannot release memory below the minimum.
+so this is an indication that MIN value set was not appropriate.
+"Are there any recommendation on min server memory?"
+I concur that for most SQL Servers 50% is probably a good minimum memory setting.
+"If windows sends low memory notification to SQL -- SQL server will trims all its pool and try to maintain memory usage up to 48 GB of memory ? "

@@ -1,0 +1,20 @@
+Are you using a physical nic for the guest or a virtual?
+It could be that you have tens of machines merrily pushing as much data as they can and the backplane of the switch is not capable of transmitting data fast enough to serve every port with gbit speeds simultaneously.
+I get 26 MB/s (quick test) with my 1 Gb Network through Hyper-V.
+There's appreciable CPU time required to emulate a network card into the VM; that, combined with the rather atrocious speed you're getting NIC to NIC, would account for the fairly dodgy performance you're seeing.
+Also, how good is that new switch and how much other traffic is running through it?
+Does HyperV advertise itself as giving better-then-100mbit performance to virtual network adaptors (I've yet to use HyperV so can't offer you direct experience)?
+With regard to your host->host speed of 20-35MByte/s I suspect that you are seeing delay due to other factors.
+Make sure in the settings for the guest that you are not using a 'Legacy Network Adapter'.
+Are you using dynamically expanding disks or snapshots on the VM?
+Cat5e cables should be capable of dealing with gigabit traffic, unless you have damaged or low quality cabling, so I doubt upgrading to Cat6 will help.
+With regard to the VMs transmitting data slower, the fact that the host machines can transfer data at the faster rate implies that the VM solution is introducing a limit or bottleneck.
+If it does genuinely vary that much then I would first suspect that contention for disk IO at one end of the transfer is the bottleneck (try running the test with no other VMS or other major processes running on either host).
+If it does then what spec are your host machines and what load do you see imposed on the host when transferring the data?
+If so, what kind of disks are your VMs running on?
+It could be that you are seeing the natural performance hit of the virtualisation process exacerbated by older server kit.
+Is that "20-35" just an estimate, or does the rate vary that much during your tests?
+Again, when you say "100mbit speeds" do you mean the speed tops out at (but usually reaches) the speed you'd expect for a 100mbit NIC, or is the observed speed less than that, or does the speed very a lot (even with no other VMs competing for the bandwidth)?
+This is more than likely a misconfiguration of the virtual machine's networking.
+This may be disk I/O limited rather than network limited.
+However, to use the 'Network Adapter' instead, you will need to install integration services in the guest (supported in Windows 2008, but you'll need to update the Windows 2008 RTM install with the later Hyper-V integration services).

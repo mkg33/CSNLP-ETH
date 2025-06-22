@@ -1,0 +1,10 @@
+So, I have my VPN tunnel up between my DataCenter and my VPC.
+route add -net 10.116.0.0/16 gw 10.115.0.1 (depends on your configuration.)
+It means all of the traffic to 10.116.0.0/16 will go through 10.115.0.1.
+Make sure you have appropriate rules in your DC firewall to allow all traffic from 10.16.x.x subnet to enter into your network.
+Evidently, when the RETURN messages were coming into the PAN, they were having the AWS subnet address stripped off of them, replaced with the LOCAL subnet address, and then black-holed because the rules didn't allow ICMP to traverse the security boundary then come back in the same interface.
+The next-hop usually means you need to add the destination IP address, netmask and gateway into your routing table.
+Traffic passes normally; SQL, RDP, AD, DNS, etc and PING from AWS side to DC side pass, but PING from DC side to AWS FAIL.
+There was a check box on the PAN config that said "append local IP range to ICMP requests".
+There is a default gateway in your routing table, all of the traffic will go through the default gateway, if you need some traffic to use other gateway, you need to use "next-hop".
+what bloody line of the config document that AWS provides gives me the "next-hop" interface IP that I configure my PAN with so i can ping across the tunnel?

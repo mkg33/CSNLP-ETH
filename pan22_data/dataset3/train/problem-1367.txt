@@ -1,0 +1,27 @@
+If Slave_SQL_Running is not running, try to start it with "START SLAVE;".
+It is very risky software and causes much more downtime than it prevents.
+AFAIK only completed transaction are written to the binlog and thus to the replicas.
+if you don't have a chain-setup (which might not be a good idea) you would need to change the the replication config of both the new master and the slaves.
+If that fails, check if there is an error mentioned in the "Last_Error" line.
+In conjunction with mmm I'd recommend xtrabackup as it can be used as a really fast and elegant way of setting up new slaves (perhaps to replace a machine that died), much faster than loading from an sql dump.
+It handles circular replication, multiple slaves, failover and automatic promotion to master (and associated repointing of slaves), all transparent to clients via managed floating IPs, and it works beautifully (I had a primary DB server disappear just last night due to a dead switch, and my clients didn't even notice).
+I have extensive experience with it and my company tried to fix its problems, but it's unfixable.
+maybe just temporarily, until all slaves are fresh again and then promote the designated server.
+So the new master could be "behind" one of its slaves.
+Personally i think you would need a special setup (e.g.
+With the commands given earlier you can check the state of all your slaves and promote the freshest (hint: Log_Pos) slave to master.
+This will only apply if the database is aware of your transactions.
+How do I perform crash recovery in a MySQL/InnoDB Master-Slave asynchronous replication setup?
+If the Slave_IO_Running is not running, you have an uncommon problem, check the error logs.
+Also if you're zipping your backups, you NEED pigz - it will knock ~80% off your backup time!
+Likewise, the slave that are promoted to become the new master may not have the most up-to-date transactions among all the slaves.
+To resync the old master, just add it as slave and let the replication finish.
+I'm not sure if it's appropriate to post a link to my blog post where I explain why this is true.
+mixing WAN and LAN slaves, huge transaction queries) to have slaves with different relay-states after the master crashed.
+How do I resolve all these potential inconsistencies?
+Then you can take the system offline and switch back to the old master.
+So there could be inconsistency between the original master and slaves, one of which will become the new master.
+If the Seconds_Behind_Master is > 0, the replica is catching up.
+The original author of MMM agrees, by the way, that it's a disaster.
+Because replication is async, a transaction that has been committed to the master may not be able to leave the master before the crash happens.
+Especially if you use a transaction agnostic backend like MyISAM.

@@ -1,0 +1,10 @@
+I am considering changing the update of the product_stock table to be done by a trigger on the transaction log table (instead of doing it directly in my application code), but I would like to add a reinforcement that the product_stock table would never be updated directly, and only the trigger would be authorized to update it.
+I have a product_stock table and a stock_transaction_log table.
+To do that, we can create a temporary table to serve as a "global variable".
+Currently whenever there is an increase/decrease in a product's stock, I update the product_stock table increasing or decreasing the quantity and also insert an entry in the transaction log table, for auditing.
+Obviously, one could create that temporary table by hand, insert a row on it and do the update, but at least you will make it harder.
+Is there anyway to do this in postgresql (currently using 9.1)
+Give the user privileges for inserting into stock_transaction_log and executing the trigger, but not for inserting into product_stock.
+The solution proposed by Ziggy will work, but if you don't want to go that deep by having to create a privileged user just to execute the trigger, there's another solution you can try: Create a validation trigger on the product_stock table that checks if the update is coming from the stock_transaction_log trigger.
+You can use SECURITY DEFINER in the function trigger, and create it with a privileged user.
+With PostgreSQL 9.3+, if you don't expect very high frequency of insertions in stock_transaction_log you can also create the table product_stock as a MATERIALIZED VIEWs with a unique index, and call REFRESH MATERIALIZED VIEW CONCURRENTLY product_stock from within the trigger after insertion in the log table.

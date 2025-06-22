@@ -1,0 +1,13 @@
+This is rare, as it requires a certificate authority to issue certs to all of the users, and requires users to properly manage them.
+The server then authenticates the clients using password challenges just as if ssl were not being used.
+That is because the client just accepts whatever certificate the server sends it, and uses that cert to set up an encrypted channel.
+Do you just want to use a certificate on the server which the clients use to authenticate the server?
+I'm deploying a virtual machine with my database in a cloud service.
+All that you need to do now is edit postgresql.conf to turn ssl=on, and edit pg_hba.conf to either require or allow your clients to use ssl (hostssl requires it, or host allows it.)
+Or do you want to use client certificates to authenticate the clients to the server as well as the server to the clients?
+So a bad guy can run a PostgreSQL server with a self-signed certificate, and if it can trick your clients to connect to it rather than your real PostgreSQL server, they will happily connect to it and send their queries to it.
+I have read a lot of material from postgres documentation [1,2], but I can't understand much of it.
+Note that with the default client configuration (at least if the client is psql), all that you really get from using ssl is encryption, not true server authentication.
+I have followed this tutorial and now I have these files:
+Assuming the first of these, you don't have need root.crt files on the server.
+I would like to encrypt all the communication between this server and any clients.

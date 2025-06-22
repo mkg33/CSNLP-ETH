@@ -1,0 +1,14 @@
+You can do this in theory, but you will need a good client machine to do that and by good, I mean a good Windows installation.
+Stick that in the remote office and create an IPSEC tunnel back to the central office. That's what I do. You don't need any subscriptions on it. 
+Step 4: if you don't NAT you have to add on Fortigate static routes for the remote office network and also firewall rule on the ssl.root interface-->to-->HQ_internal.
+As Tim has said, the idea of the SSL VPN is for it to be used by individual users, not to create a site-to-site VPN.
+Step 2: you will add a static (persistent route) on all stations (from the remote office), that for the HQ destination would have to reach through the machine connected at Step 1.
+Step 1: you connect that machine (from remote office) to the headquarter. You will receive an IP address from the SSL_VPN_pool.
+I would have to second the answer from hyussuf, as I was just about to respond the same.  If you absolutely cannot purchase any additional (new) hardware, running openvpn is probably the right answer for you.  I haven't used pfsense personally, but I have used LEAF as a dedicated firewall instance (running shorewall).
+You can do this, but that extra_vpn_equipment_money you don't want to spend would be NAT-ed into some workstation_configuration_sweat.
+This is because the operating system on the machine you want to use SSL VPN client will have to deal with all the traffic, and that machine will have to somehow prove router&firewall capabilities.
+That being said, do you have a specific reason you want/need to use the SSL VPN in place of the ipsec vpn? 
+Step 3: you will have to enable Routing&Remote Service on the machine you use SSL VPN client (I assume you will use a Windows platform, although Linux will work better for this), so that traffic from that location will be routed from lan interface to the VPN_interface. Here is a catch: you will either NAT this traffic with a source of your SSL_IP_pool or you can let it this way.
+The general idea of an SSL VPN is to allow individual remote teleworkers access to central resources. Your best bet in this case is to deploy a small VPN device at the remote site and tunnel all the traffic back to the central site.
+Is there any reasoning that you don't want to put a VPN capable device at the remote site, if its only a small site there are small/cheap consumer grade devices that could do it or even one of the low end firewalls like the Cisco ASA 5505.
+I'm not specifically familiar with the Fortigate appliance, but, if I'm not mistaken, the appliance you reference supports IPSec VPN tunnels.

@@ -1,0 +1,11 @@
+See this info at MSDN for a discussion on minimal logging with bulk updates.
+If you can't go to a simple recovery model, then your backup strategy should include performing transaction log backups in order to set a checkpoint on them.
+A differential backup at night should be able to help you not relying on the overwhelming amount of log backup taken before, and if you are not interested on having a point-in-time recovery capability.
+That link also links to: http://madhuottapalam.blogspot.com/2008/05/faq-how-to-truncate-and-shrink.html
+Bassically Log file is needed for the whole data write scenario (the database is NOT written when you commit an update).
+I admit I borrowed that from http://sql-server-performance.com/Community/forums/p/28345/151682.aspx
+The only real way to get control of your logging is to perform regular sql backups.
+Maybe every 5 minutes during those updates happening.
+Once the checkpoints are set, sql server can start recovering the disk space.
+One thing that came to mind is that you could utilize bulk update in order to insert/update those 100M records.
+Can you change the recovery model to simple, long enough to perform the shrink, and then set the recovery model back?

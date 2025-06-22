@@ -1,0 +1,22 @@
+MySQL would need to be in a Master/Master config, but it should be possible.
+You could setup a load balancer in front of these if you are sure that this load balancer will only be used for READS.
+IF you have a high load you maby have 3 nodes with apache/mysql all replicated and convert 1 of the box's into a dedeicated load balancer.
+Given your physical limitations, you really could setup 2 load balancer hosts and 2 Apache/MySQL servers.
+2 replicated Webservers, they are the public interface to access database data
+First of all i have to say i'm very very newbie as sysadmin.
+This ip will be the public ip, pointed by the DNS.
+Setting up this type of system is non-trivial, especially handling the case when the master dies.
+At this point you need manual intervention to fix things since the old master won't be getting any new writes.
+This one will be the interface used by application's connection.
+If they are in master/master replication mode, meaning either server can take writes ,then that solution is fine.
+A few Questions do you want it to be load balanced cause if you have 4 machines 2apache and 2 mysql you get set up a fail over setup such that if one server goes down it will use the other server.And to achive this you can use HeartBeat http://www.linuxjournal.com/article/5862
+This won't give you great performance on the application side, but does give high availability (assuming the load isn't too high)
+1 virtual ip address shared by webservers, with a load balancing for the 2 machines.
+But master/master replication is uncommon and it is more likely they are setup in a master/slave situation, meaning writes can only goto the master database.
+The most reliable set up is 2 load balancers 3 apache servers 1 strong mysql server and 1 backup through heart beat
+The main problem you're going to have is deciding how to setup the mysql servers.
+You can still setup a load balancer in front of the two for writes, but it will have to be intelligent enough to always goto the master database as long as its healthy, and only fail to the slave database if the master goes down.
+1 virtual ip address shared by mysql, same as above.
+The servers are on a remote server farm, but they are included in a VLAN.
+I'm trying to do someone else's work, and i have almost 0 experience in clustering / load balancing and related stuff.
+http://www.howtoforge.com/high_availability_loadbalanced_apache_cluster

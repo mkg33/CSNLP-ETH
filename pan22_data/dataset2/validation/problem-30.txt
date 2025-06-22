@@ -1,0 +1,6 @@
+If it's acceptable to have a few seconds of DNS failure before the swapover occurs, you can create a simple shell script to do this. Non working pseudocode follows:
+Have a dns service address at each site that is a VIP on the loadbalancer.  Then active/passive loadbalance each VIP across the two dns servers, favoring the local one.
+If you are using load balancers anywhere in your site, you should be able to configure them to  have DNS as a virtual service. 
+rotate makes the resolver pick one of your nameservers at random, rather than using the first one unless it times out. timeout:2 reduces the dns timeout to two seconds, rather than the default value.
+My Kemp Loadmaster 1500s can be setup to do round-robin with failover. That would use their service checking to make sure that each DNS server is up every few seconds and divide the traffic between the two servers. If one dies, it drops out of the RR pool and only the "up" server gets queried. 
+So timeout is quick and rotate make him use both to round robin the load, without any VIP/VRRP/staff to manage, just 2 dns servers doing their job...

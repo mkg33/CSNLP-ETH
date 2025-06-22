@@ -1,0 +1,15 @@
+As fare I can recall PING uses Netbios/WINS and DNS (in that order, at least if you don't specify a FQDN).
+Basically, if you have any entries in your hosts file, that are the same as the IP your ping is trying to resolve to, it will fail.
+ping uses the ICMP protocol, specifically the 'Echo Request' and 'Echo Reply'.
+http://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
+I might be wrong on this because its based on my long-forgotten NT4 ressource-kit days.
+The procedure in short is this: Open gpedit.msc and navigate to Computer Configuration -> Administrative Templates -> Network -> DNS Client > DNS Suffix Search List,  set it to "Enabled" and add the domain name to the list (the list is empty by default).
+Just disable Netbios and Ping will use DNS as first priority and append the registered DNS Surffic on the interface to your hostname.
+For example, if in your DNS, you have a record for www.example.com - 10.0.0.20, but then you have an entry in your client's hosts file, 10.0.0.20 somethingelse.com, you will not be able to ping www.example.com
+many networks disable ICMP utilities in order to prevent attacks or basic network scanning.
+I've found many routers you purchase come with a setting to disable ping and like utilities enabled by default.
+A more detailed description of these steps can be found here
+I have just had this problem, and found something quite peculiar, and managed to fix it Lol
+In my case what solved this problem was to add the domain of the host I was trying to ping to a group policy option named "DNS Suffix Search List".
+Especially if traffic is passing a router somewhere.
+WINS is gone many year ago but you might still have Netbios enabled on your interface and PING therefore might use netbios that might not give you any result.

@@ -1,0 +1,11 @@
+And maybe you can't run these DBCC commands anyway unless you have sa rights...
+Be aware of the impact that this will have on others on your system (don't do this in production!
+For SQL Server 2008+, you also have the OPTIMIZE FOR UNKNOWN hint (also see this) which gives a more general query plan
+OPTION (RECOMPILE) tells SQL Server to discard the execution plan
+If you connect via the DAC then the plans seem to be neither used from the cache nor saved to the cache without this optimisation side effect of RECOMPILE (which may be a practical solution if you are developing against your own instance).
+For example if you try the below you will see a different plan with and without the hint commented out (on SQL 2008 SP1 CU5 and later) .
+If I am optimizing a query, in order to ensure that this query does NOT uses cached execution plan I use OPTION (RECOMPILE) with the query.
+Recompile just updates the query plan for the specified procedure, doesn't clear cached pages etc.
+If you're tuning a query that runs frequently, then data will be in cache most likely in real life.
+You have no further need to clear buffers or caches: you are testing a query, not the IO stack to read data back into memory.
+Or failing that on 2008 you can at least be more surgical about just removing the specific plan as shown below.

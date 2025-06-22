@@ -1,0 +1,56 @@
+A blackboard is traditionally only one-way communication - it wouldn't handle the dishing out of damage.
+For the signal/slot case, if I want entity A to do something in response to something entity B did (e.g.
+Instead of asking what the entity's health is, fire an event/send a message whenever the health makes a significant change.
+(As an aside, this is one area where coroutines can really shine, e.g., WaitForMultiple( "Dying", entA, entB, entC ); door.Unlock();)
+Now at one point in time the MessageManager goes through the pending messages and finds that the DamageSystem has subscribed to HIT messages.
+I don't know whether some real game engine has implemented this idea or not, but it seems pretty solid and clean and I hope someday to implement it myself for my hobbyist level game engine.
+This is more maintainable but obviously has a run-time cost.
+The HealthSystem has subscribed to the DAMAGE messages and now when the MessageManager publishes the DAMAGE message to the HealthSystem, the HealthSystem has access to both entities entity_A and entity_B with their Health components, so again the HealthSystem can do its calculations (and maybe publish corresponding event to the MessageManager).
+Simple versions are nothing more than struts that are updated with things like an entity's HP, which entities can then query.
+Do not do request-hp folllowed by query-hp -- if you follow that model you will be in for a world of hurt.
+It can also be inefficient bloat if you have a lot of action.
+This is where message passing can fill in the gaps.
+By not creating a general event-system that anything can use from anywhere to pass an event to anything at any time, you create explicit data-flow which always makes code easier to debug, easier to measure performance, easier to understand and read and often leads to a more well-designed system in general.
+There should then be an overlaying system with access to both entities that requests the events from entity a and passes it to entity b.
+The script code can define and react to its own messages and events without the C++ code caring at all.
+Let's say, entities have a Health component and a Damage component.
+Keep in mind that all you're trying to do with these approaches is find an elegant way to defer a function call or decouple the caller from the callee.
+Note that a MessageClient's delegate target doesn't necessarily need to be the same object that owns the association.
+That said, I've used and been happy with the signal/slot model combined with simple message passing.
+Also, "group of entities" and "N of them" would typically be designer defined in the level data.
+It essentially boils down to something like, "tell all the entities in this area to take damage in 3 seconds," or "whenever you complete the physics to figure out who I shot, tell them to run this script function."
+When properly coupled, you can use embedded languages like Lua to easily add new features/monsters/weapons/levels/etc to the game without ever recompiling the C++ code.
+Then you have some MessageManager and three subsystems: ActionSystem, DamageSystem, HealthSystem.
+It is similar to the blackboard idea mentioned by tenpn.
+But despite its drawbacks, this "messages and events" approach meshes very well with scripted game code (e.g.
+This can easily be overkill (versus tenpn's example).
+At one point ActionSystem does its calculations upon the game world and generates an event:
+The DamageSystem goes through its list of entities which have Damage component, calculates the damage points depending on the hit power or some other state of both entities etc.
+It saved me a ton of time because I wasn't having to constantly fool around with luabind.
+FWIW, the host/client metaphor is kind of inappropriate.
+I can recommend coroutines as a surprisingly intuitive way to alleviate some of those problems, but that's a little off-topic.
+unlock a door when something dies) I might have entity A subscribe directly to entity B's death event.
+No behavior is implemented in entities themselves.
+Or possibly entity A would subscribe to each of a group of entities, increment a counter on each event fired, and unlock the door after N of them have died.
+And the script code can easily send messages that trigger C++ code, like changing levels, playing sounds, or even just letting a weapon set how much damage that TakeDamage message delivers.
+The damage-taking entity/component/whatever should push the events to either a local event-queue or a system on an equal level that holds damage-events.
+Your blackboards can either be the world's view of this entity (ask B's blackboard what its HP is), or an entity's view of the world (A queries its blackboard to see what the HP of A's target is).
+Sometimes, you're better off just calling the function and living with the fact that entity A is coupled directly to entity B.
+Also, my experience with use case #2 is that you're better off handling it as an event in the other direction.
+I have studied this issue a bit and I have seen a nice solution.
+But that can get cumbersome when it comes to reactions that are tightly coupled to C++ code, or inherently ephemeral game events: dealing damage, reloading weapons, debugging, player-driven location-based AI feedback.
+I used it in C++ and Lua for a fairly successful iPhone title that had a very tight schedule.
+You might want to have a look at Mono Continuations as well.
+If you only update the blackboards at a sync point in the frame, you can then read from them at a later point from any thread, making multithreading pretty simple to implement.
+In other words, MessageClients can exist solely to forward messages to other objects.
+It's difficult to figure out how to do that nicely using publish/subscribe or signal/slot.
+EventHosts create slots, EventClients subscribe/connect to them, and MessageClients associate a delegate with a message.
+Before I get to the specific questions you asked, I'll say: don't underestimate the power of simplicity.
+Now the MessageManager delivers the HIT message to the DamageSystem.
+Entities are made of components, but they are only property bags.
+I would say: Use neither, as long as you don't explicitly need instant-time feedback from the damage.
+And it let me keep all of my luabind code in one place, because there wasn't much of it.
+More advanced blackboards may be more like hashtables, mapping strings to values.
+The subsystems and entities are completely independent and unaware of each other.
+In such a game engine, the format of messages is the only coupling between all the components and subsystems.
+In terms of interfaces, btw, I ended up with three classes to implement all of this: EventHost, EventClient, and MessageClient.

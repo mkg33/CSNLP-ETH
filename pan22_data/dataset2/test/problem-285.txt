@@ -1,0 +1,8 @@
+I don't know which LDAP server you are using, but I have had to remove entries to remove object clasees.  This was done by extracting the record, removing the original record, and adding the record with a modified list of object classes.  The add fails if you keep attributes not supported by the new object class hierarchy.   
+I have a need to delete three different objectClasses from a bunch of LDAP entries. Here's my ldif file:
+If it really is the objectClasses you want to use then you can turn up verbosity (-v with opneldap tools) or debugging  (-d   with openldap tools) to get a better idea of your problem.
+Depending on which suite of tools it comes from (e.g. proprietary, OpenLDAP etc) it's generally pretty much the same syntax ad you just feed it DNs.
+e.g. ldapdelete -x -D uid=admin -w secret -H ldap://ldapserver.blah uid=user,ou=People,dc=example,dc=net
+I suspect your entries have attributes that require the objectClasses your are trying to remove.  You need to remove the attributes that depend on the objectClasses before you remove the object class. 
+However, when I perform an ldapsearch on that user, all the objectClasses are still there. Clearly, it matches the object class name otherwise it would complain. 
+As Bill Thor suggests you're probably having schema issues and you may well have to take a backup of the entries as they are and then re-add them as you want them to be if schema checking is enforced.

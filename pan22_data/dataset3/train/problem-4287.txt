@@ -1,0 +1,9 @@
+Under normal operation by default, PostgreSQL calls fsync (or fdatasync, if you're on linux), to ensure that the data in a WAL segment is well and truly written to disk.
+Which ensures that after a crash, committed data is still committed, and can be replayed.
+The syncing behavior can be controlled with wal_sync_method and fsync
+A nice description of this behavior under Linux can be found in the article Flushing Disk Buffers.
+If the server crashes, then you will still lose that data, because it's still in RAM, even though it's just a different part of RAM.
+On COMMIT, though, PostgreSQL calls fsync, which forces the WAL segment data to be written out to disk, not just to the filesystem cache in RAM.
+In normal operation, when a write call happens, it's basically copying that data from PostgreSQL to the filesystem cache, which is just another bit of RAM.
+The two columns in pg_stat_replication are basically pointing out the difference between write(2) and fsync(2)
+It also has the added advantage of needing to call fsync fewer times for the data files, because all of the necessary data to properly replay the changes to those files are contained in the WAL segments, which are durably persisted to disk.

@@ -1,0 +1,13 @@
+I have several cron jobs that run (in /etc/cron.daily, /etc/cron.hourly, /etc/cron.weekly, etc.)
+You may want to use one of the wrappers for the programs, that output everything when something goes bad and swallow stdout otherwise.
+where /etc/cronic is a place with executable cronic script, downloaded from the website mentioned.
+You should send successful email notifications to /dev/null so they disappear.
+So, if you want to keep error notifications, don't redirect STDERR, just STDOUT:
+try changing the redirection part of your cronjobs to
+But you want to see unsuccessful email notifications.
+What is the best way to suppress success emails for those scripts?
+One example might be cronic, just prepend 'cronic' to 'run-parts' e.g.
+This means you need to first direct stdout to /dev/null and then direct /dev/stderr to stdout
+I understand how to do that for individual cron jobs, but the scripts in those special directories are run using run-parts.
+If you do the typical >/dev/null 2>&1, you are effectively suppressing both (bash documentation).
+I'd like to stop those emails if the jobs are succeeding, and only email on error (which I understand can be done by redirecting stdout to /dev/null).

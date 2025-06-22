@@ -1,0 +1,25 @@
+If you don't want to waste space storing previous versions for a particular data set, partitions are your best ally.
+For example, if you have an unexpected disk or filesystem problem and have to reboot to run chkdsk on a 2 TB combined system+data partition, you might not have the server back online until tomorrow.
+In the end, the only solution was to wipe the partition and reload the data back on.
+We use multiple partitions on our servers with the C: drive dedicated to the OS.
+Obviously, it would have been much more painful without partitions.
+My preferred course of action is to completely separate OS and Data by having a separate RAID 1 array just for the operating system.
+I like to give at least 25GB to the OS partition, but the point remains the same.
+Avoiding partitions would have meant avoiding ugly fixes.
+Shadow Copy (aka Previous Versions) is toggled on/off on a per-partition basis.
+I don't have an exact answer to your question, but I do have several anecdotes that you might find useful in designing your drive/partition setup.
+Our other partitions we use mainly for storage of data such as databases, user files/folders, shared files/folders, etc.
+Restoring from backup becomes easier when program/data files are separated from the OS installation.
+You can also backup or image the partition in less time.
+For example, I could upgrade all the harddrives used for data storage without having to change the OS installation at all.
+As a stop-gap measure, I used a junction point to temporarily store data on the OS partition until the new server arrived.
+Being in the Administrators group is not sufficient.
+When running a Windows IIS server, we seperated the OS drive from where you put the hosted website files to prevent directory traversals.
+On a newer server, I discovered that you may have trouble administering any drive except the C: drive, unless you are the local Administrator or Domain Administrator.
+If that partition is only 20 GB, you could be back up and running in less than half an hour.
+If your system partition is small, it takes less time to run diagnostics and repairs on that partition, resulting in less downtime.
+The same server as above, at another point in it's life, managed to end up with a completely full data partition while there were dozens of GB available on the OS partition.
+That said, the 10 GB limit you mentioned seems alarmingly small, since you'll quickly consume that space with service packs and hotfixes.
+This is due to an oddity with UAC, which I have disabled for now.
+I had a server with two partitions, one for OS and one for data.
+At some point over the years, something went wrong with the data partition, and a single file nested about 6 levels deep became impossible to delete or rename.

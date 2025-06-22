@@ -1,0 +1,12 @@
+xz (or lzma) even on the highest setting -9e only reserves 64MB for this.
+gzip with no command line switches uses the lowest possible algorithm for compression.
+Even xz (or lzma) won't find duplicates if the file size of the uncompressed single file (or, more accurately, the distance between the duplicates) exceeds the dictionary size.
+Luckily you can specify your own dictonary size with the option --lzma2=dict=256MB
+(only --lzma1=dict=256MB is allowed when using the lzma alias to the command)
+Unfortunately, when overriding the settings with custom compression chains like given in the example above, the default values for all the other parameters are not set to the same level as with -9e.
+So compression density is not as high for single files.
+Some quick test results with xz and mksquashfs with three random binary files(64MB) of which two are the same:
+gzip won't find duplicates, even xz with a huge dictionary size won't.
+In case of a backup, possibly with a largish set of smaller files, one trick that might work for you is to sort the files in the tar by extension:
+What you can do is use mksquashfs - this will indeed save the space of duplicates.
+On my system lzma test.tar results in a 106'3175 bytes (1.1M) test.tar.lzma file

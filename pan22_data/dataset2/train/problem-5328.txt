@@ -1,0 +1,13 @@
+Granted this answer does not reflect your request but i use a VM specifically for this purpose. That way only the network inside the VM is restricted by the routes.
+Pros: necessary routes are added each time VPN connection is established and deleted each time it is disconnected.
+And, finally, run a few tracert commands against both IP addresses which are supposed to be accessed via VPN and against those which should work without VPN.
+1) Make all traffic NOT going via VPN. For this you must uncheck Use default gateway on remote network checkbox in VPN settings. Make sure to uncheck this checkbox for both IPv4 and IPv6. Usually I simply disable IPv6 protocol completely for VPN connection.
+Then I set up firefox on my client machine to use the laptop's proxy server.. the result is that if I use FireFox or anything that's set up to use that Socks5 proxy, it will use the VPN, otherwise it uses standard routing.. 
+You may find some better answers by other people but at least this may give you something to consider as it an easy solution after the VM has been created.
+where a.b.c.d is the target address/network and interface number is identifier of your VPN connection. This ID can be found by executing netstat -rn, or, for more compact output, netstat -rn | grep -A10 'Interface List'.
+A 'short' guide for noobs like me, who don't know much about networks. Not much new here, but a summary of all good options described in previous answers and in other related threads. Whole procedure consists of 3 basic steps:
+(!) It is (sometimes) possible that unchecking that checkbox will be enough for normal work - in my experience, necessary routes (which will direct necessary traffic via VPN) can be added automatically after VPN connection is established. I don't know exactly where and how these rules are configured, but such scenario exists - probably it is some magic done by VPN network administrators.
+If you added persistent routes, you can check them by executing netstat -rn | grep -A10 'Persistent Routes'.
+A little old but I found a way to do this using another machine.  I have a laptop where I set up the VPN connection and on there I have FreeProxy set up with Socks5.. 
+where 'VPN gateway' = 'your IP on VPN network' = w.x.y.z and target address/network = a.b.c.d. You can find w.x.y.z by executing ipconfig and looking for your VPN connection name or, if you use PowerShell, you can get compact output by executing ipconfig | grep -A5 PPP (which will output 5 lines after finding each PPP connection).
+2) Make only necessary traffic going via VPN. For this you need to define routes. Here you have 3 options:

@@ -1,0 +1,7 @@
+I think your problem is that the VPN clients use their DNS server from ISP, not from your VPN's DNS. You can make the VPN client use VPN's DNS by this step:
+Change the binding order so that your physical NIC is higher than your VPN interface. You may have to manually (or via script) poke things around further, depending on what the VPN software does.
+If you are only not able to connect to the share using the "short" name, IE NetBIOS name, then I would recommend using a WINS server as it will allow you to resolve NetBIOS names over the VPN, as long as your VPN adapter allows you to specify a WINS server.  For me, I have our internal AD DNS server also configured as a WINS server and our VPN server (Sonicwall) publishes both a DNS and WINS server to our VPN clients.  With this configuration we are able to resolve both the NetBIOS names as well as the FQDN.
+I found I had to reset the password and do an unlock for the user's account from within users and accounts on the server. 
+The other thing you can do is change your DNS suffices in the advance TCP properties on your network adapter.  This will have your Name resolution of short names:
+I think you need to set the firewall to use the PDC as its DNS so that it gives out that DNS server to the VPN clients. Or you could forward VPN requests to the PDC and make it a RAS server to use SSTP so that the clients are definitely going to have a consistent experience regarding DNS whether on VPN or LAN.
+The password was somehow saved incorrectly for the user when the user logged in with an incorrect password. 

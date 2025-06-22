@@ -1,0 +1,9 @@
+It's also worth at least considering writing a little byteWrite function that handles calling bitWrite in a loop for an entire byte's worth of data.
+I'm going to preface this with the fact that I'm not quite sure what (if any) restrictions the Arduino may impose on the C++ you can use. Since you've tagged it as C++, I'm going to assume you can use C++ as you would on any other platform.
+While this is one of my first steps into embedded programming, please point out all that you believe is wrong or need improving. I'd rather know what to improve than continue with a false sense of accomplishment :-)
+This isn't (at least according to the tag), so the (void) in the parameter list to specify that they take no parameters is entirely unnecessary. 
+I'm fairly new to Arduino and C++ in general, coming from a heavy Python background. The code below is functional, but my lack of C++ knowledge is keeping me from spotting any errors in style, idioms and other good practices.
+...should be replaced with something like std::vector<byte> ledStates;. If you can't use std::vector, you should still really do a vector-like class of your own instead of trying to embed its functionality into the parent class.
+It looks like these should be handled in a member initializer list instead of assignments in the body of the ctor. The one that initially looks like an exception is the call to setlength, but from the looks of things, that should really be as well--but with ledcount and ledstates replaced by a std::vector<byte>, at which point it can be initialized in the initializer list, just like the rest. For the moment, I'll assume you've done this.
+Not all of the library code is used by the example, as I tried to keep that to the minimum (the functions there are simply more of the same).
+Based on the usage pattern, I think I'd move latchUp and latchDown into the ctor and dtor of a separate class:

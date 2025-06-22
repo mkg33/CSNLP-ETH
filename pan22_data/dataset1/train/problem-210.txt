@@ -1,0 +1,8 @@
+IPv6 Authentication Header uses MD5 hash on the payload, the header, and unchanging fields of the IPv6 header and options to prevent sequence quessing attacks. But all these required information to calculate this hash are also available to any attacker that spies the connection (and impersonnated the real host's IP address), since they also are in the packet.
+So what guarranties the attacker cannot steal the real host's connexion? 
+Also, what payload is processed in the MD5? The payload of the current packet or the payload of the previous packet?
+Before 2 hosts start using AH with each other, they need to agree on a common set of parameters, a security association or SA. This is typically achieved using the IKE protocol (IKEv1 or IKEv2).
+As part of this negotiation they also derive a session key or "secret", i.e. a random value that only these 2 hosts know.
+This secret is then also fed into the hashing function (which can be MD5 or some other algorithm) that is used to calculate the ICV (Integrity Check Value) in the AH header.
+Hence, if an attacker wants to spoof a packet (or modify a packet sent by the real sender) he cannot generate the correct ICV because he does not know the secret.
+The payload that is protected by the ICV is always that of the current packet.

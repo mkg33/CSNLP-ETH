@@ -1,0 +1,15 @@
+The main thing to notice here is that your setting the internal URLs to be the same as the external URLs.
+Using the Exchange Management console change the internal URL of the different webservices:
+Here are the steps to change the FQDN used by Outlook to connect to the server (sources: Godaddy, puryear)
+Our server isn't server.local though, it is server.domain.com, but I don't want to have to add that server name to the listed hostnames in the certificate, and also want to do it correctly.
+You will need to have installed the certificates into Exchange, and you will also need to have created an internal DNS entry to resolve mail.domain.com to servername.local.
+You can begin to solve your situation by not using ".local" in your FQDN.
+I am working through the same process, Exchange 2010 with Outlook 2013 clients and having just registered a mail.domain.com certificate.
+You will most likely see that if you access mail.domain.com/OWA (from internal or external) you won't get a certificate error, but if you access server.local/OWA you will.
+So your better fixing this problem now then a year down the road.
+Most certificate providers are enforcing the new rule now, so you might as well buy a new certificate with your actual global domain address (hopefully you have a domain set up) with the appropriate SANS.
+https://www.digicert.com/internal-domain-name-tool.htm
+Your basically stuck between a rock and a hard place.
+You can use this tool to generate the Powershell scripts that will correct the Exchange URL addresses to be that of your externally facing hostname instead of your internal hostname, as well as a roll back script to revert the changes.
+Starting in 2015, locally assigned addresses will no longer be accepted by certification authorities.
+Note: The Microsoft KB940726 article shows that the OABVirtualDirectory URL should be HTTPS, however if you had HTTP configured, the DigiCert tool will keep that instead of changing it to HTTPS.

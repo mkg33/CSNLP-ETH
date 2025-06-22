@@ -1,0 +1,8 @@
+Implementing a checksum for data pages is a planned feature in PostgreSQL, but there are some very difficult problems with the implementation if concurrency is to be maintained.
+In PostgreSQL, the WAL records are checksummed, but not the data pages, so you won't be able to detect if the OS or hardware has shredded your data.
+That is, unless you have enough checksums to detect them, which at this point mandates app-level checking.
+The fact is, only a fraction of popular filesystems carry checksums of actual file contents [wikipedia article].
+Checksums are important, and useful, for all sorts of reasons.
+Since most file systems don't keep checksums (notable exception is ZFS), a checksum in the database would still be useful.
+As for hard drives, their durability metrics have never caught up with soaring capacities, so with enough data and/or throughput, you're guaranteed to get undetected errors once in a while [CERN research].
+Search for "postgresql block level crc" or something like that to learn more (or become totally confused).

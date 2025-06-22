@@ -1,0 +1,12 @@
+Every other delivery after that will see that mailbox is already locked and delivery is not possible at the time.
+To prevent simultaneous deliveries that can broke mbox structures, each delivery first try to lock the mailbox for exclusive operations.
+I didn't understand what's happenening .. Can you explain for me ?
+As far as you have used mbox as mailbox format, each delivery should be performed as sequence of operations.
+When delivery is failed postfix postpone the message in the queue.
+Message should be stored, indices should be updated and so on.
+I've the following error message appeared 3 continuous for the same mailbox
+Sure if delivery will be failed again for some reason, message will be postponed in the queue and warning will be recorded.
+That is why you have see three warnings in the log - first delivery have locked the mailbox and next three are failed.
+Time by time queue is processed and each message is delivered again.
+That's means that postfix have try to deliver four messages to the user's mailbox at the same time.
+Cause messages from queue are delivered one by one and each delivery happens only after previous is complete, there is no new warnings in the logfiles.

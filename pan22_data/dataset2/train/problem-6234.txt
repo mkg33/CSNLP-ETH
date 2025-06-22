@@ -1,0 +1,9 @@
+During our testing, we observed that the entries recorded by change tracking has records grouped into ‘chunks’. I.E. There are many records with the same value of SYS_CHANGE_VERSION.
+Our database is a subscriber (transactional replication). Numerous publishers are pushing transactions into numerous tables.
+We are trying to determine if all we need to do is have a sort order on SYS_CHANGE_VERSION and simple ignore records for the current max value of SYS_CHANGE_VERSION.
+Furthermore, once data is read from the change tracking table, can subsequent reads contain entries which have the same ‘maximum’ SYS_CHANGE_VERSION which was read previously.
+For example, we may have 50 row with SYS_CHANGE_VERSION = 100, 1 row with SYS_CHANGE_VERSION = 101 and then more rows with SYS_CHANGE_VERSION = 100.
+Our goal is to use SQL Server change tracking to track changes to be pushed to another non-SQL system.
+We are worried about whether or not we can continue/resume the process of pushing transactions to the non-sql system.
+As an alternative, we have considered using the replication stored procedures on my subscriber to push changes to my non-SQL system.
+When rows are inserted into the change tracking table/mechanism, can rows be inserted with a lower value of SYS_CHANGE_VERSION than the current maximum value?

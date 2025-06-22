@@ -1,0 +1,14 @@
+One thing I've done to help is to set the "maxpoll" attribute for servers on VMed machines.
+Assuming that AD1 was a domain controller, I think the problem here may have been related to your Hyper-V server setting its time from one of its own guest VMs.
+If you want to rule out Hyper-V as a cause for the error on S2, create a "no Hypervisor" boot entry, reboot without Hyper-V, and see if the time drift persists.
+You really want to make sure that the NTP server is not using the local clock in any 'server' statements, as the local clock is too unreliable.
+This forces the ntp service to check with its upstream clocks much more often than the configured default, which help keep it true.
+That's why the problem went away when you switched to VMware: the VMware server does not feel compelled to synchronize its clock with a Windows domain controller.
+The Hyper-V guest gets it's clock initially from the host (HYV1), but as you have Hyper-V time sync disabled, it gets all further clock updates from NIST (which is working fine).
+The time is drifting much quicker than the network time sync can reset the clock to the right time (which if I recall correctly takes place every 8 hours).
+From your description, it sounds like there is an actual hardware problem with the RTC (http://en.wikipedia.org/wiki/Real-time_clock) on the motherboard of server S2.
+Your Linux VM is not integrated with Hyper-V, so it is getting it's time from the domain, which is also working fine.
+Instructions here: http://blogs.msdn.com/virtual_pc_guy/archive/2008/04/14/creating-a-no-hypervisor-boot-entry.aspx
+12 works for me, but each environment is different.
+Your other physical machines are working fine, it is just a single physical server that is having 1 second of drift every 20 seconds (which is a crazy amount of drift).
+Try a few settings to see how far down you need to get to keep time relatively reliable.

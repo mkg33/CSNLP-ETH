@@ -1,0 +1,8 @@
+You need a DNS server and a DHCP server to accomplish that. Windows from the XP try DNS based resolving first, and NetBIOS after. So you can easily setup a DNS server (on CentOS BIND is preferable) to resove these names. Install named (this is the name of BIND in the Red Hat world) with the yum install named command. Set DHCP to send DNS suffix to clients .local for example. 
+The problem is that I can only reach the Linux box by IP address, not hostname. When we installed CentOS on that box we picked the option to report the hostname to the DHCP server. But it doesn't work; I can't ping the box by name.
+This is odd, because the Linux-based NAS box (a DLink DNS-323) shows up in Windows Explorer just fine, and I can ping it.
+named.conf.local will load this zone with your servers, and when you try to access server1, DNS append the suffix, and resolve the server1.local perfectly. 
+Do you know anything about DNS? That's the Domain Name Service, it translates names into IP addresses. If you have a DNS server currently internal on your network, you need to ensure that your clients are using it, and that the Linux server has an entry in it. 
+I've got a small business network. We have a few Windows machines, a Linux-based NAS box, and a Linux box on the network. Everything is connected to the Internet through a DSL router (Netopia 3000).
+You need to setup a local DNS server setup to hold records for your computers, DHCP doesn't do that... Assuming these computers need to use the internet too, you need to setup root hints for domains that you don't control so your server knows where else to ask for IPs.
+If you can't, you're going to have to update the HOSTS file on every machine in your network, and then update it every time you add or change a hostname.

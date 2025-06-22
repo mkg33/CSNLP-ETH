@@ -1,0 +1,15 @@
+I checked the result in GParted and the disk information shows
+From my experience, letting btrfs take over a whole disk with no partitions will not result in proper logical/physical sector alignment.
+According to this: https://wiki.archlinux.org/index.php/Btrfs#File_system_creation  the default block size is 16KB.
+Perhaps I should just create a disk-spanning BTRFS-partitions on both drives, that is aligned and then use those in RAID1?
+BTRFS is extent based and it does file packing (multiple files in one block) inodes are alocated dynamically.
+for both drives, which seems wrong, since normally GParted aligns the first sector to MB, which would have a first sector of 2048, as I have seen for a BTRFS partition I created on another disk (but I am not sure).
+So, considering I couldn't find anything, can I trust BTRFS to just 'do the right thing'?
+I had planned to use the whole disks without partitions in the following way:
+Since I am keen to get it right the first time before copying data to it (yes it will be backed up), my question is whether it needs any special considerations regarding sector-alignment and size for Advanced Format disk.
+BTW: Is there any pros/cons of using whole disks vs. partitions I should consider?
+In the past I know I had to take care of this, when setting up MDADM+LVM and ZFS (ashift=12) for example, but I cannot find any information for BTRFS regarding this (apart from SSD-specific stuff, e.g.
+I've tried this with 3.14.1; latter versions may do this differently (current release is 3.18.x).
+I want to set up a BTRFS RAID1 setup with two WD Red 4TB disks, which possess 4K sectors.
+My suggestion is to use properly aligned GPT partitions and tell BTRFS to use a 4K sector size with mkfs.btrfs --sectorsize.
+Hope someone with some experience can help me out.

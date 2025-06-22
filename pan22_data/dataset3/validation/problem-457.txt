@@ -1,0 +1,25 @@
+More cores will not help unless you have a lot of simultaneous connections.
+However, the main problem of heavy write access to ibdata1 can only be amended by transaction-read-only.
+If it is using MyISAM, then key_buffer_size = 50M would be advised.
+innodb_buffer_pool_size = 100M may be better and may be safe on your tiny machine.
+The machine is idle, still a simple (text-only page) request take about 8 seconds.
+I figure that this is due to locking and assuring ACID properties.
+I have a small virtual Server: 2 Cores, 2 GB RAM, Windows Server 2012 R2, Plesk, MySQL 5.6 (my.ini see below).
+On processing a request, the Windows Ressource Manager shows, that mysqld.exe is writing a lot to file ibdata1.
+So the question: What can I do to make the DB (and thus the web-server) more responsive without changing the hardware?
+A good idea would probably to use a faster HDD, or to move ibdata1 to a SSD.
+This however, is not a suitable solution, as I need the DB to be writeable to add new articles.
+Setting both query_cache_size = 0 and query_cache_type = OFF is the way to completely turn off the Query cache, which is advised for most production systems.
+Another idea would be to make Wordpress use the SET TRANSACTION statement at runtime when not needing write access, but this only helps to visitors, not authors/admins.
+Upgrading is unlikely to make a significant difference.
+Vary query_cache_limit between 0 and 10MB, innodb_log_buffer_size and innodb_buffer_pool_size between 4MB and 20MB.
+innodb_flush_log_at_trx_commit = 2 will use less I/O than = 1.
+With the other settings, I could reduce response times of Wordpress pages to around 3-4 seconds.
+If you would like further analysis, provide SHOW VARIABLES; and SHOW GLOBAL STATUS; after it has been up for at least a day.
+However, this is not possible as it is a virtual server.
+I even tried to loose ACID properties, by setting transaction-isolation=READ-UNCOMMITTED.
+When I uncomment the last line of my.ini, thus making DB read-only, requests are answere in 0.3-0.8 seconds.
+I could upgrade the server (more cores, more RAM, more disk space, but I don't think faster) but I do not see how this should help.
+Only a single Wordpress installation is running there.
+I already tried all kinds of different settings for MySQL.
+What is the value of SHOW GLOBAL STATUS LIKE 'Max_used_connections';?

@@ -1,0 +1,36 @@
+You should only be doing backups on SECONDARY nodes.
+If your read preference is PRIMARY or PRIMARY Preferred, mongodump will compete with all find() and findOne() operations.
+Especially once you upgrade and are using wired tiger as it's a bit more complicated to restore from a directory dump in my experience.
+The PRIMARY already has enough work performing inserts and writes.
+I think the fact is, any backup is better than no backup and I'll leave it there.
+With option 3, stop the secondary member, and copy the the data out.
+Please read the MongoDB Docs on Hidden Secondary Members on how to set up a hidden secondary.
+Which keeps a backup of the while machine everyday.
+Do you have any performance metrics on how long your backup usually takes?
+For option 2, make sure to use mongodump with the --oplog option.
+If you do not change the SECONDARY into a hidden member and you launch a mongodump against it, all queries to that node will slow each other down for sure.
+If you keep one of your replica sets slaves in daily backup it will do the job.
+This should make this node not be selected to perform any queries but would still just perform replication.
+Secondaries replica set members are ideal for reporting and backup use cases.
+This would allow you to upgrade each node one at a time and if you run into any issues, roll back the entire vm.
+The worst option is to backup the entire /data directory, it can be done, but I wouldn't recommend it.
+Also, if you have readable secondaries that will impact backups depending on read only traffic to them during dump operations if you backup from a secondary replica.
+It will affect your performance, so be sure to do your dump on off hours.
+Another option if you are using vmware is a veem backup of each node.
+If you have ops manager, by all means, it is the best option.
+If your read preference is SECONDARY or SECONDARY Preferred, you need to designate one of the SECONDARY nodes as a hidden member.
+We back up the entire instance, not just one database, but conceptually there's no real difference.
+Reference: https://docs.mongodb.com/v3.2/core/backups/
+If you aren't using vmare, this isn't an option at all.
+If you don't have access to ops manager, mongodump is a great next choice.
+Few months before I had to upgrade my production replica set of 3 servers from 3.0 to 3.2.
+Also, the CPU, memory, and network speed of the replicas will affect the time to back up and performance, so the impact of your 30 gig DB backup will depend heavily on these specs.
+With MongoDB 3.2 and more you can restore the database from this machine backup and make this server as a replica set member very easily.
+The best method to backup your database depends on what you have available to you.
+So in the migration I used mongodump and mongorestore.
+Or, if you do not desire to stop the secondary, use db.fsyncLock(), backup and then use db.fsyncUnlock().
+In any case dumping from the replica will isolate your production primary from the network load of the dump operation.
+But 3.0 used to use mmvpa1 storage engine so the file system was different in 3.2 than 3.0.
+This makes a hidden node a prime candidate for doing backups.
+If you need to restore, then use mongorestore with the --oplogReplay option.
+We use a scripted mongodump pointing to a secondary replica and writing out to a network storage location.

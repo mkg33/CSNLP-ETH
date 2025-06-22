@@ -1,0 +1,9 @@
+NOTE: Presumably, a recipient and a shape should only be associated if they belong to the same user.
+Tested via db-fiddle; that has the four CREATE TABLE statements, some sample data, and shows what happens in the mapping table when a shape or a recipient is removed.
+Technically at least, this would be a denormalization (the map table wouldn't need the UserID because ShapeId and RecipientID both uniquely identify one row in their respective tables).
+Here's the create statements for the mapping table (plus my dummy definitions for the three tables you've already got):
+A more solution would be an INSERT trigger on the map table, that prevents a row from being inserted unless the UserID from the shape row and the UserID from the recipient row match.
+You'd probably want the same ON DELETE and ON UPDATE for the shape and recipient foreign keys, but you didn't specify, so I left that out.
+You might be able to make the primary keys of shape and recipient the unique ID from the table combined with the UserID. map_shape_recipient would require the UserID column too, and (if there's only one and it's part of the foreign keys to shape and to recipient) they'd have to have the same UserID.
+In your case, your application should prevent associating a shape with a recipient that doesn't have the same UserID. I would still recommend some mechanism to ensure relational integrity, in case someone directly interacts with the database outside of the application.
+With a many-to-many relationship (each shape can be associated with many recipients, and each recipient can be associated with many shapes).

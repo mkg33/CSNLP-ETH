@@ -1,0 +1,19 @@
+I was looking for many solutions for this when using Docker machine (both locale and on machines set up by system administrator).
+The solution is exporting LANG variable with C.UTF-8 locale like so:
+The quick fix is to replace "sufficient" with "optional" next to pam_lsass module so it looks like:
+You almost certainly have set the wrong character set in your PuTTY settings.
+So check your PuTTY settings under Translation and ensure that you have UTF-8 set as the character set.
+What worked for me was to set the 'Connection > Data > 'Terminal-type string' to 'putty' instead of 'xterm' - apparently Putty ignores the character sequence to switch into drawing mode: http://www.chiark.greenend.org.uk/~sgtatham/putty/wishlist/utf8-plus-vt100.html
+Another reason somehow related to pam that may affect hosts with powerbroker/pbis/likewise authentication.
+Also, if UTF-8 is not properly configured, you may run it as mc -ac.
+Verify the character set on the remote system by running the command:
+/etc/pam.d/common-session (or other file with similar entry - there might be few of them) is probably included by /etc/pam.d/sshd before pam_env is loaded so if the processing of pam modules is finished before it comes to pam_env, the /etc/default/locale is not loaded in the user environment and you have garbled characters.
+was solving the problem (but not completely) and I was looking for complete solution.
+In my case (Ubuntu 14.04) the issue was caused by missing
+You may need to tweak the line drawing setting as well, but it is probably not likely.
+In my Putty everything was fine (I had UTF-8), I was using also other SSH client and had exact same problem.
+I had an issue with Debian's aptitude program even though I had UTF-8 as my characters set.
+You can obviously add it into .bashrc to have it automatically set in your profile.
+Credits: http://blog.acsystem.sk/linux/midnight-commander-utf8-line-drawing-characters-problem
+entry in /etc/ssh/sshd_config as /etc/pam.d/sshd pam configuration is responsible by default for loading /etc/default/locale into users environment.
+After reading many suggestions, I finally found the one that solved my issue.

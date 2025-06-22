@@ -1,0 +1,25 @@
+... and has a well defined scope to match the use case requirements
+If you would have a JPA-Layer you may not need this because OR-Mapper often have their own caching mechanisms that are sufficient for most usecases.
+But the only reason you may have need for two methods was bad design.
+The cache should NOT retreive new data on its own.
+You should be able to disable the cache by always returning "null" in the lookup method without worrying that your algorithm fails.
+But technically expressive statements may not be semantically expressive.
+Your implementation has a cached object lookup scope of "method" and a cached object usage scope that is somehow greater.
+Passing the parent id to the constructor of the Child object and resolving the parent through the DAO:
+A cache has a well defined lookup and object scope.
+... that should be transparent to the existing implementation
+Derive a Caching enabled ChildProxy from the "Child" and intercept the getParent()-method to check for a cached Parent-Object.
+Consider caching on In thhe Business-Layer if you have no Persistence Mapping Tool (JPA).
+Without knowing your UseCase-Layer you most of the time want to have all objects needed available in the UseCase.
+I don't think your implementation will pass this check.
+You can compress code that it looks good in one method that would normally be splitted into two methods.
+Both should fall into the same scope to satisfy symmetry.
+It's not that easy because most developers tend to simply store expensive objects near their first occurance.
+I never use lambda expressions to make code "shorter".
+ALWAYS formulate your statements as they are NOT EXPENSIVE.
+Those objects you would have to handle with seperate caches so you cannot take advantage of the already loaded instances.
+I consider usage of lambda expression rarely: Listener-notifications, mapping JPA objects to Busines-Objects or massive parallel number calculations.
+One other thing: Your Child-Objects may not the only Objects that have references on the Parent-Object.
+Refreshing your UseCase will often cause refreshing your cache because you want to process a UseCase on the latest data.
+Of course you can have very compact and technically expressive statements.
+Maybe you have to think a little bit more about the caching scope.

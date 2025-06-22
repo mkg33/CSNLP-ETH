@@ -1,0 +1,12 @@
+The newer GnuPG (I'm using v2.1.18) must use gpg-agent to ask for the necessary passphrase to decrypt the private keys.
+Therefore, I can explicitly disable pinentry usage by passing --pinentry-mode cancel or --pinentry-mode error, and let gpg try to sign/decrypt a message.
+I think the mbsync cron job will sync my emails when gpg can just decrypt the password for pass without triggering gpg-agent to ask the user for the passphrase, otherwise, the cron job will just exit.
+When gpg-agent doesn't cache the needed passphrase:
+When gpg-agent has already cached the passphrase, the same command will succeed and return status code 0.
+I found GnuPG has the --pinentry-mode option, which may have values:
+The passwords are managed by pass which uses GnuPG to encrypt the sensitive data.
+I just have the similar plan to periodically fetch/sync may emails using mbsync and cron.
+If it succeeded, then gpg-agent already has the cached passphrase and will not pop up the pinentry dialog; otherwise, the sign/decrypt test just failed.
+If I use --pinentry-mode cancel, then gpg fails with Operation cancelled.
+And gpg-agent will be automatically started when e.g., I invoke pass to get the password for my email account, and will pop up the pinentry dialog asking the passphrase.
+I don't want to configure gpg-agent to cache my passphrase for too long (e.g., 1 day or even 1 year), and I don't want the annoying pinentry dialog from gpg-agent triggered by the cron jobs, which should be just quiet.

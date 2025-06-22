@@ -1,0 +1,11 @@
+The strange thing is that this particular server only has 8GB physical and 35GB of swap space available.
+The answer is probably MMAP - the data is on the disk, but it is "outside" the swap and can not be seen with "free" or "top" command.
+However if this java process is complicated, there will be difficult to be seen.
+I was also surprised that Linux allows you to allocate more virtual memory than there is physical memory + swap space, but apparently it helps performance in typical situations.
+Given this explanation, I would expect the virutal memory allocation for a process to be limited to my swap + physical memory available.
+Obviously, the machine and the process are still functioning correctly (albeit slowly), so what am I missing here?
+According to 'pmap', the code, shared library, and shared memory sections of this process are all minimal - no more than 300M or so.
+I have a process that is reporting in 'top' that it has 6GB of resident memory and 70GB of virtual memory allocated.
+If the java process is not too complicated, you can try play with "lsof" to find where the MMAP file is.
+So that's the unelegant way memory management is done sometimes - having a continous address space simplifies releasing unused mem.
+This is likely because the process' address space is the size as you stated, but it is not really allocated by the OS.

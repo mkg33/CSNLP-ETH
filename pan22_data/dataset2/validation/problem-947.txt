@@ -1,0 +1,8 @@
+There's a old feature of Cisco switches called "Private VLAN Edge" (see https://www.cisco.com/en/US/tech/tk389/tk814/tk841/tsd_technology_support_sub-protocol_home.html). 
+The feature is restricted to a single switch (or stack-of-switches), and it doesn't really work across multiple switches. 
+That should make all Intra-VLAN traffic visible to the device. That might be a bit more than was intended in the first place, so... 
+Now whenever a host with a MAC-address-of-interest connects to any of the ports, it's switchport gets mapped into VLAN B, and to reach anyone else on the subnet (other MACs-of-Interest included) it must go through the inline device. MAC learning and ARPing should be "native" for all systems involved.
+Port Macros assign host of interest to VLAN B. Connect both VLAN A and VLAN B to a pair of bridged ports on the router (as above, two interfaces & BVI, or better two-ports-on-switch-module & SVI). 
+If the inline device is just intended for analyzing traffic (and not for manipulating or blocking), a custom smart port macro (see above) might just be running a user defined macro that adds another line of "monitor session 1 source interface 0/Y", as soon as a MAC address of interest is discovered on a given port. Of course, you'd need a "cleanup macro" as well, that runs after "line protocol down" of a given switch port. 
+Think of it as "hotel mode", where you want to keep your guests' system from talking to each other, but everyone may talk to the router. 
+Connect the inline device to a SPAN destination port on the switch, and use VLAN B as SPAN source. Whatever talks on VLAN B will be visible to the now passive inline device. 

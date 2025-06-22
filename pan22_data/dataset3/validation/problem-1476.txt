@@ -1,0 +1,15 @@
+To accomplish this, before any changes are made they are entered in the .ldf.
+SQL is designed so if the power goes out during a change (no matter how small) it will be able to recover.
+If ldf space is an issue read Why Does the Transaction Log Keep Growing or Run Out of Space?
+You should not delete LDF files until you successfully raised up the DB on the side without LDF (and sql server surely recreates them).
+In the event of a power outage, everything in the .ldf that has not committed will be rolled back.
+SQL needs the ldf (log file) to support fault tolerance answer by StanleyJohns.
+No matter how controlled your environment, there will be changes inside of your SQL database; failed logins, restarts from patching, plan updates with queries, many things create changes that you may not be aware of.
+TL:DR the ldf file is required, because SQL documents everything (including allowing you to query) before it actually does anything.
+You're probably working off the default settings, which create all databases in Full Recovery mode, meaning, the logs are going to grow.
+Logs are an essential part of how SQL Server works.
+If you drop the ldf's for just not to transfer them to the other server - copy data files, try to attach them and only if you succeed - delete old files, even with data files together.
+For the needs of your application maybe all you need is a flat file storage mechanism.
+If the system is in FULL recover, all off those entries are saved, if the system is in SIMPLE recovery, those entries are deleted when the change is completed or COMMITTED.
+To maintain ACID transactions in SQL server, the SQL server architecture relies on the use of data files and log files.
+After you dig yourself out of this hole, please, read this and learn from it.

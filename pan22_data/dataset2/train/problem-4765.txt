@@ -1,0 +1,8 @@
+You render everything to the same texture, and remove anything that's not bright enough to bloom when you start processing the bloom post effect. That means you can have a white thing that doesn't bloom by rendering it as RGB(1.0, 1.0, 1.0) and one that does by using say RGB(2.0, 2.0, 2.0).
+I've had a bloom effect in place for a while that works as a post-procesing effect on the entire screen. It's been fine up until now. 
+The only way around it I can see is that the objects I do want to have bloom would need to be rendered to a bloom-framebuffer from which I can bloom (and store the depths) to then mix back in with the rest of my scene.
+I use MRT rendering for this;  I render everything into both a diffuse map and a glow map.  I then blur the glow map into a bloom-like effect, and add it back on top of the diffuse map as a post-processing effect.
+Is this the only way to go about it? It seems like a lot of work to simply isolate something from a screen-wide affect.
+This way I can make objects that glow (by drawing their diffuse color into both the diffuse and the glow map), objects that don't glow (by drawing black into the glow map), translucent objects that partially obscure the glow of any glowing objects which are visible through them (drawing partly transparent black into the glow map), and even objects which glow a different color than their diffuse (by drawing different colors into the two buffers).
+Usually bloom is done with HDR rendering where you use a floating point (usually 16 bits per channel) texture for rendering to.
+I have an object that is made up of a few meshes, and one of these meshes is mostly white. The result is it blooms like crazy, but I really don't want it to.

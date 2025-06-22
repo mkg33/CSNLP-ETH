@@ -1,0 +1,9 @@
+It's not quite correct to say "by default unison uses rsync to do it's transfer."
+You can use findmnt to list the directories that are bind mounts, and then insert the line ignore = Path /path/to/bind/mount in your Unison profile for each bind mount.
+Since, as you pointed out, Unison does not understand hard links, I think you're just out of luck there.
+I suspect that, using Unison alone, the answer to your question is no.
+Although if rsync can do it, then I imagine Unison could do it if someone were to write the feature.
+You might be able to use an external program to cleverly ignore bind mounts though.
+Unison uses the same underlying algorithm/protocol as rsync, but uses its own implementation; the actual rsync executable is not called, so you can't appeal to features of the rsync executable, and you're not going to be able to solve your problem this way.
+In general it's difficult to tell Unison to sync or not sync files/directories with a property that can't be specified with some sort of pattern match on their name, like directories that are bind mounts or hard links in your case.
+Also, since it looks like you're considering doing this manually with a script or something, you should be aware of inotify-tools.

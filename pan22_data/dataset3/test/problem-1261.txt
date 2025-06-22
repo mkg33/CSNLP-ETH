@@ -1,0 +1,12 @@
+If you run tty, and the output is "not a tty" rather than a path like /dev/pts/9, then this will confirm my suspicions.
+What actually happens in this situation is that /bin/bash is executed, with the file provided as stdin (not your terminal).
+This will typically happen when stdin is not a TTY.
+ssh -T - disable allocation of a PTY on the server
+(I misspoke in the comments, this is unrelated to stdout or stderr).
+There are a few command line options to override this automatic behaviour:
+Consider running a shell script that is executable and has the following contents:
+cat | ssh ${HOST} - should give you a "muted" shell as you are reporting
+The SSH client will automatically determine whether its stdin is a TTY, and will then request that the SSH server does or does not allocate a PTY for this session accordingly.
+bash will detect that stdin is not a TTY, and will suppress certain behaviours, such as printing a prompt between commands and recording the commands in your history.
+Try some the following on a fully functional termainal (substituting ssh ${HOST} for bash will give similar results):
+I suspect that your local shell doesn't have a TTY on stdin, or perhaps you're using ssh in a pipeline, etc... You probably want to fix that rather than override ssh's behaviour (as below).

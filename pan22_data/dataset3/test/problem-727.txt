@@ -1,0 +1,22 @@
+Although there is nothing wrong with that, you don't know how all the clients used today would react to that, and you don't know how future clients may react to that.
+One argument for different names for the same SMTP server is if you want to give different priorities to the different IP addresses.
+Most clients would select an address at random, giving you a load balancing.
+The RFC regarding SMTP talks about content the greeting MAY contain, but there isn't anything the greeting MUST contain, except the status code.
+If you consider both links equal, you can specify just one name and list both addresses for that name.
+There is not requirement that the SMTP banner uses the exact host name.
+Most domain registrars demand at least two DNS servers in two different networks.
+For the DNS server names, you set them up the same you would with two different servers at two different addresses.
+As you have different domain names for the services at each WAN link, there would not be any problems with PTR records.
+You must either use names that are not in your domain, or you must use glue records, but you have to do this anyway.
+Clever clients might figure out which address is better connected to them and use that.
+For the NS records, you can simply let your upstream DNS provider point to two servers like:
+The question is, do you want to use different names for the IP addresses of the same SMTP server?
+You can get load balancing also by listing two names with the same priority.
+For the MX records you can even set a priority which is calles preference.
+This setup doesn't meet that requirement, although they will not be able to tell from the addresses that your two name servers refer to the same machine.
+The main reason for those checks is to prevent SPAM from SMTP clients with incomplete DNS setup, but it's not like a spammer can't setup DNS.
+Note that having the same DNS server listed under two IP addresses only gives you redundancy against failure of one of the internet connections, not against failure of the one DNS server.
+The following configurations refer to the way you would perform configuration with bind(9).
+One argument for different names is that you don't know how some email client may react is it does a reverse lookup on the IP address and then a lookup on the name and gets more than one IP address.
+You would do this if you have a preference which link should be used for incoming emails.
+In this case, you would use something like this, for a preference for provider1.

@@ -1,0 +1,29 @@
+For redundancy within a single site, on a single Internet feed, you want to put clustered hardware on your front end, with a standby box ready to take over the IP address of a failed box.
+I'd be very interested to see the articles describing this.
+This makes it easy to set up a heartbeat tied to address failover - this won't be any faster than round-robin but ives marginal benefits during reduced service - assuming its implemented correctly and you can resolve split brain problems.
+If you can possibly aviod it, I'd strongly recommend using a replicated type cluster rather than a shared storage cluster - particularly where the data is not changing frequently.
+nginx -> worker #1 (Apache), worker #2, worker #3 etc.
+(The guys who wrote HA-Proxy recommend using at least 2 proxy servers with round-robin in front of a HA cluster).
+One problem you have to resolve - what if nginx will be down, but...
+Without knowing your reasons for diskliking round-robin, its hard to suggest somethng which might be more acceptable.
+The smallest netblock you can do that with is a /24, so you'll need to have a netblock at least that big.
+While round-robin failover is a little slow compared with other methods - its MASSIVELY more robust, simpler to admin and cheaper than other approaches.
+You might even want to use virtual addresses for each service/cluster node.
+Your other option, as you suggest, is round robin DNS.
+when one server goes down, another server can take over.
+Implementing the same for your webserver files is simple using rsync.
+You can then advertise different routes to a different site if your main site goes down.
+UCARP allows a couple of hosts to share common virtual IP addresses in order
+I would suggest that you use (at least internally) virtual addresses the master and slave server - this simplifies the business of promoting the slave.
+But you'll be out of action if your ISP has a failure, or your site loses power or suffers some other problem.
+If you want protection against loss of a whole site, or loss of your ISP, then there are really only two options.
+If one Apache server is down, nginx will exclude it and serve data from another "workers".
+What ThomK suggested is one way to do it except that the single point of failure will be the nginx box.
+Another thing that you can look at is using HAProxy (or even nginx) but with some sort of IP based fail-over as well.
+Of course nginx should be installed on dedicated box.
+You've not mentioned what OS this runs on - which has a lot of relevance to how the clustering is implemented, nor what software you currently use for DNS / how easy it is to change this.
+Bind already provides for master/slave replication so distributing the data across multiple platforms - so it's just a matter of working out some way of routing the requests to an available server.
+Some people advise against this on theoretical grounds, and there are problems with Windows Vista clients selecting addresses non-randomly, but it should work fine for redundancy, with the backup box just reverse-proxying traffic back to the main box unless the main box/site/Internet feed goes down.
+From what I gather, you are looking for a high-availability solution - i.e.
+One is to get your own BGP autonomous system number, and run your own BGP routes, with peering (well, paid transit) with several different ISPs.
+The Linux Virtual Server is a highly scalable and highly available server built on a cluster of real servers, with the load balancer.

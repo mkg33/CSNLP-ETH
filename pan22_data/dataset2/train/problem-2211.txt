@@ -1,0 +1,7 @@
+You can sometimes use a SAN certificate (sometimes called UCC) with both domains on it, but the way you're currently trying to do it just won't work.
+With the code you've given above, https://www.facebook.com will not work correctly and will give an SSL warning of incorrect certificate. 
+Unless you have SNI enabled (which doesn't work on IE on Windows XP), you can't host more than one SSL certificate on the same IP.
+The important thing to understand is that for HTTPS, the server SSL certificate is checked BEFORE the webserver is accessed. This means that the server SSL certificate must contain the names of all domains that are to be accessed on that IP address using Server Name Indication. As some clients do not support SNI, it's not unusual to use different IP addresses for different HTTPS sites in order to support them.
+That's because you didn't configure a virtualhost for facebook.com, so apache picks the first configured one (www.google.com). What you're looking for is the ServerAlias configuration directive.
+So my question is quite simple : how can I redirect all https access to facebook.com (and eventually all sub facebooks : facebook.fr, www.facebook.fr, etc) to www.facebook.com (redirecting to www domain) in HTTPS ?
+I want them to be distributed via https. Using Apache, I defined a vhost file in sites-available/enabled containing this :

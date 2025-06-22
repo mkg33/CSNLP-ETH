@@ -1,0 +1,10 @@
+mysql> change master to master_host='blah', master_user='blah', master_password='blah'...;
+Putting entries in the my.cnf file are only effective for the next startup and behave as if you had entered the command into the mysql client:
+Editing the my.cnf file alone is not sufficient to disable replication.
+Both these methods will create a file in the data directory called master.info.
+As mentioned in the first answer, you also want to make sure that you do not have that configuration information in the my.cnf file, otherwise on the next restart of the server, logging will be re-enabled.
+In fact, it is no longer the recommended way of enabling it.
+As long as this file exists, the server will try and replicate using the details there.
+If you used RESET SLAVE ALL; then restart is not necessary.
+The "RESET SLAVE;" command listed in the first answer will get rid of the master.info file (as well as the relay-log.info file).
+Additionally, you may wish to enable events that have been disabled on slave:

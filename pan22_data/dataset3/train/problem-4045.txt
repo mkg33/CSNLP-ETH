@@ -1,0 +1,14 @@
+If what you want is for a user to be able to schedule a cron job according to his local time zone and not have him have to think about conversions for his convenience then you write a conversion script that accepts a cron spec and a time zone then does the conversion to UTC behind the scenes and edits the crontab for him.
+You can set up jobs using local time (which adapts to daylight savings) or GMT for simultaneous jobs.
+What I would like is the ability to specify a time zone per job (or cron line), and then only specify times in local times zones.
+I think you're trying to have it both ways and the reality is that you just can't.
+If you want a job to run at 8 AM local time, for example, regardless of whether daylight saving is active then you either run your system (and cron) in local time and don't do seasonal edits or you run it in UTC (not GMT) and do seasonal edits.
+There is a port of launchd from darwin for FreeBSD that will do everything you want if you're on FreeBSD.
+If you want your jobs to run at the same UTC, regardless, then you run cron according to UTC and there's nothing more to do.
+You can create any kind of custom calendar, with exceptions.
+I notice that I can change the entire time zone cron runs in, but at the end of the day it can only run in one time zone.
+It will be helpful if you tell us what you're actually trying to accomplish.
+It could even be a two-way conversion to handle changes to existing entries.
+My current solution is to convert all my times to GMT and runs jobs accordingly, the only issue is during daylight savings changeover weeks, many manual edits must be done in order to make sure things run correctly in the respective local time zone (for example some regions do not follow daylight savings, or they do not change at the same date).
+I am looking for a cron replacement (or a method in cron if at all possible) that can allow for the scheduling of jobs in any number of time zones (specifically more than one per user/file).
+I know you can pay a tonne of money for scheduling software but we never needed anything more than this, even with datacentres in 3 locations around the world.

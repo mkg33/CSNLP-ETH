@@ -1,0 +1,12 @@
+Similarly the ComponentManager could implement something similar to adjust it's internals based on things that happen with the EntityManager.
+One way to avoid coupling is to abstract the coupling away into a layer above the classes in question.
+During startup, the SystemsManager registers as a listener to the EntityManager and now when the entity manager fires specific events, the SystemsManager and any other class of interest can be informed without any coupling.
+The first benefit allows you to freely alter the internal class interactions between EntityManager, ComponentManager, and SystemsManager without impacting the external code.
+None of this requires an event bus, just one class maintaining a vector of listeners and iterating them during specific cases where event notifications are to be done.
+Class coupling can occur when you have classes that work collaboratively to provide functionality that the classes alone couldn't otherwise.
+You could easily have a ObjectManager class that brings the classes you describe together which 1) exposes a public API and 2) takes on the burden of some of the coupling needs you want to avoid.
+But if you find yourself where the inner workings of one class require a considerable amount of information from another class, then perhaps the relationships you've built are too granular and perhaps should be refactored into a single class.
+For example, remember that the classes you are talking about are part of a larger system called the Game Object System.
+For example, an EntityManagerListener class could expose some callback methods that the SystemsManager implements by subclassing the listener.
+Another means to decouple the three classes is to leverage the observer pattern where appropriate.
+The second allows this ObjectManager to implement methods such as ActivateEntity() that internally manages the interactions between classes like EntityManager and SystemsManager for a specific use case.

@@ -1,0 +1,18 @@
+Right now,  you're invocation of find produces absolute paths, then you're using sed to remove the prefix you specified on the command line.
+Combining those, we end up with something like this:
+It's been a while, but I think something like this will work (basically, match against *.cf followed by c or m):
+At least as I understand it, you want to get the file names with relative paths.
+Of course this alone won't make a difference to your 4 hours runtime.
+I also don't see why you need to employ 4 find calls.
+For the part that remains (removing the file extensions) you can pipe the data directly from find to sed.
+You also don't seem to be using tmp.txt, so I'd tend to just pipe the output from the first sed call into the second:
+It's generally a bad Idea to collect the output of find in a subshell like this, because that might be memory intensive.
+This might not make a huge difference, but I'd start by combining your find calls.
+Assuming that's correct, you can tell find to produce just the part you want by specifying -printf "%P\n".
+While the main problem of your script is obviously the while read fn; do
+You also probably want to use -depth instead of -d, since the latter is deprecated.
+So in total I think you can replace the whole block
+I was going to suggest creating a sed script to handle the editing inside the index, but I see @choroba has already suggested roughly the same, so I'll leave that for now.
+There is also no need to employ tr to lowercase variable contents, since bash has a built-in way to do this (but it's probably one of the lesser known features).
+Also looping over the result by for is discouraged.
+ loop (for which @choroba already provided a good solution I think) I want to point out a few problems which are often appearing in shell scripts:

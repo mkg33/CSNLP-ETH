@@ -1,0 +1,19 @@
+All the online help I fine says to create your partitions and then create an md0 raid volume using something like sda1 and sdb1 for the raid.
+If you want to be able to boot from your linux raid1 device, you need to do the following:
+And that mdx device will stay available even if one of the drives of the array fails.
+Install grub on BOTH sda and sdb, both times telling grub that THAT disk is hd0.
+If that does not work pull the broken disk, especially if it is a SATA disc and not a SAS disk (SATA does not always fail gracefully).
+No partitions on the disks, add (for example) /dev/sda and /dev/sdb to your raid1 device.
+I want two 100% identical drives so that if one fails, I can install a new drive, repair and run without any loss of data.
+I've tried things like making sure to install GRUB on both disks, making sure the drives were as identical as possible...
+So my question is, what if drive sda goes down...how will drive sdb boot up?
+Create a regular "MBR"-style partition with fdisk on the raid device and use that either as your root filesystem (or /boot, if you want encrypted root).
+This means that whatever disk the BIOS things is 0x80 will be read and booted correctly.
+I am setting up a linux server with two drives in an mdadm created raid 1.
+It should just give up on a disk and continue searching.
+Use --metadata=1.0 when you create the raid (to store the raid superblock at the end of the disk.)
+The only exciting part is if you want to boot and your firmware want to find a bootsector or EFI file.
+The re-synchronization is also harder than it should be / seems, so make sure you document that part.
+If you do this and you're serious, you should test to see if you can boot the system with either disk and re-synchronize the mirror once it is back up.
+If you installed a mirror then you are not using sda nor sdb.
+Practically speaking, the SuperGrub CD (http://www.supergrubdisk.org/) is likely to be able to help you recover when this happens.

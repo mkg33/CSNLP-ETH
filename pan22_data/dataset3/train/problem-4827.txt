@@ -1,0 +1,8 @@
+I assume you want to be able to connect from anywhere, so you can't garantee what public IP address the tablet will be on (or even if that will allow connections to the tablet from the server, as it is unlikely to be a public address), otherwise you should install a SSH deamon and ash rsync to connect that way.
+So if that works you can in your server script run something like rsync user@127.0.0.1:/path/to/stuff/on/tablet /path/to/destination/on/server -e 'ssh -p 2222' -a --compress.
+Tunnels through SSH ocnfigured this way can be very powerful once you have played with them and work out what it possible and how to do it, assuming your client and server SSH/SSHd implementations support it all.
+Otherwise, a "reverse tunnel" may be what you are looking for.
+Some more detailed notes on the above (sorry, this is bit of a "mind dump" and may not be well organsied, though hopefully it'll help you experiemnt and/or lookup useful examples elsewhere):
+For instance with openssh you can specify -R 2222:127.0.0.1:22 on the command line which would mean things on the server can connect to a SSHd server on the tablet (listening on port 22 on 127.0.0.1 as far as the tablet is concerned) by connecting to port 2222 on 127.0.0.1 (it is important to realise that from the code on the server's PoV 127.0.0.1 is the server, the 127.0.0.1 in the command line is relative the the SSH client).
+If your SSH client on the Android device supports reverse port forwarding then look into using that to build a tunnel.
+The -e option is used here to specify the non-standard port for SSH to connect to.

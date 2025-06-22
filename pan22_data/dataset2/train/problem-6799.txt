@@ -1,0 +1,10 @@
+I already tried to modify the configuration files, but it seems either I'm doing it wrong or something is overriding configurations when it starts.
+Oddly, I used both Firewallengineer and Tim Rain's answers and that solved my issue. I did notice that for whatever reason in /lib/systemd/system I had to put --allow-header-host myserver.mycompany.com athe the end of the ExactStart line. 
+In /etc/default/greenbone-security-assistant I had to set the GSA_Address as the server address. This is what worked for me. I also had to access the server as myserver.mycompany.com:9392/omp, as just myserver.mycompany.com would not resolve. I understand my company's DNS needs a cleaning but I don;t have the time to fix that. Thank you both for your information, it saved me a lot of time and taught me quite a bit too.
+Verify, that all will be done as you want. If you're happy with the changes, just add -i to the end of previous command.
+There is much more simple solution. You can redirect external ip port to localhost using firewall. Assuming that Your's server external IP is 10.0.0.10:
+I also tried to edit configuration IPs but there are in many places and seem to break OMP authorization. This solution was tested with latest Kali/OpenVAS (2016.09).
+I didn't found any way to make it permanently listen on the external interface: openvas-start causes it to listen on 127.0.0.1.
+Files are: greenbone-security-assistant.service, openvas-manager.service and openvas-scanner.service.
+This line will replace all 127.0.0.1 to 0.0.0.0 which will allow all services be avaliable on all interfaces. You should replace 0.0.0.0 to the address of your choice.
+You can append this option in the startup script located in /etc/init.d/openvas-scanner in the DAEMONOPTS constant.

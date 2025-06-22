@@ -1,0 +1,31 @@
+I find that this works quite well for the combination of cable modem and ADSL modem.
+Helpfully, pfSense has automatic failover and load balancing.
+Once 2.1 is released, pfSense will have good IPv6 support and will include multihoming.
+Obviously if you really use 8.8.8.8 choose another IP because otherwise you won't have reachability to it if ISP1 goes down.
+I wouldn't advice it as a corporate solution, but it's ok for SOHO and home setups.
+That said, pfSense does not have a fully-supported release that properly handles IPv6.
+See http://tools.ietf.org/html/draft-troan-homenet-sadr-01
+The advantage is that you can use the entire bandwidth provided by both the providers while still having a fail over option for reliability.
+But it can also be implemented reasonably well on any router supporting policy based routing.
+If it is a Cisco device you could use IP SLA to ping a destination like 8.8.8.8 over the primary ISP.
+You may have to put a static route for 8.8.8.8 over ISP1 to make it always exit out that path.
+An application should be smart enough to change connection (pick another SA/DA pair) when the current connection fails.
+There is no reason why multihoming wouldn't work in IPv6 as well as IPv4.
+For some reason, web app programmers sometimes think it is OK to test security on the basis of IP address.
+For users who need this access, you can reserve an IP address for their computer, and create a "LAN rule" in pfSense to always use a certain gateway and not the other for that IP address.
+What I have found is that a small number of web apps do not work when you are multihomed.
+In IPv6 multi-homing with provider aggregated addresses, each host in the network will get one address prefix from each of the providers.
+You can install a router/firewall that supports multihoming.
+(Otherwise BCP38 (ingress filtering) would have dropped a packet sent with ISP B's source address to ISP A).
+What kind of equipment do you have connecting to the providers?
+I.e the host/application's choice of source address picks which exit link is used.
+I've used OpenWRT with Multiwan (http://wiki.openwrt.org/doc/uci/multiwan) for some time at home to multihome between my DSL and Cable ISP.
+You could setup a remote server/VPS in a reliable data center and then you could setup VPN tunnels from your router to the remote server over each ISP.
+The web apps are usually financial sites, like banks.
+The host stack/application's source address selection (RFC6724) and choice of SA/DA pair (RFC6555) determines which exit is used.
+As soon as you don't get a reply failover to the other static route.
+In the mean time our recommendation is to set the lifetime of the failing link's address prefix to 0, meaning that new connections will not use that address.
+Various implementations do this in various ways, and none do it very well at the moment.
+The network uses source address dependent routing to forward the traffic on to the correct exit.
+The disadvantage is that you'll incur additional cpu, storage and bandwidth costs for the remote server.
+Now your router at home could route packets over these tunnels based on a bandwidth ratio, and then the remote server can route the traffic between the rest of the internet.

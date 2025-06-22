@@ -1,0 +1,13 @@
+n, the modulus (product of your two secret primes, factor this!)
+Does it explain the algorithm or version or something?
+So, if you see "BAw", your exponent was 3, or "DAQAB" = 65537
+I did an overkill deep-dive into the format after following Scott's links for funsies.
+I was updating the authorized_keys file on my server with the public key for the new laptop I got and I was surprised to discover that the two public keys began the same:
+The PEM encoded data consists of a number of (length,data) pairs, and the first pair encodes the algorithm name, which is going to be something like ssh-rsa or ssh-dsa.
+AAABAQ after the above means that your key length is 2048 bits (and that your exponent was like DAQAB because of base64 padding).
+The SSH public key format is documented in RFC 4253, and summarized somewhat here.
+Those numbers get encoded as below (with the trailing offset from above)
+The entire rest of the base64 stuff is the exponent, there's nothing after.
+The string ssh-rsa is converted to \x00\x00\x00\x07ssh-rsa, which then encodes to AAAAB3NzaC1yc2E=, so all ssh-rsa keys should start with that.
+This means that the initial part of the public key data for all ssh keys is going to be similar.
+With some searching online, I see that others keys start the same, too.

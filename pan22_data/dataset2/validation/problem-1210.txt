@@ -1,0 +1,7 @@
+You should be using Interval Partitioning (11g+) to automagically create your partitions as you need them.
+We have same type of table with billions records in our Project. So we do followings actions in our tables for have performance and fastest access to data :
+AFAIK, the creation of the index needs to be done only once, and then daily, the index on the new partition only needs to be created. Besides that, indexes on partitions older than 5 days will never be used anymore, so there's nothing to do there.
+We need to do selects on this table, over a period of the last five days, and including the accountid.
+In order to keep things a bit performant, I suggested to partition the table on day level (done), and create a local index (prefixed or non-prefixed) on accountid.
+Now, one of the teammembers says it will not be possible, since they need to create an index on only the last five partitions of the table, and that would require too much effort.
+We have a big transactional table, partitioned on transaction date (day). Each day, several million records are added.

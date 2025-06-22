@@ -1,0 +1,23 @@
+You could do this by exposing a public interface of the render subsystem to the physics subsystem so that physics can simply set a particularly renderable's position.
+And you may need to interpolate results from the output of physics engine.
+It's often common to see even the transform data (position/orientation/scale) stored separately from both physics and renderables because it's possible a game object exists which isn't imposed by physics nor is rendered but requires a world position for other mechanics.
+For simplicity, you can put a world transform variable to the GameObject.
+Another option is that the renderable subsystem queries the entity for the transform during it's update and does the update of the renderable component's position then followed by drawing.
+For example, the physics simulation may need to be run in fixed time step (e.g.
+Neither MeshComponent nor PhysicalComponent knows each other.
+Unity provided a good reference of their Components, which worth a look.
+During rendering, the MeshComponent reads that variable.
+As others have said, it's pretty common place that physics has it's internal data state is managed separately from the internal data state of the rendering engine.
+How the data gets from physics to renderable is entirely up to you.
+In your situation, there can be a MeshComponent and a PhysicalComponent, both attaching to a single game object.
+I wouldn't get caught up too much on a specific way at this point and pick a communication pattern and try it.
+Nowadays, more game engines adopts a component design (e.g.
+During update phrase, PhysicalComponent outputs the world transform to that variable.
+In a realistic scenario, however, you may need more sophisticated handling between physics/graphics synchronization.
+In this kind of design, a GameObject is composed of a list of components.
+Naturally, depending on your game a few of these means are going to be more cache friendly and have better performance than others.
+You could do this via some inter-subsystem dispatch process using events/messages.
+Besides @Millo Yip great answer I would like just to remind you that you will need to share the same data with the Controls module and the AI module and if I'm not mistaken most audio libraries have a notion of the position of the sound emiter so you'll need to share the data with that module too.
+The rationale behind this design is to decouple between components.
+And it can be easier to extend the system by composition, than using single hierarchy of inheritance.
+You can easily rework this part later on to test various means for optimization.

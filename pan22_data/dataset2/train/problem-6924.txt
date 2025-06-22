@@ -1,0 +1,7 @@
+Actually, your probably shouldn't be doing this at all. Instead, use frozenset(). Whenever you call frozenset() it returns the same set, so the empty sets won't take up excess memory. If you rework your app to use them, you should use much less memory.
+Instead of providing the name as a parameter, have DefaultAttr make one up such as '_' + str(id(self)). That'll provide a unique attribute to store data on.
+Do you see a way to make it neater? I was wondering if I can avoid the hidden attribute _a. Also the "Void" solution seems dodgy. What would you do?
+What is the common practice to implement attributes that have side effects in Python? I wrote the following class which supposed to save singletons when a variable is going to get a certain value. The background is that my program had sparse data, meaning that there were a lot of objects having empty sets in their attributes which wasted a lot of memory. (my actual class is slightly more complex). Here is the solution I took:
+Alternately, delete the attribute using delattr instead of storing anything there. Absence of the attribute indicates that you should use the default value.
+These issues are caused because set are mutable. They go away if you only use immutable objects, such as frozenset(), or if you just never use the mutable operations on the sets.
+Alternately, if you restrict the use of the object to immutable objects, just store a reference to the immutable object there. There is no need to use a special sentinel value. Here is my code to implement that idea:

@@ -1,0 +1,10 @@
+If this is insufficient, please let me know and I'll work in a few more steps or explain the steps in more detail. 
+I feel that my only solution is to somehow remove my root partition from the LVM setup and copy it across to the SSD. My boot partition is, of course, not part of the LVM group.
+There are advanced options to specify PE ranges from which to allocate, even inside a given Physical Volume, as well as specifying the LV size as a function of free space in a given PV, etc. See the -l flag in lvmcreate(8).
+I have an Ubuntu home media server setup with 4.5TB split across a few hard-drives (1x3TB, 2x1TB) and I'm using LVM2 to manage the volumes. I have recently added a 60GB SSD to my server, and I wish to use it to house the 'root' partition of my server (which is currently under the LVM group).
+If you had not used up all the extents in the SSD, it'd be a candidate whenever a new LV were to be created. So, conversely, you'd have to do something like this
+I don't want to simply add it to the LVM volume group, because (afaik) there's no way to ensure that the SSD will be used for the root filesystem. If I just throw it at the VG, it may be used to house my media, which would defeat the purpose of having the SSD in the first place.
+Does anyone have any advice as to how to go about this? My end goal is to have the 60GB SSD used for my boot and root partitions, with everything else on the 3TB/1TB/1TB hard-drives.
+if you were to create a new LV for more mass-storage, and wanted to make sure your SSD isn't wasted on it.
+I have a few logical volumes. my root (/), a 'media' volume for my media collection, a backup one for my network backups.etc.
+Even though this question is a couple years old, I'll leave the following for reference: you can actually force LVM to allocate extents from a specified Physical Volume when creating a new LV. The syntax is as follows (you'll find it in more detail in lvcreate(8)):

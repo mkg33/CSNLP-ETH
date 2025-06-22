@@ -1,0 +1,6 @@
+This might be a bit wasteful, as grep will scan each file completely, rather than just the start. If it's mostly small text files, it will not matter. If you have loads of files with several MB, you'll have to write a perl script :-).
+It's based on sleske's solution, but takes into account that the Byte Order Mark can be reversed. It also uses awk to stop looking for the BOM after the first line, since the BOM must be at the beginning of the file. The \x escaping used to specify the BOM works with bash, I don't know if it works with other shells.
+-r is recursive search, -l makes grep print the names of files it found (instead of the matching line).
+Though you asked to find the BOM, using file might even give you results when such BOM is not present. From man file:
+The $(echo... part generates the BOM (Hex FE FF, as octal escape sequences), this is then fed to grep as its pattern, prepended with '^' (=match start of line).
+Alternatively, you could try file (combined with find+xargs). file will identify UTF-16 (as "UTF-16 Unicode character data"). I don't know how reliable it is, however (as it uses heuristics).

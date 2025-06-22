@@ -1,0 +1,12 @@
+Apt installer should have already created this directory with the correct permissions and AppArmor context.
+Try setting it to permissive temporarily and see if the problem goes away.
+The named process is normally running as a restricted user (probably bind), which does not have access to the file dnskeys.conf (with the current permissions the file can only be accessed by the user root):
+The error message is actually rather self-explanatory:
+or change the owner of the file to the user running the named process:
+Therefore, the nsupdate process cannot write to them either.
+-rw-------  1 root bind  126 Nov 12 08:53 dnskeys.conf
+Aside from the filesystem level permissions you mention above, you need to configure bind to allow these remote updates using the allow-update directive.
+By default, the Bind/Named daemon does not have permission to write to the zone files in /etc.
+As others have pointed out you should definitely NOT make the file world-readable, much less world-writable.
+Either change permissions on that file to 640, so that the group bind has read access,
+If you're dynamically updating your DNS, you should store your zone files in /var/lib/bind instead - https://help.ubuntu.com/14.04/serverguide/dns-configuration.html#dns-primarymaster-configuration

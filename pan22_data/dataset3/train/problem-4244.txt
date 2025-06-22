@@ -1,0 +1,22 @@
+The bad part is that slapcat gives no indication of a problem, i.e.
+We have been using slapcat for our backups much like the other answers mentioned.
+I run both copies of openldap on the same machine (different ports, replication is bound only to 127.0.0.1 so it doesn't leak out onto the actual ethernet).
+Second we decided to put all LDIF entries individually in a Git repository.
+We looked around to consider better backup strategies but apart from setting up a slave which can be stopped for the backup there is not much else as far as standard procedures or best practices go.
+This gives us much better compression than just compressing the individual LDIF files from slapcat.
+Depending on the database format, this can cause file corruption, or deadlocks.
+This led us to rethink our backup policy and to write some scripts to automate the new policy.
+If anybody else is interested have a look at https://github.com/elmar/ldap-git-backup
+I've been wondering about backups, and did som reading on the net.
+If there's any other backup solution better suited for this, I'd gladly hear about it.
+If you're willing to recreate your LDAP directory using the bdb backend, that might be the way to go.
+At my site we've been running a slapcat backup on a live directory with ~10k entries every 4 hours for the last six years or so, and haven't had a single problem with it.
+These broken backups occur in about 1 out of 30 cases.
+The reason slapcat is dangerous is because it pokes around in the database directly.
+I'm planning to run these backups during the night, and no writing will be done to the database during the night - reads will probably occur though.
+They were very reliable for 4+ years but since the upgrade from Debian lenny to squeeze we experienced occasionally truncated backups.
+Slapcat seems to be the way to go, but I keep seeing these posts speaking about it being dangerous to use it while slapd is running.
+For historical reasons we are using the bdb backend.
+First of all we have a script called safe-ldif which runs slapcat multiple times until it gets the same number of LDAP entries twice in a row.
+In addition it is very convenient to have a history of the individual LDIF stanzas.
+I'm running an OpenLDAP directory on a Debian server, using the hdb backend.

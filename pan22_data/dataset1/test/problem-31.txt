@@ -1,0 +1,17 @@
+I am new here and also new to Sophos XG firewalls and to Azure nor am I a network expert, which might not be a good combination. On the bright side, there might be something very easy that I have missed :)
+I have followed this guide to make a connection from a Sophos XG firewall to Azure:
+Both the Sophos and Azure says the tunnel is up and running and I have found out by accident that I am able to ping two IP-adresses in the GatewaySubnet from both the on-premises network and from the VM.
+But I am not able to ping from the Azure VM to any IP on the Sophos network, nether can I ping the VM from any client or from the Sophos.
+I have also tried to use RDP from both networks, but that did not work either.
+One thing that probably is worth mentioning is that the VM at first only had one NIC, that both had an internal and external IP. What I did was adding a second subnet in the VMs vnet:
+So, more precisely, I am able to ping 10.0.8.4 and 10.0.8.5 from the VM.
+I am also able to ping 10.0.8.4 and 10.0.8.5 from the on-premises network. Guess that it could be some kind of routing issue.
+I have tried both of these on the VM, but they seem kind of off:
+route add -p 192.168.1.0 mask 255.255.255.0 10.0.8.4
+route add -p 192.168.1.0 mask 255.255.255.0 10.0.8.5
+This did not make any difference and I do not actually know how the GatewaySubnet works. Seems it would be easier with just one IP? With several addresses in the GatewaySubnet, to me it seems like the route should be something like this, but that can’t be right :)
+route add -p 192.168.1.0 mask 255.255.255.0 10.0.8.0/28
+What would be the prober way to continue the troubleshooting?
+I would start by trying Network Watcher's IP Flow verify - it will tell you if your traffic is blocked by firewall rules or misconfigured routes
+https://docs.microsoft.com/en-ca/azure/network-watcher/diagnose-vm-network-traffic-filtering-problem
+Make sure your User-Defined routes in the vNet allow conection to/from 192.168.x and 10.0.x

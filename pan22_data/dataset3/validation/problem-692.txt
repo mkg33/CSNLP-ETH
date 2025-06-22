@@ -1,0 +1,11 @@
+https://docs.aws.amazon.com/eks/latest/userguide/troubleshooting.html#iam-error)
+aws eks update-kubeconfig --name eks-cluster --role-arn "arn:aws:iam::999999999999:role/eksServiceRole"
+Is your user ID with which you are creating the cluster MFA enabled?
+The error you are hitting is because the AWS credentials you're using to run the update-kubeconfig command don't have permissions to describe that cluster.
+If so, you need to get the token and update the credentials file
+--role-arn is the role which will be used by aws-iam-authenticator when you run kubectl to get a token and is only injected in to the generated config; it is not used for fetching EKS resources in any way by the command.
+If not you'll need to check your aws-cli permissions and make that work first.
+A couple of suggestions that may, or may not help:
+To provide Amazon EKS admin permissions to a user, see Creating Amazon EKS IAM Policies.
+If you receive an AccessDeniedException when calling an AWS API operation, then the AWS Identity and Access Management (IAM) user or role credentials that you are using do not have the required permissions to make that call.
+I'm not that familiar with EKS but I guess the user that you're running the aws eks command as needs privileges to describe the cluster.

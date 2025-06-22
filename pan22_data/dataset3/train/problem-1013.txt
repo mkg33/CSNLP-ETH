@@ -1,0 +1,18 @@
+pkg which again to figure out where they came from, upgrade those ports, repeat until it's empty or every file is unclaimed.
+What is the easiest way to upgrade Perl using ports?
+Use portmaster or portupgrade to force a rebuild of all perl modules:portmaster p5- does the trick for me.
+For me, that usually means turning off SpamAssassin, which really means I just shut down postfix for the few minutes it takes me.
+portmaster -r perl- would be the cheap and easy way to do this, but that would probably spend hours rebuilding things that don't actually need to be rebuilt.
+Just run it and look for binaries that have unresolvable references to libperl.so.
+Use pkg which to figure out what port installed that binary, if it's not obvious from the name, and then go and rebuild that port using portmaster or portupgrade.
+see /usr/ports/UPDATING the entry from 20120630 has detailed description how to do it with portmaster or portupgrade
+You can probably start bringing back up your perl-based services, like SpamAssassin.
+I'd think there would be a cool way to upgrade Perl and all it's dependencies.
+Then go look for binaries that have dependencies on perl that are broken - I use libchk for this.
+Before upgrading perl, I would shut down anything that depends on it, since those things are likely to break while the upgrade process is running.
+perl-after-upgrade is supposed to do the trick for most files (excepting binaries like irssi), however, I find it doesn't work so well anymore, so I just do everything by hand.
+I would also dump the current list of dependents on perl - pkg info -r perl, just in case you have to fall-back to manually upgrading everything.
+I currently uninstall all of perl and it's dependencies.
+All of your perl modules will be broken because they're still installed in the old perl directory.
+Then I go poke through the /usr/local/lib/perl5 directory, and see if any files are still there that shouldn't be.
+This way is probably a lot faster, but it is a lot more work and requires a little bit more fiddling.

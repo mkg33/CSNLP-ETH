@@ -1,0 +1,18 @@
+I need to delete all emails from a specific source.
+If you find these tools handy, and wish to keep them for future use, then:
+My approach to tasks like this has been to split the mbox into individual messages, use standard UNIX tools (grep, rm) to process the messages, and then re-assemble the mailbox.
+Split your mbox into multiple files in the current directory:
+That command reads your mailbox, and creates files msg-#####.txt in the current directory.
+If there are multiple regexps you want to use to find the messages to delete, you can go back and grep again with a different regexp and spot-check those hits, etc.
+It is okay to use multiple regexp passes, but you must be sure that each regexp does not have any false positives.
+Once you've successfully deleted all the offending messages, backup your mailbox, write the remaining msg*.txt files to your mailbox, and re-start the mailserver:
+Is there a faster way or a way integrated into the program that will do it automatically?
+I will also assume that you're using bash for your shell, and that you have root access to the box, or at least sufficient sudo privileges to start/stop the sendmail instance on your machine, and to write directly to your mailbox /var/mail/$USER.
+If the message files identified by grep are indeed messages you want to delete, then:
+I can list all of the emails with the f source@emailaddress.com but I'm having to dump it to something like awk and back into mail... or copy all of the email header numbers individually.
+Using grep, identify the msg-*.txt files you want to delete, and examine a few of them to ensure that you are certain your regexp correctly targets only the messages you want to delete.
+Naturally, this needs to be done with the sendmail process stopped, so that no new mail arrives while you're working.
+Install the procmail package and read the formail man page.
+The procmail package includes a handy tool called formail which allows the user to iterate over individual messages of a traditional mbox-style mailbox.
+You don't say which BSD you're on, but I'll assume FreeBSD.
+It does not write to or delete your /var/mail/$USER mailbox, so no harm done.

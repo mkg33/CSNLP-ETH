@@ -1,0 +1,24 @@
+Just start by triggering the job as I stated above.
+The only possibility (that crosses my mind) of triggering a jenkins job from inside a GitlabCI execution is by having a (custom?)
+If you want to keep it simple, try the generic webhook trigger plugin.
+Once the Jenkins job is finished, you would probably want to fetch the job's console in Gitlab
+You need to work a little more to monitor the job and feed its status back in Gitlab-CI, manage security and possibly get some commit info from gitlab to inject into your job.
+Here's the way I do it: no plugin required, just triggering Jenkins api from gitlab-ci.
+In order to have a proper monitoring, I recommand to write a full trigger + monitor + return value script [** ] (in whatever language available or you're familiar with).
+You might want to consider sticking with one if possible.
+You can trigger a build by sending an http POST using a JSON body or URL parameters.
+Two CI/CD systems on the surface does seem overly complex.
+See also https://stackoverflow.com/questions/20359810/how-to-trigger-jenkins-builds-remotely-and-to-pass-parameters.
+Finally you may curl once more on JENKINS_JOB_URL/lastBuild/api/json but this time you grep it on UNSTABLE, SUCCESS or FAILURE.
+FWIW, the trigger you referenced originates from Gitlab repository events, not from a GitlabCI execution.
+First, you need to have a .gitlab-ci.yml file in your project having a basic structure such as:
+[*] Your Gitlab project Settings > CI/CD > Secret vaiables
+That script will merely trigger a Jenkins job and forget about it.
+I've posted a long discussion on why and when should you do this.
+https://plugins.jenkins.io/generic-webhook-trigger
+By following the guidelines above, you can fully orchestrate Jenkins jobs from Gitlab-CI.
+script invoked as part of the GitlabCI execution which remotely activates a Parameterized Trigger Plugin configured for your jenkins job, via a properly-crafted POST request which would include the desired parameters.
+Then, run a while loop (don't forget to put it to sleep [***]) on
+[** ] Of course I mean by that to craft a script nicely with params, functions, nice variable names, meaningful logs... You name it.
+Now you can use it in your pipeline assuming you had a deploy function.
+I will assume you have a gitlab-ci runner installed and configured.

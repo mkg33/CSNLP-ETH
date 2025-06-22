@@ -1,0 +1,10 @@
+How do I get this to work correctly and play on my TV(the display the media center computer is hooked to)? 
+Enter this environment variable export command in your ssh session to have X11 requests redirected to the local machine (the media box)
+I want to eventually get it so that there is no keyboard or mouse required. Right now I want the solution to be SSH. My problem is that when I do something like mplayer movie.mpg over an ssh shell, I'll just get vo: couldn't open the X11 display ()!
+You should connect to your remote box via ssh with -X option. If you connect with X option and if you have installed xorg on the remote box, you could run your command on remote box and mplayer will be visible on your local screen.
+If you're using X windows, then since you DON'T want the output on YOUR machine, then you need to be logged in as the SAME user the X windows system is logged in as, (it's a permissions thing really).
+If your media system is connected to the TV, it depends on whether you are using X windows or a framebuffer to display graphics.
+You can also use sshfs to mount the directory over ssh. This allows you to seek your movies, which is not possible with stdin option. Further, the method is permanent so you don't need to do this for each file:
+If you're using X11 to display, check out the 'xhost +localhost' command and possibly re-enabling the insecure unrestricted port 6000 access for your Xserver.  Again, depends on how you set up your media box.
+Try using mplayer with the '-vo fbdev' or '-vo fbdev2' option, telling mplayer to use the framebuffer to display output.   Check the mplayer manual for more details.  Those are the most likely to work, but there are other options, but they get more complicated.
+This will cause mplayer to be redirected to the local media-box video, you'll still be able to control mplayer with the ssh connection using the various keyboard commands it supports.  (f for fullscreen (or -fs option), q-quit, p-pause, etc...)

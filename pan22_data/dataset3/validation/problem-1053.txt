@@ -1,0 +1,20 @@
+Computers A and B will never ARP for computer C's address since, based on their IP addresses and masks, they know that Computer C's address is not on their network.
+When Computers A and B want to send something to Computer C, they realize it is on another network, so they will send it to the gateway each has configured.
+Switch only conmunicates equipments on the same network
+However, in this example, A will never send a request to C. If A has traffic for C, A will use it's own IP address and mask to determine if C is on the local network or not.
+The IP stack of those computers will however discard those packets as they recognise it is outside of their own local network.
+Let's extend this example a bit and say that B is misconfigured with a /22 mask (smallest network to include both 192.168.1.0/24 and 192.168.2.0/24) instead of the /24 it should have.
+The switch doesn't care about what IP addresses are as it is only using the L2 addressing.
+For example, if A ARPs for B, C will also see this broadcast.
+Instead, it will send the traffic destined for the other network to its configured gateway, and it may need to ARP for the gateway's layer-2 address, but it won't even try for a host which is not in its own network based on its configured IP address and mask.
+ARP is a broadcast, but it is looking for a specific address, and Computer C would not have that address, so it won't answer.
+L2 broadcasts and unicast floods will be received by all three computers in your example.
+But switch see is x.x.x.y and x.x.x.y2 are on the same network(It has his ARP table who match MAC with IP).
+To be accurate, based on your description, all three of your hosts are on the same network from a L2 perspective and the switch knows this to be the case.
+Nothing on the switch prevents C from answering a request from A.
+If you does a capture, you can see that on the same switch, that if from one network to another, you tried to make a ping request, this one "Who has x.x.x.y?
+A host doesn't ARP for an IP address it knows is not on its network.
+In this case it is not, so A will then look to it's routing table to determine where to forward this traffic (on most computers this will typically be the default route or gateway).
+You are correct that on a layer 2 level all computers will receive broadcast packets, including ARP requests for IP addresses of networks other than their own.
+The syntax of an ARP request is something like this:
+If B had traffic for C, it would determine that C is on the local network and B would ARP for C. When C receives this ARP request, it should not respond as it would determine that B is not on the local network.

@@ -1,0 +1,31 @@
+https://support.microsoft.com/de-de/help/4345421/windows-10-update-kb4345421
+The backup scripts are doing their jobs, stopping all services, making the backup but now, all services are restarted except Apache.
+Both servers uses Apache 2.4.27 x64 binary build from Apache Haus.
+After searching on the Web about the recently installed updates, the KB4338818 is the one causing problems.
+These scripts are working fine since several years (almost 4 years).
+We have some backup scripts running on both servers.
+So I hope Microsoft will fix this in a later update!
+https://support.microsoft.com/en-us/help/4345459/stop-error-0xd1-after-a-race-condition-occurs-in-windows-7-service-pac
+I've just uninstalled this Security Update and now Apache can be started/stopped as normal!
+I was having a similar problem with Tomcat on a Windows Server.
+After investigating, I found that Apache 2.4.27 service can't be stopped.
+So I presume the problem is from one of these updates.
+But this is false, as the httpd process is always running!
+As a work-around I tried loading IIS on the problem server setting up the default web site so that it used non-standard ports and the problem appears to have gone away without having to uninstall the update.
+So before uninstalling all of them, is there someone which have the same problem as I, I mean Apache 2.4 becomes unkillable and can't be stopped on Windows Server?
+I had another server with Tomcat that was not experiencing the problem however, and the only major difference I could find was that the working server also had IIS installed and running on other ports.
+The only thing to do to unblock the situation is to reboot the whole server.
+Microsoft is releasing KB4345459 to fix the issues in Windows 7 and Windows 2008 Server.
+So I've updated Apache from 2.4.27 to 2.4.34, but the problem remains.
+KB4338831 seems to fix the issue for Windows Server 2012 R2.
+So I tested to kill the process with pskill from Sysinternals:
+We have two Windows Server, one in 2012 R2 and the other in 2008 R2 which uses Apache HTTP Server (httpd) 2.4 in proxy/reverse-proxy mode (usage of ProxyPass, ProxyPassReverse and Virtual Hosts configuration).
+It's available as a recommended update on Windows Update.
+I checked the installed updates, and some of them were installed the July 11, 2018 so one day before:
+When using the Services console and trying to manually stop the service, the console shows "Stopping" and nothing happens.
+This is happening for other softwares, like FileZilla Server, as detailed here.
+So I checked the running processes and seen that a httpd.exe process is running.
+The big issue is, if that httpd process can't be killed, Apache can't be restarted as the port 80 is already bound.
+Seems like Microsoft is starting to fix the issue, until now only for Server 2016 and Windows 10:
+They stop all the services (including Apache) then do the backup and restart all services again.
+But starting from July 12, 2018, the behaviour is now strange.

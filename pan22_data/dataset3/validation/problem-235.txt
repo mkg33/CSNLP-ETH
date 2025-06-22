@@ -1,0 +1,28 @@
+There is an Account Lockout Threshold Group Policy setting in Computer Configuration -> Policies -> Windows Settings -> Security Settings -> Account Policy -> Account Lockout Policy.
+to stop rdp login attempts, as already told, you need control of your firewall to isolate a particular ip.
+You should be able to add rules based on IP address this way.
+I use Forefront TMG so I used the API to add bad IP addresses to a group of IPs that way and I've asked Cisco to add API access to one of their SMB routers (which they have assured me they just might do!)
+I allow x number of attempts before I ban and a success will reset the count.
+I used EventLogWatcher and bound to "*[System/EventID=4625 or System/EventID=4624]" so I could reset a bad count on success if the user genuinely just got their password wrong.
+For Remote Desktop however I discovered that going into "Remote Desktop Session Host Configuration" and changing the RDP-TCP connection to have the security layer of "RDP Security Layer" instead of "Negotiate" or "SSL (TLS 1.0)" brought back the IP addresses.
+If you're trying to prevent break-ins, Windows has a built-in way to block attempts at logging in.
+If you want to use the native Windows Firewall to block them have a look at the API for that ("netsh advfirewall").
+I'm not sure if it's possible, but could be a way...
+Maybe you've to consider a batch script to listen rdp port and control logon failures, so if there were a tot attempts (you choose the number...) by the same ip, then no other attempt for a known span of time could be.
+I had an issue on Server 2008 R2 where the event log didn't always list the IP addresses of the user (if they connected from the newer Remote Desktop clients).
+You may or may not wish to whitelist LAN / management IPs.
+You'd need a separate account for actual administration, which is probably advisable anyhow.
+Whether you really want to do this is another question for you, "If you select RDP Security Layer, you cannot use Network Level Authentication."
+I found http://www.windowsecurity.com/articles/logon-types.html to be helpful.
+You can do some settings in Administrative tools -> Terminal services manager but can do nothing to stop one ip in this way.
+Are you trying to prevent break-ins, or cluttered logs?
+Attackers will use common user names like Administrator, and they will certainly lock those out.
+Automatically blocking at the firewall level will require some scripted log reading with automatic updating of firewall rules.
+I'm running a Windows Server 2008 R2 with Terminal Server, and I'd like to block an IP after repeated attempts to login via RDP.
+Some services implement their own credential check provider that doesn't provide all of the information you would want.
+http://cyberarms.net/security-insights/security-lab/remote-desktop-logging-of-ip-address-%28security-event-log-4625%29.aspx
+It may be a bit obvious, but have you also considered running Remote Desktop Services on a non-standard port?
+I'm more familiar with Linux tools to stop brute force attacks, so I'm having trouble finding suitable tools for Windows.
+Also I whitelisted ::1, 0.0.0.0, 127.0.0.1 and "-".
+This has been very effective for me at thwarting break-ins.
+This is basically what iptables does in a Linux system.

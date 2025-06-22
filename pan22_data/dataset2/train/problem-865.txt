@@ -1,0 +1,6 @@
+In the current state, ObservableCollection doesn't make much sense, because there is no list, you will only ever have one item in the collection.
+If you switched to two (or more) threads, ObservableCollection is still not a great choice, since it's not thread-safe.
+But if you don't need parallelism, a single processing thread (i.e. two threads in total) is enough and it also means you don't need any locks (assuming only this thread writes to the log).
+If you wanted to process each file in parallel, you would need more threads. To keep the log clean (and to perform any other operations that are not thread-safe), you should use a lock.
+In any case, you shouldn't directly use Threads. Instead, you should use Tasks, or some higher-level constructs (see below for more), since they are more efficient and easier to work with.
+Not really cached, FileSystemWatcher just raises its events one at a time. So, until your event handler returns, you won't get another notification. And since you execute all your code in that event handler, that can take a very long time.

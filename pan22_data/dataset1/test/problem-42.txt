@@ -1,0 +1,9 @@
+Another alternative to @KamilMaiorowski solution would be to create a filesystem on /dev/sdX, then write empty files on it.  In this way you can stop part way, and continue at will, either by appending to the file or writing a new one. Once the disk runs out of space for more files you are done.  You can also delete the files from the disk once you have done so.
+I need to wipe a hard drive before I give it away, but I want the ability to do so in portions so that I can stop and resume at various points in the middle. For instance, if it will take 24 hours to wipe the disk but I only have blocks of 6-8 hours each night available, I would like to plug the USB hard drive into my laptop to wipe overnight, unplug and take my laptop away in the morning, then resume the next night until it's completely done.
+I originally thought of simply monitoring its progress with kill -USR1 ${ddpid}, keeping track of it, and then resuming where I left off following interruptions. I was immediately not fond of this as I messed up on the math on the first attempt and lost time re-wiping an already-wiped area.
+I'm now considering partitioning the drive in advance, and then wiping each partition one at a time or a couple at a time. Since it's a 4 TB disk, I couldn't reach past the 2-TB boundary using fdisk, so I used gdisk to create new partitions:
+I'm running dd backwards from sdb14 down to sdb1 just so I can keep things straight.
+As I complete each partition, I'm considering going back into fdisk/gdisk and deleting the partition even though the full disk isn't wiped.
+Once I'm done with all the partitions, I'm planning to wipe the beginning of the disk as well:
+(I understand 512 is a bit excessive; please feel free to provide a better number in the comments.)
+Will this accomplish my goal of wiping the disk in full, pieces at a time, without leaving any missed gaps anywhere?

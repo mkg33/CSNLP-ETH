@@ -1,0 +1,15 @@
+Is there a way I can find what public IP a specific destination sees?
+'whatsmyip' or similar tools aren't showing the right path.
+In the scenario you describe, for general traffic, a simple curl icanhazip.com would do the trick.
+On the Direct Connect, it'll depend on how your organization is using it.
+You should either study the configuration of your routers connected to upstream links, like BGP tables and such to see how your traffic "looks" like when leaving your network.
+Or, you place a tiny responder at each destination you are interested in so that it will reply back to you with the IP address it sees as source when you query it.
+If you don't have access to the "far end" or to the device doing the NAT/routing, you'll have a fairly hard time figuring this out.
+My office's network takes various paths to AWS direct connect, Google, some of our production clients and then our backup ISP is used for general traffic and wifi.
+This is what "whatsmyip" does but it can obviously see only one of your source IPs if you have multiple paths, so it will reply with the one it sees, based on your own local routing policy.
+But this all depends first on why you need to identify these IP addresses anyway.
+But you did not give enough details to see the current architecture of your network.
+If they're importing AWS public space, you could try a traceroute against an s3 bucket in that region (again, if NAT'ing with a different block, you may not glean much from this).
+server access logs) or to the device doing the NAT / routing.
+This is especially true if you are using a NAT IP that is not in the same IP block as your actual IP path.
+Really the best way to figure out that information is to have access to the far end (i.e.

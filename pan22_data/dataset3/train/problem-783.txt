@@ -1,0 +1,27 @@
+A NAS's disks should not constantly be spinning down after only a few seconds of idle time.
+This constant churn of spin-up / spin-down was killing peoples' hard drives in very short order on Ubuntu in 2007.
+This meant that as soon as the disk stopped handling an I/O request, the "0 second" timer for the spin-down would immediately expire, the disk would spin down, and the heads would park.
+No one designs their NAS like that on purpose (well, I wouldn't totally put it past WD to do that, but it's unlikely).
+If you can open/close Windows Explorer very fast and reproduce the spin-up each time, something is wrong on the NAS side.
+If your NAS is constantly spinning up and down, the disks inside it are suffering a sort of mechanical wear that is uncommonly weathered (at this frequency) by HDDs, so it's really kind of a torture test for them.
+I would consider it a flood if more than about 100 requests are sent just by opening Windows Explorer, and especially if the requests continue to happen at a very high rate for more than 5-10 seconds after opening Explorer.
+The request isn't particularly expensive, and it's not "flooding" by any measure.
+A good NAS won't let the drive spin down and the heads park until at least 2 hours of total inactivity.
+What Windows 7 actually does when you open Windows Explorer, is it performs certain SMB operations that query the filesystem metadata to calculate the total and available disk space on the NAS's shared space.
+Hard drive "spin-up" is a very specific operation with the following characteristics and limitations:
+There are also some programs that will faithfully execute a user's instructions if they, for example, configure the program to perform an hourly full virus scan on a shared drive.
+For a hard drive that's spun up and "fully running" at the time of access, calculating the total and available disk space should take less than a second.
+You should attempt to remedy the situation on the NAS itself.
+Windows 7 is completely blameless if that's happening because your Windows computer can't control the power management functions of your NAS's SATA controller through the SMB protocol.
+Once this process begins, it would indeed "flood" the NAS with SMB requests.
+Folks who didn't notice and correct the problem quickly experienced working HDDs failing in days to weeks (these HDDs were either not designed with frequent spin-up cycles in mind, or they were less than 1 year from failing under normal usage).
+Now, as to your suspicion that Windows is the problem?
+However, there was a bug in Ubuntu Linux many years ago (in 2007) where they accidentally set the spin-down idle time to 0 seconds.
+These sorts of bugs are mostly historical, but can crop up from time to time with certain software.
+Then I/O requests would queue up in memory while the disk had to spin up again to handle them.
+So you might want to rule out that sort of thing occurring, but the root cause of the problem in my opinion is that the drive is spinning down in the first place.
+On the software side, a well-configured system would generally have one of three sorts of policies around spin-ups/spin-downs:
+Keep in mind that certain virus scanning and backup products aren't smart enough to realize that a mapped network drive (e.g.
+I would be surprised if the WD NAS you own is designed out of the box to have an extremely short spin-down time.
+F: or something) is a shared drive and, as a result, attempt to do virus scanning or backups on the entire drive (not just the files you access from it deliberately).
+If you truly believe that Windows is performing some kind of a command flood to the NAS, you should prove it to yourself by installing Wireshark on one of your Windows 7 computers and run a packet sniff on the SMB protocols with an IP destination of your NAS.

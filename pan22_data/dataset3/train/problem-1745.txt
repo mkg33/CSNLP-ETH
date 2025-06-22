@@ -1,0 +1,22 @@
+So, break it up into three procedures (insert, update and delete).
+This may seem like a pain now, but if the structure of the table were ever to change and you hadselect *` the application would immediately fail.
+It should do work and then possibly return a status e.g.
+If you assume that use of * in an SQL query is a bug you will not often be wrong.
+As per my knowledge I thought, this procedure will work fine.
+The logic should be performed in the application code.
+It may be that you add columns later on but you will still SELECT *.
+Let your programmers add the logic in their code to determine which one to call.
+Every time needs to call this procedure with all its parameters, but developers need to call the procedure with required fields, for example they need to call only the ID (PK) to perform delete function, but it required some values (NULL) for remaining parameters.
+There should be one procedure for update and insert which requires all fields from the table except ID, which is permitted and optional.
+Your SELECT * will then store all (incl unnecessary columns) columns in memory and, in worst case, run out of memory and be swapping to disk.
+Move the select statement into a view rather than a procedure.
+Call businesstype('insert', 1, 'Online Marketing', datetime(),'raj', datetime(), 'raj', 1);
+There should be one procedure for delete which takes a required ID parameter; it should return no resultset.
+If ID is present it the procedure will update, otherwise insert.
+I am just a starter, I am expecting some best practices to implement this, also I need to know whether the given table design and procedure will meet the industry expectations?
+There should be one procedure for select which can be given one optional ID parameter and will return as few rows as possible (filtered by ID, or not, based on availability).
+A stored procedure on a DB, when used as you're trying to, should be like a method on a class: Have a well defined purpose and name, do one thing, and return something predictable.
+In my opinion, a procedure should do one thing and one thing only.
+Secondly, a procedure should not return a result set.
+I have to create stored procedure to tables, so that programmers can simply call the stored procedure to implement the functions.
+This provides a straightforward API that the client developers can use to do what they care about: Read, Write, Delete.

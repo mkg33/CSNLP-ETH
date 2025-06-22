@@ -1,0 +1,18 @@
+If you have, say, 5 or 10 50-length fields, you're talking about potentially adding an additional 500 bytes per row.
+Which is probably related to the Windows API itself treating char and wchar_t that way.
+Using NVARCHAR rather than VARCHAR (when unnecessary) will effectively double the row-size for your character fields.
+In some places Unicode is still relatively new, rare or not fully supported.
+If you have thousands of components and millions of lines of code dependent on single byte characters then you'd need a good reason to invest the time and money required to switch to unicode.
+Plenty of organizations still have a large installed base of applications, interfaces, platforms and tools that assume single-byte characters.
+Changes on that scale could take years to complete.
+This is exactly what most open-source databases do with VARCHAR.
+While disk space is readily accepted as cheap, DBAs/Developers often ignore the fact that query performance is at times directly related to the row/page size of a table.
+Maybe we will need to change it later, but for now, we simply don't need it.
+Because some of us build lighter, smaller applications on less than state-of-the-art hardware that have no need for Unicode capabilities.
+In addition to the answers addressing standards and compatibility, one should also keep in mind performance.
+Microsoft is the odd one out with its view that 8-bit strings are for legacy encodings and Unicode = UTF-16.
+Databases rarely live in isolation - they are one part of an IT ecosystem.
+I like my strings taking 1/2 the space they otherwise would have to under NVARCHAR.
+Removing or deprecating VARCHAR support in SQL Server would be a step backwards in compatibility and portability.
+VARCHAR and NVARCHAR are both part of ISO Standard SQL.
+If you have a wide table, this could push each row into multiple pages and have an adverse affect on performance.

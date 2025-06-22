@@ -1,0 +1,44 @@
+So if you're just showing a 3D sphere with a 2D surface texture mapped around it, this isn't really a problem.
+So you then sub-sample the input surface map data, and render out the resulting pixel.
+Let's also assume your visible disc is 256 px wide.
+http://en.wikipedia.org/wiki/Sprite_(computer_graphics)
+As the planet rotates, the visible portions of the planet's surface animate in a non linear way (the equatorial parts of the texture move faster than the poles).
+Let's assume that your surface map texture is flattened out, so that at the equator there are 512px of image.
+You could also do it the other way, and have the lines in the source texture be of different lengths.
+The more I write about this now, the more I'm convinced that it's a horrible idea, that you'd only implement if you really had absolutely no other choices.
+And you'd have to be in a very unusual situation to have no other choices.
+then finally you make a stencil mask that is just a circle, so you are in effect looking thru a round hole at your square textures, thus masking off the corners.
+The next line down on the disc will be slightly less than 256 px, but because of the distorted surface map, there are still 256px of input surface map data.
+But each line is double the width of the disc at the equivalent y coordinate.
+it all depends on how seamless you made your textures.
+im going to guess at what you mean, and just throw an idea out there, but it's certaintly not going to be the 'famous' way to do it.
+It would be horrible to implement, but if you are able to render the texture, pixel by pixel, then you could basically do the rasterisation calculations for each line of the sphere separately.
+make the textures tileable, that is they seamless wrap.
+Offset the planet texture according to dt to make it rotate.
+On the equator, the window is 50% of the texture width, and you simply copy each of the 256px onto the equivalent pixel on the disc.
+In both of those cases your animation is simply then incrementing the start pixel x in the input texture, and wrapping around to the start of the input texture line.
+When you get down to the pole, you'd be averaging all 256px into only a few output pixels.
+So each of those 128px is going to be the average of 2 neighbouring pixels.
+For each pixel within the circle, Red + Green/255 is normalised X coordinate of planet/cloud texture to lookup and Blue + Alpha/255 is normalised Y coordinate.
+clouds should have a alpha layer that matches so you can 'see thru them'.
+now you animate the texture matrixes of the land and cloud textures to make them move.
+Basically you take an image that encodes the orthographic projection (http://mathworld.wolfram.com/OrthographicProjection.html) and wrap your planet and cloud texture around it using a shader.
+Now think of each line of the rendered disc as a sliding window on the surface texture.
+That sort of a texture would be absolutely horrible to have to create though.
+If you can't use 3D rendering, then you have to say exactly what you can use.
+So I think either you have to distort the image yourself as you map it over the disc, or you do as VirtualVoid suggested, and simply have multiple images which you change between over time.
+The planet and cloud textures should be in equirectangular projection.
+And would probably suffer from horrible aliasing issues.
+It sounds like what you're describing is a 2D sprite in a 3D game engine to render cheaply (the Nintendo64 did this all over the place, as did many early 3d engines).
+https://translate.googleusercontent.com/translate_c?depth=1&hl=en&rurl=translate.google.com&sl=auto&sp=nmt4&tl=en&u=https://habrahabr.ru/post/248381/&usg=ALkJrhgViuYdAi-Vav3cyhxvydkaBKh6EQ
+For easy maths, let's assume that 1/3 of the way between the equator and the pole is 128px wide in the output disc.
+So while the line containing the source data has 512px in it, the line 1/3 of the way down has only 256px, and the line at the bottom has only a few pixels.
+make them move in different directions and speeds and it will appear to be rotating.
+The problem is that it would be pre-rendered, so as you said, this only works if the user isn't allowed to manipulate the view angle.
+I don't believe I've heard of any solutions to this (rather vague) problem as a specific named technique.
+If you wanted to render a planet rotating, you'd just have to display a 2D sprite that was animated based on a sprite sheet that was a pre-rendered planet rotation.
+Your question is unclear as to the restrictions on context you're working in.
+The vast majority of textures in 3D rendering are 2D.
+The basic issue is that you have to render a flat texture over the surface of a sphere, which you get for free with 3D rendering.
+Use an prepared translucent image for the atmosphere ring and shadow, or generate it by drawing translucent arcs and some experimenting with the shader for the shadow.
+there are programs that help you make these or tutorials in photoshop you can follow.

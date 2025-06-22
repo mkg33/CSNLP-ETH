@@ -1,0 +1,12 @@
+At this point note that when you run du it won't show that file.
+In your situation I'm assuming you have a collection of .dmg's, zips, or other monolithic files taking up chunks of your space.
+If you'd like to see it in human readable units just use df -h or du -sh
+Therefore if df or du report a total of 117209520 and your block size if 512 then:
+Could it perhaps be the Mac mapping bad blocks out in your filesystem and thus them becoming "used" according to df?
+I believe you are seeing this because du reports the sizes of directories under the path you're requesting.
+As explained by this article du does not count things like inodes, disk maps, and super blocks since du operate in userspace.
+Since this would not happen in userspace it would explain why du does not report it.
+The only thing that df reports or should I say takes into account that du does not is metadata.
+IE if you have any files in /Volumes/Apps it won't be adding their size to the count.
+You should now see the space being used by the test.txt file.
+Also as a side note and I'm sure you know already that df and du by default report block count usage, not size.

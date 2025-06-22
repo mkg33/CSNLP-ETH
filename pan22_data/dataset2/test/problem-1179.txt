@@ -1,0 +1,8 @@
+I'm attempting to back some stuff up from a server that runs an old version of rsync - for various reasons I can't just upgrade the software.
+Apart from that, giving the exact command you're using might help.  include-from/exclude-from definitely recurse nicely for me.
+If your file is larger, you probably want to use a while/read loop instead. This will be much slower as it will do a single file at a time.
+Usually xargs just sticks the arguments on the end of the line, but with rsync you'd want to have the destination last, so we use the -I option to replace a string with the arguments. (This is the bit that's untested). I'm also a little unsure what rsync will do with the paths, so please test this carefully before using it in anger.
+I've tried a combination of --include-from= --exclude=* but that looks to be insufficiently recursive (eg. /etc/* only backs up things directly below /etc).
+xargs will take data from stdin and add it to the commandline one parameter per input line until it fills the command line length, and then runs a separate command until all the input lines have been used up. This will mean that rsync could well run more than once. This shouldn't be a problem in this case, but could be with other commands. 
+If your includes/excludes aren't recursing, perhaps you haven't specified -r?  If you're used to using --files-from then you might have gotten out of the habit.
+Usually, I'd use --files-from and give a list of files and directories to back up, but this version of rsync doesn't have that switch.  Is there a way, with other switches, to make an older rsync behave the same way?

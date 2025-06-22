@@ -1,0 +1,11 @@
+I guess textures don't implement ICloneable for a good reason: it would be too easy to accidentally cause a FPS sink.
+But if you want to clone a texture once in while, a simple way of deep cloning is to walk through mipmap levels and clone them one by one:
+Chances are, if you're going to do your thing on a per-frame basis, it will be better to just render twice.
+I have encountered a situation where I need to make a complete copy of a RenderTarget2D texture and use it as inputs for two separate rendering effects.
+My current work around is that I wrote a copy function that sets a new render target, uses a simple effect to just re-draw the contents of the target to be copied to into a quad and return the new render target.
+Can you "clone" or deep copy a RenderTarget2D in an easy way?
+I see that some XNA resources implement ICloneable (namely the Effect class) but textures don't.
+But seems like a lot of work around simply to create a copy.
+One effect will change the contents of the RenderTarget2D so I can't pass it to the other effect, which is why I need two copies.
+One might think, XNA stores texture resources in the managed memory pool, so when someRt.GetData() gets called, texture data seems to be already there for locking, which should be fast, right?
+Not really, since getting actual data requires the driver to flush all commands in queue, wait for GPU to process them, and then send fresh data back for reading.

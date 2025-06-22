@@ -1,0 +1,17 @@
+This is a bit more tricky because you are using the same IPs and you can only decrypt the https header ONCE you give it your side of the  certificate (ie: you won't know for which domain it is for, before you pass it to a load balancer or a web server [1]).
+Configure your web server to only respond to www.newdomain.com and ignore everything else.
+Create a virtual host for the old domain with an empty directory as the root (which will just serve 404s).
+The best way would be to do it at the firewall level (such as iptables, with string modules) because you consume less ressources than doing it on a 'web server' service such as lighttpd, nginx, etc
+The string module requires a linux kernel >= 2.6.14
+You have to confirm that your old domain does not appear in any of the url request for all the sites in your domain.
+In time, the search engine won't send you traffic anymore.
+But remember, this might end up blocking legitimate traffic.
+Using a different hardware device such as firewall would be a better option since they are much faster at this and then it never hits your server.
+If www.newdomain.com is the default, chances are the web server will use it to answer requests for any domain.
+Using iptables will save your web service from having to process the request.
+Although this is not the most recommended way of doing it, you might need to consider it as you seem interested in blocking it completely.
+(I haven't used lighttpd in a while, you'll need to look up the syntax.)
+You could also craft a basic 301 (permanently moved) reply and redirect them toward somewhere else.
+So I would suggest you simply catch them at the webserver level.
+Note, there's a way, through the SNI (server name identification) SSL extension, but this is getting a bit more tricky.
+Based on your response to my comment, I would use iptables or a hardware device to drop the packets.

@@ -1,0 +1,9 @@
+Or let you create the file with the admin credentials, run the upgrade, and delete it again.
+It should have only CONNECT and TEMPORARY rights on the database, USAGE rights on the schema(s), and the required rights on each table GRANTed to it.
+The best way, really, is for the web app to have no right to create or modify tables at all.
+It should only have the rights to do what it needs to do to perform its day to day functions, not administration.
+If you can fix the app so it uses different credentials for schema changes, then its regular non-schema-change user should not own the tables or database.
+If the webapp has built-in administration functions for changing tables when it's upgraded, etc, it should do so via a separate set of credentials and allow you to be prompted to enter those credentials each time you perform an upgrade.
+In particular, the web app must not run as a superuser and should preferably not own the database or tables.
+Just don't forget to REVOKE ALL FROM public ON DATABASE mydb; and REVOKE ALL FROM public ON SCHEMA public;.
+If you can't fix the webapp to use different credentials for schema changes, then it might as well be the owner of the database and tables.

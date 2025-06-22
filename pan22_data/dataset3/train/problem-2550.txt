@@ -1,0 +1,10 @@
+A clear goal of normalisation according to Codd is "To free the collection of relations from undesirable insertion, update and deletion dependencies".
+This is because you have introduced a dependency on insertions into the Model.Period table in order to maintain the ability to insert into your Model.TaskRecord table.
+If you are designing and OLTP system, I would recommend that you replace "PeriodID" in your "TaskRecord" table with "CreateDate" or something similar, so it implies what you are actually storing.
+However you have introduced a dependency on a suitable date record exiting in the Period table by using your original design.
+Essentially date/time has no dependency if used in a field which stores a date/time value.
+In respect to normal forms, I would suggest you have decreased from 3NF rather than gone beyond.
+I think you have gone too far for a transactional system, however if you are designing a data warehouse, your approach is correct.
+If you are designing and OLAP system however your approach is correct - your Model.Period table is a Dimension table and your Model.TaskRecord table is your fact table (though it appears to be lacking measures).
+You have lost the definition of what you are storing by having a column named "PeriodID" in your TaskRecord table in addition to potentially losing accuracy (as it is a date, rather than a datetime).
+I don't believe you are designing an OLAP system however so will not mention more.

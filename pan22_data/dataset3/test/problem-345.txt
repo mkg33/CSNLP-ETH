@@ -1,0 +1,37 @@
+Seems like it would make more sense to have each location keep a copy of the database schema locally for their own read/write operations and their own slice of the data, and the reporting portion of the data could be replicated centrally.
+Or if the reporting data is most of the data size, you could just use log shipping or copy_only backups, keeping a copy of the whole database, with central reporting using views or other techniques against multiple databases when they're restored.
+We used Red Gate to build our deployment scripts based on comparisons between beta and production, and then a home-grown sp_msforeachdb on each instance (because you can't trust the built-in one - see here and here).
+I considered and tested using merge replication on the entire database, but we require quite a lot of database and application changes/redesign/etc.
+Consider your local copy as the 'master' site and have the application work only on the local copy, always.
+Manage schema changes through application deployment migrations, ie.
+For a meer 52 client sites replication will do just fine.
+The key to deploying changes is to make sure the changes are backward compatible.
+There is a single central location, and 52 satellite locations.
+Normally, our application is deployed as a central solution where there is only a single database, and all locations connect to the one database.
+Deployments that I know of with +1500 sites use customized data movement based on Service Broker.
+In this case I'm not sure how index maintenance would cause network overhead.
+Index maintenance should only be done on the source and not "replayed" if it can be avoided.
+Would this work with a centralized distribution database (for ease of management)?
+I dealt with this quite a bit at my old job, where we had ~500 databases with identical schema.
+My first thought was to use a giant peer-to-peer topology that replicates every object in the database.
+Also licensing would push toward deploying Express on periphery.
+I haven't been able to find any documentation or references of any installation that's scaled out this much using this method, so I have no idea if it's technically feasible, and if so, what hardware is going to be required.
+The reporting data could be distributed back to the central location using a variety of techniques, including roll-your-own (I have some experience there if you want further info).
+Configuration table changes would be pushed out by some other mechanism, possibly merge replication, possibly a homebrew solution.
+to make this work correctly, so I've ruled that out already due to time constraints.
+We have a client that's geographically distributed in remote communities, with somewhat unreliable network/internet connectivity between each of the physical locations.
+There's also the option of creating a roll-our-own solution, which I figured would involve log shipping separate copies of the database (each non-central location would only contain its partitioned portion of the data) to the central location, and then using a merging tool (which we already have) to create a reporting database.
+As the number of sites increases, managing replication becomes harder and harder.
+If you can build a script that doesn't break one database, you can write a loop that deploys those changes to n databases / servers / environments.
+Every location has its own data center, and is licenced for SQL Server 2008 R2 Enterprise.
+The data itself is partitioned by a location column in most of the tables (some data is centralized), and the application operates such that touching data at one physical location does not touch data at another physical location, including the centralized data (at least, we're pretty sure it doesn't -- if it does, it's likely a bug).
+The goal is to deploy our application such that broken network/internet connectivity must not prevent local read/write operations, as our application is mission-critical.
+What I'm looking for here is some guidance from people with more experience.
+Use replication to aggregate the data to the central repository for aggregated reporting.
+See Using Service Broker instead of Replication for an example.
+I've even seen designes that use Service Broker to push out to periphery new bits (application changes) which in turn deploy, when activated, migrations and schema changes, making the entire deployment operated from the center.
+Does index maintenance generate a huge amount of network overhead?
+Index maintenance operations normally do not generate replicaiton traffic.
+Is there any reason site A would have to make its non-reporting data available to site B, or vice-versa?
+And SQL Server upgrade is an absolute pain when replication is involved, as the order of upgrading the components (publisher, distributor, subscriber) is critical is but difficult to coordinate with many sites.
+Our client would like to do centralized reporting (which we normally support), and synchronization of several centralized configuration tables across the enterprise (same, because there's normally only one copy of the tables).

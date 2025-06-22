@@ -1,0 +1,6 @@
+SW # show port-access authenticator 10 vlan - still shows Unauthorized VLAN 200 and Authorized VLAN 150
+Also, if you want it to work, you have to create all required VLANs on the switch, otherwise you'll get this kind of stuff:
+So, the problem was with authorize section in my default site configuration at /etc/raddb/sites-enabled/default, it was kind of default. I don't really know what's up with that (if you, guys, know, comment on that, please), gonna do some research on that; here it is:
+This would tell the switch that port 10 will use the auth-vid assigned VLAN for authenticated devices unless it gets a different value from RADIUS. Without this, it will just use the configured port value and ignore any RADIUS provided VLAN assignments.
+Didn't quite get it to work with unknown VLANs in spite of the fact GVRP was enabled, aaa port-access gvrp-vlans was set and I also explicitly set unknown-vlans learn on interface 10, but oh well...nvm. 
+I was not hoping any more to ever get it working and then I reconnected and... it happened, just randomly and I'm so excited now! I got assigned a VLAN dynamically:

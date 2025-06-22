@@ -1,0 +1,10 @@
+Kerberos, which is a component of Active Directory, has a property called 'MaxTokenSize'. By default it is set to 12.000 bytes. In older versions of Active Directory it is 8.000 bytes. Most of the time you see people bumping into trouble with this, is when they put users in too many groups (somewhere in the range of 70 to 100 groups). Having user objects this big causes the MaxTokenSize to be too small for the buffer that is needed for authentication, according to this TechNet article.
+As you can see, TGT validation fails. This only happens for this specific account, not for any other.
+I'll shamelessly answer my own question, because we found the  answer. The user object that failed to authenticate had some sort of certificate in it, which made that object rather large in comparison to other user objects.
+I was unable to track down any sources that talk about this problem in relation to clients running Linux, but I did find this site about OpenAFS (which uses Kerberos), that talks about tickets that are too large when using AD's Kerberos.
+If I have the failing useraccount log into a RHEL4 or 5 box, there is not problem, so it must be RHEL3 specific, but the fact that only one account suffers from this, alludes me. Maybe someone has seen this before? 
+To make a long story short, the user I had trouble with was not in a whole many groups, but as said, he did have a huge ass certificate in his LDAP object, which made it pretty big. 
+I'm seeing the weirdest thing here. I have a couple of RHEL3, 4 and 5 machines that validate user credentials through Kerberos with an Active Directoy domain controller as their KDC.
+Removing the certificate shrunk the user object enough to re-enable Kerberos authentication on RHEL3.
+This works for all of my users, save one. There is one account that is unable to log into RHEL3 Linux machines and generates the following errors there:
+The failing useraccount's password has been reset, I inspected both user objects in Active Directory, but I see nothing out of the ordinary.

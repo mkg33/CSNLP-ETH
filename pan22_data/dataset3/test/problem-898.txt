@@ -1,0 +1,15 @@
+Without knowing more about your setup, its not possible to advise exactly, however if it is mounted and part of your tree, copy the data from it into a temporary directory, then umount it and move the data from the temporary space to where it belongs (Luckily there is not much data there).
+Then, you can extend sda2's partition into the newly "unallocated" space.
+You probably also want to create a swap file or a swap partition.
+Deleting the linux-swap partition is not a major, and can be done by simply turning off swap and deleting it (swapoff -a) - however /dev/sda5 may provide a bigger challenge.
+/dev/sda4 is an extended partition with 2 partitions in it.
+You also need to go to /etc/fstab and remove / update the mounts as appropriate.
+You can only grow a partition if there is adjacent unallocated space immediately after the partition.
+Once you have created the swap area, format it with mkswap /dev/sdX or mkswap /path/to/file.
+You need to do a similar thing to move the contents of /dev/sda3 into /dev/sda2.
+Once you have removed the contents of /dev/sda3 and sda5, and removed swap, you can delete these partitions, and recreate a larger partition for /dev/sda3.
+Unfortunately this is not easy, and indeed I believe that earlier posts are wrong in 1 crucial way.
+You need unallocated space after or before a partition to extend into.
+Disable swap, delete the swap partition, then grow the Extended partition, then grow the sda3 partition and filesystem, then re-create swap.
+The first thing you need to do is delete BOTH of these partitions.
+To do this, you can simply move sda4, then sda3 further down the drive.

@@ -1,0 +1,12 @@
+Here you need to look at src/backend/executor/nodeCtescan.c.
+A CTE term's output is accumulated into a TupleStore.
+It's pretty complicated, but a read of CteScanNext suggests that the queries are often executing concurrently, with one query consuming the results of another.
+However, that doesn't mean PostgreSQL will keep piles of data in memory.
+If it materialises, sorts or aggegates query output it will generally throw away the un-aggregated/un-sorted data after it finishes.
+It frequently discards rows as soon as it's done with them and never needs to see them again.
+A TupleStore may internally be in-memory or may spill to disk.
+See src/include/utils/tuplestore.h and src/backend/utils/sort/tuplestore.c, particularly the comment at the top of tuplestore.c.
+For a wCTE that'll be the RETURNING output for that term.
+To determine whether anything else is retained requires analysis of the memory contexts in which each CTE term is executed, as PostgreSQL uses a hierarchical memory context based allocator.
+It can spill big temporary results to tempfiles on disk.
+While memory might be freed at the end of each sub-statement (CTE term) there's no gurarantee that any of the CTE terms finish at any particular time.

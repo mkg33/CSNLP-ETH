@@ -1,0 +1,14 @@
+Several active MySQL databases on the same host "know" about each other because they share the same internal data structures, but PostgreSQL usually does not expect concurrent RDBMS on the same host.
+It doesn't seem to matter which is using the memory cache or disk bandwidth, or if it's a lot of usage on just one.
+My only useful advice on the subject: keep your Postgres transaction log files on a separate physical disk from your Pg and/or MySQL datastores, which can probably coexist.
+The big difference between MySQL and PostgreSQL is that MySQL preallocates its data buffers on start and then manages them on its own and PostgreSQL relies on OS file caching instead.
+Are there any caveats or best practices we should be aware of?
+Imagine a situation when an OS file cache gets too small, PostgreSQL performance will degrade then.
+However now we have the requirement to also run MySQL as some software we want to use only supports that database.
+The transaction logs are huge sequential write chunks, and Pg will perform much much better if you can keep that IO sequential by isolation, rather than letting it get randomized with all the other datastore IO.
+I've run medium-scale databases using both database engines, and found it to be no worse than two or more active databases on the same engine.
+I run PostgreSQL and MySQL on the same host under quite a heavy load and finally got OS file cache shortage, had to move PostgreSQL to a separate host.
+No real technical problems running both systems on the same machine and in fact many (most?)
+Without knowing anything about the kinds of loads you're expecting it's kind of difficult to give a really meaningful answer but the short of it is:
+We recently bought some new hardware for a database server which we were intending to dedicate to the operation of PostgreSQL.
+Since the storage on this machine is the most suitable for hosting a DB, and we don't currently have the budget for more hardware,we're thinking of running both of them on the same server.

@@ -1,0 +1,30 @@
+(alternatively draw black borders / or stretch the view).
+The only solution to this is to write a vector graphics system.
+To summarize I highly recommend you study WPF as it does nearly all of this except it maintains an origin at the top-left corner coordinate system and doesn't automatically scale DPI based on vertical resolution.
+If 800x600 is 96 DPI then we'll use 123 DPI for 1024x768 or 115 DPI for 1280x720.
+What I recommend doing is putting (0,0) in the center of the display area (as well as windows and controls).
+In terms of 3D, as long as you set the viewport up correctly you should end up with widescreen players being able to see slightly more than non-widescreen setups.
+make a UI message box larger or smaller depending on resolution.
+For example lets say your application is running at 800x600.
+In this case lets use inches because I'm American and you can scale elements with DPI (dots per inch).
+Another option is to have different render paths for different aspect ratios.
+For example we can scale DPI using vertical resolution as our heuristic.
+One option is to have black borders if the aspect ratio (proportion) is different (probably easiest, just render to texture, then render that to screen, resizing as appropriate).
+With high enough magnification individual texels will start to become visible.
+Default Windows DPI is 96 so that means the application has a resolution of (800 / 96) x (600 / 96) inches or 8.33x6.25 inches.
+You could have one for widescreen, one for 'normal'.
+First keep in mind that with rasterization there technically is no such thing as true resolution independence.
+So at the moment you have DPI independent UI system with items that will always be at the same spot relative to the center of the screen - not quite resolution independent.
+You can specify that controls/boxes fill some % of the parent element while docking it to an edge along with many other useful automatic layout options.
+Since you need to be able to work with, at the very least, both 4:3 and 16:9 aspect ratios how you handle your screen coordinate system gets a little bit tricky.
+Lastly you will need to build a layout system that handles both absolute positioning as well as relative positioning.
+Yet another option is to scale things separately, e.g.
+Ovbiously in this case you'd get stretching of things, although depending on how you're drawing things that could be fine (i.e.
+Continuing our example with 800x600 this would result in a coordinate system that is (left to right) -4.165in to 4.165in and (top to bottom) 3.125in to -3.125in.
+Whenever you need to work out where to draw to, instead of using exact pixels, do things like 0.2 down, 0.8 across, width 0.1, height 0.3.
+Generally what you'd want to do depends on the game.
+That being said there are a few steps to creating a robust raster based resolution independent system: sizing, coordinate systems, and layout.
+All of this together will result in a UI system capable of looking nearly identical across many different resolutions and aspect ratios.
+For sizing and positioning we need to use some set of units that maintain a ratio to the actual application resolution.
+This works well because if you put (0,0) in a corner then as that corner moves around based on resolution and aspect ratio it's going to translate all of your sprites whereas the center of the screen will always be the center of the screen no matter the device.
+Fortunately what DPI independence allows you to do is scale the UI by scaling DPI based on some heuristic.

@@ -1,0 +1,13 @@
+In this case Symantec stayed connected so Activity Monitor helped me figure this out.
+I would check to see if Auto_Close is enabled on your databases.
+I had a similar circunstance of strange DBCC CHECKDBs running when I had nothing scheduled.
+I just fixed 3 databases by disabling Auto Close and Auto Shrink to get rid of those "Starting up database ..." and "CHECKDB" messages every 5 minutes
+There does not appear to be any additional jobs that run except for a syspolicy_purge_history job that I believe is an automatically created job by SQL.
+Some minor digging lead me to one of our server engineers who had been instructed to backup the databases (these were Sharepoint dbs) with Symantec.
+When it is enabled, your database will shutdown and free it's resources once the last user exits the connection.
+If your databases are running checkdb every time a database opens then this could be your problem.
+When a new user comes to use the database, it reopens.
+I have a nightly full backup that runs as well as a 2 hourly transaction log back.
+The following query will check for Auto_Close on all databases:
+Just prior to his backups, the Symantec tool was configured to run DBCC CHECKDB.
+The full Backup also shrinks and checks the integrity of the database when it runs.

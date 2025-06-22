@@ -1,0 +1,9 @@
+The second option is a two step process. First add a new domain to your DB (in this example the domain type is named c_byte8) with the command
+As for the second approach, the plus is a more readable DB creation script, as is the same with the table definitions of a running production DB, but changing an existing production DB is more complicated.
+A simple restriction of the domain of the SQL data type by a constraint is the most natural way. You have two options
+(change the table, constraint and column name as needed, and adjust the range of the checked bounds)
+You will have to replace the actual value with the one that matches the chosen datatype (I don't do C, so I don't know what those limits are).
+Second create your table with the appropriate types, i.g. c_byte8 instead of NUMERIC as the attribute's type. E.g.
+I'd be tempted to look up the necessary information during the build, and map the result to implementation language's data types.  For example, I can look up the information you need from PostgreSQL's information_schema views.
+Please keep in mind that the first solution will require you to add constraints to each attribute you have defined, or you will define in the future. It makes your DB-create script less readable, because of the repetition of the same constraint condition every time you use the restricted domain. A second downside of this approach is, that you can easily miss some columns of your schema when you add those constraints to an existing schema.
+However you can create a check constraint that ensures that no value is inserted that could not be represented in your programming language:

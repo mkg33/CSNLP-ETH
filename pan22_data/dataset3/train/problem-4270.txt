@@ -1,0 +1,21 @@
+In modern CMake best practices you should always prefer target_ functions whenever possible to configure exactly the target which needs the configuration instead of setting it globally.
+Second, you should not need to set the C++ standard directly, instead you should select features which you need to compile your project and let CMake decide the standard.
+Alternatively, there is also the ExternalProject module which exists for this sole reason, to pull in and compile external dependencies.
+This is generally frowned upon for two different reasons.
+I'm by no means a professional CMake user, I try to follow best practices though and have seen many talks and articles about modern CMake best practices, so lets go through your CMakeLists.
+I'm pretty sure I missed a few things but I hope these pointers help you to get started.
+You're configuring globally again with include_directories, use target_include_directories instead.
+This looks like a messy hack to pull in a dependency.
+Subdivide your project repository to subdirectories, one per library, and then use add_subdirectory to pull in all the libraries you need.
+target_link_libraries does a lot more than linking.
+Since gtest exports a target with it's INTERFACE_INCLUDE_DIRECTORIES set up, solely linking (target_link_libraries) to gtest sets up include directories automatically for the target.
+You're setting include directories globally again.
+First and most important, you set this configuration globally for every target you create or import through add_subdirectory.
+If this dependency is required to build your project you should probably add it as a subrepository to your own git source repository and use it using add_subdirectory (assuming it's a CMake project).
+If you follow best practices and set all configurations with target_ functions then all you need to pull in a library should be a sole target_link_library since all other configurations (compiler features, include directories, ...) are automatically pulled in, given they're either set PUBLIC or INTERFACE on this library.
+Same problem as previously, use target_compile_definitions(mytarget PUBLIC ELPP_FEATURE_CRASH_LOG)
+All you're doing is find_package(FMT REQUIRED CONFIG) and target_link_libraries(mytarget fmt::fmt) and everything else to use this package is set up by the target_link_libraries command since the fmt package exports all its own requirements and include paths through its target.
+As I said, target_link_library does a lot more than just linking, it's name is very misleading.
+Actually, you don't even need to set the directories at all.
+Also, I'd really consider splitting up your CMakeLists file, there is too much going on.
+A perfect example is the fmt package you're using.

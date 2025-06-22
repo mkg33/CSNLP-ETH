@@ -1,0 +1,18 @@
+The correct answer is that elements should not have a Draw method.
+It can be much more efficient to using hardware instancing or to do the CPU-side math and pack all the objects into a single vertex buffer (profile to find out which is faster for your specific uses on your target hardware, of course).
+Your renderer or physics engine are typically going to be heavily specialized in purpose and design and don't really need or want to be constrained by game objects, nor do you want your game objects constrained by every special system.
+You'd usually do the actual draw position calculating on the GPU (either with fixed function or programmable pipelines).
+The final drawing position will be dependent on a camera, which the renderer is likely to have easy access to but the individual elements would not.
+A renderer of some sort should contain the collection of objects to draw which it then can efficiently pack or instance in one big go after culling.
+There are cases where you want to do this on the CPU.
+The math is the exact same, you just use whatever your CPU-side math library is instead of using HLSL.
+Your game objects then simply handle the game-specific logic and "glue" to keep these hierarchies meaningfully up to date.
+It is definitely more common in most custom engines to integrated graphics/physics with the game objects/components directly, though, and that's a perfectly valid approach.
+You have a scene graph of some kind that is nothing more than a collection of renderable objects efficiently managed by a renderer.
+Another approach which I'm coming to prefer lately is to simply have separate hierarchies.
+The extreme (IMO overly so) version of this is an Entity Component System.
+The position of the element itself is written to the ModelMatrix as a translation.
+You have a physics simulation which is nothing except bodies and physics materials managed by the physics engine (which is exactly what you get when you use physics middleware like Bullet, Box2D, Havok, PhysX, etc.).
+A big win for the renderer approach - especially if you're doing sprites (you didn't specify) or particles - is that you can avoid drawing each element individually.
+In general, focus on approaches where systems or manager of some kind operate on collections of objects rather than having an approach where objects operated on themselves.
+The actual drawing position is calculated using the camera and projection.

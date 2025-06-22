@@ -1,0 +1,27 @@
+Run a SMART test using a Linux recovery disk or similar, make note of the badblocks count, run a full SMART test and then look at the bad blocks count again.
+Maybe their firmware has a bug that breaks under .
+But, assuming this was an out-of-the-blue failure and not an I-did-something-funny-and-it-failed failure, you already have an indication of problems with the disk.
+Drives can be marked as failed in an array for many reasons.
+Fully 36% of the failed drives had no SMART errors, fatal or not.
+When I replaced the caddy (the disk was fine), it still thought it was failed because the disk had the same serial number.
+So you could run a full suite of SMART scans, find none, and know no more than you do now.
+This is pretty rare though, i ran a bunch of SMART tests on the drive and did a full badblocks test run through by wiping the entire drive with DD.
+Can you also include the readout of "smartctl -a /dev/hda" for this drive in the original question thanks.
+You can then run extensive testing on the removed drive and requalify it for use if it passes.
+Even at 99.9% certain, I would delete the array and start again.
+However, if you try to rebuild the failed drive in place, you are extending the time you are vulnerable to a double-drive failure should something go wrong during or after the rebuild process.
+It all depends on your situation, but normally I would never mark a disk as OK unless I was 100% certain that it was OK.
+I once had a faulty caddy in an old U160 SCSI array, that was one of 14 disks in the array.
+The thing is, it's really hard to predict hard drive failures.
+Maybe cosmic rays hit your drive at the right angle and time to fail a scan.
+Google's infamous paper found that SMART was only useful in that if it alerted, the drives were more likely to fail than if it didn't.
+I've never been in a situation where it was worth letting a drive fail.
+It entirely depends on the reason the drive was failed.
+So I marked it as OK, the array re-built and all was fine until we de-comissioned it.
+The risk is not just that the drives completely fail but that your data may corrupt over time.
+Some of these are reparable failures, some aren't.
+If it spiked by anything more then 20 i wouldn't trust it.
+Same if the badblocks are particularly high for that drive size/make.
+That particular drive was ok by all my standards and as i was running raid5 and not Linear or raid0 i added it to the array again.
+If you care about the data, replace the drive immediately with a new one and rebuild the array.
+In some cases ive seen perfectly fine disks get failed on startup with cheap raid cards because the controller had a derp moment and didnt detect the drive.

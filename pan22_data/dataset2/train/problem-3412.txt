@@ -1,0 +1,6 @@
+I setup a private registry, which run fine. Docker 1.10. I choose to change the host, and recreate the certificate. All run fine on my server, but on my customer server I can't push an image to the registry : 
+I can't find anybody else talking about 'forbidden' answer on Google. Where can I search to understand ? 
+I already deleted the container, the image, uninstalled docker, reinstalled docker but still the same error. The only thing I do not delete is the thinpool used to store docker data (devicemapper).
+The registry IP was not localhost, so I needed to add the host to the NO_PROXY variable. I still not undestand why the first host worked. Restarting the registry container without https (http only) and using tcpdump help us to resolve this issue. 
+Probably you are doing: docker pull my.customer.private.hostname:5000 xxx/yyy instead of docker pull my.customer.private.hostname xxx/yyy
+For me it is very strange that docker is trying to reach via https to 5000 port and then you made a curl with http to the same port and it worked.

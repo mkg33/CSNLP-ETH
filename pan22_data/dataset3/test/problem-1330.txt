@@ -1,0 +1,28 @@
+sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -m state --state NEW -m recent --update --seconds 60 --hitcount 8 --rttl --name SSH -j DROP
+This effectively reduces the send speed to the maximum that the client can receive at.
+So what happens if the sender is already sending 56Kbps of data and then tries to send a bit more?
+For protocols that have a layer on top of TCP (I don't know if that is the case for torrents), it would be a simple matter of pacing requests for further data.
+With a ifb interface, you can route the ingress flow of eth0 (or whatever) to the egress in ifb0 (for example), and apply there the limit rules.
+This thread shows a simple example that defaults to IPs with 6 hits within 30 secs are denied:
+I can't answer why you haven't found any solutions that permit shaping incoming data (and don't know any off the top of my head), but as to how the sender knows how fast the receiver can receive data:
+Check this url of the Linux Foundation: http://www.linuxfoundation.org/collaborate/workgroups/networking/ifb
+sudo iptables -A INPUT -i eth0 -p tcp --dport 22 -m state --state NEW -m recent --set --name SSH
+(And there's optimization methods to reduce the number of times a packet has to be resent in this case, where basically the sender slows down each time it has to resend a packet, but that's beyond the scope of this simplified description.
+The basic design of TCP/IP is that for every packet that the source sends to the destination, it has to wait for the destination to reply back (with an ACK packet) saying that it received the packet.
+https://github.com/rfrail3/misc/blob/master/tc/traffic-control.sh
+For traffic taht is about to leave an interface, you can buffer and re-order packets as much as you want (or, at least up to the available buffer memory in the device).
+Since the packet got lost, the receiver never receives it, and therefore never sends an ACK packet.
+Most UDP-based protocols will, by necessity have ACK/resend logic in the app-specific protocol, so at that point it's bordering on trivial to pace them.
+The reason why it's hard to shape on incoming traffic is that there's no buffer in the transmission medium.
+So if You have a 4Mbps sender and a 56Kbps receiver, then the sender has to sit and wait between sending packets for the receiver to respond to each packet (There are some technical details to reduce this overhead, but the premise still holds on an abstract level).
+Since the sender never receives this ACK packet (because it was never sent, but also it could be lost, or there could be a network disruption), the sender is required to resend the extra packet.
+(Well, potentially queued in a switch's buffer, but when that fills up, the packet gets lost).
+You either accept the incoming bits or they're lost.
+It sits and attempts to resend the packet until it gets through and the ACK reply gets back to it.
+Also a more 'advanced' command with specified values for time and hit count
+Otherwise, the application would need to communicate with the OS, to delay ACKing the packets.
+In the case of a 56k modem versus a 4 Mbps DSl line, there's (usually) no shaping making the speed difference, it's just a difference in the speed of the link.
+Check out wondershaper: http://lartc.org/wondershaper/
+And this scripts that limit incomming and outcomming bandwight:
+So, to recap, once the sender has maxed out the receiver's bandwidth, it has to stop and resend the next packet over and over again until there is enough available bandwidth for it to get through.
+One possible route would be to shape the traffic from Internet on the LAN side of your DSL router, as at that point, you'd be shaping on an egress port.

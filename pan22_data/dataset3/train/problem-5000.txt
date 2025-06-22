@@ -1,0 +1,11 @@
+Users and navigate the site without any problem, regardless of having implicit admin rights on the IIS host or not (most do not).
+You can use wmimgmt.msc to open up the wmi security settings for your server.
+Next would be to double check that the users accessing the site are actually being authenticated and not running the code anonymously.
+However, when I try to execute a common Win32_PingStatus request within the ASP code, it fails unless the user has admin rights on the IIS host.
+Go into IIS and make sure it's set to full so your site can access internal server resources.
+Next would be to check wmi permissions for the type of users who are accessing your site.
+You can test out your wmi permissions by logging into your server with a regular user and try to execute wmi commands (you can use either powershell's get-wmiobject, wbemtest.exe or vbscript).
+I've been trying to get my head around SWBEM and WMI impersonation capabilities, but I'm still confused as to whether it's even possible (supported or unsupported) to do this regardless of the user/browser session context.
+Just to be sure check that anonymous authentication is disabled in iis and your site is forcing users to authenticate (disable ntlm automatic logon in your browser or write a user identification piece into your app to be doubly sure authentication is occuring).
+I have an IIS 7.5 web site running "classic" ASP code (not ASP.NET) where the site is running under the normal service context, and only "Windows Authentication" is enabled.
+Every user is a Domain account, no anonymous users are able to access the site, so it seems (and I could be wrong) to be related to their group memberships and permissions on the IIS host.

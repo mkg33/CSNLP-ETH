@@ -1,0 +1,15 @@
+If you don't care about losing changes to files modified during the copy period and you are using LVM with the current disks, then you can create a snapshot of the current disk and make the copy while the system is online.
+Any change made to the system since the moment the snapshot is created will not be transfered to the new disks.
+I want to convert a non-raid linux system to RAID1, using two new disks.
+If you don't use LVM, or if you can't lose any changes made to the current system, then a nice way to minimize the downtime is to use rsync do the copy: run it first while the system is running, and then after the copy is done log into single user mode and run rsync again.
+You should have an idea of how long the rsync during the downtime by timing how long the second rsync took.
+Try to leave as little time as possible between the second rsync and dropping to single user.
+This does involve two or three reboots and you will have some downtime while you do the second rsync, but hopefully it won't take too long.
+This time it will only copy files that were changed since the first rsync you ran, so it should be much quicker.
+Rather than adding the disks and shutting down to single user mode to copy data over is there any way to do this conversion while the system is running, with just a few short outages to install the new disks/remove the old ones?
+The second rsync should catch up with files modified during the first rsync.
+If you are using LVM you can use the "pvmove" command.
+This is something I need to be doing in the very near future.
+This reduces the amount of data the third rsync needs to do.
+I haven't tested this, so the first thing you almost certainly want to do is to set up a test system that is like your system is set up now, and then go through your planned procedure to verify that it works as you'd like and flesh out the details.
+Note: there is an issue with pvmove that may cause it to deadlock when doing pvmove on the root partition.

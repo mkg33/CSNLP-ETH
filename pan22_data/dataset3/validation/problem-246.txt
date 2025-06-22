@@ -1,0 +1,13 @@
+Give it a read, I think M-S replication is your solution.
+This and running reporting/read-only queries on them, are what slaves are most useful for.
+If a user/application error happens on the master, let's say a wrong "DROP TABLE" statement, it will be replicated to the slave too, so you would be in a serious trouble when trying to rollback to a previous state.
+However, if the master crashes (HW or network failure) the slave will always allow you to do a quick switchover with minimal amount of data loss.
+You can use your slave as backup or use it to get the cron backups from time to time (you can stop the slave to backup stuff and it will sync the changes with the master when it get back).
+The slave will connect to the master as if it was another client just reading the binary logs (once each transaction has been commited) and then it replies the transaction on the slave server, so the overhead on the master is very very low.
+I heard about db replication, but would it effect the performance of the original db?
+As this link explain the Master-Slave replication process normally is not a very big hit on the master server.
+That's why I recommend installing a database slave and keep doing full backups (via mysqldump or innobackup) + binary logs backups, so you can do a point in time recovery (PITR) in case you need it.
+In the case you describe, MySQL replication can be helpful, but will not be the "silver bullet" at all.
+MySQL master->slave replication is really what you're looking for.
+Check the MySQL replication page (http://dev.mysql.com/doc/refman/5.0/en/replication.html) in order to set it up, it requires a couple changes to your my.cnf file
+I need to backup a MYSQL database so that the backup database is as updated as possible, but I don't want to set my cron job so that it copies the orignal db every 5 minutes because it would hinder performance.

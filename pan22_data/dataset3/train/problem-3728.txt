@@ -1,0 +1,14 @@
+Are they unrelated but are sharing some information that could be recorded in a BidInfo class which they would inherit?
+An easy, minor one is naming inconsistency: per_channel, totalBudgetSpent.
+Lastly, the isPerCampaign, isPerChannel, isDailyWinmethods strongly suggest the existence of a hierarchy.
+The getSelectorAndModifier contains a lot of business logic in a non-type-safe way, when type-safety is the major argument in favor of Scala.
+There is indeed a degree of duplication between the two classes but the refactoring needs domain knowledge: Is the case that a BidWin has-a BidEvent or the opposite then one should contain the other as an argument?
+The most striking problem is that it contains business logic that is very tied to the specific data representation:
+In fact, Scala's match-case syntax is a very elegant way of moving from hierarchies back to flat representations or the opposite.
+To be honest, this code contains quite a few bad practices.
+These answers are not directly related to the data representation, which may be structured around performance compromises.
+Again the decision of creating a hierarchy should not be tied to the representation of the data.
+Having these cases represented as different classes buys you both code clarity and type-safety.
+This class should then be converted to a BSONDocument in a straight-forward manner.
+Go for the latter, as it is the common convention is scala/java world.
+The output of this logic should be some strongly typed case class with the desired data.

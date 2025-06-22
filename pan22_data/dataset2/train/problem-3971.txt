@@ -1,0 +1,9 @@
+DEVs and content team work on staging and then I tar ball the files from the wordpress container and dump the mysql DB and scp them to production server.
+Disclaimer: Although I've worked on DevOps automation for Wordpress sites, I am by no means an expert on Wordpress, so suggestions and clarifications welcome.
+Once in production I untar the files to the wordpress container and "restore" the DB. One of the advantages of docker that these are immutable packages. If one untars packages in production then this is a contradiction. In my opinion one should pull docker images as is that are immutable. Imagine that a newer version of the docker image, e.g. 1.0.1 is broken then one should be able to revert to the last stable image, e.g. 1.0.0. If one would follow your suggested approach then this is not possible.
+For our web servers running on Docker containers (Apache, mysql, wordpress, etc) we have a production and a staging virtual machines.
+I was thinking on an internal docker registry, but that's only for images... so I will need to start/restart the images to container. 
+Installing the client is very straight forward although the server requires a few more steps. There are quite a few hosted options available, but self-hosted should be the most cost-effective variant.
+I’ve been using a private project on Gitlab to push/pull. I’m using Docker Compose to launch the containers in development and production.
+Although I am needing to customize the WordPress image now, so I’m using the built in private container registry at gitlab too and thinking of baking all of the updates into the image as well.
+What might be of interest to you, without using immutable Docker packages, is Git LFS (Large File Storage). It is an effective approach to using Git for large binaries (your TARs). This has the following benefits:

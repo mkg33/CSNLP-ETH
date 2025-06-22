@@ -1,0 +1,10 @@
+e.g. some people WANTED to be able to lock accounts from password logins, but still allow SSH key access.
+PAM will not deny SSH key authentication to accounts which have just been locked (e.g. due to invalid password attempts, because SSH key authentication is designed to not pay any attention to the password field, which is where accounts are usually locked from.)
+I understand that the password hash entry is implicitly checked at pam_authenicate() time, not at pam_acct_mgmt() time. pam_unix.so pam_sm_acct_mgmt() doesn't check the password hash at all, and pam_authenticate() is not called during public key authentication.
+I read: "The problem is pam_unix checks just the expiration dates of the shadow entry, not the password hash field contents."
+This request got rejected as a patch "because it breaks some expectations from users [who were] used to passwd -l only locking the passwd." (see Debian bug 389183)
+Another option for denying access could be some use of DenyGroups or AllowGroups in the sshd_config.
+If your intention is to be able to centrally disable accounts from logging in, there are other possible workarounds, including:
+I have read elsewhere other people asking for SSH to be "fixed" so that locked accounts can’t be logged into via SSH. (see Debian bug 219377)
+(then adding the user to a "sshdeny" group, or removing them from an "sshlogin" group to disable them from logging in.)
+The answer to your question is possibly "yes, if you're disabling them somewhere other than the password field"

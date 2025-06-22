@@ -1,0 +1,15 @@
+This have to be coded into the application and can not be set by any program as far as I know.
+Certain ram intensive programs can still make my important programs freeze up by sending them to the page file.
+I need a utility that changes the memory priority of the process.
+You will probably have much better results by increasing the amount of ram in your computer.
+I have hit problems with working-set draining in processes that accidentally got set to low memory priority in several cases.
+I need to stop this, and I need to be able to select the EXACT priority of any program.
+Please note that this is not "process priority" or cpu priority.
+As far as I know there is no way to make sure a process stays in memory on Windows.
+https://msdn.microsoft.com/en-us/library/windows/desktop/hh448389(v=vs.85).aspx
+You can set memory priority with SetProcessInformation:
+The restart manager and task scheduler can both end up doing this.
+It sounds like you either need to write your code in the kernel in High IRQL and access only none paged memory which is a very bad idea, or change the target OS to a real time OS.
+In Windows the MM will only page-out pages that are not being accessed for some time, also when "Context switch" happens your code will stop running.
+There is a Win32 API called VirtualAlloc() that will allocate memory in such a way that the memory manager won't try to push it to disk.
+I need to know how to change "memory priority" of a process.

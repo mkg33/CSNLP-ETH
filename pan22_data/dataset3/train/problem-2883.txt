@@ -1,0 +1,18 @@
+Get ready to stop it with ctrl-C before it takes over the whole system.
+You might want to exclude dev and proc from that command.
+(/dev/null makes grep printing file name even if only one file was found)
+You can get around this with a loop, such as this:
+Note how the list does not contain /dev, /proc, /sys or /selinux.
+For example grep XXX /dev/zero will go on forever.
+As some of the others pointed out, the error is occuring because you are using grep on some 'files' that will produce weird results.
+I don't know why it doesn't end but "fgrep -R" usually works in those cases.
+Although some have pointed out that it is inefficient to spawn grep each time you find a file, you will have to do something which will be 'inefficient' because you do literally have to search every file for that string.
+I would do it with find instead and exclude special files:
+find /there -type f :MaybeSomeRestrictingFlagsLikeSizeNotBigger500MB_or_FS_type_if_u_know_its_exactly_on_EXT3_AndSoOn: -print0 | xargs -0r grep needle /dev/null
+You can try using find + xargs + grep for that, kinda:
+Or by executing it from find, whatever floats your boat.
+Also if your argument list in grep is too long, you will get this error:
+Another way is to only search for 'files' and no other types.
+I would first exclude the directories such as /dev/ and /proc/ from your search.
+If I wanted to do what you're doing, I'd enumerate the subdirectories of / that I wanted scanned, and make sure I only checked text files, probably with
+There are some files in the file system that aren't real files, but are instead hooks into the kernel.

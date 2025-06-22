@@ -1,0 +1,10 @@
+You can monitor deadlocking by following the information in the article: How to monitor deadlock using extended events in SQL Server 2008 and later
+(You should be able to see deadlocks in the SQL Server errorlog at all times).
+On a side note: Are you actually having deadlocks where one statement is rolled back?
+If you have the deadlock information you will be able to pinpoint the actual root cause.
+Deadlocks can occur because two processes are accessing the same tables, but each from the other side, while additional locking occurs.
+Deadlocking is explained here: Detecting and Ending Deadlocks
+If you can stop all other activity on the database and run only the two update procedures simultaneously, do you still have deadlocks?
+A quick win can be achieved by turning on two trace flags to capture the deadlocks in the errorlog file of SQL Server.
+Looking at your code I wouldn't think the two updates are the root cause of the deadlocks, but more victims of other statements running in the background.
+Or are you having a blocking chain where multiple spids are waiting for one spid to finish?

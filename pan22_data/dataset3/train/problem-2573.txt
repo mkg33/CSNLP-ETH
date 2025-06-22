@@ -1,0 +1,20 @@
+As the gateways have fixed IP addresses I simply added a static route in the VPN interface for the specific sql gw.
+You can try setting up a VPN server with NAT on your VM, allow the VM IP address on Azure SQL, and then your developers will connect to the VPN server on the VM.
+However - I can't connect using SQL Server Management Studio from my desktop machine, even when I'm connected via the VPN.
+We have a number of remote developers (all on dynamic IPs) who will need to access the servers and I don't want the overhead of managing these firewall rules.
+For example if you get and ip address range from the VPN of 192.168.1.0/24 and you need to connect to a SQL in AustraliaEast region, execute the following commands:
+I have just received a response from Azure Support on this issue (03/03/2018) and they have confirmed that what I'm trying to achieve isn't currently possible.
+It is currently working for me for AustraliaEast and SouthEastAsia regions
+The same can be done in powershell with Add-VpnConnectionRoute, it will add a static route.
+I have verified that I can connect to the SQL Server from a copy of SQL Server Management Studio installed on the Virtual Machine.
+Azure SQL uses gateways to figure it out which clusters the client wants to connect: https://docs.microsoft.com/en-us/azure/sql-database/sql-database-connectivity-architecture.
+I have setup an Azure SQL Server with an Elastic Pool into which I have created a Test database.
+I have set "Allow access to Azure services" to "OFF".
+The NAT will trick Azure SQL to think that the clients are the VM.
+I'd like to be able to do this without adding my client IP directly to the firewall.
+I have also added both of my Virtual Networks' subnets to the SQL Server's firewall settings and enabled the "Microsoft.Sql" endpoint.
+I'd like to restrict and control access to the SQL Server as far as possible.
+The Virtual Network has 2 subnets - one for the GatewaySubnet and another into which I have placed a Windows Virtual Machine.
+I have successfully configured Remote Desktop access to the VM and have verified that I can only connect to Remote Desktop by using the server's internal IP when I am connected to the VPN (I have also disallowed RDP access via the external IP - but that's not relevant to my question).
+I have also setup an Azure Virtual Network and a Point-to-Site VPN.
+This is more workaround rather than using the VPN gateway.

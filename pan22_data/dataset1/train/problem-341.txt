@@ -1,0 +1,10 @@
+The connection breaks because the VPN will change the default route so everything goes into the VPN. You may change that routing table, but it can be tricky to get right, especially if you lose ssh access if things go wrong.
+One easy simple solution is to tell your server to reach your own IP address via eth0 by setting a route :
+If you also want to allow other hosts to access the server's original address, that is to say, if you also want your server to both answer his original IP address and the VPN's IP address, you will need to alter how the VPN changes your route, or at least know how it changes them to workaround what it does.
+Basically, what you want is policy routing. You will have two routing table: one will use the VPN, and the other will not use it.
+If the VPN script will only modify the main table, then you can add another routing table to be used for the original IP address.
+So basically, before launching the VPN, you duplicate the main's content into another table, for example table 2 (2 is an arbitrary number here, see /etc/iproute2/rt_tables to define a name alias):
+Now add a rule to use that table if your server is accessed by its original IP address from the eth0 interface:
+In theory, you should run ip rule add before adding the default route to your second table because otherwise, the kernel will reject this rule, saying that it can't route to the gateway. but in your case it will just work fine as main can already route to the gateway.
+I have an ssh access to a distant machine, running the last version of Ubuntu Server edition, and I have to run a software on it "through" HideMyAss VPN (because this machine's IP has to be spoofed when the software is running). But of course I want to be able to still access the machine via it's "original" IP.
+My problem is that as soon as I start the hma-start script on the distant machine (which basically gets a configuration file from their servers, and run openvpn with it), I loose the connection and I can't connect to it anymore.

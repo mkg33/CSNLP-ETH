@@ -1,0 +1,28 @@
+In your case it can't find the file because the php-fpm process doesn't have permissions to read the file.
+I created a file named index.php in /home/user/index.php.
+That's right, you don't need any execution permissions for a PHP script (unless it's a CLI entry point).
+The only problem I have is with linux permissions to files/folders.
+If I create now a file index.html, or index.htm - nginx works in a browser!
+Well, the question is what are your file permissions?
+Hmmm, that's really interesting for me, what did I do wrong?
+This way the web server will be able to "cd" to this directory and read the php file (providing it has read permissions to it)
+Then apply the following permissions (assuming /var/www as root for all websites, which is best practice imho):
+The reason for this is simple, PHP scripts are not executed, they are parsed (read).
+Next it needs to go into "user" dir, and as nginx user is in user's group, so nginx can make a next step to use "g" permissions (user/ dir permissions) to come in.
+And it doesn't that for displaying the .html, which is obviously only read, not executed.
+Now everything should be fine for anything that you execute with nginx, PHP, and php-fpm and that's below /var/www.
+Ok, I did "usermod -a nginx -G user" and changed permissions for "user" dir to: 750 (so now nginx belongs to user's group, and can read or execute contents of the user dir).
+The process simply can't find any PHP file at that location.
+Nginx said (/var/log/nginx/error.log) that I have no permissions.
+It's generally a good idea to use the same user/group for nginx, PHP, and php-fpm if it's your server and nobody else is messing around.
+But what is making nginx can't see index.php (and sees index.html and .htm)?
+Firstly, my nginx configuration is well done (for me - i.e.
+The interesting fact is, if I change user dir permissions to: 755 (from 750), nginx sees index.php.
+I'd like to get some answers or suggestions to my problem.
+Wanted to answer over at Stackoverflow, but your question was closed to fast, glad you moved it here.
+Ok, maybe my knowledge has some bugs, but I need to ask, why does it happen?
+yeah.. now I want to create index.php, to write some code.
+If I understand correctly, nginx goes first through the "o" permissions into /home dir (r-x).
+Because you're running the php as a cgi, it probably needs the a +x for the group on the .php files, which it probably doesn't have int he normal case.
+Try changing the permissions of the directory from where you serve your files to drwx--x--x (that's 711).
+Primary script unknown is reported by php-fpm and almost always a problem with the path that you pass (from nginx) to php-fpm.

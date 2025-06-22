@@ -1,0 +1,7 @@
+I think you want something like Monit or God here to automatically restart services when they stop/crash.  Your description of the crash itself would suggest the OOM Killer, which can be avoided by configuring some swap space on the host.
+I found the answer myself: the simplest way to achieve that is to add the following two lines at the end of the upstart script installed by MongoDB (/etc/init/mongodb.conf):
+You could use Supervisord, this tool can restart anything you need and it is very simple to configure.
+In the unlucky case you can't reach an answer, you could brute force your system: I'd check regularly via a script if the mongod PID file exists, it should be stored somewhere in /var/run, if not, service mongod start.
+I am running MongoDB on an Ubuntu server. It's using an upstart script to start mongod when the machine boots. I noticed that if the process crashes, it doesn't get restarted.
+This will try to restart the process if it terminates, and stop if it crashes more than 10 times in 90 seconds.
+First of all, you should understand why the system service crashes. Lack of memory? Bugged libs? Wrong or not updated package? Your software using MongoDB is not working properly?

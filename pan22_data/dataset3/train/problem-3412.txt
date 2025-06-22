@@ -1,0 +1,10 @@
+The only case this is not true is on the first transaction after performing a truncate on all the tables.
+What I'm seeing is that out of all the tables that get rows written to them, only a handful show that the table has increased in side.
+SQL Server is filling up empty or partially empty pages within the allocated pages.
+Quick and dirty demo (without duplicate rows, but you can play with this if you want)
+So to me it appears that instead on storing duplicate data SQL Server is showing rows are inserted but must be just storing pointers to previous identical rows.
+So, for prefix and dictionary compression (page compression), SQL Server uses pointers to store  (partially or fully) duplicated values (not duplicated rows) within same column or within diff.
+So if I have a very narrow row (2 columns say), I can add a few hundred more rows on the same page without increasing space used.
+It depends on SQL Server's version and data compression options:
+The others that show rows were added show no change in size from this stored procedure.
+I'm using the built in sp_spaceused stored procedure before and after performing a operation in our software to see which tables have row inserts and how the size of each table changes.

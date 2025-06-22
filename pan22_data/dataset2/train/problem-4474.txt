@@ -1,0 +1,12 @@
+The number of cores exposed to guest CPUs does not affect performance as much as you would like.  It merely adjusts the amount of cores the guest CPU "sees".
+yes, I'd also say that it depends.  But I'll say what I prefer to do.  At work I have a quad core CPU.  So for my virtual image (win7), I've allocated two CPUs.  That way, I can use both the host machine and the virtual machine at the same time, and they each have equal CPU resources.
+It's best to leave it to the default.  If you encounter performance issues on the host PC, then you can simply adjust the process priority with the Windows Task Manager.
+VirtualBox, and possibly other VM software, allows the user to specify the number of CPUs exposed to the VM. In my particular case, I have a dual core CPU, with Windows 7 64-bit running natively, and Ubuntu 9.04 64-bit as the VM.
+With other hardware results are different. I also have an i7 with 8 cores, and performance seems to scale much better with the number of cores there (using 4 there happily). 
+However, if you plan to use it in a way that can benefit from more cores (multi-threaded program, many parallel programs, ..), the story is more complicated.
+I'd trust the OS's scheduler and just set the VM to the # of physical cores, unless you Know that you always want the host to have a potentially idle core while you're busy in the VM.
+Depending on how the emulator is set up, it could literally half the performance of the virtual machine, do nothing, or only impact the way the guest OS/applications split up their thread scheduling.
+The help file suggests not setting this above the number of physical cores available. This makes sense. So, is it best allocating 1 or 2 CPU cores? Does this depend entirely on the native CPU load?
+As Nate mentioned, as long as your VM will mostly serve running a single-threaded process, there is little reason to allocate more than one core. 
+I previously assumed that using half of your CPU's for your VM was a good idea. Turns out this is not always optimal.
+The only way to make sure is to run benchmarks.. I don't know why, but in my Core2 Quad system (which has VT-x support, nested paging, ..), actually using 1 out of the 4 cores performs better than using 2 or more cores! I see this simply in start-up times of the VM, but also during compilation benchmarks. 

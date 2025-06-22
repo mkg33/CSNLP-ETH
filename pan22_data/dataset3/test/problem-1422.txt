@@ -1,0 +1,10 @@
+Since you want to redirect to /chat2/index.php?....
+Reading #2 of the API Phases, I think that is your problem.
+The plan is to take domain.com/chat2/roomnumber and redirect to domain.com/chat2/index.php?room_id=roomnumber.
+Looking at your rewritelog, your first line indicates that the URI is being stripped down to "asdf" before the pattern is applied.
+The way you read those prefix lines is that anything after the "->" is what the pattern is getting matched against.
+So in your case, your RewriteRule should probably look like this
+If you're on a modern version of Apache, which I'm guessing you are because I don't believe the + (one or more) quantifier is available in earlier versions of mod_rewrite, you can use Perl-compatible regular expression syntax in your pattern, including shorthands such as "\d" to denote "0-9".
+Using an absolute URL for rewriting within a .htaccess file worked for me.
+A rule of thumb with RewriteRule, if your first two characters are "^/" then your third character better be a question mark to make that forward slash optional.
+I'm guessing the problem is my placement of the ^ but I'm not certain.

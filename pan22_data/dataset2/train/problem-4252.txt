@@ -1,0 +1,11 @@
+IMHO, vertical sharding can make sense depending on the context. When I see this, it's typically in some sort of log form. Let's pretend we're using this for web server logs and we want to partition by month. Instead of altering an existing table in place every day, we could create a new table every day and log rows to that table.
+This is a piece of cake for any RDBMS to handle.  Go with one table, index it properly, and consider it a solved problem.
+This way, the data remains maintainable and searchable. Extraction becomes a normal periodic process. Continuous operations are not locked out by operations on older data. 
+If you have a transaction that needs to lock multiple rows over several tables and there are issues on it(for example, deadlock or transaction timeout), you may like to combine them into single table and rewrite the SQL to repair the issues.
+IMHO, This seems like unnecessary overhead. You could simply index and partition a single table properly unless there's some other information not revealed in the description.
+If a query targets enormous data, split of data by query conditions would has a notable improvement of performance. But such split, as you have seen, brings some programming issues up.
+In the scenario you've presented you're locked into a structure anyway, so why not use a single table optimized for this purpose? The algorithm based storage of rows seems sketchy and error prone.
+You don't need to consider partitioning, whether "homemade" or otherwise, until you start handling extremely large volumes of data--think billions of rows and up.
+In your situation, the modification of existing code may be a long-term solution to make code easier to maintain. I would suggest a try to meta-programming. For example, using StringTemplate to generate SQL dynamically. I like to generate SQL from meta-programming engine if modification of existing code is too hard.
+When I think about whether to split table, I used to consider the trade-off between performance gaining and programming complexity.
+I have tables with >30 Gb partitioned in 10 tables. These tables have only ID - BLOB and to me is easily to keep. And I use MyISAM to save INNODB buffer.

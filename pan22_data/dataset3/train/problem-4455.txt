@@ -1,0 +1,20 @@
+When connected to the Internet, I can go to 192.168.102.1 and I see a landing page for "mikrotik routeros", but I cannot go to 192.168.1.1.
+Sounds like there's competing DHCP servers on your network.
+When connected to the router but not the Internet, 192.168.1.1 yields the router web portal, and 192.168.102.1 is inaccessible.
+Router needs to have WAN Connection Type as DHCP and also needed static DNS set up (I used 8.8.8.8 and 8.8.4.4).
+You have two options to get internet connectivity AND be able to connect to the 192.168.1.0 network at the same time.
+route add -net 192.168.1.0/24 wlan0 should work for this.
+This would be specific to your router/firmware, but since you're running DD-WRT you can easily find the information on adding a static route.
+As a note, your gateway should be 0.0.0.0 for directly connected nets.
+2) Add a static routing entry to the router that tells it 192.168.1.0 is directly attached.
+The fact that your are getting assigned IPs on two different subnets implies you have two DHCP servers on the directly attached network.
+Network is apparently connected like this:  There is a central router, with a cable to my unit's local router.
+With internet access (wired in this case, but it varies):
+I don't know anything about networking, but here's some info that seems helpful taken from my Ubuntu laptop.
+Usually, I'd recommend using something like dhcp_probe -f eth0 or roguechecker to find out which IPs on your network are serving DHCP but you already know which they are.
+On both wired and wireless connections, I can only access one of 192.168.1.1 (the router web portal) and the general Internet.
+Which "mode" my devices are in is seemingly random.
+1) Add a static routing entry to the linux box that tells it that 192.168.1.0 is directly attached.
+This has persisted so far for 5 days (since I began using this network).
+With "router access" (wireless in this case, but it varies):
+Both will require disabling or removing the DHCP server on 192.168.1.1 and letting 192.168.102.1 assign you an IP for internet access.

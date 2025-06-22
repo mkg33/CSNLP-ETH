@@ -1,0 +1,7 @@
+Keep your downloads in a non Web accessible directory and then use a PHP script to create unique symbolic links into it. Then you can delete the symlinks after a specified period of time (e.g. after 24 hours).
+I have used a service call Net 2 FTP, which is a pure html/PHP interface to access FTP accounts online. You can download and install the software relatively easily and it has no overhead since it's such a small website.
+This solution doesn't prevent someone from sharing the link for the next 24 hours, so it probably isn't appropriate in situations where that matters. But it doesn't require any additional Apache modules etc.
+You can then use a cronjob to run a "find /public -type l -mtime +24 -exec rm {} \;" or something similar to delete expired symlinks. (NB: be very careful when using find to delete files.)
+This software is extremely useful and easy to use, it sounds like it would be perfect for your usage.
+Here's an example. Assume that your files are stored in /private and protected by a .htaccess file. You also have a /public directory which is writable by the user Apache runs under.
+X-Sendfile is made specifically for this type of operation.  You can read about it at http://codeutopia.net/blog/2009/03/06/sending-files-better-apache-mod_xsendfile-and-php/

@@ -1,0 +1,19 @@
+Making sure the certificate was created for local system (not user)
+You also need the certificate thumbprint for your certificate.
+This will not work when copying to another PC with a different computer name "Server2".
+However when I try to configure with SQL Server Express on the new PC, the certificate does not appear in the dropdown.
+Basically, find the SuperSocketNetLib key for your installation/instance.
+Now use the following from an elevated PowerShell session to set the thumbprint value and enforce encryption.
+I'm not sure if SQL Express is different than full SQL.
+The registry location depends on the SQL version being used.
+And yes, the CN value is one of those things it is picky about.
+The feedback I've got so far is that the certificate CN value is set to the computer name it was created on "Server1".
+So your first option is to generate a new self-signed cert that does match and use that.
+And finally, restart the SQL service to pick up the changes.
+So if the CN doesn't match the server name, it won't show up even if the server name is in the Subject Alternative Name field.
+When I export the certificate to another PC I can import fine and can see the certificate in MMC under Personal > Certificates.
+The other option is to bypass the GUI and set the certificate via the registry instead.
+I've created a self-signed certificate and configured with SQL Server Express.
+I have tried a few things suggested on other forums
+The SQL TLS configuration GUI is super picky about the certs it will show in the drop down.
+Copy the value in the Thumbprint column for your cert.

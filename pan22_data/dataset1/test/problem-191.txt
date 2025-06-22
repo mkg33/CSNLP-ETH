@@ -1,0 +1,8 @@
+However, a "dates table" aka "calendar table" is much more flexible, regardless of the DBMS you are using. 
+Basically, it's a pre-generated table of dates from say 1900-01-01 to 2200-12-31.  In addition to various date columsn, it would contain various flag columns (weekday, weekend, holiday) and other helpful columns (Fiscal year, Quarter).
+A bit of searching will turn up lots of articles about using them.  
+For Db2 for i specifically, if you have the Web Query product installed, IBM provides a routine (LOAD_DATE_CONVERSION_TABLE) to generate one (QWQCENT.DATE_CONV) for you.  See chapter 5 of the Redbook - IBM DB2 Web Query for i
+For your case, you could define a unique key constraint on your dates table over (date, fiscal_year) and then use that as a FK constraint in your BUDGET_DATE_TARGET.
+However, you may find you don't need BUDGET_DATE_TARGET or BUDGET_YEAR_TARGET at all once you've got the dates table.
+How can I ensure that any records of BUDGET_DATE_TARGET that share a BUDGET_YEAR_TARGET_ID will have DATEs under the same Fiscal Year (with Oct 1 as new year day)?
+If I were to insert a new record with a DATE of Dec 1, 2020, I'd like it to succeed if the BUDGET_YEAR_TARGET_ID is 3 but fail if it is 1 or 2.

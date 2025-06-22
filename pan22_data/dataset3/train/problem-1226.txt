@@ -1,0 +1,19 @@
+First of all, the smtpmail library can now do plain SSL.
+It looks like Emacs 24 (currently on pre-release) has made several improvements and things are a lot simpler.
+In particular, it ensures that the CRLF character pair at the end of the 220 greeting from the server does not get altered.
+I determined that a fix is to change the line in function "smtpmail-via-smtp" in file "smtpmail.el" that reads:
+http://obfuscatedcode.wordpress.com/2007/04/26/configuring-emacs-for-gmails-smtp/
+The changes discussed there--that make the fix--made it into Emacs 24, but are not present in Emacs 23.3 or 23.4.
+The general title of that discussion is "Changing the default for `send-mail-function'" (it began on 6/26/11).
+This insures that no coding conversion takes place when the server response is inserted into "process-buffer".
+It asks how one should configure Emacs mail sending packages on MS Windows for use with secure SMTP server such as gmail, which require TLS and STARTTLS.
+This is a question originally posed on https://answers.launchpad.net/vm/+question/108267 on 2010-04-26.
+With this one additional change I was successful in sending a test email via smtp.gmail.com:587.
+Bug #7789, discussed at newsgroup gnu.emacs.bug, reports this signaling deficiency in MS Windows (aka Woe32).
+http://www.gnu.org/software/gnutls/manual/html_node/gnutls_002dcli-Invocation.html#gnutls_002dcli-Invocation):
+The advice was unearthed by Uday Reddy and can be found at http://article.gmane.org/gmane.emacs.windows/3250.
+My Emacs version information is "GNU Emacs 23.3.1 (i386-mingw-nt5.1.2600) of 2011-03-10 on 3249CTO".
+The authentication credentials (login and password) should go into a file ~/.authinfo or ~/.authinfo.gpg.
+I later found that my fix is covered by the discussion at http://comments.gmane.org/gmane.emacs.devel/140976.
+I also followed the advice to make this change (in function "starttls-negotiate-gnutls" in file "starttls.el") but I was still unsuccessful in sending a test email via the server smtp.gmail.com:587.
+The following is advice that led to the question of the moment.

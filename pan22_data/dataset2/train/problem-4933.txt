@@ -1,0 +1,7 @@
+If you wish to delve further into how ext4 works start with https://ext4.wiki.kernel.org/index.php/Ext4_Disk_Layout
+Your calculation is incorrect, as you added rounded human readable sizes. Storage is allocated in blocks (typically 4k), so you should look at these.
+It is also possible that some storage is appointed to SWAP, if you execute grep swap /etc/fstab you can check what partition or file is appointed to represent the swap.
+The reason why this happens is because the system needs a fail safe to report if something terrible has happened.
+If you want a proper breakdown of your block devices it's partitions on linux, you can try: lsblk. This is part of the util-linux package.
+As @Milliways already mentioned, the ext4 filesystem reserved some space for various reasons. By default this is 5%, so for you this should be 0,8 GB. Although this can be larger if defined.
+The ext4 filesystem reserves space for various purposes, including inodes, hash tree, journal and just "reserved" (for performance reasons - to prevent the system filling up, and crashing).

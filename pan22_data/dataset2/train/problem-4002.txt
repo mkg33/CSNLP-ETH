@@ -1,0 +1,6 @@
+So inserting a value into memcached should not be expected to update the MySQL database. One major problem is that memcached has no knowledge of how and where that data should be stored. All it is is a key/value store in RAM.
+On the memcached command line, you need to supply an option like "-E ndb_engine.so".  Memcached has a "pluggable engine" architecture, and the MySQL Cluster component is implemented as an NDB Engine.  When memcached starts up with the correct engine you should see a log message like this:
+The same is not true going the other way. You can modify data in the database, and have it updated in memcache. From the same FAQ:
+The basic docs for using the Memcached API for MySQL Cluster 7.2 start at http://dev.mysql.com/doc/refman/5.5/en/mysql-cluster-ndbmemcache.html
+You can choose whether certain key-value pairs are stored in Memcached, MySQL Cluster or both by setting up meta-data in the database. 
+To follow up on JD's response, you can view a worked example of using the Memcached API to MySQL Cluster at http://www.clusterdb.com/mysql-cluster/scalabale-persistent-ha-nosql-memcache-storage-using-mysql-cluster/

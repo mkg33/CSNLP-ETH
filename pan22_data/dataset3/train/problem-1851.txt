@@ -1,0 +1,13 @@
+Your GoDaddy domain will now be pointing to an AWS hosted zone which in turn points to your load balancer.
+We can use a ec2 with varnish and nginx to point to an external ip for website hosted on godaddy.
+ELB provides one -- or more -- IP addresses, hiding behind the CNAME you are using with www record, and these addresses are not static, so you can't create an A record at the top ("apex") of your domain and point to the addresses... along with that, a CNAME at the apex of a domain is not a valid DNS configuration.
+You can either use Go Daddy's web site forwarding feature to redirect example.com requests to www.example.com, which will cause the browser to change its address bar value from example.com to www.example.com and then send traffic to the ELB (via the www CNAME)... or you can move the DNS from Go Daddy to Amazon's Route 53 service, which has another feature that operates similarly to a CNAME but is implemented differently, consistent with the rules established in RFC-1912.
+http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingAliasRRSets.html
+https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html
+An Alias record in Route 53 is a pointer to internal configuration within Route 53 that allows that service to look up and return an appropriate A-record for the service to which the Alias record is pointing.
+Each hosted zone creates nameservers for you so once created, get the provided name servers and update godaddy to use those nameservers.
+You can successfully do this by creating a CNAME record in GoDaddy that 'Points To' the amazonaws.com DNS record that AWS provides for your Load Balancer.
+I would like to example.com to point to my load balanced instance.
+More here on creating a hosted zone: http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html
+In addition to the accepted answer, another option is to create an AWS hosted zone in AWS Route 53 following the steps below:
+I have an ec2 load balancer pointing to an ec2 instance.

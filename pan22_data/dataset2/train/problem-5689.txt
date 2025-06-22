@@ -1,0 +1,11 @@
+Adding a constructor which takes an IEnumerable<AgentCommission> to the BetCommission class would be a good idea.
+By extracting the creation of the AgentCommission's to a separate method your code will benefit regarding readability and maintainability.  
+By changing this second .Where() to just compare like (x.SportId == bpKey.Key.SportId) && (x.LeagueId == bpKey.Key.LeagueId) it is more readable too.  
+Variables should be placed as near as their usage, so key could be just placed above the call to AddOrUpdate().  
+Then the calculator could group all commissions on agent and pick the most specific based on the bet.
+The first thing to change would be the query for commissionForCurrentKey to include the condition x.Level != 0 if Level can be negative too, or x.Level > 0 if it can't be negative (which I assume now).
+In this way any item having a Level == 0 would be eleminated, hence at least the first iteration in the foreach (var pos in commissionsForCurrentKey) loop wouldn't be senseless.  
+To keep this query simple, I would return all commissions for all agents matching sport or leage, assuming league is unique for the sport. Agent 1 would have two entries in this list, Agent 2 would have three.
+I don't like the public parameterless constructor of AgentCommission. What use does it have ? IMHO none, so you could just delete it. Also having public setters can do some harm and should be avoided if the same values can be set by the constructor.  
+I would like to encourage you to always use braces {} for single statement if's to make the code less error prone.  
+I suggest you profile your code for bottlenecks if you haven't already done so. I had to figure out once, why a certain piece of code needed 40 minutes to generate two short chapters of text: There were millions of synchronous calls to the database over the network. That's an order of magnitude more than there were words in said chapters.

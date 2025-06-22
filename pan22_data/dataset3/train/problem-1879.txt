@@ -1,0 +1,12 @@
+I think that is why you get bad performance, because VLC is using software encoding and Raspberryis not powerful for that task.
+There is element for hardware video encoding that would make good server from your Raspberry.
+http://wiki.matthiasbock.net/index.php/Logitech_C920,_streaming_H.264#Raspberry_Pi
+I had the same problem, found this thread when searching for a hardware encoder, not for c920 issues.
+I posted a possible solution in raspberry forum using a lightweight RTSP server based on live555 that capture H264 from a V4L2 driver.
+For me there is dramatic difference between 1000ms buffer and 200ms buffer.
+If I understood your situation well, you want Raspberry to transcode video to H264?
+This seems to work for me @ least... cvlc v4l2:// :v4l2-dev=/dev/video0 :v4l2-width=640 :v4l2-height=480 --sout="#transcode{vcodec=h264,vb=800,scale=1,acodec=mp4a,ab=128,channels=2,samplerate=44100}:rtp{sdp=rtsp://:8554/live.ts}" -I dummy
+This was done for the raspicamera, but it should works with any V4L2 device that provide H264.
+Try with larger buffer on the client displaying the video.
+I would suggest to to try with Gstreamer and gst-omx plugins.
+Nevertheless, execute a firmware update for the raspberry pi and the garbage should be gone

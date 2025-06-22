@@ -1,0 +1,15 @@
+edit /etc/apache2/ports.conf (for ubuntu, or httpd.conf )
+After recently upgrading Apache2 to version 2.2.31 I found a strange behaviour in SSL VirtualHost setup.
+change "Listen 443" to "Listen 443 http" under ssl_module
+This shows as the common Firefox's/Chrome's passport-warning about you being possibly scammed if you're browsing your home banking, but that simply was not the case.
+I had the same exact problem, and what worked for me was unbelievably simple
+It happens that it could be a bug in the most recent version of Apache.
+Examining error logs for the offending VirtualHosts shown the following text
+and in fact the vhost was correctly configured with SSLCertificateFile.
+A few of the website I'm hosting were showing the certificate for the default host even if the client was Server Name Identification aware, and this happened only with a few of them.
+All sites are hosted on the same IP address, on port 443.
+Another solution for this is to ensure that all of your :443 vhosts include the TLS configuration.
+The truth is that VirtualHosting works on the HTTP side and redirects SNI-aware clients to SSL automatically, so it's backward compatible with SNI-unaware clients.
+To be clear, if server host.hostingdomain.org has its own SSL, attempting to access https://www.hostedsite.org reports certificate for host.hostingdomain.org, but a few https://www.hostedsite.me reported the correct certificate.
+Replace Listen *:443 (or Listen 443 according to your setup) with Listen *:443 http
+This problem was recently introduced in Debian wheezy and I got the solution from http://blog.noizeramp.com/2010/10/03/apache-2-and-ssl-configuration/.

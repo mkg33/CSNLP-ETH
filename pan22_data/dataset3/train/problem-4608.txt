@@ -1,0 +1,17 @@
+See: https://www.varnish-cache.org/docs/trunk/users-guide/storage-backends.html
+There is no negligable impact for 97% of your served requests.
+As a reference, this page from the VM subsystem author will give you a good idea what is likely to happen;
+Total memory size = 4GB, a dummy of randomly generated test.txt = 2GB
+On a dedicated system with 4 gigs of ram I recommend you to use "malloc" with a size of about 3 gigs as storage for your cache.
+So the following is probably the result for all of your commands you run..
+BUT of those 3% of unlucky requests around 2% of them anyway would have been slow because they wanted something out of the 6500Mb cache that was never in pagecache anyway!
+So, in summary with my contrived and assuming example you'll see in broad terms about a 3% loss in efficiency.
+If you have configured varnish to use a file based storage your file operations may have an impact on performance.
+(100% efficient would be all objects for every request are served out of memory).
+Of the 3% that are affected, expect a higher delay in those being served up -- probably 500 millisecond.
+In 'normal' running in this contrived example performance would be about 98% efficient.
+As your varnish cache size is 10G it will never fit completely in memory, thus the following formula is relatively representative
+Note that this is actually very difficult to answer in its current form (if your are talking about file backed caches) because its dependant on how hot the cache is, how long you cache items for and the 'heat' of each object in the cache.
+The answer depends on what storage backend your cache uses.
+I know Varnish use memory mapped technique for caching data in memory, what if I execute the following commands on a machine, are there any penalty on the overall Varnish's performance?
+They however do suffer from the high disk utilization now.

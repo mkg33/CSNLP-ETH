@@ -1,0 +1,7 @@
+This means that the problem is with groundcontrol itself; it has returned the status 2 (some sort of failure).
+(Remember that on modern Linux systems, practically all devices are discovered dynamically; there is no point where it says "oh, I have all the devices, let's start init.")
+(The & is also unnecessary, as systemd itself – being a service manager – runs everything in "background".)
+Usually this specific problem – service failing on boot only – is caused by the service starting too early, that is, when it requires some hardware device that hasn't been discovered by the system yet.
+The workaround is to order the service after the specific device (I don't know which device it needs though, so I cannot give a full answer), or use Wants= + After= to pull in systemd-udev-settle.service which waits until udev has processed the first batch of "new device" events.
+The solution would be to rewrite the program to use libudev and dynamically add devices.
+Also, why do you have a whole separate .sh script for the sole purpose of cd'ing to a directory?

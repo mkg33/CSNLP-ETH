@@ -1,0 +1,6 @@
+You can even do this with the volume mounted.   Since you're only reading from -- not writing to -- the block device,  the OS will not notice or see this as a problem.
+So, if you don't do something to encourage it to be not-so-lazy, EBS would naturally assume that there's no particular hurry, so it needn't tax its own resources, or those of S3, to load the data quickly.
+If you like progress meters, try pv - pterab /dev/xvdN > /dev/null.  (sudo apt-get install pv first.)  This will not necessarily be the fastest, but it's solid and more fun to watch, since it gives you current and sustained throughput, percent complete, and an ETA.  When it's done,  your volume is fully warmed up.
+At this point I would expect all the data to be copied from the snapshot to the new volume in less than an hour, but it seems to take more in the order of 12 hours. In the meantime the new instance is unusable for production traffic, since any request may take a very long time to serve.
+Since fio can run reads in parallel, it can warm your volume faster than dd but dd will get  job done.
+Is there some way to ensure a faster copy? I believe I've seen mentions of dd, but does this really speed up the copy or is it a placebo?

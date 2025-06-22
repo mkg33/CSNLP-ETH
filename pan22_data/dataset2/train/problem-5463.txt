@@ -1,0 +1,8 @@
+It's possible to bind a MySQL server on 127.0.0.1:3306 and an SSH server on your external IP address for mysql.myhost.com on port 3306, but that's very unlikely. I guess your SSH server is listening on port 22 (the default).
+Therefore, you'd need to specify a connection to an SSH server on server via which you're establishing the tunnel. Here, you seem to be using mysql.myhost.com:3306, which would imply that you're running this SSH server (not MySQL) on port 3306.
+You should probably use mysql.myhost.com:22. (Check you can connect to it via a normal SSH client such as Putty too.)
+In my case I could solve it doing a nslookup myserver.com and using the IP address instead of the hostname. My assumption is a problem trying to connect from IPv4 to IPv6.
+I think the TCP/IP over SSH approach works by establishing a "normal" SSH connection underlying the MySQL connection (in the same way as you would tunnel using -L with the OpenSSH command-line client).
+Only what I found... often I'm creating users on SSH server without shell (such as /sbin/nologin) to prevent them be able to login to a server and create files and etc there... (for production systems we're doing it on firewalls).
+But workbench giving an error that it can't connect to MySQL... If you will change the shell for that user to, let say, /bin/bash - everything works fine after that.
+I came up with the same error. The problem is "somewhat" the timeout. I cranked even the value up to 120 seconds which did not help.

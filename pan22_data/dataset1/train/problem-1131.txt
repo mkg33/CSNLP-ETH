@@ -1,0 +1,16 @@
+It seems a DNS-related problem: the client or the server are tring to resolve (or reverse-resolve) the other machine, and this lead to timeout/slow connection. As many router supports DNS forwarding, try the following:
+I've got a Samba 4 share on a CentOS 7.2 server in my LAN that I access from some Windows 10 clients.
+The clients use the server IP to access the share and Samba is configured to be a stand-alone server, not a domain member one.
+Everything works fine as expected when internet connection is up, but when there's no internet connection the clients need up to 20 minutes before displaying the login credentials window.
+It doesn't seem to be a network related problem: the clients can reach the server, ping it as fast as usual, use other protocols such as HTTP or SSH and in general perform every other network activity over the LAN flawlessly.
+Also, the fact that it works after a long waiting, suggests me there's some kind of timeout involved in the process.
+If disconnect the WAN cable from my local router and try to access the Samba share from the client, it starts to wait for something (green loading progress on address bar slowly moves), but as soon as I plug in the WAN cable again, the client shows the login window.
+The Samba logs (debug level 5) don't show anything abnormal, but there seem to be many connecting attempt which are indeed accepted by the server:
+[2016/11/15 16:18:34.378116,  3] ../source3/lib/access.c:338(allow_access)
+  Allowed connection from 192.168.100.5 (192.168.100.5)
+[2016/11/15 16:18:34.436829,  5] ../lib/dbwrap/dbwrap.c:178(dbwrap_check_lock_order)
+  check lock order 2 for /var/lib/samba/serverid.tdb
+[2016/11/15 16:18:34.436924,  5] ../lib/dbwrap/dbwrap.c:146(dbwrap_lock_order_state_destructor)
+  release lock order 2 for /var/lib/samba/serverid.tdb
+... this is repeated an unbelievably lot of times ...
+I'm incline to think it's a Windows 10 related problem more than a network/samba/server one.

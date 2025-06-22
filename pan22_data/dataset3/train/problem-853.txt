@@ -1,0 +1,19 @@
+The block driver supports disk devices as well as disk images.
+It is also possible to pass through an ISO file as a bootable SCSI CDROM device.
+I find myself having to maintain some old hardware for some legacy applications.
+To start from Adam iSCSI is a protocol which "expose" disk space from one computer and represent this as storage device to another computer.
+Windows XP seems to be easier to deal with for the 39160 cards, but as XP can be sanbooted from iSCSI already, that doesn't unlock any extra functionality for me.
+I'm currently doing this via a pair of Adaptec 39160 cards connected with a VHDCI cable.
+By default it presents devices as LUNs on ID 7, so make sure your SCSI cards are set to different IDs.
+Is it feasible to run a modern computer with a physical SCSI interface and present itself as a target disk to the legacy computer, so instead of accessing a physical SCSI disk, it's accessing a modern disk in a SAN?
+What you can search is PATA to SCSI convertor/controller to use PATA disks as SCSI.
+Moreover after iSCSI LUN is recognized it should be formatted and mounted (from OS) to particular mountpoint (or used as RAW device).
+But I'm not familiar enough with the terminology or technology to tell if it's supported, possible or completely out of the question.
+But to use it the OS of second computer must recognize the protocol and have appropriate drivers/modules to work with.
+Windows 98 seems to hang when scanning the PCI bus with ASPI for 79xx, possibly due to a driver issue, though I haven't investigated heavily.
+But the best you can do is to migrate all the applications which run on this old hardware to new software/hardware platform.
+I believe your desired approach is possible using FreeBSD's CAM Target Layer subsystem and SCSI adapters that support target mode, like the AIC-78xx series.
+I looked at http://www.linux-iscsi.org/ and it looks like the usual mode of operation is act like an iSCSI target out of a physical disk rather than the other way around, a physical target out of a remote iSCSI target.
+These computers use old parallel SCSI drives, and when those drives die, I have to scavenge for new ones, which is getting increasingly difficult.
+I am not aware of option to use iSCSI disk as root device.
+The FreeBSD kernel must be compiled with targ and targbh drivers, the ports must be enabled for target mode (eg ctladm port -o on ahc0), and the block devices must be created ( ctladm create -b block -o file=/path/to/disk or ctladm create -b block -t 5 -o file=/path/to/iso).

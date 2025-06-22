@@ -1,0 +1,8 @@
+I'm pretty sure throughput would be shared,  so you don't want to mount too many drives per USB port but short of getting a dedicated bulk USB duplicator (which do exist - google it), you could do the same thing with a bunch of hubs, and slight abuse of Tee. I'm sure this can be made more elegant (for example, this hardcodes the device locations, and it may not be the same in each case). There's a more complete writeup here but...
+Get a hub, plug in the disks,  work out what their device names are, and ensure they are not mounted. 
+In the example given they're copying from /dev/sdf to sdd and sde. They're also using pv to give an idea of how far along they are, and you can add more drives by just adding more piped in dd of commands.
+dd if=/dev/sdf |pv| tee >(dd of=/dev/sdd bs=16M) | dd of=/dev/sde bs=16M
+I'd try to split this amongst as many hubs as possible, and probably see if you could script it so you don't automatically set device names. You could also use an image file as the input file, which would free up a USB port.
+You could write a script that detects if a usb stick is inserted and copy the file like this
+You will still have to insert 10k usb sticks into a hub.
+Or just buy the usb sticks preloaded search google "usb stick preloaded data"

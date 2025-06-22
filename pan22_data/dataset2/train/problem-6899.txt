@@ -1,0 +1,7 @@
+That command sequence involves both single quotes and back-quotes - that always adds to the fun.  Generally, you are better off using $(command args) in place of back-quotes.
+It works fine form the commandline, but fails when I try to set it as an alias. I tried adding the following to .bash_profile:
+So, if you must use an alias, then you probably need to use single quotes around the whole expression, plus for each single quote that appears in the expression, replace it with the sequence quote-backslash-quote-quote: '\''.  The first quote terminates the current quoted string; the backslash quote represents a literal quote; the final quote restarts the quoted string.
+How would you use the value you got from awk and store it a variable? This is what I am starting with. 
+VAR=$(xrandr | awk '$2=="connected"{s=$1} END{print s}'); xrandr --output $VAR --mode 1024x768 --rate 60; xrandr --output LVDS1 --left-of $VAR; xrandr --output LVDS1 --primary; unset VAR;
+Frankly, by the time a command gets that big, I'd make it into a script and not an alias.  One advantage of a script is that you make it work with more files than just 'access.logs'.
+When you use the double quotes around the alias, the back-quoted commands are executed as the alias is created - unless the shell has a different way of interpreting things when they define the alias.  Also, $var expressions are evaluated inside double quotes, so your awk errors show that you have no arguments in the current shell.

@@ -1,0 +1,18 @@
+The "bubbling " to user space is enabled by the listening port.
+putting an IP on a bridge is pretty usefully if you want to bridge 2 interfaces  and communicate to hosts on both sides of the bridge.
+2) packet arrives on eth1 destined for the MAC of the bridge.
+(Unless a specific netfilter rule is used to intercept it - see other answer)
+Pointing an IP on the bridge Means the  the  packets are destined for the Bridges MAC address and so the normal Local delivery packet  receiving process is invoked.
+This isn't the answer, but there is limit of the comment lenght, so I have written this text as answer.
+In addition I created an application with a TCP Listener on port 80 in the user-space on PC-A
+Here the packet doesn't leave the bridge but instead is received by the  IP stack as an  normal inbound packet on br1.
+Set the sysctl variable bridge-nf-call-iptables = 1 (kernel module br_netfilter should be loaded).
+I set up a bridge interface (br0) on PC-A (Linux Ubunutu 14.04)
+As what I understood from the documentation of Netfilter and bridge-utils is that the bridge suppose to route the packets through the kernel without bubble it up into the user space but when I connect a wired (p2p) PC-B to the bridge pc (PC-A) and surf to a HTTP web I can see the packets are being received in the listener which means that the packets got into the user-space.
+Let's say we have  eth1 and eth2 connected via br1
+The strangest thing here is that I have the same configuration in another location and the packets don't get up there to the user-space unless I add a broute rule (which is the expected behavior I guess)
+This packet is then processed and then the  data is forwarded to the process listening on port 80 on the br1 interface.
+1) packet arrives on eth1 Destined for an non-local MAC,  packet is forward by kernel through the bridge and out to eth2.
+Any change anyone knows what can cause the strange behavior?
+To redirect the switched frames to local port you can done the next steps:
+I have to say that there are no ebtables rules in any chain that tells packet to redirect up to the user-space.

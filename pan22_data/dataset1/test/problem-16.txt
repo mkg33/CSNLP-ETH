@@ -1,0 +1,13 @@
+You are mixing up lots of different responsibilities in your classes. For instance, AndGate has to handle both the And part and all the pin input parts. It is weird that an AndGate doesn't actually take references to its input pins. Furthermore, how in this model do we connect gates to each other? By your design, a "pin" is a value comparable to an integer. What if I wanted to model something like (picking a random circuit from google):
+How would I do that in your system? The Connectors confuse the logic, since in your example you're creating a bunch of gates that are floating around - and then just to see that G1 and G2 go into G3 is split across several lines, rather than ideally:
+As a first go, gates should know their inputs and be able to perform logic to determine their outputs:
+This separates the concern of input handling (determining the pins) from the concern of actually emulating the gates (determining the outputs) - and is what will let us have NandGates as input to other NandGates:
+I have some comments regarding the base structure of your classes:
+But here is my rudimentary suggestion for building the tree of logical gates:
+If you run this file, as is, you'll get the following truth table:
+a       b       ^a      ab      a+b     ^a(a+b) ^(ab)   a⊼b     
+False   False   True    False   False   False   True    True    
+False   True    True    False   True    True    True    True    
+True    False   False   False   True    False   True    True    
+True    True    False   True    True    False   False   False   
+Hope this gives you some idea on another apporach related to how to do object orientation in Python.

@@ -1,0 +1,19 @@
+If you fill out this form and include your Elastic IP addresses, your IP addresses will not be listed on the blacklists (after a couple of days) unless you actually start spamming from them.
+https://aws-portal.amazon.com/gp/aws/html-forms-controller/contactus/ec2-email-limit-rdns-request
+What are some best practices for doing this successfully?
+Then it might actually stand a chance of being delivered.
+Eventually, I'll probably move the service to AuthSMTP or similar.
+Pointers to any resources are greatly appreciated.
+By default, EC2 IP addresses are greylisted on most spam lists due to their dynamic nature.
+You can't depend on an EC2 instance's IP address reputation, nor will you  be able to get it removed from blacklists (this sometimes requires proof that you own the IP address block)
+I've also set up a hosted Gmail account, but I'm not sure if that will work yet (the Rails developer hasn't reconfigured the application to give it a shot).
+Mark's comment on the disk disappearing is correct, but you can mitigate that by using an EBS-backed volume.
+I had to have my IP address (an "Elastic" address) removed from a couple of RBLs that had proactively added all of Amazon's space, but so far it works (just; I have to keep a close eye on the rejections).
+http://aws.amazon.com/contact-us/ec2-email-limit-request/
+Particularly because reverse DNS is unworkable on EC2 (Amazon won't let you modify it).
+I'm working on deploying a rails site that will be sending emails (checkout confirmations, alerts, etc) from an EC2 server.
+Submitting the request above will make it so your IP addresses aren't grey listed.
+I'd send email from EC2 instances through an encrypted, authenticated connection to a non-EC2 relay on address space that you own and monitor for blacklisting.
+I think the authentication (Gmail requires secure authentication, I believe), might pose an issue.
+Also, you can't rely on an EC2 instance having a disc which won't disappear without warning, so your queued mail may vanish at any moment.
+You must now contact support if you want to send a larger number of emails, so that they can unlock it for you:

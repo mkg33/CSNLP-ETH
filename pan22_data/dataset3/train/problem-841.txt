@@ -1,0 +1,19 @@
+But really, you're avoiding one of the better features of VMware: High availability.
+Hi I have the following setup for using vSphere with HA:
+Please outline the IOPS requirements of your database server.
+The better solution would be to re-examine the database's IO requirements and look into a SAN that can support its and the rest of your cluster's needs.
+This is cluster-management software that will allow you to have one or more mirrors of the same server, managing service failover, IP addresses and of course, data.
+You can implement a third-party synchronous or asynchronous data replication package like SIOS SteelEye.
+The storage network is 10gbE and while it wouldn't meet the performance requirements long term I would like to have a way to have an automatic fail over to shared storage in the event that the Host fails.
+The IOP requirements of the database server are very high, as such the database files are spread across three local SSD raid 10 arrays.
+VMware has the same thing called vSAN being currently in beta.
+So StarWind had visioned the future long before whole IT industry had moved to the right direction :) Key point here - run inside HYPERVISOR and not inside a guest VM.
+If that's acceptable, its probably the best choice.
+Or, if that's not a possiblity, then maybe moving the DB to dedicated hardware and leveraging the application's HA offerings (Oracle RAC/dataguard, mysql master-master, etc) to meet your needs.
+However, its not going to be automated like vSphere HA (at least I don't think so) and you're not going to get better than a 15min RPO.
+There is vSphere Replication, which is a vmware appliance that could replicate the database VM and its local storage to another host's local storage.
+My problem with this is the finding some kind of reasonable HA for the database server.
+Is there any way to improve the capabilities of your NAS?
+The vSphere Storage Appliance can "share" local storage between different vmware hosts, but I don't think its included in essentials plus.
+Does anyone have any suggestions on how I could do this ?
+Perhaps pick up to the last image backup on shared storage ?

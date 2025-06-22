@@ -1,0 +1,29 @@
+From the data returned by this stored procedure (about 3000 rows) it displays row-specific information, for one row at a time.
+You need to run it within the database that contains the Stored Procedure in question since the system catalog views are per each database, even though sys.dm_os_buffer_descriptors is instance-level.
+I know PLE could be an indicator, but is there anything that could be more specific, for a query for example.
+I'm trying to identify, if possible, how long it takes for data being cached by a stored procedure to be taken out of the cache.
+Due to the data already being in cache, when testing with a single user the response time was ~1 second, because all of the 250 Mb would fit in cache without any problem and not being cleared very fast.
+The procedure returns user-specific information, so the procedure is called with a @userID input parameter.
+I have a stored procedure which returnes about 250 Mb of data into the cache, when being ran by one user.
+This is all just a theory at this point, but I'm trying to identify some metrics that directly point at this being the issue.
+Data pages in the Buffer Pool are shared across any number of queries, so you can't really narrow down which data pages go with which particular queries.
+Inefficient code and design will always bring hardware to it's knees at some point.
+I would do that before adding memory, because adding memory won't fix the issue of inefficient design.
+And if you store the file_id and page_id values in a local temp table, you might be able to tell the difference (to a degree, perhaps) between the data for two different @UserID values, assuming that the data for the two @UserID values would be on different datapages, which may or may not be the case, or it may sometimes be the case.
+There is a functionality that when a user presses a "Next" button in the application UI it goes and gets the row-specific information for the next row in the result and so on.
+If the goal of your question is to determine if your stored procedure is having to do physical reads to satisfy the query (instead of retrieving the data from memory), you might be able to use the following query in the stored procedure to capture the physical reads during execution and possibly save that information for auditing purposes
+In this case, if you cannot add more memory, you should look to rewrite the code to reduce the amount of data being returned.
+You only have two options when it comes to resource constraints: use less or add more.
+I've tested the procedure with a cold cache and the execution time was about 10 seconds to return the data.
+Oh, and crazy enough, they're not very happy about increasing server memory either.
+My recommendation would be to re-write the stored procedure in a more efficient way, but that would take lots of time and business is not very interested in spending time for that.
+You may go from 30 to 300 users in a year, it would be better to look at code now and not later.
+But, you can at least identify which tables / indexed views the data in memory belongs to.
+time when pushing data into the cache and because there are 30 users, my conclusion at this point is because the total amount of data being pushed into cache is about 7Gb (total server memory is 16Gb), the data gets pushed in and out of cache very often.
+If I can prove, with this theory of mine, that there is no way, then they might allow for a re-write of the procedure.
+Now, I have about 30 users running the stored procedure in the same time interval and they have reported experiencing about a 10 second delay when pressing the "Next" button.
+Just doing some quick math here, but 250Mb of data is about 31,000 pages, meaning that each row is being pulled from 10 pages.
+And, if there aren't many (or any) other queries against the table(s) being selected from in this particular stored procedure, then you can get a sense of how much data it pulls in.
+I know there is the PLE counter in sys.dm_os_performance_counters, but I think in my scenario that won't help me very much.
+You might need to uncomment the WHERE condition related to the TableName to narrow things down to what is being used in that Stored Procedure.
+Disclaimer, all of this was handed down to me to improve:

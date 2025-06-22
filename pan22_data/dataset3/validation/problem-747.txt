@@ -1,0 +1,18 @@
+We just updated nginx code to enable keep alive for all opened sockets.
+You will then need to also decrease keep alive time (from default 2 hours) and maybe keep alive interval.
+Load balancer has unconfigurable timeout of 4 minutes after which inactive connection is killed.
+So, if server takes more than 4 minutes to reply the connection is killed by the load balancer.
+But no keep alive messages between nginx and load balancer, so eventually connection dies.
+We tried other reverse proxies (IIS ARR proxy, haproxy) and always ran into the same issue.
+so_keepalive option seems to be related to the TCP keep alive for connections opened to nginx from client (browser).
+If client connects to nginx, it sends keep alive to nginx and all is good with connection to nginx.
+Everything works fine except nginx doesn't send keep alive messages to the server it opened connection to.
+We have IIS servers in Azure behind load balancer.
+How could we configure either linux with nginx, nginx, or IIS behind load balancer (to which nginx connects) to get them to send keep alive messages to keep connection open?
+We can't configure load balancer (outside of our control).
+http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_socket_keepalive
+Put it in ngx_event_connect_peer right after socket is created and connection is retrieved (ngx_get_connection).
+If a client (browser) connects to the load balancer directly, it sends TCP keep alive messages and all is good.
+Both in Linux and Windows the program which opens connection must set keep alive option on the socket for keep alive packets to be sent.
+We're trying to setup nginx as a reverse proxy to the IIS cluster described above.
+See http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/ for more details.

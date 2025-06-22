@@ -1,0 +1,6 @@
+You'll want to make sure that rediscluster is a registered save handler for sessions. You can check that in phpinfo().
+You'll also want to tweak session garbage collection lifetimes and the probability that it'll happen on a given session_start() call to make sure old sessions are cleaned up.
+Failover and distributing between master and slave nodes does not appear to be documented that well (I plan to raise a Github issue) but if you've only got a few shards and single nodes on each, I believe this should work (since AWS doesn't require you to list the endpoint of each node, and just the configuration endpoint).  You don't actually need to specify any options.
+Your session save handler is set to redis, not rediscluster.  See: https://github.com/phpredis/phpredis/blob/develop/cluster.markdown#session-handler
+You're also using the redis style for your save_path, not the rediscluster style.  That requires only hostname:port in the save_path, but also at least one seed at minimum.  It should look something similar to:
+Where option is any of the options defined in the cluster.markdown file (timeout, read_timeout, persistent, failover... and maybe distribute). 

@@ -1,0 +1,8 @@
+I am not familiar with Box2D, but normally a physics engine should give you ways to check the normal of a collision.
+If the player is coliding with the ground, then isColidingWithGround equals true, else isColidingWithGround equals false.
+Inversely if he is not colliding, or if none of the collision normals are pointing 'up' then he is falling.
+Sometimes the player is still in contact with the ground after the initial jump impulse, and I find that with using these two flags, it prevents jump() from being called multiple times when jump is pressed.
+If your character is humanoid, you should probably move and check only the feet of the character, as otherwise your character may end up being able to jump even when standing on his head!
+When the user presses the jump button, if isColidingWithGround is true, and isJumping is false, then call jump() which sets isJumping to true
+Very naively and simply, you could check if the player has a y-velocity (velocity, not speed) which is > 0, assuming you're using (0,0) as top left.
+Move all relevant components in your "bunch of fixtures" (which together make the player) downward by a small amount, and check for collisions with anything you consider possible to jump off of. If there is no collision, the player is falling. Otherwise, he isn't. Don't forget to move the components back up by that same amount.

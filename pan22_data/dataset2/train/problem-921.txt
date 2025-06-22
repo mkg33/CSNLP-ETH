@@ -1,0 +1,6 @@
+dbcc reseed needs sch-m lock, so it's the biggest disadvantege of the replication mechanism. Sometimes locks wait for long transaction...
+In my research, I learned that inserting records alongside identity values can cause the next identity for the table to be reset, which is something I want to avoid due to key range management issues.
+I wrote own replication system for SQL Server and it works for 3 years. It has ~70-90 subscribers, it's faster then SQL merge replication (for my specific applications), but it has some problem with locks.
+I'm working on a project that has hit a bit of a snag: I'm replacing some replication with a home built system so that if replication goes down we don't blow our SLAs with our customers and shell out hundreds of thousands of dollars.
+– I have some constraint for inserting rows (to make sure that inserting rows is from specyfic range)
+Alternatively, has anyone figured out a way to insert identities like replication does without causing the identity value to get reset?

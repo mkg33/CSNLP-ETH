@@ -1,0 +1,20 @@
+I have installed VMWARE EXSI 6.7 on my HP server and I've setup 2 VM's.
+spanning tree communication so I will try to avoid use VLAN 1 now to not cause misunderstanding...
+I would like to have them on 2 different subnets... first on 192.168.2.x and the second is 192.168.1.x.
+In case I am right the issue would be that you are sending VLAN 12 as native ( not tagged ) traffic but portgroup expect specific VLAN which is not found there (as it is not tagged) so the communication is not working.
+In the VM that I want to have on the .1 network, I've changed the hardware properties to have the network adapter point to Management Network 2 (A port group that uses the new vSwitch1).
+One is for a SCADA system and the other is for a Maintenance server.
+This second one can be then used for VMs and these two portgroups can then communicate together...
+There is not problem to have more portgroups with the same VLAN ID on the same vSwitch.
+Once you will assigned VMkernel NIC to portgroup you cannot use the same portgroup for the VMs so even it would be in the same VLAN you have to define another port group on ESX even with the same VLAN ID on the same vSwitch.
+I've connected a second cable from a physical switch on my .1 network to a second port on the server.
+You are using almost all important terms... Let to do quick overview.
+Once you are using 802.1q tagging on the physical switch (VLANs) you don't need to separate the traffic into 2 vSwitches.
+In networking (in general) the VLAN 1 is used for default VLAN and also used for e.g.
+Although I've changed the Nic properties in Windows Server to a static IP on the .1 network, I can't communicate with this server...
+I've used one of the 4 physical ports on the server to connect the Host to the .2 network and I can communicate fine to it.
+VLAN ID 0 on port group correspond to "native" VLAN (untagged) traffic on the connected physical NIC.
+I'm new to VM's as I've always setup physical servers in the past.
+Portgroups has assigned VLAN ID so it is acting as logical switch in point of view of VLANs on physical switch.
+Two portgroups with defined VLAN ID on vSwitch will do the same stuff...
+I've created a new vSwitch (vSwitch1) and linked it to the second port vmnic1.

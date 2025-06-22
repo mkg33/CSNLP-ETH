@@ -1,0 +1,14 @@
+This looks pretty straight forward, if the distance is less than 20, return a bool. However, if we follow the Single Responsibility Principal, this function is actually doing 3 thing. Calculation, determination and returning a result. Let's split it up:
+See how easy this code is to read? This is the sort of thing you can do with Python (or all code). Obviously this is only a small part of your code and you have a lot more to change, but I can already see some code duplication right below the if statement we just improved:
+I also see a lot of comments which state the obvious, for example, above "set up screen", and below: 
+As we've updated that, we can now go back to the large if statement. Given a collision, we update the pong, so let's extract that into a separate function:
+Okay, thanks for fixing up the code. Now, to make it more pythonic, we need to move all the statements (not functions) into the entry point, which is a 
+As we're trying to keep the variables in the main loop the same, we need to pass them into the function and get them out again after the state has been modified. I don't like the name "change_pong_direction", but for the moment it will do.
+You don't need comments in your code if you've written code which expresses what you're doing. The comment # check for bounce and redirect it is useful, as the code doesn't explain in clear english what it does (so :thumbsup: there).
+Now we have a calculation function that only performs a calculation, and the isCollision function returning True or False. I also renamed your function into snake_case, this is preferred when using Python.
+Here we see four things - first is the check for collision, next is a modification to the x and y, then we update the score, and write something to the display.
+etc. The code still runs as expected, and now we can look at what needs improving with the code. My IDE says you have 3 imports which are unused. I've ripped those out.
+See how the string has been embedded into the function? This (might) make it easier to introduce a "display" interface later on, if the score_pen changes to something else, you can easily inject the message into a different function.
+I've actually added another variable as part of this function, just to make it a little clearer. Of course you can improve it, but it looks like there might be an opportunity to adjust the 10 at a later stage. Such as for games that last longer than a minute, to increase the per-score points. Anyway, continuing on... we need to now write the score to the display:
+Now we get a little deeper, and see all the if statements. A famous programmer said (in many ways) "every if statement is a function waiting to happen". Let's look at one chunk of your code:
+Let's look at the scoring function now. As mentioned above, we are actually doing several things. Incrementing the score, and changing the display. Let's separate those commands into functions.

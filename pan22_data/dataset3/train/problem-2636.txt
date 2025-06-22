@@ -1,0 +1,24 @@
+With cygwin you can get rsync on windows but that may make things a bit messy.
+Rsync works by breaking down files into smaller blocks and then only transfers the blocks that changed across the network.
+If A goes down then all of the data is on B and vice versa.
+Windows isn't my area of expertise but rsync may help get the backups from one site to the other.
+There are some versions of it for Windows out there but I've never used them so I can't comment on how well they work.
+Whatever you do spend the money to ensure that your data is secure befause on the day when you loose it all or it's corrupted the cost of a robust backup solution now will seem like pennies then.
+I know it will do the delta diffs, but not sure about your replication needs.
+I am in the process of setting this up for internal use.
+You could then simply replicate your VTL backups from each site to the other one, and that's about it.
+http://www.microsoft.com/systemcenter/dataprotectionmanager/en/us/default.aspx
+If you're data is chanign a lot then you will probably have to consider some hardware medium for your backup but if the changes are failry small each day then you could consider an online backup service in that case.
+In addition to this we still take a backup of the DB regularily and the files are backuped offsite.
+With NLB the end user doesn't need to know which server they are hitting so this minimizes both downtime and the need to worry about a lot of configuration issues.
+If you want to increase the speed of your site to site replication, you might look into a WAN accelerator.
+Another admin just recommended the ones from Riverbed to me: http://www.riverbed.com/index.php?cnt=1
+But ideally you should find a rsync client for windows that will allow you to use the scheduled tasks to automate it's execution.
+I set it up for 16TB backups and it just works fine.
+Essentially they compress the data before sending it and decompress the data after receipt.
+It's well supported on windows, it synchronize only changed data blocks like rsync, it has an easy to use GUI, and is free both as speech and beer.
+The Data is mirrored to the failover machine so if A goes down B will automatically assume the role of primary DB.
+I was unaware that Microsoft offered such a product until just recently.
+If you haven't looked already, checkout Data Protection Manager(DPM).
+Secondary (Failover for Server A) node for SQL Server
+The files are replicates via the replicaiton agent which takes care of our websites and this is updated whenever files chang ein either server.

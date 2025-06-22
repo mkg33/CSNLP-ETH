@@ -1,0 +1,29 @@
+If you run vi `which pecl` on the command line you should see the contents of the PECL command (as noted above, its just a shell script), and if you inspect the last line, you will see something like this:
+Must of us will use dotdeb, and the have removed xml from being build-in to being a separate package:
+Many answers recommend to install php-xml, but its not working for me, when I type specific version like
+Ensuring PHP is built with XML support compiled in, is however a long-term fix to the solution, but may not be ideal for everyone's circumstances.
+In searching for tips on how to solve this issue, I came across this question, and now that I have discovered a working solution I wanted to share my findings here.
+You may see this error when trying to run PECL if your PHP installation does not have XML enabled by default, but instead XML support is usually loaded into your PHP installation via a PHP extension module (this could occur if the ./configure --disable-xml flag was specified when building PHP from source, or if you installed PHP via various package managers where that build of PHP is configured to load XML via an extension module).
+exec $PHP -C -n -q $INCARG -d date.timezone=UTC -d output_buffering=1 -d variables_order=EGPCS -d safe_mode=0 -d register_argc_argv="On" $INCDIR/peclcmd.php "$@"
+Just for completeness, if you run vi `which pear` you will see a very similar shell script to the one that PECL uses, however the -n flag is missing from the command which calls PHP and as such the PEAR command is not subject to these same issues.
+will no longer include xml, which PEAR package parser depends on (XML parser).
+Notice how the last line of the error output from PECL is XML Extension not found – the reason this error is appearing is because when PECL tries to use its XMLParser.php class it fails because it cannot access the XML extension (it checks for the XML module using extension_loaded('xml') around line 259 of the XMLParser.php source), and because the XML module is unavailable, it cannot parse its configuration/settings files and outputs all of the other errors seen above.
+Finally after some further research and reviewing the source code for PECL/PEAR I found the real cause.
+The problem flag which the PECL shell script is using is the -n option, which tells PHP to ignore any php.ini files (and therefore PHP will not load any of the additional extensions your php.ini file specifies, including in this case XML).
+Since it is critical for pecl to not use php.ini of the system, to guarantee functionionality in all cases ( even if the disfunctionality is the reason you run pecl .. ) it will not change using -n .. rather the dotdeb guys need to finally stop repackaging, restructuring and shifting arround packages without even slightly testing it.
+There is also an issue with the shipped PEAR package, which needs to be upgraded with...not allowed to post anything else due to the current reputation
+Alternatively, you can recompile PHP from source making sure that the XML module is compiled into the PHP binary instead of being loaded from a PHP extension module at run-time.
+You should not see the XML extension listed when you run the second command because the -n flag told PHP not to parse our php.ini file(s).
+Other suggestions I had found online which included erasing and re-installing PECL/PEAR and even my PHP installation did not solve this issue.
+Obviously editing the PECL shell script to remove the -n flag will only fix the issue until PECL/PEAR gets re-installed, hopefully however the maintainers of PECL/PEAR can update their repo with this fix.
+Remove any PEAR RPMs completely, then rm -rf /usr/share/pear/ then install pear again and all your modules.
+If you edit the PECL shell script, omitting the -n flag you should now be able to run PECL again without issues.
+The reason for that, is, how mention above, the missing XML extension.
+The reason this issue occurs is due to the way that PECL operates.
+I had installed PHP via the Yum package manager, and then needed to re-install some of the PHP extensions I was using.
+The PECL command itself is just a shell script, which first works out where PHP is installed on your system installation, and then calls PHP on the command line with a number of flags before providing the path to the main PECL PHP script file.
+source: https://www.dotdeb.org/2016/06/24/php-7-0-8-for-jessie/
+You should see the -n flag listed between the -C and -q flags.
+I came across this error after updating my PHP installation to 5.5.14, on RedHat EL v6.
+you have to install php-xml package in order to fix "XML Extension not found" problem
+One can see the impact of the -n flag by running the following two commands:

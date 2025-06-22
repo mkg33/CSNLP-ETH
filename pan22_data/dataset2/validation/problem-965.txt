@@ -1,0 +1,5 @@
+2) split the object to different sub-objects (at triangle level) based on the material and issue separate draw call for each. This keeps the shader simpler, but has higher CPU overhead due to more draw calls.
+I tried passing a variable from the vertex shader to tell the fragment shader whether or not I wanted part of an object textured. That way I could write another shader for the other parts of the object. Unfortunately, what I have creates the undesirable effect seen here.
+1) put the textures for the house to a single texture are just UV-map the object accordingly. If you would need to use different BRDF etc. for different parts of the object, you can use uber shader and switch in shader and use another texture to control which BRDF to use in which parts. The benefit is that you can render the entire object with a single draw call reducing CPU overhead with the expense of some GPU overhead due to the uber shader.
+When I rearrange the code a bit so that the bottom half of the house is textured instead of the top I get this
+In vertex, put  vPos as varying. Then instead of doing the height check in vertex, do it in fragment.

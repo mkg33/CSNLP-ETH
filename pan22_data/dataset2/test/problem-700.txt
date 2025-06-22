@@ -1,0 +1,18 @@
+Bacula is an Open Source Backup solution. It's architecture is designed after that of major commercial solutions.
+Job scheduling is very rigid in Bacula. You can define intervals and start times for every backup job, but there's no automatic tuning/distribution of the jobs based on (changing) amounts of data which need to be backed up.
+This is again due to the fact that they can't generate good reports because we don't give them root access to the severs.
+While these fail many of the "enterprise" criteria specified above, in my experience the keep-it-simple, standardized approach is more likely to result in your data being both recoverable and secure.  Keep in mind there is no one ideal solution for backing up all systems, and developing effective backup strategies for each one involves more than just buying an agent for a commercial program.   
+Bacula consists of file daemons (clients), one or more directors (Job Schedulers) and one or more storage daemons. Each director can use multiple catalogs (SQL Databases) to store information about jobs.
+No native interfaces for monitoring or performance data exist, although this information can be extracted from the SQL databases without too much troubles. There've been some improvements in this area in Bacula 3.0, which I haven't explored in detail yet.
+Bacula is working on a Live system which aids in bare metal recovery. See the release notes for further information.
+The problem here is that NetBackup has assumed this for you - so suddently, the backup team ask you for all sorts of access (root access to be specific).
+Oh - the reports that you get from NetBackup are also inferior to that which you get from Legato.  NetBackup reports (which I've seen to date as managed by our backup team) is very useless - to the point that we have asked them to tell us if it went ok or not, and we depend on them (i.e. we don't monitor the backup email ourselves anymore).
+All configuration exists in the form of plain text files, which can be easily versioned by a SCM. Additional state of the software is entirely in a SQL database, which can be audited by appropriate tools on the database side.
+Bacula 3.0 comes with a new plugin system and native support for Exchange 2003 & 2007. Additionally there's an extensive framework to run custom scripts on client side before/after backup jobs.
+This is by no means a complete answer as I simply don't have a complete answer, but I can comment on two products...
+After 10+ years and thousands of dollars, I have given up on both tape and commercial solutions.  We now backup to disk, and I look for a backup solution to be:
+Firstly, NetBackup would not be such a disaster if the team responsible for the servers was also the team in charge of the backups, but in the case of an enterprise-sized company, this is often not the case.  That is, there is a separate backup team.
+Another flaw of NetBackup is that - say you want to revive a server from scratch, from backup - you actually can't.  You need to install the Operating System, install the netbackup client, and then restore the files.
+I think all of the major commercial backup software has its quirks.  I'm actually starting to like HP's dataprotector.  I've used legato and netback in the past and hadn't even heard of data protector until my current gig.  After using it for a year I'm fairly impressed.
+Authentication between daemons is always secure, to encrypt the communication between the daemons, a full rollout of PKI (client certificates) must be done.
+Bacula stores all file contents in volumes which can be stored on local filesystem, on tape drives or even on DVD media. Support for tape autochangers exists.

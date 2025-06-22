@@ -1,0 +1,11 @@
+Port bindings are set up correctly in the network configuration tab of the software iSCSI adapter.
+The VM will have two virtual NICs on the iSCSI VLAN.
+The PS5000E will be presented as an iSCSI device to a VM than runs Windows Server 2012 R2, formatted with NTFS and used by that VM exclusively.
+VM will have Dell EqualLogic Host Integration Tools for Microsoft installed which should take care of the OS side of MPIO to the PS5000E.
+VMware vSphere 5.5, software iSCSI, each host has two physical NICs connected to the iSCSI VLAN.
+It seems to me that the module is not required because the PS5000E is not presented to ESXi and any iSCSI traffic is pass-through, but I can't find an actual reference to back this up.
+iSCSI traffic runs through a standard vSwitch which has two vmkernel ports, each vmkernel port has one physical NIC assigned as active and the respective other set to unused.
+Single Dell Equallogic PS5000E array, fw 7.0.5, dual controller, NIC0 and NIC1 on each controller are on the iSCSI VLAN, NIC2 on each controller is on the management VLAN.
+The question is whether the ESXi hosts need the Dell EqualLogic Multipathing Extension Module for VMware vSphere to take full advantage of MPIO between a VM on those hosts and the PS5000E without that the storage is presented to ESXi?
+Sidebar discussion: The only reason to give the VM two virtual NICs in the iSCSI VLAN is to aggregate storage bandwidth in and out of the VM to the PS5000E.
+The PS5000E will not be presented to the ESXi hosts and will not be used as VMDK datastore.

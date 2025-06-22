@@ -1,0 +1,13 @@
+How would I build an LDAP query for AD that returns all users in a particular security group whose accounts are not disabled?
+According to the userAccountControl docs that means the following values are set:
+Sometimes a set of yes/no values is stored in a single value by setting various bits.
+Looks like this will work, but it won't pick up nested group members:
+If the value for that bit is 1, then that bit is set.
+For example, 546 in decimal is the binary value 10 0010 0010 - in decimal, the sum of 512, 32, and 2.
+It doesn't matter what the other bits are set to, so you are effectively asking if userAccountControl & 2 == 2.
+However, for example, if you had a user who did not have PASSWD_NOTREQD set (so their userAccountControl value was 512), or one who also had DONT_EXPIRE_PASSWORD (65536) set (meaning their value was 66082), you would not find those users in your query.
+(All those numbers are powers of 2, which means they only have one '1' in their binary representation): That means those three yes/no values are set.
+The LDAP syntax for checking a bit using AND is 1.2.840.113556.1.4.803, therefore you can see if the ACCOUNTDISABLE bit is set with (userAccountControl:1.2.840.113556.1.4.803:=2).
+What you need to do is use a bitwise AND in order to query the value of only that bit:
+(foo)) around it gives you all the users who are not disabled.
+I’m attempting to setup Google Apps Directory Sync and would like it to sync all users that are part of the “Google Apps Users” security group whose accounts are not disabled (or optionally, just suspend accounts in GA if they are disabled in AD).

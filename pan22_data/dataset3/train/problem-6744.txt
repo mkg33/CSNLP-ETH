@@ -1,0 +1,24 @@
+The original Magento was set up with v2.1.8 but I have had to update/upgrade the installation a number of times as the needs/requirements of the project have changed.
+As a result, I do not necessarily have all the original files as they were installed (I backed up some, but after changing multiple times, I had to trim down what I was backing up) and can't necessarily ask the person who originally installed/configured this what he did.
+But when I run certbot to test the renewal (per suggestions I saw in the various instruction pages) it fails:
+The first problem occurred when the apache server was mysteriously shutting down overnight with no fan-fare.
+You just need to configure new blocks for nginx containing your domains, after that calling certbot
+I need to know what is still missing to get the renewal to work properly
+All of the instructions I can find on setting up letsencrypt seem to assume you haven't done anything yet and don't yet have a certificate.
+Part of the problem is that I am now using the Magento advice and set up apache to just do http in the background with a varnish cache and nginx handling the actually https stuff.
+My server is hosted in Digital Ocean but generally you can do that with any server hosted anywhere.
+I did this for 3 domains now and it worked, but try it at your own risk and make backups of original files before you do anything.
+In each of these files, there are two lines where you need to replace apache2 with nginx
+If you also want to migrate the certificates to a new server, I summed everything up in my blog here https://peacemoon.de/blog/2019/01/13/moving-servers-and-lets-encrypt-certificates-from-apache-to-nginx/
+The original set-up was just a stand-alone magento-CE on apache2 with https.
+(I also modified the 'installer' line but not sure if that is needed since it was installed under apache2)
+But I do have certificates, I just don't have whatever nginx and letsencrypt need to run the renewal properly.
+I inherited a very new magento configuration from a previous employee (who left for another job) where I currently work.
+I modified the /etc/letsencrypt/renewal/myhost.conf to use nginx instead of apache for the authenticator.
+I recreated a .well-known/acme-challenge/test file in the server root and added a Directory and Location issue and confirmed it accessible from both the apache server on http at port 8080 and through the cache on the nginx on port 443 with https.
+Finally, to test if it went well, try renewing your certs with
+What I need now is information on how to finish migrating the set-up so it the renewal script will work with nginx instead of apache2.
+I traced that down to a cron job running a renewal script for letsencrypt that was trying to verify the certificate via apache2 (which is no longer doing https or talking on port 443)
+I manage to get it working by, setting authenticator to nginx, commenting pre_hook and changing post_hook to systemctl start nginx to systemctl restart nginx in /etc/letsecrypt/renewal/*.com.conf.
+If you don't get any errors, it means the renewal succeeded.
+Just a received SIGTERM message in the error log which suggested something was shutting it down.

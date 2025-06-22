@@ -1,0 +1,27 @@
+The original backup solution was to load the files as blobs in a database by the md5 signature.
+I worked with a server that stored about ~20 million files where 95% are less than 4k in size and about 50% are deleted every 90 days.
+Created an ISCSI target which is in fact one large file (.vhd)
+To backup one big file is much faster than a lot of small files.
+It just does a snapshot (or Volume Shadow Copy in MS parlance), then backs up all used blocks in the file system in-order.
+You don't mention an operating system but something like ZFS or a NetApp filer would allow this and both are being used for this exact function all over the place.
+Or to use a system that bypasses the FS, like a RAW copy like poige suggested.
+The faster you get all those small files into bigger files, the faster your overall process will be.
+Windows Server Backup in windows 2008 and later does volume-level images, so it doesn't ahve to troll through all the millions of pieces of file metadata.
+This way there's little impact on the actual server and the backup system can take its time doing the backup without concern for the main system.
+We bought a NAS with Windows 2008 storage server R2 on it.
+I'd strongly suggest using a file storage system that allows you to snapshot the volume and backup from the snapshot.
+With many small files, the FS is constantly reading metadata about the files which might be separate to the file, or the files that you are reading may not be in a nice contiguous clump on the disk.
+Unfortunately, if all you are doing is copying those files once, then having them in a single large file like an archive will only make the process slower.
+There are a couple of downsides: every backup is a full backup, there is no compression, and you can only store one "image" per target folder if you're going to a network share.
+The bottlenecks here are going to be the file system and the HDD itself.
+This was phased out since creating millions of md5 hashes took longer than just making a raw image backup.
+They also create a index file of names, md5 hash and date created via a script and use that to track the contents.
+Reads are sequential, so it is very fast, and writes the results to a big .vhd file on another volume or network share.
+You can install the backup software also on the NAS and attach your tapedrive to this.
+In either case, the drive head has to move around a lot.
+You can overcome the latter with scripts, and the former with other tools like 7-zip, rsync, or any other backup/compression/deduplication tool that can handle raw files.
+You'll probably end up using the command-line wbadmin interface for this; ignore the GUI, it is just too simplistic for most use cases.
+The optimal ways would be to either copy all the files once to a secondary location and then use the modified dates and sizes, or the archive bit, since you are using Windows, (not content examination like hashes, that would still involve reading the files) to determine which files have changed, and copy just those to the secondary location and backup from there.
+I'm sure there are other file systems that offer this but I know these work.
+That way you don't have to use double storage (mirror the data and backup the mirrored data in order to buy time)
+Mounted the ISCSI target and moved all the files to the virtual disk.

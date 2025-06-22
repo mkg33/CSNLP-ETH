@@ -1,0 +1,11 @@
+First, you do not make snapshots of directories but (whole) file systems (or volumes) with ZFS.
+I am not certain how the comparison of the two snapshots would take place, but it seems like it should be simple.
+Moreover, even while snapshots are very lightweight with ZFS, triggering a snapshot for every file change would probably hurt performance unless your file system has a really low update rate.
+I'm not sure thousands or millions of snapshots would be manageable.
+Couldn't you write a script to make a new snapshot, compare it to the last snapshot, and if nothing has changed, simply remove the snapshot?
+A file can be updated by a very large number of write operations, each of which would create a snapshot according to your requirements.
+Assuming you want to avoid snapshots every five minutes with unchanged files, you could implement a dtrace script triggered writes occur that create a flag file; then a script that runs periodically via cron which creates a snapshot when the flag file exists.
+http://constantin.glez.de/blog/2010/04/how-automatically-update-your-home-media-server-library-dtrace
+1) is probably the easiest way to do something, altought you might miss some changes, but you will not have snapshots with no changes piling up.
+Constantin Gonzalez wrote a blog entry which covers most of what you'd need to implement this:
+1) cron based zfs diff (Solaris 11 Express++) and if something changed -> Snapshot()

@@ -1,0 +1,16 @@
+I have a VPC setup with a public subnet, and a private subnet.
+I can even ssh connect to the private instance from the public instance.
+By default AWS will check the source and destination of network traffic, so an instance must be the final destination of any traffic it sends or receives.
+And I can't seem to find any log messages about dropped packets.
+I didn't want to use the NAT for this since AWS apperantly pre-configures the NAT instances when you set them up and I heard using iptables can mess that up.
+To route traffic from one instance to another you will need to disable this check:
+Ok, so I've been racking my brain for DAYS on this dilema.
+and 1.2.3.4 should route it to the internal server 10.10.10.10.
+These are the rules I have setup on the public instance (not the NAT).
+But I need to set it up so that I can connect to the private instance directly using the 1300 port number, ie.
+http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_NAT_Instance.html#EIP_Disable_SrcDestCheck
+My security groups and ACL settings allow communications on these ports in both directions in both subnets and on the NAT.
+I can connect from SSH into a instance in the public subnet, as well as the NAT.
+I changed the SSHD configuration on the private instance to accept both port 22 and an arbitrary port number 1300.
+Now I heard iptables is the job for this, so I went ahead and researched and played around with some routing with that.
+Another potential problem is that routing has not been enabled at the kernel level by running something like:

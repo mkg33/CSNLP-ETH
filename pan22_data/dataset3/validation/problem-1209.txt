@@ -1,0 +1,17 @@
+I'd like to add that you're only looking at one metric - index fragmentation.
+While certainly important to IO, I've also found it quite helpful to explore my systems and see if I can ascertain how to best maintain it, rather than updating, rebuilding, and reorganizing blindly.
+Consider the following scenario (using AdventureWorks2014):
+Ok, our fragmentation numbers are modestly better but not significant and, to your point, perhaps not worth the overhead of rebuilding over reorganization.
+We create a new auto-created statistics object (_WA_Sys_00000006_44CA3770, in this example) by filtering on SalesOrderID and then we delete rows (~30,000 of them).
+We then introduce further modifications by deleting rows with a specific ProductID.
+There's more to evaluate than whether or not you're getting good defragmentation rates.
+However, we have noticed that even with really high fragmentation (over 95%) on large and small tables, REORGANIZE works fine.
+This is important because it's a leading column in at least one of these indexes/stats which, in turn, is important for selectivity calculation reasons (statistics), and b-tree traversal (index).
+Let me quote another part of that same page, which basically says IT DEPENDS - emphasis mine:
+On this MSDN Page it says if you should reorganize or rebuild based on the amount of fragmentation:
+There's not really a good answer for this except "it depends"... those are just general guidelines and may or may not be appropriate depending on the number of rows, the columns in your index, their data types, how wide the index is, what else is getting written to disk in between writes to those tables, etc.
+Like how big should I size tempdb, what is a good threshold for PLE, and what type of car should I buy, the answer is the same: IT DEPENDS.
+That's a good start, but there are other things to consider.
+@AaronBertrand has a very good answer and is correct - it depends.
+There are a few other things worth noting, though.
+The index fragmentation isn't so bad, so let's reorganize.

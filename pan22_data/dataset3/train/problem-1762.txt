@@ -1,0 +1,48 @@
+If you do have performance problems then you might consider using a smart relay to offload messages from your server faster.
+The usual bounce rate for a large email list, even an opt-in one is about 20%.
+Ubuntu uses this router to prevent deliveries running as root.
+Try running exiwhat to see what deliveries are being attempted.
+Personally, I'm not a big fan of exim - I've had much better experiences with sendmail and postfix, although I admit that its been several years since I did any serious testing on MTAs.
+Rather than switch off the logging, it might be a good idea to temporarily add forwarding for the root account to see exactly what all those emails which aren't getting delivered are about.
+Possible values are detailed in the Exim Specification (likely chapter 49).
+On a high volume mailing list the entry is added to maillog on every email that goes out as well as on every bounce email received back.
+This should help reduce the CPU overhead writing to this log.
+By simply disabling maillog you can decrease your system load by "a lot", sometimes by as much as 50%
+SPF, DKIM) - IIRC Exim does not directly support milters - there are a lot of useful milters available - notably milter-limit.
+However, as you are using Exim this log is not used by default.
+A lot of email providers now implement throttling as a method of spam blocking - while sorting the email list by domain would help reduce DNS lookups, you might end up having problems with remote systems throttling or blocking mail.
+I'm guessing that the MTA is configured to send mail directly to their recipients.
+Certainly you are getting into the ballpark where you need to be a lot more sophisticated about email processing.
+Just comment out the entry for mail then restart syslog service.
+So, you must profile it and post here its sources.
+If you're already using a smart relay, then do check its configured correctly - IME, with a sendmail based setup, php mail() calls block for a long time (but somehow messages still get delivered?)
+Conclusion: monitor you bounces and keep your list clean - marked bouncning accounts and don't send mails to them anymore.
+The bounces really bugging down the server because not only your server has to send out emails that people don't see, it also has to receive and process the bounced emails.
+Check your configuration to ensure you haven't enabled use of syslog.
+It's very common for a system to reach the mailbox limit for the root account, which is usually 100MB.
+mailq should not have a lot of messages waiting delivery and fer which have been on the queue for a hour or more.
+As mfarver says, high load is not uncommon on email systems, particularly with the increasing number of synchronous checking done by mailservers to avoid spam.
+Once the limit is reached you are starting another problem where you cannot even accept bounced emails, so you system may be sending its own bounce messages adding even more load.
+Exim doesn't handle a lot of delivery processes running simultaneously well.
+Or are you inferring that tere is a problem based on the high load?
+Or is it the length of time the script takes to execute?
+As noted load average is related to the number of waiting processes in the run queue.
+Your maillog entry is marked not to flush on each entry.
+Writing to maillog is very resource intensive because it involves disk writes.
+System metrics (load, CPU, I/O) are often the only indicators most people have of the performance of their system - however actual transactional performance is something quite different.
+I don't know what email server you using, but on Linux you would usually look in the /etc/syslog.conf
+You should look configurations changes which may help.
+Do make sure that you're doing everything practical to avoid looking like a spammer (e.g.
+These metrics can provide guidance on how performance is constrained, but really its a lot more useful to look at how long transactions actually take.
+A long list of messages which have been on the queue for a while indicates you are attempting deliveries which are likely to bounce.
+Also, have a look at your DNS caching and see if it could be improved.
+Also modern CPU are usualy dual core, so it's like 2 CPU's in one, so the load is really more like 2 per CPU.
+If each of those processes has very little work to do and frees the processor quickly you can handle much larger load averages than the common 1 per CPU rule of thumb.
+Does that mean you are seeing problems with the mail queue not clearing down?
+But try switching Exim to queue only to see if this resolves the load (and more importantly any performance) problem first.
+As far as processing emails is concerned, there are 2 things you can do to decrease the load: 1) make sure you have a script that processes the bounced emails so that you can mark an email address as 'bouncing' and not send to that address anymore.
+Once more thing: the bounced emails usually come back to the root account.
+Mail is pretty much the perfect example of this, each process needs CPU to send a message but very, very little.
+I've seen mail systems running sendmail at a load average in the 25 to 35 range, and the system is still interactive and working fine.
+To resolve the attempted deliveries to route your can use a transport or an alias.
+To reduce what is being logged, add a log_selector specification to your configuration.

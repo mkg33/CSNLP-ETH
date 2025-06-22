@@ -1,0 +1,22 @@
+Then, whenever a like button's data must be accessed, one can search for the like_button_id column of the appropriate parent element, and go on from there.
+Your original solution is the first one presented on the slides, the one you propose is the 3rd one (but without using a base, parent table -more on this later), and maybe one can argue that is the one that seems the "cleanest".
+Also, there is a more direct relation in the direction like_button -> entity_to_be_liked.
+I was going to write a long post telling you that there are basically 3 ways to implement polymorphic associations, but someone (@Bill Karwin) has already done it better in a more compact way: http://www.slideshare.net/billkarwin/sql-antipatterns-strike-back/32
+Having separate tables, like in solution #2 on the slides can be helpful as we are doing some kind of manual horizontal partitioning.
+Assuming that like_buttons (in this example case) only has one id NOT NULL PRIMARY KEY AUTO_INCREMENT column, is this the best method for preserving uniqueness in ids across multiple tables of information?
+Consequently, I stumbled upon MySQL's trigger functionality in searching for a solution.
+The best solution I found seemed to be to define a new table, say like_buttons, with a primary key like_button_id that would be provided in a foreign key column within all other significant tables (blog_posts, comments, users).
+Quite often, I run into situations where there is an element (such as a "like" button) that requires a globally unique id despite being associated with a variety of different "parent" element types (blog post, comment, user page, etc).
+Previously, my design had been giving every like button a column for blog_id, comment_id, and user_id, and leaving the irrelevant columns NULL; if a like button is on a blog post with id 5, blog_id would be set to 5 while comment_id and user_id were NULL.
+This trigger would be repeated for every other parent element table, such as blog_posts and comments.
+I'm attempting to (re)design a MySQL database for a personal social networking site I'm developing.
+Regarding specifically the trigger, I have nothing against the concept, but I am not sure if it is useful, as on creation time it is completely empty.
+For example, the single table like_buttons may be much easier to query, but it can grow very tall.
+On the other side, having separate tables may be less flexible, as it may force us to change the code if we add another entity part of the polymorphism.
+However, when defining new comments and blog posts, I do not wish to have to add another line to my code separately defining a new like button just to pass the id to the significant element.
+Referential integrity will already be secured if you create the extra generic table that I mentioned.
+Is there any more elegant, efficient, extendable, or appropriate solution?
+The actual preferred solution is not always the cleanest, but the best fit for the queries to be done.
+(Apologies for any bad formatting or ignorance of common practices within this community; this is my first question here.)
+This implementation seemed redundant and unmaintainable, so I searched up alternative solutions.
+To avoid further protracted exposition, my question lies in the acceptability of the following example code:

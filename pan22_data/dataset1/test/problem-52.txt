@@ -1,0 +1,10 @@
+i was printing the input from a RF433 MHZ receiver.
+I'm using this simple code, just to see what was coming in:
+But then i got a very high number of True and False values in the command prompt.
+When i decoupled the receiver from the cable, i still got these values printer out to the command prompt.
+Only when i completely removed the cable from the device, i got only False values.
+Is it 'normal' that when you attach a connector cable 
+If you program a pin as an input, and just connect it to an open cable, it's reasonable that you get a mix of high and low. This is because an input pin is somewhat like an open circuit - a little tiny capacitor, actually - and when connected to an open wire, it will just float up and down according to whatever RF field the wire is receiving. You could add a pullup resistor to avoid this - even a weak one like 100k-470k would prevent this.
+You could try this: disconnect the cable, then connect the pin to ground using your fingers (one to ground and one to the pin - touch the ground first to avoid zapping the pin). You should see False, and it will stay like that even when to remove your finger. Then connect the pin to +3.3 v using your fingers. You'll see a True, which may also stay after you remove your hand. What you are seeing is that the tiny capacitor is acting as a memory cell and just retaining the most recent voltage.
+(I've not actually tried this with the Rpi, but I've seen this happen several times, and quite repeatably, with digital input pins. It's a great way to demonstrate what happens when you leave digital inputs floating).
+Some of the rPi pins have pullups on the circuit board (GPIO0 and GPIO1, since they can be used as I2C that requires pullups).

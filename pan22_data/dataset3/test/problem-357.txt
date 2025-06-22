@@ -1,0 +1,15 @@
+Reason 2: You have optimize for ad hoc workloads enabled
+In the post-execution (actual) plan you provided, the only (undocumented) indication that parameterization was forced is that the first parameter marker is @0 in the Seek tooltip:
+Your plan guide is being applied, and the query is being forced parameterized.
+With this configuration option enabled, the first time you run the adhoc query, no plan is cached, just a plan stub.
+Reason 1: Post-execution plans do not show plan guide properties
+You would need to run the query twice to see the plan stub populated.
+The prepared plan does not contain the extra plan guide properties, as mentioned previously.
+So, without running the query, the execution plan shown in SSMS will have a root node with two extra properties (compared with the plan provided in the question):
+Notice also that the ParameterizedPlanHandle property points to the plan handle of the fully parameterized (prepared) query plan in cache.
+Without the adhoc option, the adhoc compiled plan will show the important plan guide properties.
+These properties do not appear in post-execution plans, nor in prepared cached plans.
+Unfortunately, this is not so easy to see in your particular situation, for a couple of reasons:
+A quick and reliable way to see that your query is using the plan guide is to request a pre-execution (estimated) plan.
+There still won't be a full plan (just a root SELECTnode) but this node will have the TemplatePlanGuideDB and TemplatePlanGuideName properties populated:
+Without the plan guide, your test query still qualifies for simple parameterization, but the parameter marker in the tooltip is @1:

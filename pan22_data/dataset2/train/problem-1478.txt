@@ -1,0 +1,7 @@
+For images (first FilesMatch) we set the "forbidden" ErrorDocument to a PHP file in our /server404 directory. Then we check if it is hotlinked (there we also do that for video files, thus two FilesMatch tags) and forbid access if hotlinked.
+The only effective way to do is is with mod rewrite rules. If the referrer is not from your own domain, then rewrite the image url to be one that is non-existant, somewhere else, or a 1px by 1px transparent gif.
+We used the /server404 path for a serverwide 404 error document for some time, so we already had that. You could also call it 403 or GlobalNoHotlink or whatever you want. 
+referer checking not always works, some proxies or even browsers strip HTTP_REFERER header from http requests. 
+it's much better to check some cookies in your content-generating code [ eg index.php that generates picture gallery ] and check on mod-rewrite or apache2 level if cookie is set to expected value.
+I have a solution, even if it is not very beautiful, because it leaves the default error 403 document changed even if the image is not hotlinked:
+It works - but it is not as beautiful as I'd like to have it, so will still be happy about other solutions.

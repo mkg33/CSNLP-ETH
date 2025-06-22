@@ -1,0 +1,18 @@
+No, firewalls don't habitually drop big DNS queries like that, as far as I'm aware.
+Does anybody know if this is enforced by major corporate firewalls?
+Google for cisco pix dns edns0 and you'll find a bunch of info on this.
+DNS' RFC notes that DNS queries over UDP are limited to 512 bytes.
+However, we are not very knowledgeable about common firewall behavior and would like some help.
+What you want to look at for your problem is existing implementations of IP over DNS, such as dns2tcp, nstx, or iodine.
+This is a classic problem with Cisco Pix firewalls.
+For a full treatise on these issues with low end kit see RFC 5625 and ICANN SSAC report SAC035.
+Since the typical user of this product (performance engineer) would not have access to firewall's settings, we would like to develop a method that bypasses firewalls with good rates of success.
+If on the other you're talking about low end firewalls, SOHO routers, etc, you're quite likely to come unstuck.
+Here is an example of a broken DNS at an important IAP in France:
+My company develops a product that should communicate between data centers.
+DNS packet truncation is something of a speciality of mine...
+Besides Alnitak's good summary, see also an excellent tool to test your DNS setup and see if it lets packets > 512 bytes go (as it should).
+We thought of tunneling the application data over DNS TXT queries, since it seems that (within the WAN) firewalls tend to let DNS queries pass by.
+If you're talking about real, proper, enterprise firewalls you're probably OK, although Cisco PIXes tend to come with a default setting that does limit packets to 512 bytes.
+For example http://homepages.tesco.net/J.deBoynePollard/FGA/dns-edns0-and-firewalls.html
+Specifically, we are wondering whether the big-brand firewalls block DNS queries over UDP that are longer than 512 bytes.

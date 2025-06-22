@@ -1,0 +1,22 @@
+There is a very annoying header in mail sent by the the Postfix daemon and I'm looking for a way to get rid of it:
+You'll need this to be part of the envelope when passing the message back to postfix.
+Sure, you can mangle existing headers in postfix if you really want.
+Here is an example header_checks snippit for your consideration.
+As the last thing the script does, pass the message back to postfix.
+Finally add an unfiltered smtp receiver to master.cf to accept the newly modified messages:
+You can use header_checks to either IGNORE the header, or, better, to REPLACE it using a regexp to X-Received or something similar.
+In master.cf on your smtpd line, change the last part to include the filter.
+Note that the sender and recipient here are from the envelope not the body.
+Headers checking is frequently one part of the Bayesian spam analysis.
+Somewhat off topic, but is it also possible to remove the hostname from the Message-ID, leaving only the domain?
+You then configure postfix to pass all messages to that script as a filter.
+But IIRC, most MTAs won't add that header unless it hasn't already been added by the MUA.
+That said, I would probably replicate this configuration for production networks in the future.
+Mail reputation is a tricky business, and cloaking all mail so that it appears to originate from a small number of relays makes that reputation management easier.
+This finds and grabs "Received: host1.amazonaws.com" and replaces it with "X-Cloak-Received: host1.amazonaws.com".
+You can also use Net::SMTP to make resubmission back to postfix easy.
+I use this on mail relays that send mail on behalf of servers in Amazon's EC2 cloud.
+As has been mentioned, Postfix header_checks is the place to do this.
+Anti-spam systems hate finding anything related to EC2, so this kind of cloaking is regrettably necessary.
+That being said, if you remove your Received: line, keep in mind that it may increase the spam probability on emails sent by that server.
+The first thing you need to do is write a script that will accept a raw message on STDIN, and modify the message as you'd like (I'll assume that you have this capability already).

@@ -1,0 +1,9 @@
+We have an legacy but very important app running on windows server 2003. App itself doesn't support any kind of HA and it's not the most reliable piece of software.
+Last week we had a special emergency when OS on application server crashed and it didn't go up again. 
+As far as I know when you use vmware HA the vmware keeps running two VM's which are perfect copies and are totally synchronized. 
+So I wonder what happens if app or os crashes in one copy of VM, does this mean that it also crashes in another ? But in this case HA doesn't make any sense. 
+How about OS updates if one update breaks the app ? 
+Can you please enlighten me on how does relly work this vmware HA and what against it protects.
+What you're describing is vSphere Fault Tolerance, which keeps a warm copy of a VM in lock-step with the running copy.  It's the same VM - an app crash in one copy is immediately replicated to the other copy.
+vSphere High Availability, which simply reboots a VM in case of failure, is capable of monitoring the state of the OS, and rebooting the VM if it stops receiving heartbeats from the VMware Tools installation within the guest OS.
+These technologies are both designed around keeping your VM running - keeping application services within the VM running needs to be handled elsewhere.

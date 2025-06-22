@@ -1,0 +1,12 @@
+What makes this issue different from other questions on the removal of orphaned InnoDB temp tables is that the database server seems to have deleted the .frm file, both, from disk and from memory (running lsof | grep sql-4593_1e9 shows only the .ibd file open)
+I do not feel comfortable removing the database files from disk manually, as I am not entirely sure it wouldn't lead to issues down the road. Even if the chances of tablespace id collision are near zero.
++----------+-----------------------------+------+--------+---------+-------------+------------+---------------+
+| TABLE_ID | NAME                        | FLAG | N_COLS | SPACE   | FILE_FORMAT | ROW_FORMAT | ZIP_PAGE_SIZE |
++----------+-----------------------------+------+--------+---------+-------------+------------+---------------+
+Can that be a source of the problem? If so, is there any way to recreate the .frm file of a virtually inaccessible table of unknown structure?
+|  1576129 | database_name/#sql-4593_78d |    1 |    118 | 1576115 | Antelope    | Compact    |             0 |
++----------+-----------------------------+------+--------+---------+-------------+------------+---------------+
+|  1576130 | database_name/#sql-4593_791 |    1 |    118 | 1576116 | Antelope    | Compact    |             0 |
+For the second time, I have encountered an issue, where our MySQL server (MariaDB v10.1) suddenly threw an error - Could not remove temporary table: './database_name/#sql-4593_791', error: 120.
+Following the guids like https://mariadb.com/resources/blog/get-rid-of-orphaned-innodb-temporary-tables-the-right-way/ does not work, I still get an error that the table is not known (ERROR 1051 (42S02): Unknown table 'database_name.#mysql50#sql-4593_1e9')
+|  1576128 | database_name/#sql-4593_1e9 |    1 |    118 | 1576114 | Antelope    | Compact    |             0 |

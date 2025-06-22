@@ -1,0 +1,9 @@
+Environment issues seem much more likely, unless you're receiving bounces from the failed mail attempts.
+But I assume you've probably already covered those bases as well as you're able.
+Generally speaking, "it works in one user's shell, but not from crontab (or in another user's shell)" means that the problem is caused by the program relying on environment settings (very often PATH) which the first user has in place, but are different or missing in the cron environment and the other user's shell.
+Another avenue you could investigate would be to tail -f your mail server log to see whether it might be receiving the message and then discarding (or bouncing) it, but that seems like a bit of a long shot and requires you to have access to the appropriate mail server's logs.
+The next thing, then, is to run the env command in the shell that it works for and go through the output for any settings which look like they might be relevant, then try transplanting those settings into root's shell environment to see whether they get the mail working there.
+Once you've identified the setting(s) that get it working for root, then you can also put those same settings into the crontab file and it should fix that up, too.
+(Check root's mailbox for them if you haven't already done so!)
+I discovered a bug in the provided script that allowed an option to be turned on when it shouldn't have been.
+If I were in the situation you describe, the first thing I would do is review the Perl code, because Perl is my thing, and then I'd put a print "Back from sendmail\n"; command immediately after the sendmail(%mail) or die, just to be absolutely certain that the program isn't exiting silently when attempting to send the mail.

@@ -1,0 +1,11 @@
+Does your NAS have an rsync service set up?  Some support it (e.g. ReadyNAS).  If so, you can do something like this:
+Check out my instructions at http://www.luxgruppe.de/tech/?p=10 and subsequent articles for syncing music and iTunes playlist with your Synology using rsync.
+If you save that as, say, ~/bin/backup.sh (and be sure to do chmod a+x ~/bin/backup.sh) then you can run it nighly using cron.  Run crontab -e and add this line:
+This gives you a copy in /backup/root/ and a backup of all changed or deleted files in /backup/incr/$DATE-$NUM. 
+When using rsync for backup the most import options to have a look at are --backup and --backup-dir, without those you are doing a copy, not backup. As with backup you want to keep track of changes, instead of just overwrite them. What I use is this:
+If your NAS doesn't support rsync as a service then I think it should work if you change the start to this:
+(0 0 * * * means: run at midnight every day, every month.  First column is minutes, so 3am is 0 3 * * *.  This will write logs in ~/logs so make sure that directory exists, or put them somewhere else)
+That works if the files are owned by you. I think you might want the E option (-avE) to grab the resource fork, which is not really used under OS X, as I understand it, but only your classic stuff, which doesn't work any more).
+If you want it extra pedantic, you can add --checksum, that will checksum all files instead of just using the timestamp for skipping. Advantage is that your backup will have a better chance of being free of bit-flips, but it will run for a good while longer.
+This script uses --one-file-system, so it doesn't cross file system borders and it uses --relative to get the absolute path names preserved.
+Another general advise, always use --dry-run when you play around with new option where you are not sure what they do, especially when it comes to --delete and friends, as you don't won't to wipe out your already existing backup by accident.

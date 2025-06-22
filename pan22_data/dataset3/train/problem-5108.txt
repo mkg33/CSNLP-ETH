@@ -1,0 +1,19 @@
+I'm not planning on having a lot of configuration options (maybe 20 at the most, more likely 5-10), so I'm not sure if key-value or multi-field is the way to go, here.
+I did this with a project recently, only I had even fewer settings to store.
+It seems like using the single row format is superior, because each field can have the proper data type (INT, VARCHAR, etc.)
+I've used this before, and it combines the best of both worlds, allowing for the flexible storage of the key-value, and the performance of the single row.
+Frankly for 20 options, I don't think performance will be too much of an issue.
+I think there are pluses and minuses to each, but if you're dealing with such a small set of configuration options, there is not going to be a huge performance hit.
+A single row many column table to hold the majority of the "common to all records" type of data.
+I'm planning on adding storage for configuration options to the website I'm working on (php + MySQL).
+I know this has already been answered, but hope that helps...
+The problem is that I cannot decide between having a 2-column table (with key and value fields) that contains multiple rows, one for each option; or an n-column table with one row.
+At the same time, though, it seems like having a key-value table would possibly be a performance issue since you'd have to fetch all rows to get the full configuration, as well as updating having to find and seek the proper row to update; you also don't get actual typing (and would have to rely on VARCHAR or TEXT only).
+This allows you to easily have the possiblity to add and a new parameter, or even a parameter type.
+and would make fetching all configuration values easier (single-row), but adding a new option would mean a new field every time.
+You can even promote one of the key-value pairs into an additional field within the common table, and then populate it from the data in the key-value table before removing the set of key-value data once an option becomes so common amongst your user base that it makes more sense to have it within the single row table.
+And a second table which has a foreign key field to the first table, and then two additional fields as key-value pairs.
+If I were you I would do a table Options with 3 columns:
+If you want to use per-user option, add a UserId column in the Options table.
+To put into perspective, phpBB's config table has almost 270 rows of config options.
+I opted for using a two column table, with each setting being it's own row.

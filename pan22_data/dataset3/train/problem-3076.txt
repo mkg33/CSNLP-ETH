@@ -1,0 +1,14 @@
+My setup consists of several servers including production, production fail-over, developer instances, etc.
+I would like all of the servers to have consistent environments.
+Longer answer: In Nginx each server or website is typically defined in an external file, often in the "enabled-sites" or "sites-enabled" subdirectory of the nginx configuration directory - I called mine enabled-sites as it makes changing to it quicker with tab completion.
+I'm currently leaning towards having an events-[subdomain].conf file for each server and creating a symbolic link to it named events.conf.
+The main Nginx configuration file typically includes everything in this directory.
+Short answer: yes, but there might be a slightly better way.
+The nginx.conf for each server could include only the files required by that server at that time.
+The production and production fail-over servers periodically swap roles.
+I could use the appropriate file merely by changing the symbolic link.
+If you can define your configuration files so they work on all servers in that role you may be able to avoid manual changes, and it might work better behind a load balancer.
+An issue that I've run into is that the NGINX main configuration file has settings that are tuned to the server hardware, particularly the events context.
+You could put all configuration files for all servers into this subdirectory and synchronise the directory, or refer to a directory in a shared location.
+The nginx.conf might be different but the server configs the same.
+I accomplish this in Apache by using virtual hosts, and enabling/disabling them as necessary.

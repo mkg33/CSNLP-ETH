@@ -1,0 +1,9 @@
+I would not model a one->many relationship as a many<->many one, with a junction table as you describe, because you are allowing more in your data model than the system it is modelling. You will need to add extra constraints, either in the DB if possible or other application layers, to enforce the more limited relationship and/or add code to detect and deal with breaches of this constraint that happen due to bugs.
+Is there a particular reason you want to disallow NULLs for a value that seems to naturally call for them?
+If so then you could create "partial junction table" or "extension table" (I'm making that terminology up, I don't know off the top of my head if this is a pattern that has a commonly accepted name):
+this way the FK ensures that you have a one->many relationship as each ID from TableB can only appear once while rows from table A can be referred to by many entities in TableB. The empty condition then becomes that the row does not exist. This avoids the NULL needing to be "stored" but you now have an extra table to join in every time you need to use this field.
+If you want to have a surrogate key as your PK, as in the example in the question, then the definition becomes:
+though that would be wasteful IMO unless you think that you might in later revisions change the relationship to be many<->many where it is valid for the same two entities can relate to each other more than once.
+What is the best way to design one-to-many relationship with nullable FK?
+TableB has reference to TableA but this reference can be null. What is the best way to design that? I want to avoid nulls in my database (or maybe I shouldn't). It is a good practise to add join table to one-to-many relationship? Like this:
+I know that in many-to-many is a good solution but I couldn't find enough data about this solution in one-to-many relationship.

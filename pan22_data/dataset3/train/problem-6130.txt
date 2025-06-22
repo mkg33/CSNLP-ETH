@@ -1,0 +1,17 @@
+If you want to have everthing distributed, you need to use a clustering solution.
+So curl http://app will go to your app container - no need to know an IP address.
+You can find a lot of examples for similar architecture
+ - Manual approach using docker run ... --link ...
+Either way, you have to go past your local dev env.
+From my experience you cannot use container links between containers deployed on different machines.
+If your app service is not public to the world, you don't even need to map its port with the -p option because the networking from inventory to app service is all internal.
+ - docker-compose with a configuration file showing how the apps are linked.
+You could deploy your containers to a bunch of Amazon EC2 machines and use a load balancer in front of them, or use a DNS mapper.
+From the inventory service container, you can access the app service simply with the name app.
+Either way is really just the --link option in use.
+There is an example of a PostgreSQL server with container linking in the docs.
+The documentation on how to do this with Docker compose also includes examples of linking.
+In my opinion best option for this architecture is using docker network and dns with environment variables
+You can use --link  for that even in compose file or as a command line argument.
+You can use docker swarm which takes care of the networking issues you might face.
+What you need to understand is this: Let's say you link your inventory service to your app service, you would do something like --link app when starting the inventory service.

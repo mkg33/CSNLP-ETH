@@ -1,0 +1,9 @@
+That sounds familiar, and I've seen the same behaviour coming from Linux based services. 
+It's an application-specific behaviour, although I can't recall which application I traced this too.... or even if I did actually trace it to an application...
+Basically, the application in question does its own DNS lookups using the normal libC resolver (which is normal in the case where something like nscd or dnsmasqd is not running as a local cache), and the client socket is closed before the response gets back. Because the response comes back and there is nothing listening on that (unconnected UDP) socket any more, it responds with a port unreachable.
+1) use a client side DNS cache (preferably not nscd if you care about short TTLs)
+2) (untested) drop on the OUTPUT chain ICMP-unreachable packets going to port UDP/53
+I would suggest the former to be the preferable solution, and this probably accounts for why you don't tend to see this coming from Windows machines (which have a local cache)
+try to pass all traffic from x.x.21.122 to your DNS.
+If the errors will dissappear - than you should improve your firewall rules.
+It logs, that you provide, we can't find any connection on port 39132.

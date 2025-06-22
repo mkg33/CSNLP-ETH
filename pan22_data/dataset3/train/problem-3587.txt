@@ -1,0 +1,20 @@
+You should be able to adapt that code to your needs.
+Files with known names will be accessible, but auto-index generation won't be.
+I'm going to try some things out and I'll post if I come up with something that works.
+I was thinking perhaps a bash script that will su - apache and then attempt to navigate to each directory in the path.
+The following finds files and directories that can be written too.
+Does anyone have a script or one-liner that could verify this?
+You may also want to ensure only a few files or directories can be written to.
+If the user belongs to multiple groups, you will need to add additional tests for the secondary groups.
+Failures when running as a non-root user should be dealt with appropriately.
+The following find commands should be run as root, or at least a user that has full access to the directory tree.
+Change the user and group appropriately for other users.
+In combination with sudo it can be used easily to test accessibility of files within directories with +x permissions only (such as many home directories), e.g.
+Replace /srv/www with the appropriate directory or directories for your requirements.
+For a system where apache runs as www-data:www-data the following will find files which can't be read.
+You will need an additional check to verify access to the paths used in the find commands.
+This can be accomplished by running the command as the target user.
+For directories that don't need to be listed use 1 instead of 5 in the above.
+(In many cases just flagging files owned by the secondary groups may be sufficient.)
+It seems that Apache needs at least read and execute permission to all the sub-directories of a path in order to serve the files  in the directory.
+This is what I got (must be run as a user that could su - <test user>:

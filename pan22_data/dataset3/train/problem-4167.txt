@@ -1,0 +1,25 @@
+I'm attempting to determine whether it is possible to have two Active Directory domain controllers running on the same network, within the same subnet, with two separate domains.
+I imagine this could be resolved via forwarders -- IE, I could set the IP addresses of both DNS servers in my DHCP config and then tell DomainA to forward requests for *.DomainB to DomainB's DNS, and vice-versa.
+The DHCP issue is a valid point, and your potential fix is correct - You can hand out the DNS address of one domain via DHCP, and use a forwarder to resolve the other domain's namespace.
+Windows Domains are not the same thing as Internet domains, but I see clients confuse this all the time.
+However, the DNS server of DomainA won't be able to answer queries for DomainB, and so on.
+However, I want to keep everything segregated for security reasons.
+My current concern is in regards to DNS -- as far as I am concerned, this is the main problem.
+I run a lab at my home and I've now convinced the person I live with to run a domain controller of their own.
+On those DNS servers either set up conditional forwarders for the other domain or create a stub zone for the other domain.
+I haven't done this so I'm not 100% positive that it would work, but I can't think of any reason it wouldn't.
+You can leave the other domain's client working from DHCP.
+I had a fairly long answer all typed up on why you shouldn't go down this road, and then I reread your question and saw the part where you said that this is in your house, so here's my revised answer:
+However, I'm looking for simplicity (as much simplicity as you can achieve with a domain controller in your house...)
+There will be no trust established between them unless you manually establish one.
+However, I don't know if this will this work, or if there is there a better option.
+The reason for running two domain controllers on the same network?
+I recommend moving DNS services to a Linux system.
+We have a few subnets that are used for internal testing and have 5+ different domains running on them, no real issues to speak of.
+If this was a business network, I would go ahead and setup VLANS, multiple DHCP servers, etc.
+An alternative fix would be to manually configure networking for the clients on one of the domains, and point their DNS manually at the correct domain controller.
+And, the less exposed your Windows environment is exposed to the Internet, the happier you'll be.
+I could also use a single aggregation which properly forwards the requests to the individual servers.
+The two domains will not interfere with each other on the same network.
+Since I have one single DHCP server handling the entire network, I want to have one set of DNS server IP addresses handed out to all clients.
+I do not want these two domain controllers to be linked in anyway (accounts, etc), except by the switch I have connecting them.

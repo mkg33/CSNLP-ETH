@@ -1,0 +1,12 @@
+It appears that the init script checks for a running MySQL/Percona server on Ubuntu by using mysqladmin --defaults-file=/etc/mysql/debian.cnf ping (see line 27 and 77 of /etc/init.d/mysql of the in this case percona-server-server-5.5 package version 5.5.28-rel29.2-360.precise).
+Our server normally requires around 40-70 seconds to start (init of an innodb buffer pool of 97GB takes about 35 seconds alone), so naturally 'start' reports it 'dead' since the socket file is not created yet.
+The /etc/init.d/mysql 'start' function has the following (starting ln:112):
+This works in a default new installation, but when copying over data files in setting up replication from another machine, the user configured in debian.cnf does not match anymore.
+I've just increased the "10" value and that worked fine for me.
+You may need to wait to have the replication process catched up and then try to restart.
+On the master, just add the user like this (seems to have all privileges by default?!
+One solution is to re-create the MySQL user the init scripts expect.
+I know this is a bit old, but its 30/4/2015 and we had the same problem with Percona 5.6.
+/etc/init.d/mysql start or service mysql start, it always times out.
+Just wanted to know if there is a problem with the install because it happens all the time, not a one off error.
+As a result, the mysqladmin command will fail and the init script will report the service failed, yet it just runs fine as you can see in the logs.

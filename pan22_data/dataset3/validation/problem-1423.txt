@@ -1,0 +1,25 @@
+My issue was slightly different: I needed to have a CGI script (well, Mason actually) to access a Dropbox folder with remotely changing info to update pages.
+Because Apache runs as a separate user, its not allowed to just stumble into your folders.
+Then login as the new account, setup Dropbox for that account, be sure to chmod -R g+rx to make group-readable the Dropbox folders, and make the account auto-login on startup.
+How should I go about getting sites served from Dropbox?
+Because Apache is a different user and you do not share a group in common, the folder would likely need to be 777 so that it can use it.
+And lastly edit my USERNAME.conf file to allow Apache to follow the sym link.
+You should now be able to edit your files in Dropbox and have them served up using Apache.
+But, Apache runs as user _www and is quite restricted.
+I'm positive this has something to do with the permissions in that folder, because I can change the virtualhost directory to a page I've created at the command line with sudo and it works fine.
+So, using whatever editor you are comfortable with, edit /etc/apache2/users/USERNAME.conf to change...
+I've tried changing just the MySite folder to root:wheel, but to no avail.
+You might want to read up on UNIX file permissions: http://en.wikipedia.org/wiki/Chmod but in this case the folder is probably either 755 or 775 which would be either Full for user, Read and Execute for Group and Others, or Full for User and Group and Read/Execute for others.
+So, dropbox uploaded the contents of that folder and downloaded any changes I made to that folder on other machines
+Apcache does not follow symlinks, unless they are inside document roow (/var/www in my case)
+The solution I found to this was to move the existing Sites folder aside...
+Now there's a live Dropbox folder on your OS X that Apache can access, being _www, without logging on itself.
+I'm worried that if I keep changing permissions up the directory tree I could mess something up.
+(Don't make it able to login, even though you can!)
+Be aware, that using FollowSymLinks is a potential security risk, so shouldn't be used in a live/production environment.
+I'm trying to serve web pages from my Dropbox folder (at ~/Dropbox/Projects/MySite/) on Lion 1.7.2 using Apache.
+I setup a new account, group _www, add the new username to group _www.
+Then create a symlink from the Dropbox folder with my files to Sites..
+What I did was create the folder /var/www/mysite and then made a symlink to that folder in dropbox.
+This a bit of a messy fix and it might be easier for you to just symlink a folder that it can access into your Dropbox, maybe your ~/Sites folder?
+But remember not to delete the folder on another machine and recreate it, this will sever the symlink

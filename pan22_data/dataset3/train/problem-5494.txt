@@ -1,0 +1,16 @@
+I've managed hundreds of Cisco ASA devices and use a mix of 80:20 between working in the ASDM versus the command line.
+First I created a NEW network object for each of my servers.
+Sometimes people should really use the ASDM for their ASA firewalls.
+Secondly I extended my access-list on my outside interface by defining every server and the required service (echo, echo-reply) in the "Public server list".
+Indeed I had to extend my access-list on my outside interface!!
+When you create a new object you will be asked for the internal IP address and "this is where the magic happens" you have to set the NAT IP address (the external address) !!
+access-list OutsideToInside extended permit icmp any any
+If you would like to anyone to be able to ping your server on public IP interface, you will need to add below ACL:
+When I performed these 2 steps I was able to ping the server from the internet.
+access-list OutsideToInside extended permit icmp any4 object SERVER2002 object-group DM_INLINE_ICMP_1
+Or you can choose the servers instead of allowing ping to all/any.
+The packet tracer GUI is very easy and would tell you exactly where this is happening.
+access-list OutsideToInside extended permit icmp any4 object SERVER2004 object-group DM_INLINE_ICMP_0
+access-list OutsideToInside extended permit icmp any4 object SERVER2003 object-group DM_INLINE_ICMP_2
+All you configuration looks fine and I can see that you have only allowed desired traffic to your servers using ACL.
+You would need to use the OutsideToInside access group, but that really should work.

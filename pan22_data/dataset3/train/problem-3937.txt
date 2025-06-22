@@ -1,0 +1,26 @@
+I have slightly adapted it; warning: I haven't tested this code.)
+With 'M-x shell' mode you can't use zle (the cool zsh tab completion stuff).
+Check Emacs Doc, the variable completion-at-point-functions goes here:
+Its the only Emacs terminal mode that seems to play nice with zsh.
+You must start the buffer in Term mode, then you can use these functions to toggle between the two.
+Emacs sends the input to the shell one line at a time when you press RET.
+comint-completion-at-point is an alias for icicle-comint-dynamic-complete' inob-sh.el'.
+Depending on what program you're interacting with, shell mode can be nice (because you get all of Emacs's edition features instead of whatever limited capabilities the shell or other program provides) or not so nice (because you don't get whatever nifty capabilities the shell or other program provides.
+You can switch between Term mode and Shell mode in the same buffer.
+With 'M-x term' (and ansi-term), the terminal captures most of the emacs C- and M- commands that you want routed to emacs.
+When you press TAB, it's Emacs's built-in completion that's triggered.
+So it's clear that you need to add your favourite complete functions to comint-dynamic-complete-functions variable.
+I'm learning about the more powerful tab-completion and expansion capabilities of zsh, and they don't seem to work when I run zsh under emacs with M-x shell:
+It comes preloaded with defaults that work very well.
+I poked around the emacs environment and here's what I found:
+cat $PATH<TAB> expands the tab variable in Terminal, but in shell-mode it just beeps.
+You gain some, but you also lose some: Term mode's scrollback capabilities are poor.
+Let's look at what really happens behind the sense.
+Then let's check out document of comint-completion-at-point
+(Note: I didn't write these functions originally, it was contributed to the Emacs Wiki and I have not tracked down the source.
+MultiTerm allows you to easily set which commands you want captured by emacs and which you want routed to the terminal.
+According to Emacs Doc, <Tab> is bound to function completion-at-point.
+In shell mode, Emacs tries to keep track of your current directory and completes file names, but that's all.
+One more tip: Add the following to your .zshrc to allow emacs to track your current directory as you cd around.
+Inside Emacs, you can run M-x term to run a more complete terminal emulator inside Emacs, where you interact directly with the underlying program.
+So I'm surmising I need to add a function to completion-at-point-functions, but which one?

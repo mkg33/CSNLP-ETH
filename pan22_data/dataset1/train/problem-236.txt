@@ -1,0 +1,13 @@
+What you are describing is the main obstacle with tile-based game maps. You've got too many triangles being drawn in one call and having them zoomed doesn't help either.
+There are several optimizations that can be done to work with a tile-based world.
+A simple way to reduce the performance costs of a tile-based world is to draw less tiles. When zooming out you can switch from drawing your small 32x32 tiles to drawing a 64x64 tile that represents the 32x32x4 area. You can do this at discrete zoom distances multiple times.
+This technique is quite effective though it can have a very large memory footprint and can be difficult to make look 'pretty'.
+Here is a video of a prototype I made a while back that shows off this technique as well as chunk loading (unfinished).
+Implementations of LOD vary greatly but the premise is mostly the same.
+Another way to reduce the number of draw calls is to combine the vertices of any large swaths of the map that have the same texture. Think of a quadtree like structure.
+Besides these two techniques, you need to ensure you aren't drawing any tiles that aren't visible, as well as making sure you aren't switching textures (use a spritesheet). Also, make sure you aren't drawing in immediate mode.
+I'm not sure if this is ever done, and if not, why not. But; I think it would be possible to create a render target for those things in your viewport that are likely static. So your map, for instance, is not likely to change. Because of this you could draw your entire set of map tiles only once in a while (except when your camera moves.) 
+This would avoid walking all of those vertices, reapplying the texture in a way that matters, etc. You may have to keep a depth buffer floating around whenever you "settle" on a static background.
+One can imagine extending this technique to Buildings (even if destructible) and simply only redrawing under the same conditions as the land or if a building has taken sufficient damage to require an update.
+Aside from that, a few things you may want to check:
+That's what I got right now with my coffee :), best of luck!

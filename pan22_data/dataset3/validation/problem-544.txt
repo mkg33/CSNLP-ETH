@@ -1,0 +1,12 @@
+Due to the recent changes in our network I added last 2 recently and did not bother commenting the old ones as I thought that having extra nameservers won't effect if the name is resolved or not and it will probably just take little bit more time.
+This is compounded multiplicatively if you have search entries and are resolving single-label names where search list entries are appended.
+Bottom line, having additional nameserver references to known dead nameservers on Linux / Unix systems using straight /etc/resolv.conf for resolution is detrimental.
+If the first 4 nameservers are non-responsive, you have to wait a minimum of 20 seconds for every DNS query.
+Typical applications, e.g., web browser, will give up waiting for an answer after ~15 seconds, so from that perspective, the perception is "the Internet is down" even though an answer may be forthcoming.
+Having many servers are fine as long as you understand a 'not found' answer, is completely different from a failure to communicate with the server.
+If you client attempts to resolve your intenal domain against the public sever and got a response saying there was no results then it stops.
+But without commenting out the previous 4 nameservers the names wont't resolve and I am just wondering why.
+Lets say you your client is configured to use Google DNS, and also pointed at internal servers for Active Directory.
+For Unix / Linux using the standard C library resolver code (implied by reference to /etc/resolv.conf), the nameserver entries are used in order with ~5 second timeout between them.
+Your resolver only tries another server if there is a failure.
+So I see no reason why it should not work without uncommenting the previous nameserver entries.

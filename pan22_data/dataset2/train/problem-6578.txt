@@ -1,0 +1,7 @@
+I have a 2 node high-availability postgresql 9.5 cluster. I'm using streaming replication, PGPool II (3.5.4 [ekieboshi]), and a virtual (or floating) secondary IP all hosted on aws to accomplish this.
+All the scripts defined in PgPool's configuration - failover_command, follow_master_command, failback_command, etc - are executed by the pgpool master process. You can check which one is master using pcp_watchdog_info utility.
+This configuration above is passing the new master candidate and an argument to my failover script which is executed on pgpool but ultimately promotes the master candidate (which is a hot standby) to a master using postgresql.
+I'd like to be able to execute a failover script on the slave node when the master becomes unreachable. Is there any hook for this in PGPool II? If not, is this not really even a good idea? Thanks in advance for your help.
+It means that if you want to execute commands on PostgreSQL node you need to setup password-less auth from pgpool into postgres nodes and use ssh inside the script. To give an example, in my failover.sh I have this:
+I've configured the PGPool Watchdog and it is running well but only seems to be executing a failover script on the failed node when the postgresql service instance dies.
+Sounds like you might have incorrect values for your failover_command value. And Typically the failover script is run on pgpool server, not the database node.

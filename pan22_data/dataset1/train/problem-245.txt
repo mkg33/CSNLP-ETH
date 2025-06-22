@@ -1,0 +1,12 @@
+Firstly, I am confused by your use of the following in the location block, I feel like you would probably want to deny from all, but allow from perhaps your own IP, but I digress.
+The most important thing you missed from the guide you posted was the following line:
+Which would make the .htaccess file look more like this:
+On top of that, you seem to have two separate blocks of rewrites in your .htaccess which are nearly identical, I would combine them into one, to make the finalized contents of .htaccess be (and nothing else):
+Just a bit more info for you, the AllowOverride being set to none is making apache totally ignore the .htaccess file, so when it is set to all, clearly that tells you something in .htaccess is overriding the ability for /server-status to be handled by the sever-status handler.  In your .htaccess file the offending line is basically:
+Which is telling apache to rewrite everything and send it to index.php, this is because wordpress processes everything through index.php and allows for SEO urls, among other things.
+Tells apache to do what we stated above (rewrite everything to index.php based on the RewriteRule), unless the URI is /server-status - since that will no longer be rewritten and sent to wordpress index.php, the handler should be able to behave as expected.
+For your knowledge, tell apache not to rewrite the url if the request is an actual file, or an actual folder.
+You can read more about Mod_Rewrite in the official documentation.
+The simplest way to get the server-status page working with the Wordpress rewrite rules is to just create a folder or file in the Wordpress folder with the name server-status
+This works because (as WerkkreW points out) the rules:
+mean that rewriting should not be done if there is a file or directory with the same name.

@@ -1,0 +1,15 @@
+Looking at Mystery files, "not a directory", I found someone with a similar problem.
+I have the same symptom from a CentOS client on a CIFS mounted resource.
+The trailing / denotes that you would like to delete the contents beyond the symlink
+That CentOS is a guest on VirtualBox on a Windows 7 host, but that should not matter because the network device is virtualized in this scenario, and not the file system or storage device.
+I don't have ssh privileges to that machine, but I can FTP.
+They were able delete the "mystery file" by ssh'ing into the machine that was doing the sharing and delete the file from there.
+For me, the problem is related to whether the target of the symlink exists at the point in time where you try to remove the symlink.
+I tested it on a local filesystem and on a network filesystem (NFS) and it worked.
+My CIFS client is a CentOS 7, using the cifs-utils package.
+My CIFS server is a Synology NAS box with DSM 5.2, with symbolic link support enabled in its CIFS/SMB options.
+The same test when performed on a local file system, works fine (i.e.
+I guess the problem was a combination of Samba and bad ln calls.
+If the target does not exist, removing the symlink fails.
+I managed to solve this, even though I don't fully understand how or what really went wrong.
+(Only the last few lines - starting from 'unlink' or 'newfstatat' are needed.)

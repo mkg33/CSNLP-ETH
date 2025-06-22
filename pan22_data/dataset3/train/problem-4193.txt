@@ -1,0 +1,24 @@
+But I doubt that the difference between 15K and 10K drives will make much difference to overall performance either way here.
+I have occasionally had to use an old disk when a disk failed and I didn't have a new replacement to hand.
+Depending on the capabilities of the controller you may be able to use the remaining space on the other disks for a different array.
+At a guess I would expect it to work with some but not all I/O being held up by the 10k disks.
+Disk capacity will limit the volume size to the maximum that can be supported by the smallest disk.
+Parity writes waiting on the slower disks will be held up until all I/O finishes.
+You should not see any issues with drives of different speeds other than the fact the the slower drive(s) will reduce average performance.
+It's generally strongly advised to use disks of the same model and the same firmware revision in a RAID array, to minimize risk.
+RAID4 offers the same protection as RAID5 (it can survive one drive failing), though is not always offered as it is very rarely desirable in practise.
+This will add stress the the disks too, greatly adding to the risk of failure.
+At best any striped RAID configuration will support reading one stripe per physical disk per revolution.
+There is no inherent reason why it won't work but anything reading in a round robin will be held back by the slowest disk.
+Asynchronous or random I/O will be mostly a function of the total IOPS available from the physical array but any applications with a dependency on previous reads (i.e.
+Some RAID configurations require synchronised disk spindles but RAID-5 does not.
+If you select the faster drive for the parity area you essentially have RAID0 on the other two+ drives for read access, and parity on the faster drive (for every write, the parity drive much be written to too, as with the distributed parity blocks of RAID5).
+Some controllers will support a M:M relationship between disks and arrays and others won't.
+It's technically possible to mix about any  disks together, however your array will be slowed down by the slowest disk; the slowing down can be even worse than expected, because data striping is done the same way on all disks; if one is slower, the others may miss access and make an additional rotation, adding even more latency, giving you abysmal performance.
+Yes, in a RAID5 array the smallest physical volume (disk or partition) will define the size of the array, so any extra space on larger volumes in the array is not used.
+Unless it's to test, or learn about RAID, but never ever put such a setup in production.
+non-async blocking I/O) may experience bottlenecks from the slower disks.
+The Dell Perc controllers are the only ones I have much experience with, and with these controllers you can use any combination of disks that you want.
+If you're paying all that money for a shiny new RAID controller why would you handicap it by using old disks?
+If one of the drives is much much faster than the others then RAID4 is better then RAID5 as it keeps the parity on one one disk.
+The smallest disk will constrain the capacity and the slowest disk will constrain the speed.

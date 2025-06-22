@@ -1,0 +1,11 @@
+I can get a very nice connection via FTP that fills up pretty much the entire 2 Mbps with a single threaded FTP connection but CIFS or whatever else TCP based seems to be gimped horribly.
+I don't really have much experience with any of this insanity so was hoping someone might have some insight into what I'm missing or some things to consider.
+We get around 250ms to US DC from APAC and 220ms to our European DC.
+The 2M connection (to Asia from the US) has about 300ms of latency and when transferring between clients (XP, 2003 Server) and server (2003 Server) a single flow won't exceed .65 Mbps.
+I've peeked at Network Monitor to see what window sizes I'm negotiating and it's reporting that if I set it to 64K it's really negotiating 64K and so on.
+FTP has less overhead than Windows file copying so it's generally going to run faster.
+We have the same problem as you do, the only way to solve the problem of accessing CIFS via the MPLS link is to speed it up with CIFS accelerator like Riverbed devices or F5 Networks devices.
+I currently have a data center connected to two remote locations via MPLS - 2M and 6M respectively.
+It's been suggested that this is a TCP window size issue but when referring to this to change the window size to 64K (or larger, I've tried a range of window sizes) it doesn't change my transfer speed at all.
+It will be worst if you are using windows file sharing, and without a local domain controller due to the chatty protocol from MS. With exception of Vista and above due to SMBv2.
+IMHO, low level hacks like changing the window size aren't the first place to start.

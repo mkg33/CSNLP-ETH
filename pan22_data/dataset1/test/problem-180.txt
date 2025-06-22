@@ -1,0 +1,7 @@
+You will unfortunately never get a behaviour that is 100% consistent across framerates, but it’s worth trying to approximate. Here is my suggested solution and the explanation of the maths behind it.
+Consider what happens to distance after your update: it becomes distance * (1 - factor) since the camera moved by distance * factor. If the player wasn’t moving, here is how it would evolve with time at 40 fps:
+That last line gives us a simple formula for framerate-independent updates:
+Note that if timeElapsed is exactly fixedStep, this is equivalent to what you had before. That’s a good test to detect whether an algorithm is wrong (it can’t tell you whether it’s correct, though).
+Either way, your problem is that you're not actually using time deltas.  With a variable frame rate you just replace your old fixedStep with a variableStep that is the distance moved.
+Time accumulators are typically used to convert the variable frame rates of running applications into fixed time steps.
+You typically always want to pass some kind of time_delta into all your update() methods no matter what, though: even if you have a fixed timestep, you may want to change that rate someday, and all your math should work in term of time deltas and be ready to accept whatever value.

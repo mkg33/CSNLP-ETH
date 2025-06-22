@@ -1,0 +1,17 @@
+I've just hit the same issue as you, and thanks to this thread here, I've found the answer!
+After turning on a second (trusted) realm in my mod_auth_kerb settings, and putting the right stuff in the keytab, if I tried to sign on with a user from the second domain I was getting errors in the httpd log like:
+The good news is, I've solved it! Details below....
+Firstly, in your Apache HTTPD config, you want something like:
+That tells mod_auth_kerb to accept users from either the main domain realm, or the branches one, and strip off the realm from the username. That means that admin@example.com goes to admin, while guest@branches.example.com goes to guest
+Next, assuming the MIT kerberos, you need to edit your /etc/krb5.conf file, and tell that how to map principals into usernames. For various historic reasons, this isn't done in a libdefaults section as you might expect. It's also not done on a per-realm section either, which caught me out. Instead, it's done with auth_to_local entries in the [realm] section of the default realm.
+By default, the krb5_aname_to_localname() libkrb5 function will remove the realm from the default realm, and leave it there otherwise. So, we have to add an entry to tell it to strip the realm from the branches realm as well. (More complex rules are also possible, see the krb5.conf man page for more)
+So, we'd want our config to be something like this:
+Note how the BRANCHES.EXAMPLE.COM mapping rule doesn't live in its realm, but in the main EXAMPLE.COM realm, which is the default realm.
+Just the Apache HTTPD service needs restarting after changes
+I have successfully implemented SSO on apache for windows users in the same AD domain  that the apache server is in:
+I set the KrbLocalUserMapping to ON in httpd.conf, as the application the users are logging into needs the @example.com part of the username to be stripped. 
+Now I want to enable the users from the branch offices to login to the application as well but they come from a different domain = branches.example.com. Both domains are in a trusted relationship.
+When users from branches.example.com try to login they get "Internal Server Error" and apache error log says "Krb5_aname_to_localname() found no mapping for principal user@branches.example.com"
+My guess is that users coming from the subdomain branches.example.com are not getting the domain part of the username stripped.
+What do i need to change and where (probably krb5.conf?). Do I need to generate a separate keytab for the branches subdomain?
+Also, since it is a production server which I cannot arbitrarily restart, what services do i need to restart after changing things in the krb5.conf?

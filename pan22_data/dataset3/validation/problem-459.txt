@@ -1,0 +1,11 @@
+I just ran into this issue myself and I believe it happens because cloud-init is still in the process of configuring the EC2 instance when apt-get runs.
+Some times apt-get update hits http://us-west-2.ec2.archive.ubuntu.com/ubuntu ... other times it doesn't.
+I solved it by inserting a 30 second delay in my script that runs immediately after the instance boots.
+I think a better way would be to ask cloud-init to run any scripts through User Data or even letting it handle package installation and updates for you [1].
+For my use case, where I don't want to acknowledge cloud-init, adding the delay was an acceptable solution.
+If you are using cloud-init you can wait for it to complete.
+I don't understand why this behaviour is inconsistent.
+I'm using Packer to build my AMI and it fails about 40% of the time.
+How can I get apt-get update on the official Ubuntu AMI to work consistently?
+I get various and inconsistent errors with apt on the official Ubuntu images (ami-83e769fb).
+Other times packages are missing (like apache2 or python3).

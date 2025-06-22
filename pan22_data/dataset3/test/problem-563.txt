@@ -1,0 +1,17 @@
+This will give you the locking query, how many rows/tables are locked by it etc.
+will show all process currently running, including process that has acquired lock on tables.
+If you use InnoDB and need to check running queries I recommend
+Is there anyway to show all the locks that are active in a mysql database?
+But no query is going on right now and nobody is waiting for a lock anywhere (yet at least).
+Clearly the transaction above holds a lock, because the transaction is still active.
+Also see this link for more information on using the innotop tool.
+INFORMATION_SCHEMA.INNODB_LOCKS is empty, which makes sense given the documentation, because there is only one transaction and currently nobody waiting for any locks.
+The suggestions in the other answers so far won't help at least.
+You can use INFORMATION_SCHEMA.INNODB_TRX, performance_schema.events_statements_history and performance_schema.threads to extract the queries that any active transactions have executed in the past as outlined in my other answer, but I haven't come across any way to see that someTable is locked in the above scenario.
+AFAIK there's still no native way in MYSQL, but I use innotop.
+SHOW ENGINE INNODB STATUS is useless: someTable is not mentioned at all
+Disclaimer: I don't have innotop installed and I didn't bother.
+None of the answers can show all the locks that are currently held.
+It's free and has plenty of other functionality as well.
+The problem with using SHOW PROCESSLIST is that you won't see the locks unless other queries are queueing up.
+SHOW FULL PROCESSLIST is empty, because the culprit is not actually running a query right now.

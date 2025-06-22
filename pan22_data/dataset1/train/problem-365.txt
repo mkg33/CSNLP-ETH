@@ -1,0 +1,10 @@
+I have a SQL Server database with the PAGE_VERIFY option set to NONE. When I set this to CHECKSUM, only pages changed from that point onwards get their checksum calculated and stored on the page.
+I'm looking for the best way to put checksums on at least all table and index data.
+My initial idea would be to drop and recreate all clustered indexes. For tables that have no clustered index I would create one and then drop it again.
+That should result in at least one write operation on each data and index page, but it's a bit heavy-handed. Anyone has a better idea?
+The most comprehensive way in my view would be to encrypt/decrypt the database with TDE.
+This will ensure that each and every page will change in memory and will be flushed to disk.
+I've tried this with success on 'legacy' dbs that were originally created in SQL2000, after I discovered that several pages didn't have actual checksums on them (0x...200) if you look at the header with dbcc page.
+If you were to try this, I would recommend testing it on a restored version of the live db, just in case you have undetected corruption that could be caught and stall the encryption process. There are flags to deal with it, but better play it safe.
+Obviously you'll want to backup the certificate used by the encryption, so you are covered for any eventuality during the time the db is encrypted.
+If anyone has a better idea for writing checksums on all pages, I'd love to hear it :-)

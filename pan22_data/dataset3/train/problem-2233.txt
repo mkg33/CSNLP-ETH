@@ -1,0 +1,24 @@
+http://technet.microsoft.com/en-us/library/cc961719.aspx
+DNS returns a list of IP addresses that match the target domain in the SRV records (that is, IP addresses of domain controllers in the specified domain) that are sorted by priority and weight.
+Doing multiple pings in quick succession ensures that the discovery algorithm terminates in a finite amount of time.
+The client pings each IP address in the order returned.
+http://technet.microsoft.com/en-us/library/cc978019.aspx
+Clients attempt to contact the server with the lowest priority.
+If a local DC is unresponsive for a short period of time, the client will contact any another DC in the domain, regardless of location.
+It is possible to make the process more deterministic by configuring Sites and Site Link costs (if you have not done that), and by using the Priority and Weight of the SRV DNS records in the _msdcs subdomain.
+Choosing the domain controllers at random provides a first level of load balancing.
+http://msdn.microsoft.com/en-us/library/windows/desktop/ms675983%28v=vs.85%29.aspx
+Note that when a client establishes a connection to a DC, it creates an affinity (sometimes referred to as "stickiness") with that DC.
+Weight is a load-balancing mechanism that is used when selecting a target host from those that have the same priority.
+There is actually a very sophisticated algorithm that Windows clients follow, called the DC Locator.
+There is also a hotfix to enable this behavior for Windows XP/2003.
+The client pings each domain controller from the list.
+Windows Vista/2008 and later clients will attempt to rediscover domain controllers every 12 hours by default, and that is configurable with group policy.
+After each ping, the client waits one-tenth of a second for a response to the ping (or to any previous ping), and then pings the next domain controller.
+(Windows 2008 there is a new setting that makes the next closest location more efficient).
+What you are describing is most likely completely normal.
+Clients randomly choose SRV records that specify target hosts to be contacted, with probability proportional to the weight.
+http://technet.microsoft.com/en-us/library/cc978011.aspx
+http://technet.microsoft.com/en-us/library/cc733142%28WS.10%29.aspx
+Enabling Clients to Locate the Next Closest Domain Controller
+How to optimize the location of a domain controller or global catalog that resides outside of a client's site

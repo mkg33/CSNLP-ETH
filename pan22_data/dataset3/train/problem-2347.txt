@@ -1,0 +1,12 @@
+vSphere (ESX\i 4) supports VM Direct Path IO which will allow you to directly map other IO devices (NICS & HBA's primarily) provided those devices are supported.
+It also requires support at the platform level - on Intel platforms VT-d is required so this is limited to Xeon 5500 platforms AFAIK.
+Further steps along this road make use of Single Root IO Virtualization (SR-IOV) where the hardware provides virtualization support enabling direct mapping of multiple VM's to the same physical device, offloading the hardware virtualization from the Hypervisor in the same way as DirectPath but retaining the ability to have a device shared between VM's and hopefully recovering many of the lost cluster\FT capabilities.
+Raw Device Mapping does this for disk IO and has been around for some time.
+When you are assigning a disk to a virtual machine, you can choose between a logical disk or a physical disk.
+Blade chassis or clusters with shared IO fabrics).
+Multiple-Root IO Virtualization is an extension to this that provides direct IO mapping for distributed PCI complexes (e.g.
+If you don't have that option, in later versions of ESX and ESXi you need to choose "Raw Device Mappings".
+There are some significant drawbacks to doing this at the moment - almost all advanced cluster\fault tolerance\high availability features are unavailable to VM's that directly map IO devices.
+If you choose Physical Disk, it will give you a choice of all the un-allocated disks on the server.
+Here's some information from Intel at the latest IDF that claims a 1.7x performance improvement when using direct path IO with 10GigE versus the standard VM emulated network hardware.
+The benefits for direct mapping slower hardware (e.g.

@@ -1,0 +1,7 @@
+If you have many different flows they statistically distribute somewhat evenly.
+In the best case, the application can be configured to distribute the traffic over multiple IP addresses.
+In another case, you use a DNS name in the configuration that resolves to multiple IP addresses with round-robin and the application alternates between them (either by not caching or on purpose).
+A single flow will not benefit from trunking at all.
+Since your traffic flow is mainly from the switch to the backup server and the 5400zl uses SA/DA traffic distribution, the load balancing is completely dependent on the source and destination IP addresses of the packets - each pair of source and destination IPs will always use the same physical link.
+Very few flows will not distribute very well, only by luck or fine-tuning (=selecting the combinations of IP addresses that result in the desired distribution).
+Usually, it's preferrable to not use link aggregation in layer 2 but to use multiple independent NICs with multiple IP addresses and do the load-balancing in the application in layer 3 (=using the different IP addresses).

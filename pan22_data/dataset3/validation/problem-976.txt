@@ -1,0 +1,23 @@
+Something you should look into is to not manage these servers individually, but somehow cluster them together.
+The reason is that this way you have some redundancy for a limited increase in cost.
+Possible options are HP VSA http://www8.hp.com/us/en/products/storage-software/product-detail.html?oid=5306917 or EMC Unity VSA https://store.emc.com/us/Product-Family/EMC-Unity-Products/EMC-Unity-VSA/p/EMC-Unity-Virtual-Storage-Appliance which is free but as far as I know not allowed for production.
+Or in other words, in small deployments it is better to be wide than tall.
+As you are probably aware, well looked after equipment lasts longer!
+If you want to grow more, you probably want to migrate from on-server-storage to a SAN.
+Since you are using Hyper-V a perfect option for you would be to use StarWind Virtual SAN https://www.starwindsoftware.com/starwind-virtual-san that runs natively on top of windows and allows you to seamlessly create a fully-functional Microsoft Failover Hyper-V cluster using only directly attached storage.
+That said, it would be helpful to know some extra details about your environment... such as, how how long you've had these machines, are they in a purpose built environment (clean, dry room with a rack & AC etc).
+Generally speaking, there's nothing necessarily wrong with using less 'professional' hardware, it just doesn't come with the same guarantees or reliability as more expensive kit, and these risks need to be weighed against your budget.
+I would also recommend using VEEAM B&R https://www.veeam.com/vm-backup-recovery-replication-software.html that has a free version or Bacula http://blog.bacula.org/ to backup your VMs instead of using native Windows 2012 Server Backup since it is known for causing issues when trying to recover your VMs.
+Since your storage backend is all-flash, your hardware is totally OK for the mentioned workload.
+Thus I would strongly recommend you to use some software-defined storage (virtual SAN) that will let you join both servers into a single cluster and making your virtual machines immune to possible hardware failures.
+as long as you don't have any problems on your network and on your back up system you can continue with this setup but for future it is better to have Professional server to be 100% HEALTY.
+If one of the cheaper ones fail you at least have half of your VMs still running, and it can probably run the other ones as well, it's just going to be slow.
+Assuming your VMs are redundant (and this is tested as working with one node off), you are probably relatively immune from an hardware related outage by virtue of having two mirrored nodes.
+Without knowing more, I wouldn't recommend dropping down to a single (newer) box unless an outage of the entire node isn't a major problem at your company.
+This also reduces micro management and means that in the future, you can just add a new server while keeping the old ones running, until it is no longer economical to do so.
+This decision usually comes down to power consumption or space limitations.
+In small deployments, it is generally better to have multiple (at least 2) cheaper machines than one expensive one.
+The only concern I have regarding your configuration that your VMs are split and running on a single server instead of being mirrored/synchronized between servers especially if they are identical.
+Two 3000,- servers might be able to do the same thing as one 5000,- server, but if the expensive server fails you are boned.
+Your virtualization solution should be able to create a failover cluster so that it doesn't matter on which host a VM lives, if the host dies, the VM is automatically migrated.
+This way, your servers become pure computing nodes, and their health doesn't really matter to the VMs.

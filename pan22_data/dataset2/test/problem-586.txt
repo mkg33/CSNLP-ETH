@@ -1,0 +1,12 @@
+The script is the same in all of these 3servers, but I need to sync the DB in all of them, or replicate the DB or whatever you suggest, I don't know it's name exactly! There are a lot of things I've heard:
+Group Replication, aka InnoDB Cluster, is the newest offering.  It is available with MySQL, not MariaDB, since Oracle invented it.
+I have 3 servers which there is a load-balancer in front of them and sends the requests to these servers randomly.
+This is not always possible with multi-master database solutions. The way your application interacts with the database is critical to the success of the database layer. If your application code is written poorly, the database will behave poorly. 
+The first question you should ask yourself is do you really need a multi-master topology? Most organizations and applications function well with MySQL asynchronous replication with a failover script in the event failover is necessary. 
+I am not ready to say which of the last two (Galera vs Group Replication) is best.  Both have these features:
+If you decide a multi-master topology is the right choice, you need to confirm that your application and requirements are a fit. I see a red flag already with this. 
+You are asking some good questions here but you are at an important crossroads and undoing an architectural mistake after implementing it is extremely difficult and costly.
+Master-Slave and Master-Master are older technology; they have limitations, especially when it comes to recovering from a failed Master.  These are not recommended since there are better ways.  For 3 datacenters:  S <- M -> S or M <-> M -> S, where each Master/Slave is in a different data center.
+Here are some tips on dealing with Galera.  (Some of them also apply to other replication technologies.)
+I highly suggest you reach out to an expert to help you design an ideal solution for your situation. 
+WAN replication with multi-master solutions like Group Replication (MySQL) or Galera (which is used by Percona XtraDB Cluster and MariaDB Cluster) have similar limitations. There are workarounds if your application is tolerant of additional latency and your application also does not process large, long-running write transactions. Which brings us to our next point...

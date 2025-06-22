@@ -1,0 +1,21 @@
+Nick Anderson has a great writeup on how to do that.
+Are similar performance gains to be expected, or does network latency cancel out the speed benefits?
+In your case the performance increases would be hard to discern through the caching done by Samba/Linux.
+If your clients are accessing a set of data that can mostly be cached in RAM, then an SSD should rarely show a benefit.
+I've read a lot (and experienced) the benefits (fast boot times, quick program launching, quick file access, etc) of using an SSD as the boot drive on a workstation, but haven't been able to find much good information about using an SSD for serving files over a LAN.
+In short, the only way to know for sure is benchmark as things are now, install one, benchmark again.
+The reason that SSDs aren't as spiffy as they are as an OS volume is due to the I/O loads.
+Adaptec supports up to 4 SSD on a controller (supporting 250 discs or so) as read caches and claims 5x performance benefits under certain conditions.
+I'm interested in general answers, but to be more specific, I have a samba server on a gigabit LAN where a small amount of data (<10GB) is what I would call frequent use.
+The latency of a disk seek is far higher than network latency.
+You should calculate how many I/O operations per second your current disk setup can deliver, then use a tool like sysstat to determine if historically you have been hitting that limit.
+In general it ought to improve things, but to be certain you will get value for money you need to be sure that is the bottleneck (or at least one of them).
+It's no good working on server disk speed if the server's network stack is horribly broken and slow, or the server's disk and network IO are being hammered to death by overly paranoid AV settings on all your lan clients or the switch is a horrible one (there's gigabit and there's "gigabit" if you see what I mean).
+Most files are <5MB in size and I'd estimate the ratio of reads:writes at 10:1.
+There are exceptions to this, of course, but that's the general case.
+Most file-server I/O is orders of magnitude under the I/O load done to the OS drive.
+However, if there is heavy random access to the data your fileserver's spinning disks can easily become the bottleneck.
+In that case, the superior random-read performance of the SSD would be able to saturate a 1Gb network connection.
+For most use-cases, there won't be an appreciable increase in performance through using SSDs for simple file-serving.
+When you have a lower I/O load, the performance benefit isn't as evident.
+For live, interactive monitoring of disk and network utilization, atop is a fantastic tool.

@@ -1,0 +1,15 @@
+The individual parts of the variable define how Oracle displays information. If your <LANGUAGE> is AMERICAN then messages, days and months will be displayed using American spelling. Sorting is also affected by this part of the parameter
+The parameter is used to tell the RDBMS system with which encoding it shold store data in certain columns. 
+Territory affects things like the default date, settings for money values (e.g. $ sign), and number formats (e.g. 3,000,000.12 to display three million point 12)
+NLS is short for National Language Support and is the beginning of multiple parameters that are available in the various Oracle products.
+They can be different. The short explanation is that the characters are stored in the database as defined by the NLS_CHARACTERSET. If the client is not able to use this character-set. The NLS_LANG also holds region. If the client uses a different currency, date format, decimal point/comma as is expected by the database then this can also differ.
+The NLS parameters can be quite tedious to understand and I recommend searching for the term "Setting Up a Globalization Support Environment" in the official documentation.
+So in essence you are configuring how you client would display data stored in the database. If your database contains the following data:
+When retrieving data from a database column NLS_LANG will add all the bells and whistles (date formatting, time formatting, number formatting) to the data that is being retrieved.
+NLS_LANG is described as a variable that defines the <LANGUAGE>_<TERRITORY>.<CHARACTER_SET> of your client environment.
+The NLS_CHARACTERSET parameter is setup during the creation of your database instance and shouldn't be changed thereafter. (It can be altered but it can cause data corruption even in the DATA DICTIONARY objects). This parameter defines the encoding of the data in the ...
+The NLS_CHARACTERSET parameter defines with which encoding the data is stored in the columns. (ASCII, Unicode, ...)
+I have intentionally left a large portion of the explanation regarding NLS_CHARACTERSET out, because it gets really complicated when comparing encodings between AL8UTF8, AL32UTF8 and AL16UTF16 (which can only be use in conjunction with the NLS_NCHAR_CHARACTERSET parameter) and all the other possible Unicode settings.
+This is the bit where it becomes pretty interesting. This part of the NLS_LANG parameter is described as the 
+Yes, you can have two totally different encodings. You could store you data using a setting of NLS_CHARACTERSET = AL32UTF8 and still display and transport the data to the database with NLS_LANG=American_America.US7ASCII.
+...then if your client has AMERICAN_AMERICA.US7ASCI as the NLS_LANG setting, then querying this table would return:

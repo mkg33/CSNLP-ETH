@@ -1,0 +1,19 @@
+I work in the SQL Server Tiger team at Microsoft that's responsible for generating most of the hotfixes mentioned above.
+These fixes are all in the most recent builds of each major supported version, but they are not used unless the trace flag is turned on.
+This is because, in some cases, the "fixes" can actually lead to regressions (and worse performance) - and people shouldn't expect to have major variations in plan generation just because they applied an update or service pack.
+TL;DR: No plan changing fixes are enabled after RTM without enabling trace flag 4199, no matter the service pack or CU level.
+On the next RTM release, any existing 4199 fixes will be enabled by default, and the process starts over.
+Any fix that ends up under the 4199 umbrella should be enabled by default in a future version of SQL Server, under a future compatibility level, as they are expected to be improvements in the vast majority of cases.
+Perhaps they will provide a trace flag to turn them all off, just like you can turn off the new cardinality estimator.
+Any fixes released by the time SQL Server 2016 was snapped for RTM should be present by default in 2016's compatibility level 130.
+Any fixes after RTM was released will again be protected under 4199.
+If 4199 is not enabled, you can go back to 2014's behavior, good or bad, by changing the compatibility level of the database to 120.
+One thing of note (that was missing in Aaron's answer above) is that for each new release we have a new compatibility level that, in a sense, resets the 4199 flag.
+In this context, you should consider "hotfix" to mean any fix that ended up in a Service Pack, Cumulative Update, or on-demand hotfix and falls under the jurisdiction of this trace flag.
+Therefore, we ask users to explicitly enable any code change that can change plans using traceflag 4199, unless that change affects the correctness of results, security, or corruption.
+However, like anything where there are millions of users, there may be plan changes that benefit most people, but hurt a minority of users for one reason or another.
+I'm not sure if this is an exhaustive list, but this article lists many of the 41xx TFs that ultimately came under the 4199 umbrella.
+A hotfix is anything that changes the software after RTM (release to manufacturing), including CUs, Service Packs (which include all CUs released up to a few weeks before release of the Service Pack), GDRs (critical security fixes) and ODs (On Demand hotfixes).
+At some point in the future, I suspect that all of the enhancements from TF4199 will be enabled by default in a new full major version (but not in a service pack or CU).
+However, once 4199 is enabled on the server, you get all the fixes whatever the compatibility level happens to be.
+The v4 PDF made available in this blog post may contain more flags (I haven't cross-checked) but certainly contains more info on several of the individual fixes.

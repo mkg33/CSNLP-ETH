@@ -1,0 +1,16 @@
+Further, if you're doing no caching the disk rates should approximate the network rates.
+I use collectl exclusively for this as do many of the users of some of the largest clusters in the world.
+Some of the inodes can get large, but the b-trees in common usage for indexing the directories make for very speedy fopen times.
+If you're main purpose is serving images, then I'd think your network traffic would be dominated by them.
+If you can live without updated access times on files and directories, you can save a lot of I/O requests if you mount a filesystem with the 'noatime' option.
+Modern filesystems (the latest ext3, ext4, xfs) handle the large-dir problem a lot better than in olden days.
+Without knowing the details, I suspect that's what the NAS device in the article was using.
+Finally, if you're doing perfect caching the network rates would stay the same and the disk rates go to 0.
+If a dir_index is not used, retrieving a file out of a directory with thousands of files can be quite expensive.
+Then look at the numbers and figure out how efficiently your caching is working.
+It will log a ton of stuff which you can playback or even plot.
+Some filesystems are better at the large-directory problem than others are, and yes caching does impact usage.
+Older versions of EXT3 had a very bad problem handling directories with thousands of files in them, which was fixed when dir_indexes were introduced.
+If you run a large file server, get one, not a low end appliance.
+Too much metadata + too little RAM = NO WAY TO CACHE IT.
+In the paragraph that you yourself quoted it says clearly:

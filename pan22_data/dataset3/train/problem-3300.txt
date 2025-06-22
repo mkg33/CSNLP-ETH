@@ -1,0 +1,17 @@
+e:\hyper-V Replica (this is the directory I had setup to receive replication)
+I had to do something similar in my Hyper-V Replica directory for Replication to work again.
+(I didn't bother to check if that is all the same for all directories, maybe it is and you could just set it up with a few commands one directory level above)
+The problems were around two directories and their subdirectories:
+This made me find out which files vmms.exe was actually having trouble accessing.
+Perhaps try creating a new folder and giving the Everyone group full access on it, and see if you can create a VM in there.
+Have you tried creating the machine somewhere other than under the C:\Users folder?
+I had to do it on both Servers, Primary and Replica, to find on which one the error was actually happening.
+A lot of permissions that were present on the working server had mysteriously gone missing on the broken server.
+Something totally screwed up folder permissions on my Hyper-V Server and I started getting these same 0x80070005 Access Denied errors, when creating VM's, starting or resuming Replication, etc.
+Does the host server have any other roles installed?
+I had a different Hyper-V server that was working fine, and I used it to compare the permission settings on that server and discover what was missing.
+I don't recommend you leave the permissions set like that, but this would confirm that it's a filesystem permission issue.
+My troubleshooting method was to use SysInternals ProcMon to catch all vmms.exe activity during an operation that was giving this error.
+c:\ProgramData\Microsoft\Windows\Hyper-V (this is a configuration directory that exists on all Hyper-V 2012 servers)
+Ok, I had a similar problem, but not exactly the same, so I'll leave my acquired knowledge here for future reference:
+With the correct settings I made up this batch file to run on the broken server:

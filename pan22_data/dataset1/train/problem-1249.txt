@@ -1,0 +1,8 @@
+I have a Cassandra cluster running for quite some time now (months) and, as expected, it has been consuming large quantities of data every day.
+In the past few days the cluster has been having problems because one of the nodes keeps crashing and I don't see much in the logs. 
+One thing that stands out is the following warning but I'm now sure if it is related: 
+which is quite more than it is available. Nevertheless, even if there was enough disk to support such compaction, it seems excessive, doesn't it?
+By default, Cassandra uses SizeTieredCompactionStrategy that compacts several files (4 by default) of similar size into bigger file. These files contain multiple partitions, so big file size isn't a necessary sign of wide partitions.
+When you're using Cassandra (especially with SizeTieredCompactionStrategy) you need to have ~50% of disk space free so Cassandra will able to write data during compaction - after compaction happens, the old files will be removed.
+You may also consider the use of other compaction strategies, such as, LeveledCompactionStrategy, but it's more suited for read-heavy workloads (like 90% of all operations are reads).
+You can read more about compaction strategies in documentation, and about size tiered compaction in this blog post.

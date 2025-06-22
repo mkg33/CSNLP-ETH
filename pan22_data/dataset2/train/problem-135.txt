@@ -1,0 +1,10 @@
+In my setup I use pfSense as the Internet facing firewall for a couple of virtual machines (Windows servers) also running on the same Hyper-V host.
+The problem I had is that after working successfully with a RDP connection over the management network (port 2), the connection just dies and all network connectivity is lost to the server and VMs. Before the problem occurred I did two configuration changes.
+I have setup pfSense 2.0.1 (64bit-amd image) as a host in Hyper-V. As described in other blogs I had to do the “ifconfig down deX”, “ifconfig up deX” to get the network up and running.
+For re-directing incoming services, the pfSense is setup with 1-1 NAT to map ISPs IP-addresses to internal 172.16.0.0/16 addresses on the Windows boxes.
+Since the problem seam to propagate between the two physical ports my guess is that this might have something to do with ARP not working correctly.
+Earlier today we had a similar problem when using only one NIC (port 1 shared between Hyper-V/pfSense and the host). The problem we got then was that when pfSense was stopped we could ping the host and when it was started again the ping stopped working (no IP conflict what we know). 
+I have had to do this many times on VMWare.  Also for your 1:1 's you may have to add static network route mapping for those as example.  I have seen pfSe
+If you are using the Virtual Machines behind the pFSense as a firewall, however you need them on a different SubNet than the PC's on the lan.  You may have to turn up an additional interface on pfSense (LAN2 say)  Then map it in the VM Host to a private VSwitch that the other VMs are using.. Or even TAG the traffic in the vSwitch and have seperate vlan for it.
+The Windows boxes use the pfSense as default gateway and I successfully downloaded Windows updates to all VMs through pfSense firewall – working smooth.
+The thing that puzzles me is that management network connection (port 2) is supposed to be untouched by Hyper-V since it is not integrated with Hyper-V. However there seem to be error propagation from pfSense (using NIC on port 1).

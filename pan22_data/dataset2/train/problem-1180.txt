@@ -1,0 +1,9 @@
+Have you considered sneakernet? With that, I mean transfering everything onto the same drive, then physically moving that drive over.
+I think this drive would just about do for this. You'd still have to copy all the files, but since you don't have network latency and probably can use SATA or a similarly fast technique, it should be quite a lot faster.
+Generate the file list with find -type f (this should finish in a couple of hours), split it to small chunks, and transfer each chunk using rsync --files-from=....
+If the old server is being decommissioned and the files can be offline for a few minutes then it is often fastest to just pull the drives out the old box and cable them into the new server, mount them (back online now) and copy the files to the new servers native disks. 
+ZFS is primarily a Solaris filesystem, but can be found in the illumos (open source fork of Sun's OpenSolaris).  I know there has also been some luck at using ZFS under BSD and Linux (using FUSE?)--but I have no experience on trying that.
+If that was an option for you, you could then take snapshots and use zfs to send incremental updates.  I've had a lot of success using this method to transfer as well as archive data.
+about a month ago, Samsung unveiled a 16 TB drive (technically, it's 15.36 TB), which is also an SSD: http://www.theverge.com/2015/8/14/9153083/samsung-worlds-largest-hard-drive-16tb
+If there is any chance to get high success ratio when deduplication, I would use something like borgbackup or Attic.
+If not, check the netcat+tar+pbzip2 solution, adapt the compression options according to your hardware - check what is the bottleneck (CPU? network? IO?). The pbzip2 would nicely span across all CPUs, giving better performance.

@@ -1,0 +1,8 @@
+Regardless of whether or not you grant the web user escalated privileges, you are granting the web process the ability to define what is executable by what type of script in what directories by allowing it to rewrite the config file.
+People go out of their way using chroot and other mechanisms to try and REMOVE privileges from the web server process/effective user.
+Or send the commands directly over a TCP connection to a port on the same machine as described below.
+I would suggest creating a set of very limited actions which the web server could take, perhaps writing name and home directories of the needed virtual hosts to a text file in the web root.
+From a security perspective, one couldn't imagine many worse ideas.
+To limit the privilege escalation to only taking this one action, you could write a TCP server listening on a special port to which the web service could send a restart message; I've written such special-purpose TCP servers (just a couple hundred lines of C, much of it available as a template) to allow an otherwise chroot isolated web server process access to some other service which would normally be unavailable without granting it carte blanch access to the file system and binaries.
+If you really want do it, and do it with Apache, read about mod_vhost_alias - no changes in httpd.conf, no restarts
+Some other process with the required permissions could then check the syntax and turn it into the needed changes.

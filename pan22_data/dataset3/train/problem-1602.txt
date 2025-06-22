@@ -1,0 +1,12 @@
+I suppose you mean you have a "read lock on the table" (you can't write, also known as shared locks).
+Be careful, because if the server is a master, or if you need point in time recovery, in certain cases it may create inconsistences.
+Be careful with the terminology, a write lock is an "exclusive lock".
+With this, you will be able to update and insert new records on the table at the same time the command runs.
+The second part (kill the query without doing a rollback) is not possible for InnoDB due to internal consistency requirements (atomicity of transactions).
+However, if you are not using replication or it is a development database, it will be safe.
+The tool is a free and open source perl script, easy to use.
+It also changes the locking logic, so be careful, as it may change the application behaviour.
+You can avoid most of the lock problems if you avoid the extra locks that innodb sets because of the statement based replication:
+One is to restart the server with innodb_force_recovery = 4 and then drop the table.
+InnoDB writes like yours create read locks (writes have to wait).
+A better approach would be to do the copy in chunks - a tool like pt-archiver with the --no-delete option, which allows you to copy in several transactions controlling the impact on the server (by the way, probably solving your first problem, too).

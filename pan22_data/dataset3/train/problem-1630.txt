@@ -1,0 +1,18 @@
+This is only one type of memory, which is useful to describe for most processes, but may not show the whole picture in some edge cases (such as this.)
+Anyway, upshot is that memory management in modern OSs is terrifyingly complex, so when you throw in a system filter driver which uses half a gig as a cache and it doesn't show up in a third party process list utility as you might expect given how applications normally show up, don't be surprised or upset - it's just how it is :)
+Although it was designed and documented for programmers to debug device driver problems, there seems to be no reason you couldn't use it to find which device driver is using the "missing" memory.
+Click Next until you get to the "Counters specific to each of the currently verified drivers" page and go through the drivers until you find one with lots of allocated memory.
+Since the memory you're interested in is already allocated, you'll need to reboot.
+The "Create standard settings" option should be appropriate; you can then select the drivers to be monitored (basically, any that you are suspicious of; all non-Microsoft drivers would often be a sensible choice).
+You can bring up the Driver Verifier Manager simply by typing "verifier" in the Start Menu or at a command prompt.
+It does however use RAM to cache disk access, so whatever you configure it with is what's going to disappear from available memory, and perhaps windows is reporting this backwards somehow.
+Actually, it looks as if I was wrong; there is a way to monitor memory allocations by device drivers, using Driver Verifier.
+After reading up on FancyCache, at a guess I'd say that because it's a driver rather than a process, it's not going to show up in the process list directly.
+Default verification options are applied, including pool tracking.
+Once you've rebooted, run the Driver Verifier Manager again and select "Display information about the currently verified drivers".
+Because kernel mode is kernel mode, I don't think that Driver Verifier will always work; it relies on the drivers following the rules, at least approximately.
+I also note that your screenshot above shows only the Working Set size.
+You'll need to run it with elevated privilege, i.e., by pressing control-shift-ENTER at the Start Menu or by running it from an elevated command prompt.
+There are probably various oddball methods a driver could use to allocate memory that will evade Driver Verifier's counters.
+This tool is built into all current versions of Windows.
+Again, the system drivers do require some memory to do what they do, and this may not directly show up in the process list (they're not directly processes remember - you don't see drivers for your network card or video adaptor show up in the process list either, remember...)

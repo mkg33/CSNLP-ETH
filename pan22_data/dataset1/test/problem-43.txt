@@ -1,0 +1,18 @@
+There are a lot of simple things you can do to improve this code, but the square is not actually an indication of a problem.  You asked for a sphere of radius 4 and your code says that anything that's less than 4 units away should be filled. (I changed this so that things that are exactly 4 units away would be included.) The corners of the square are \$2\sqrt{2} \approx 2.828\$ units away, and therefore are correctly filled.  If you manually calculate the distances for each square in the center slice, you'll see they're all "correct" even though it's odd to see a square as the middle slice of a sphere!  With larger dimensions, this problem is less noticeable.
+This code uses sint64 as a data type, which suggests a signed 64-bit integer, but there's already a perfectly usable uint64_t which is standard within <cstdint>.  Threre are also int64_t and uint8_t types which look like they'd be applicable to this code.
+The code has a number of spurious semicolons immediately after closing braces.  They don't bother the compiler but they will bother any other programmer who looks at your code.
+Your Radius * Radius code is recomputed every iteration which really isn't needed.  Compute it once and use the squared value within the loop.
+This code appears to use CamelCase style names for functions, variables and possibly objects.  This hurts readability.  Instead, consider using capitalized names for class definitions, an lowercase names for functions and variables.  This is a fairly common idiom in C++.  It doesn't really matter so much which convention you use; what matters is that you pick one and consistently use it.
+There seems to be little purpose in the hard-coded 0.0 value returned by the function.  Either declare it as void or return something useful.
+Your code would be considerably simpler using a class to compute distances between the center of your sphere and an arbitrary point in the cube.  
+Also the code appears to be referring to BytePrism, ByteBuffWidth, ByteBuffHeight, Xpos, Ypos and Zpos without having passed any of them into the function.  If that's because they're all class members of a UBytePrism class, that's fine.  If they're global variables, then you should change that.   
+I've reimagined your code with these ideas in mind and it looks like this.  First, some includes and then a very minimal Point3d class (with no error checking, so don't use this without addressing that!)
+Here is a redesigned UBytePrism class that only does cubes.  Obviously you can change the shape to any arbitrary rectangular prism if you need to do so:
+This is the member function corresponding to the code you posted:
+When run with the parameters given, it reports that 3071 voxels were set.  The volume of the sphere of radius 9 is \$ \frac{4}{3}\pi(9^3) \approx 3053\$ so this is acceptably close, considering we're doing all of the math with integers.
+The code below is sort of complicated to explain...
+It writes a "sphere" of data to a 3D array from the given 3D-Position outwards in a spherical shape based on the given radius and value to write.
+As you can see there is an issue where it's not drawing an exact circular shape.
+If possible I'd like to fix and or modify this to work elliptical-spheres rather
+than exact spheres. However, I am not sure how to modify the if-statement if ( ( w * w ) + ( h * h ) + ( d * d ) < Radius * Radius ) { of the
+function to fit my needs since I pulled it from an example code.

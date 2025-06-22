@@ -1,0 +1,15 @@
+You don't actually get to see anything in the eventlogs because of this.
+The Windows log and the SQL Server error log are your best places to look.
+I think I may have also found another contributing factor to this kind of does not start on reboot error.
+A possible answer is that the SQL service is trying to start before another required service (or driver) has started.
+Be sure that you have the right instance set to auto start.
+If this is the case you can fix it by setting the dependencies for the SQL service.
+If you set the eventlog to a much larger size OR to Overwrite as needed then you won't experience this issue.
+SQL's logs don't get any data either because it doesn't get far enough into the startup of the service to write to it's own logs (afaik)
+As a test you could try doing that anyway - pick one of the last services to start and make SQL dependent upon it.
+You could also check the dependencies of the working machines and see if they are the same (though you could have different requirements on different machines if, for example, you use different connection libraries).
+I've seen this with agent, and it's been the dependency thing, but not with the main db service.
+But a lot of activity has occurred within this window, then Event Log is effectively full because it can't overwrite the number of events generated inside that timeframe.
+sometimes with Expresss, there are multiple installs, and you might be confusing the services.
+I thought perhaps unable to verify domain credentials, but that shouldn't be an issue.
+It appears that if the Windows Event Log is set to Overwrite Events > 7days.. size 512kb..

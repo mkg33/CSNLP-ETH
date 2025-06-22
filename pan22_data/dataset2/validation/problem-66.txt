@@ -1,0 +1,5 @@
+Constantly shrinking your log and data files can cause performance issues because SQL Server has to regrow these files as needed, which causes waits on your queries that require the additional space.
+No, this is unrelated. Most likely your SQL Agent history is limited and you have a high-frequency job filling the job history tables. See this link.
+As per the title, how much is it safe to use BACKUP LOG db_name WITH TRUNCATE_ONLY in last STEP of any SQL-job execution? Randomly found on google that this Code line can be very harmful in use. But how?
+SQL is backing up the log to nowhere and then trying to shrink the data and log files of your database. All of these are bad ideas. Backing up the log to nowhere means you lose point-in-time recovery of your database because you cannot restore these portions of the log. See this link for more info.
+Before you can reclaim space in the log, you need to backup the data in the log. Removing this would mean your shrinking wouldn't likely free much space, however, as stated before shrinking the log is a bad idea anyway.

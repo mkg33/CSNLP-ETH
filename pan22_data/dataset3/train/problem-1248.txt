@@ -1,0 +1,21 @@
+This can be fiber SAN storage or iSCSI - whatever you have available and there are a ton of options there if you're starting from scratch.
+Windows cluster works using actvive directory for certain aspects of it's configuration.
+If you don't already have a domain, you need to think about redundancy for the domain as well - easily achieved with a pair of domain controllers.
+This is absolutely something you want to test in a lab first and give yourself lots of time to test failovers, failing back, etc so you're really comfortable before going into production.
+We are coming up with a solution for instant fail-over but are not sure what the most cost effective method would be.
+All larger cluster solutions assume the existaence of a SAN.
+Is a windows server cluster the best method for this?
+There's no shortage of info about clustering on the internet.
+Instead you use a domain account as the cluster account.
+We found Parallels has a documented method for setting this up but it said it required a Domain Controller as well as a Fiber connection to shared storage, is all that really needed?
+Also note we are using Parallels Virtuozzo if that makes any difference here.
+If you're talking about hardware redundancy, Windows clustering is a pretty good option.
+I Mean, it is not like ECC RAM does not start screaming like mad when it gets bad ;)
+Tht said, if both computers also have a virtual instance that just serves as domain controller, and you use a third computer outside as PDC emulator (something small / cheap), you are fine.
+In your badRAM situation, you would have failed over to the passive node and had a minute or so of downtime and then could have focused on fixing the other node without all the pressure of being fully down.
+The other advantage to clustering is you can do a quick failover when you need to perform maintenance on the active node (Microsoft updates, firmware updates, etc) and the whole thing doesn't have to be down during that operation.
+We had a server with bad ram which caused a long outage while they figured it out and our client facing apps had to go down for a while.
+The domain controller requirement exists because you need the cluster to be able to run in the same security context on both nodes and local accounts don't provide that.
+It is mostly needed because this basically allwoy the server to fail over - without constatnly synchronizing discs.
+Windows clusters work well but there is a learning curve if you've never used it before.
+The shared storage is required because you need some form of storage that can be accessed by both nodes of the cluster.

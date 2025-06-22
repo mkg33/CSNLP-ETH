@@ -1,0 +1,16 @@
+I've checked the port number sshd is configured to use, checked my firewall rules and verified that I can ssh localhost (which I can just fine).
+I've just set up an SSH server (OpenSSH) on a Windows 7 machine using cygwin and I'm trying to connect to it using PuTTY on a Windows Vista machine but I keep getting Connection timed out.
+SSHD is probably not in the list that comes up, so use the "Browse..." button to find the binary and click "Open" and then "Add".
+I left mine with Private checked and public unchecked.
+Control Panel -> Windows Firewall -> Allow a program or feature through Windows Firewall
+Make sure you are win 7 Antivirus is not blocking port 22.
+This line (using my subnet) as the first rule fixed the issue for me.
+Click the "Change settings" button then the "Allow another program..." button.
+If it's 127.0.0.1  (or any other 127.0.0.x number), then it's ONLY listening on the LOCALHOST, and you can only log in from the SAME machine.
+Does your sshd_config specify ListenAddress as 0.0.0.0 or 127.0.0.1?
+I have absolutely no idea how to troubleshoot this problem.
+If it's 0.0.0.0 or just commented out, then you can connect from outside the machine, ie, from another computer.
+I've checked the network activity on the Win 7 machine with Wireshark and found that I am receiving TCP SYN on port 22 on the Win 7 machine, but the ssh server doesn't seem to reply.
+Also, go to your windows service panel and search for CYGWINsshd and enable it.
+Somewhere in there you can decide which "Network location types..." you want to use.
+After messing around with windows firewall to no effect I eventually found I had to allow connections to my own subnet in Cygwin itself via the /etc/hosts.allow file.

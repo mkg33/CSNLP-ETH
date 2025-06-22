@@ -1,0 +1,23 @@
+At some level, lots of rows being modified makes it take longer, but that is not the only cause of "size".
+The write went to one node; the read went to another node, but it had not gotten there yet.
+But, since Galera can completely recover a dead server, you can allow torn pages if you are willing to rebuild the node after a power failure.
+I suspect that Galera has made sure that DROP USER works.
+"Transaction size" -- well that should probably say "how long the transaction takes to run".
+But if only part (N*512, but less than 16K) is written it is a "torn page".
+However, since all the GRANT stuff involves MyISAM, I suspect there are cases where it can fail.
+An example of where you would like to do stuff on one node without bothering the others:  You need to compute a bunch of stuff to get the data to INSERT in a table.
+The typical disk thinks in units of 512-byte blocks.
+But you are happy to do the computation on a single node and not worry if the node crashes.
+DROP USER involves MyISAM tables in the database mysql.
+So, InnoDB stands on its head with "doublewrite buffer" to be able to recover from such.
+(MySQL 8.0 moves GRANT stuff into InnoDB tables, thereby making it crash-safe.)
+For example, you might have some other mechanism to recover from a crash.
+InnoDB can recover from a power failure if its blocks are entirely written or not written at all.
+The next page comes up but fails to show that comment.
+(This is perhaps the only realistic example of why Galera does not claim to be fully synchronous.
+"Torn page" -- An innodb unit of data is a 16KB block.
+Critical read:  User write a comment on a blog, then clicks submit.
+I will try to make improvements to http://mysql.rjweb.org/doc.php/galera and the MariaDB link you gave.
+Too small -- more effort and delay in doing the cross-node COMMIT.
+"colo" = "co-location" = "datacenter" -- meaning a non-trivial latency between nodes.
+The check in the gcache only checks for "will it successfully commit", not "has it already been written to disk".)

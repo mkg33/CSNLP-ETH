@@ -1,0 +1,7 @@
+I'm building a really simple top-down 2d shooter which uses an Entity Component pattern.
+I've added several different entities to a level and given them different collision groups. I have an entity to represent a teleporter (assigned to collision group A), a player entity (group B), and a bunch of enemies (Group C).
+I understand that the actual collision response should be decided in the collision System based on the groups that the colliding entities belong to. What I can't figure out is how to define the specifics of a collision.
+For example, if a player collides with a teleporter I need to move the player across the level. Where do I store the target location? I'd assume in a component on the teleporter. Should I create a whole new component just for that data? I feel it should be stored in the teleporters collision component but no all entities that use the collision component will require this data.
+You're thinking is correct, the target location should be stored within a separate component attached to a Teleporter entity. This does two things:
+Attaching a TeleporterComponent to an entity effectively makes the entity a teleporter. You could now conceivably make any game object act as a teleporter just by attaching the TeleporterComponent. This is a major strength of ECS.
+As evorlor mentioned, you are now able to write a short script/system that fires when a teleporter collides and handles the logic for teleporting the collider. This way, all the other collision response logic does not have to be concerned with target locations.

@@ -1,0 +1,36 @@
+Some RAID5 implementations read parity data for streaming reads to prevent unnecessary seeking (cheaper to throw away every nth block than to cause the drive to seek over every nth block).
+Again, though, I have no personal knowledge of actual implementations.
+dependent on the raid size, you have also to consider rebuild times in case of an error (how many disks are there, how big is one disk, what kind of raid (soft-, fake-, hardware-), which level etc.)
+So, from my point of view, yes, it could do that, but if it did, it would be inefficient, and I doubt that any are implemented that way.
+with raid1 you have slightly worse writes than on a single disk but your reads are a little bit faster (has to write a file to two disks but can read one part from disk one and the other part from disk two).
+IN this case, both RAID5 and RAID1 can handle single drive failures but neither will survive any more than that.
+RAID1 implementations can't check because they read from both disks for performance (well, in the vast majority of RAID1 implementations.
+afaik, i am no 24/7 storage pro, the controller always checks what is written to and read from the disks.
+Maybe you can disable data checking for a raid level but what is the point of this, all raid levels (except 0) are there to give you data redundancy so why hamper yourself.
+No common RAID implementation typically checks the parity on data access.
+Personally, I think that the ultimate test of a RAID system is how well it can withstand failure.
+A handful let you pick, which can be useful if one disk is much slower than the other and it's not write-intensive load.)
+controller starts returning bad data, sybase crashes with a clear error, therefore no writes were done when the database was running on failing hardware with an inconsistent state).
+That would depend on the raid implementation type (hw/sw), the disks, the raid controller if any, and it's features.
+In that case, RAID6 wins as it can recover the data, and RAID5 and RAID1 are in the same situation, you can identify but not fix.
+Sybase and Oracle do this (I believe at the page level) and I've seen it on many occasions save a gigantic database.
+as I said, the checks aren't part of the raid algorithm, although some controllers might have something additional implemented.
+Also, if your read is for less than one block, a parity-check read would have to expand it to a full block, whereas a regular read wouldn't.
+With raid 5 you need at least 3 disks and can use N-1 disks for data.
+The only filesystem solution and the only RAID solution that does this for you is ZFS.
+So it is not really possible to say that one raid is more robust than another (maybe raid 6 is always more robust than raid 5 at the cost that you lose storage space)
+data read/write checking is done by the disk and controller firmware, and has nothing to do with raid levels.
+the robustness of the array is up to the quality of the drives (2.5" drives tend to live longer than 3.5" due to decreased RV rates; in my experience NEVER buy maxtor SCSI/SAS drives - they have horrible firmware glitches), the environment (temperature and humidity control), the controller itself (does it have a BBU?
+Remember that in order to calculate the parity, it will have to read the block from all drives in your RAID set and then do math to determine correctness, whereas if it doesn't, it just just does the read off of one drive.
+I think that reads from disk have to be of full blocks.
+it does make some slight sense, but not really :) what happens is - if wrong data is written, on a mirror it will be sent to both drives, and on raid5 parity for it will be generated and spread across the drives.
+I don't know this, but it seems to me unlikely that it does.
+(Assuming, of course, that the RAID block is bigger than the disks' blocks.
+If by more robust you mean which offers more redundancy, than it is raid 1.
+With raid 1 you always need an even number of disks and can use N/2 disks for data.
+(This is not strictly true as the drive could detect a bad CRC, return an error, and let you rewrite the block from parity.
+It will definitely be read during reconstruction but on normal use, it would not make much sense to do so as bandwidth would be wasted on it.
+), the amount of PSUs in the server, the UPS quality etc.
+As for your question on the parity bit, I would think that it is dependent on the RAID drivers.
+So in bigger raids level 5 gives you more storage while raid 1 gives you more redundancy.
+If you want data integrity, store a hash with every block (or record, or however it's divided up) at the application layer.

@@ -1,0 +1,17 @@
+You can have as many lowercase "smtp" aliases as you want, assuming the domains are set.
+In Office 365 we've added a domain alias which we'd like to automatically add user email aliases for.
+Alternatively, is it possible to set up some Exchange Admin Center rule that would automatically forward an email domain alias to the primary domain equivalent, thus removing the need for email aliases on each user account?
+Get-EmailAddressPolicy | Format-List should show you all the values of the default policy.
+You're probably most concerned about "EnabledEmailAddressTemplates"
+Adding New Email Addresses for Multiple Mailbox Users by Paul Cunningham pretty much covers this subject.
+set-EmailAddressPolicy "Default Policy" -EnabledEmailAddressTemplates "SMTP:@maindomain.com","smtp:@newdomain.com"
+https://technet.microsoft.com/en-us/library/bb232171(v=exchg.160).aspx
+Also note, if you do this on an existing user, it will honor the policy, so make sure you have tested it!
+https://technet.microsoft.com/en-us/library/aa996800(v=exchg.160).aspx
+This will allow you to define how email addresses are assigned to users that have this policy enabled.
+I understand we can script this task to add the email domain alias to all existing users, but it would be preferred to automatically assign a email domain alias to all new users on creation to prevent someone forgetting to do this in future.
+You should be able create a Email Address Policy in O365 using the *-EmailAddressPolicy (new, get, set, remove etc.)
+I would recommend looking at your default policy and potentially adjusting that.
+There can only be ONE "SMTP", thats the reply to address
+This wont be enabled by default, you will need to flip the "EmailAddressPolicyEnabled" from $false to $true on the mailbox for it to take affect.
+The technet article shows that it is supported in Exchange Online.

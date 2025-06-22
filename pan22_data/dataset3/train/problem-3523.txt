@@ -1,0 +1,23 @@
+Downscaling a bitmap to the display resolution is just as bad.
+The lowest resolutions are the most important to have crisp edges, but they're going to be the worst-affected.
+If the edge between the red and the green falls in the middle of a pixel, and the SVG renderer does anti-aliasing, you'll get a row or column of half-red, half-green pixels, which will look like mush.
+This means that you can make a higher-detail design for a higher-dpi screen, without it being too busy on a low-dpi screen.
+Make sure all your important edges line up with those guides, but you can still use curves, gradients etc.
+If the renderer doesn't anti-alias, you instead get the edge in the wrong place, which might be fine for a single rectangle, but for a repeating pattern each instance of the pattern might come out a different width, which is just as noticeable.
+For example, say your GUI is a red box on a green background.
+(For example, you can use a fine checkerboard or ruler pattern, and have it show up correctly at each resolution.)
+Again, imagine your green-red edge is on a pixel boundary that will not be a pixel boundary in the downscaled bitmap.
+You can make either one of these techniques work somewhat, if you can accept a restriction: instead of handling any resolution, you're willing to handle a set of resolutions, ideally powers of two apart (e.g.
+That way, you know you won't get the blurry mush at low resolutions, but you can still get the benefit of smooth diagonals and curves at high resolutions.
+If your buckets are powers of two apart, you can use mipmaps to store the images (instead of using the built-in mipmap generation), whether you're creating different images for each resolution or just downscaling.
+Mobile OSes (which are designed for a range of screen dpis) use a similar technique, but with two differences.
+Neither of your suggestions is a solution for crisp 2D graphics at all resolutions.
+That way you avoid the runtime memory bandwidth cost of downscaling.
+When you're designing your UI, draw a large bitmap (512x512) or a vector image, but use guides in your editor to show the minimum size (e.g.
+To make this work out, they don't limit the resolutions to powers of two, but have some intermediate ones as well.
+You could consider doing this too, but it makes designing and managing the bitmap assets a little more time-consuming.
+You're again going to get a row or column of pixels that are a mushy red-green mix.
+First, they "bucket" the screen's actual dpi to the nearest "standard" dpi.
+This means a UI might show slightly larger or smaller on different screens, but you know exactly how many pixels will be in each icon or widget.
+SVGs are great and infinitely scalable, but since you don't know where the pixel boundaries will lie in the final render, you can't get crisp edges at all resolutions.
+Second, they let designers specify a different bitmap for each resolution.

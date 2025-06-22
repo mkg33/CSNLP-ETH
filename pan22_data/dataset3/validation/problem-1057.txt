@@ -1,0 +1,38 @@
+FWIW, I just tested this using VirtualBox and it simply froze, which for all intents may as well be a crash.
+I'm not sure which value it sets for Windows VM's.
+So hard that I was unable to kill the VM and had to reboot the entire VMware host.
+Once you install VMware-tools on the VM, it takes care of raising the timeouts of the virtual disks to a safer value of 180 seconds.
+If I understand correctly, the guest OS system partition is local from the point of view of the OS, and it's only remote for VMWare?
+The VMFS filesystem is actually located across the network on an iSCSI LUN on a SAN.
+The Linux VM thinks it is running on a SCSI disk, which is actually a VMDK file on a VMFS filesystem managed by VMware.
+Multiple paths and separate networks for iSCSI traffic only are the common means of achieving this.
+The VMware software iSCSI initiator has reasonably long timeouts as far as I know.
+This can be achieved by disabling the QEMU disk caching function ( cache=none in the cmd line), and using werror=stop to make the guest pause whenever it hits an IO error, instead of trying to push that IO indefinitely.
+If you don't use these, with an unstable storage you are risking image corruption and data loss, though in some cases, if the guest OS detects the IO error (if you use propagation for example), it might simply remount it's FS in r/o mode.
+Applications themselves implement response timeout values which are likely going to be hard coded and non-configurable by a platform or virtualization administrator in the application itself.
+In any case, it is generally better to avoid disk access bottlenecks, especially when VMs are involved.
+A personal experience: I once upgraded my SAN firmware and rebooted the SAN.
+I had to delete a snapshot to free some space, though I'm not sure if they continued to run directly afterwards (or after a reboot).
+In such a layered system it's smart to increase the default timeouts since there is a bigger chance of something failing temporarily.
+Not to get into too many details, if you anticipate using unstable storage, it is much safer to keep risks to the minimum.
+I don't have other systems to test on, nor do I believe that this behavior will be consistent.
+I imagine this will depend quite a bit on the virtualisation layer.
+This is quite a complex question really, and the answer depends on your host configuration.
+However, this time a single VM didn't like the delay and crashed hard.
+The same goes for the device-mapper-multipath that controls the block devices, and above that you have the QEMU disk layer and the disk controller driver within the guest OS.
+How long depends on the OS and settings of its I/O subsystem and all the layers below it.
+I suspect it will depend a bit on what the OS is actually doing at the time the connection broke.
+The default timeout for scsi disks is 30 seconds, but you can change it by changing
+VMware actually takes care of some of this by itself.
+Actually I had a problem with VMWare ESXi where the storage (containing all virtual machines, and it was local!)
+First of all the iSCSI layer has it's own timeout periods and retries.
+While the OS may survive the disk I/O interruption, application(s) running on the OS platform may not.
+Without knowing for sure, my experience with VMWare is that it will rather pause the virtual machine during this time.
+In this case you have to check the timeouts on both VMware's iSCSI initiator and Linux's SCSI subsystem.
+A guest OS with high disk I/O activity may not be able to tolerate sustained read and/or write requests for the duration of the timeout value.
+Many layers, each with their own settings and timeouts.
+Wasn't a critical server though, and I'm just a developer, not a system administrator :)
+This reboot is fast enough to fall within the timeouts of both VMware ESXi and my Linux and Windows VM's.
+Linux guests may go read-only on their root volumes which requires a reboot to fix.
+was full when increasing the size of a growable partition.
+For example, consider a linux VM running on VMware ESXi.

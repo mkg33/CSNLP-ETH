@@ -1,0 +1,5 @@
+Assuming that it is plugged into a managed switch, find the switch that it is plugged into, and track it down to the specific port. Log into the switch, and look at the mac-address that is associated with that port. In Cisco land, it would be something along the lines of show mac-address-table | i 5/34 where 5/34 is the port that the device is plugged into.
+Once you have the mac address of the device, then you can look at the arp tables on the switch, which should show you an IP. Again, in Cisco, it would be something like sh arp | i FFFF where FFFF is the last 4 characters of the device's mac address.
+That will get you as far as the IP address. The you should be able to use a tool like wireshark to watch the traffic, and glean the netmask from the traffic.
+All IP stacks for two decades have supported multicast, so they should all respond to that, unless they have an overzealous firewall.
+In OSes that don't let you ping the all-ones broadcast address (255.255.255.255), you can usually still ping the "All Hosts" multicast address:

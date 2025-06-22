@@ -1,0 +1,17 @@
+Your solution is good if we expect a lot of duplicates, but bad if we don't.
+So this is only an algorithmic idea that will be fast in certain cases.
+As you can verify, the tests for the std::complex vector and the two std::string lists fail because std::complex does not implement operator< and because although std::string does, it's not the ordering that was used to sort the containers.
+Since you only care about uniqueness (and not occurrence count), you could push the idea further as well by using less space per histogram entry.
+For simplicity, I'm skipping the details of making this generic (I'm assuming the container is really say a vector).
+It is also a bit unnecessary for this particular algorithm to assume the input is sorted; we could also just find the maximum element first, and then proceed (but this assumption should make things run faster, and be more cache friendly).
+While we could fix that with your original code, I thought it might be thought-provoking to provide an alternative implementation that both addresses that problem and also abuses std::accumulate to do our counting.
+The result is that the only valid comparison is == rather than < which is what std::upper_bound implicitly uses.
+If you are OK with the empty set returning a value of 1 (and there may be some mathematical justification for that, even though the cardinality of an empty set is usually understood as being 0), then you can eliminate the first line containing the early bailout.
+The other answers have addressed most issues, but I wanted to expand on one, which is that while the container is sorted, the sort ordering is not necessarily ascending.
+Now, especially if you expect the container to be dense, you could also compute a histogram of the elements.
+You may want to fallback to the simple forward-iterator version if the type is only equality-comparable but not less-than-comparable.
+The binary-search optimization requires that the type the container holds is ordered.
+As an optimization for the worst case, we could add some exponential bounding to find the next element.
+Of course is now pretty bad for non-random access iterators since we have to keep doing lots of distance and advance related calls, so I would simply default to the trivial comparison algorithm in that case.
+If we pass an array of completely unique elements, we get a pretty bad runtime.
+I'm not sure how generic you aim to be, but suppose the elements in the container are (positive) integers.

@@ -1,0 +1,19 @@
+Traceroute depends on the common router practice of sending an ICMP Time Exceeded message, documented in RFC 792, back to the sender when this occurs.
+Traceroute'' is a network debugging utility that attempts to trace the path a packet takes through the network.
+It measures the time from the initial SYN to the SYN/ACK.
+More info Please see http://www.tek-tips.com/faqs.cfm?fid=381
+no... your machine sends out 3 UDP packets with a TTL (Time-to-Live) of 1.
+When those packets reach the next hop router, it will decrease the TTL to 0 and thus reject the packet.
+At every router the value is being decremented by 1 and if TTL reaches 0 the packet has been expired and is discarded.
+Since tcpping requires tcptraceroute, I'll start with tcptraceroute.
+This is sometimes referred to as a half-open connection scan.
+Also in ICMP ping you can specify the packet size, can this be achieved in TCP ping?
+Traceroute transmits packet with small time to live(TTL) values.
+It will send an ICMP Time-to-Live Exceeded (Type 11), TTL equal 0 during transit (Code 0) back to your machine - with a source address of itself, therefore you now know the address of the first router in the path.
+Does it take in account just the time it takes to establis the TCP handshake?
+So, tcptraceroute does not measure the time it takes to complete the three-way handshake because that never happens.
+Since tcptraceroute sends a standard SYN packet, it should be a small packet, perhaps 64 bytes.
+I am not aware of any standard specification or reference implementation for "TCP Ping" or "TCP Traceroute", so you probably need to pick a particular pair of tools that implement these tests and then use a packet sniffer to see what those particular tools do.
+As to your packet size question, the above description also has the answer.
+Further: It is worth noting that tcptraceroute never completely establishes a TCP connection with the destination host.
+The author of tcptraceroute states that unlike a traditional traceroute, "By sending out TCP SYN packets instead of UDP or ICMP ECHO packets, tcptraceroute is able to bypass the most common firewall filters."

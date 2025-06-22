@@ -1,0 +1,32 @@
+The biggest performance issue you will need to look at is concurrent logon requests, as many posters have pointed out.
+You could go with 32-bit hardware of your .dit file is less than 1.5GB, but why bother?
+Also, if you are looking for some type of High-Availability, be aware that the replication and the site-awareness in AD is not really designed to provide this on the level you might need for a commercial application.
+This will significantly improve your performance, as it wil entirely eliminate paging while processing LDAP queries.
+It also depends on how you're doing the authentication.
+The easiest way around this is to build your DCs on 64-bit hardware and make sure that your DC has enough RAM to store the entire .dit file.
+(I think most people would be surprised how tight this can be.)
+If this is purely to authenticate external users -- why even bother with AD?
+It has great password policy, password complexity, blah blah blah...You should really be looking at using SAML or OpenID...If you have a mix of users that federate and users that don't you should still code against the claims model and abstract out authentication provider specific code.
+If, however, you use a HTML form, you can do the lookup on a login request and return a cookie for the following requests, meaning you do much less authentication lookups.
+Also, can you add caching to speed up your lookups.
+If you're using HTTP auth, you'll probably have to do a lookup every request.
+If the AD benefits for this are low on your "pros" list, then you should really consider a different LDAP package, like Siteminder, although that will require pulling together more bits of tech in order to build a scalable system.
+Generally, you should use AD - LDS (ADAM) for application users.
+It should give you many of the benefits of AD, i.e.
+pre-existing techie knowledge and stuff like FRS for replication.
+Make sure there aren't local accounts, use group policy to restrict security settings.
+And they had quite simple hardware for their tests.
+If you had a million users, but you only had one login a day you're not going to need a lot of hardware.
+But I think you need to query MSFS for your specific scenario.
+This note claims that even old Windows Server 2000 was performing 2,376 LDAP-based full-tree searches per second on a 5 million-object directory.
+It was designed for authentication and accounts' management and now its quite mature in its evolution.
+The number of users is fairly irrelevant in comparison to the number of users you'll be serving at the same time.
+You will need to be aware of the limitations of locating a DC and write your applications to use the Windows API to correctly handle offline/unavailable DCs.
+I see this issue a lot, where an app dev just points their LDAP auth package at fqdn.ad.domain, but that address i just a simple round-robin and won't be updated if you take a DC offline.
+This would be much more important for HTTP auth setup.
+But I would recommend you go with the ADAM (or "AD LDS" it is called now).
+You'd want to look at how well AD scales out; how many servers can you have serving requests before the replication becomes a problem, either maintainence, or producing diminishing returns adding more.
+Anyway I think that AD is the best solution for reliable authentication because it is very scalable (you can have domain controllers as much as you need and where you need), secure.
+If your user directory is compromised then your operational directory is still functional.
+I don't know about licensing for sure but I think you don't need have CALs for users if you use AD for authentication only.
+There isn't a licensing fee, and the users in LDS can't be used as security credentials for the servers themselves.

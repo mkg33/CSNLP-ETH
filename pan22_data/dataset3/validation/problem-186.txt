@@ -1,0 +1,13 @@
+Copy data to a GCE PD: Spin up a VM then either transfer your data from your local machine to the VM or create the filesystem and prep the files required directly from the VM instead of your local machine.
+Instead, we want to make sure the PV is created first and targets the GCE-PD explicitely.
+Mount the PVC in your pod: First of all note that GCE disks don't support read/write many, so this PVC can only be used by a single pod.
+This sounds like your container needs a pre-populated volume to start up.
+Create a PV to consume the disk: It is important to follow the documentation for this step carefully.
+If the files and filesystem the container needs only has to be read only, then you have two other options to make it easier:
+Create the PVC to target the PV: As I mentioned, the default behavior will be to create a brand new disk dynamically which will be a blank new disk.
+If you need to have more than a single pod, you'll need create multiple PVCs using the above steps.
+If any of the fields are set incorrectly, a different PV will be created.
+Instead, you'll transfer your data to a GCE PD, make sure your PV uses that pre-existing disk and then mount that to your pod.
+Prep a GCE disk for PV use: Either detach the GCE disk from your VM or take a snapshot of the disk and create a new GCE PD from the snapshot.
+You could use hostPath like you mentioned but this is not recommended for a couple reasons.
+The default behavior of PVC in GKE is to be provisioned dynamically using a StorageClass.

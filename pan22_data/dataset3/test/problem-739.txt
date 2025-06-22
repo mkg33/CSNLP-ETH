@@ -1,0 +1,13 @@
+Here a simple one-liner to clean container log file:
+Here, the fd is /proc/17511/fd/25, so we truncate it:
+logspout is useful for colelcting logs from all your docker containers and sending them off to somewhere.
+IF you're only just needing to consider this, then sending them to the host's syslog daemon might be a good approach, and you can use the usual mechanisms for arranging those into files and rotating them from there.
+if you run sudo lsof | grep '(deleted)', you might find that there are a lot of deleted container log files left open by docker
+echo "" > $(docker inspect --format='{{.LogPath}}' <container_name_or_id>)
+These are logs that belong to a deleted container.
+Another way to free this space is to find the relevant file descriptor and to truncate it:
+If you want to free space, you can do in this way:
+One way to have these closed is by restarting the docker daemon itself.
+Where 17511 is the pid of docker and e49d81fc is part of the offending logfilename / container id.
+A late answer, but anyone in the same boat might be better off exploring options for exporting their docker logs to somewhere sensible for managing them.
+For larger multi-host environments, you might look at shipping to an "ELK" stack.

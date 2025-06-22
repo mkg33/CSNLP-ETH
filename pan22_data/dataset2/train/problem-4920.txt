@@ -1,0 +1,10 @@
+Memory figures for apache processes are pretty normal for a PHP setup. An highly tuned apache/php server here with many modules/extensions not loaded or even compiled usually runs between 200 and 350MiB of virtual memory per process, and 40~45MiB of resident memory per process.
+Another possibility is that you have some kind of op-code cache, such as XCache, installed, and have configured it to use a lot of memory.
+If you really need to tune things tighter, consider getting away from prefork apache mpm.  That means running PHP as FastCGI.  If you're going to go with PHP under FastCGI, you should consider upgrading to PHP 5.3.3, which has much nicer FastCGI process manager (--enable-fpm configure option).  
+If performance is generally okay until load causes you to start swapping, a quick fix is to start throttling down apache's MaxClients.  If apache is allowed to fork worker processes whenever it wants, it's going to start swapping under load.  Requests will queue until a worker is available, so things can get slow, but not as slow as the death-by-swap.
+If you think it should stay forever at 0MiB swap, you're thinking wrong, that would be a really stupid thing for your operating system to do.
+My crystal ball is a bit dusty, but I guess you are using memcached and its PHP extension. If that's the case, try to disable it unless you really need the thing.
+Use eAccelerator php module. It is php compiler. You can get faster execution and smaller memory usage.
+php-fpm/worker is much more memory efficient than old-fashioned mod_php.  You can then tune the number of apache processes/threads independently of the number of PHP processes.  And your memory-heavy PHP processes are only used for serving up php-driven content, and not wasted on serving static files.
+You probably are not that familiar with the virtual memory subsystem? From what you're writing, your system is probably healty. Check the load average, you're ok with those memory figures unless that also goes high.
+You're almost certainly running mod_php, which means you're almost certainly running apache in mpm_prefork.

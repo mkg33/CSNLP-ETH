@@ -1,0 +1,9 @@
+You stated that you cannot communicate to the newly assigned address - where are you trying to communicate from?
+For non-routed traffic (within the same subnet), your newly assigned VMkernel addresses should already be working just fine.  You should be able to verify by communicating with them from another device on the new 10.13.110.0/26 network.
+Routed traffic is another story.  Two issues with routed traffic:
+Since your subnets are sliced into very small chunks (what's up with that, anyway? Does someone in your organization need reminded that 10.0.0.0/8 contains 16.8 million addresses?), I bet most of these hosts' communication is routed.
+The tricky step of this migration for you will be the change to the hosts' gateways, as everything that's connecting to them from outside the subnet will need to be switched over to the new address.
+You need to properly differentiate between VMware Host networking and VMware Guest networking.
+Typically, the only network traffic that directly involves VMware host machines is (Vcenter) management and cluster-related communication.
+Traffic to and from individual VMware guests is completely unrelated to this; in fact, they should usually not be connected to the same network(s).
+That said, Virtual switch ports can be trunked, or tagged, or whatever you desire for your guest VMs.

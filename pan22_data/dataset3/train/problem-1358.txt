@@ -1,0 +1,8 @@
+Rsync collects the file list to transfer in a 1st pass, and 1/ traversing a large hierarchy over NFS is slow (local lstat() translated as remote NFS getattr are slow and non cachable since you're only traversing once), 2/ this problem depends on the number of inodes (use df -i), not on the total amount of data to transfer.
+polynomial and AndreasM said what's naturally comes to mind : it looks like a thrashing situation, you did not have enough memory.
+Depending on your CPU+network setup, adding compression might speedup the whole operation - or not (add -z on both tar invocations).
+Depending on your NFS latency, this might be a nice boost.
+Note that using rsync -H|--hard-links is even more expensive, rsync must build a full hash tables of all inodes to find dupes.
+Try to use rsync right from the file system exported by the NFS server, bypassing NFS altogether.
+| tar -xC /path/to/dest which is a simple streaming copy which has a constant memory usage.
+In some edge cases where traversing a large collection of inodes was actually more expensive that simply copying the data, I used something like ssh source 'tar -cC /path/to/src .'

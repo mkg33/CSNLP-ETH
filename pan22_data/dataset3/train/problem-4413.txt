@@ -1,0 +1,12 @@
+Just use the gateway IP to go from one guest to the host.
+I did the following steps and it worked fine with me finally (on CentOS VB):
+Then this VB should access the Internet and could be accessible from the others (VBs and local machine).
+This is how I connect vbox guests in NAT mode only (tested on VirtualBox 4.2.4).
+I think what you're looking for is "Internal Networking" , connecting internal VMs each other.
+Then you need to configure port forwarding on guest B so that all traffic received by the host on port 1000 go to guest B on port 1000.
+In conclusion, you don't necessary need host-only mode to connect multiple guests but I don't mean to say that host-only mode is not the best option for your use case.
+You need the host-connection LAN type (something like that in english version) on guest machines and bridge-connection on your host-machine.
+For instance if guest A wants to reach a guest B service that listen on port 1000, A has to use the gateway IP (for the first NAT interface it is 10.0.2.2).
+Then use port forwarding to "proxy" the host traffic into the other guest.
+This might not work for every service but it seems to work just fine for ssh, salt, ...
+The NAT adapter will be used to access the Internet while the Host-Only adapter will be used for networking access between any other VBs and the local machine as well.

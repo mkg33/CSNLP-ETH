@@ -1,0 +1,14 @@
+If you're not concerned about that, then this setting should turn off the known_hosts check.
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i secret.pem ec2-user@10.0.0.5
+You could put CheckHostIP no into your ~/.ssh/config file, but that leaves you open to spoofing attacks.
+Edit your ssh_config file and add change this line:
+You will still get a warnings that the 10.0.0.5 has been added, but it has really vanished into /dev/null.
+I do this often enough that I set an alias in my ~/.profile
+What this does is to do just the kind of check you're failing.
+I reserve ssh ec2-user@example.com type commands for machines were I went to the trouble of checking the fingerprint.
+You can set StrictHostKeyChecking=no in your ssh client configuration (i.e.
+Turning it off means it just trusts that the IP is variable, and will to key-checking against the hostname.
+I avoid adding the fingerprints to my known_hosts file when connecting to  transient AWS machines.
+The ~/ssh/config file on the machine that you connect from), to ignore the warning.
+Addition: you could try only disabling the CheckHostIP check for that name:
+It will not ask you if you want to add the machine “to the list of known hosts.” Replace 10.0.0.5 by the IP address of your machine and secret.pem by the full path of your Ssh key.

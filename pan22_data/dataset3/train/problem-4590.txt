@@ -1,0 +1,20 @@
+For a database you want defined IO performance, seriously optimized latency - you do a lot of very time critial IO.
+Unless you have great bandwidth between the nodes, I don't think this is going to fly.
+Is it really cheaper for you to buy multiple boxes vs. one big server?
+They provide pre-installed versions of most Linux distributions.
+Actually most proper databases will try living in a handfull of files - so they end up in one (not controlled) node anyway (per file).
+What are you storing in your database which does not fit a single server?
+Storage SIZE Is normally not critical - in the pre SSD days you bought discs not for space primarily, but for IO performance.
+The design principles between distributed file systems and database storage systems are orthogonal - they go for totally different targets.
+But the performance is going to suck unless you have LAN-level communications performance.
+For a distributed file system you want ease of management, transparenty of location, focus on storage size instead of defined IO performance.
+You could set up a distributed block device with drbd, for instance, and run a RAID setup over several boxes, mount the fs on a single node and run your database server.
+If you need more storage, the provider can add it for you - just have LVM add the additional volume to the volume group.
+One is a 40 ton truck for moving lots of things, the other is a highly tuned formula one car.
+You rely on caches to handle performance in many parts, which is redundant with what the database does itself and will simply not work in a proper optimized database scenario.
+A relatively simple way to do this is create a virtual machine install at a provider like Linode.
+This is like asking "what is the best way to win in formula one with a 40 ton truck".
+You will not ever get them into the same boat because they are designed based on different assumptions.
+You actually can not guarantee IO performance on a good enough level as you get a very unreliable (as in: can change) infrastructure below.
+I once had a chance to work with a database distribute over 190 discs in a SAN - because it needed the hugh IO performance.
+Actually larger database storage systems are designed around IOPS - IO operations per second - optimizing delays out.

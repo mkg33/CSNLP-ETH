@@ -1,0 +1,25 @@
+I'm automating a machine creation workflow that involves several separate systems across my infrastructure, some of which involve 15 year old perl scripts on Solaris hosts, PXE Booting Linux systems, and Powershell on Windows Server 2008.
+I would prefer if the process began on a Linux host, since I imagine that it will end up as a web application living on an Apache server, but if it needs to begin on Windows, I am hesitantly okay with that.
+I've had good luck in the past keeping a Windows image with different answer files on a Windows file server and delivering a custom WinPE boot image using tftpd from a Linux host.
+I'm open to ideas and suggestions, including "Look idiot, everyone uses Cygwin, so suck it up and deal with it".
+So I guess what I'm asking is if there is a way to execute jobs on Windows machines from Linux.
+I can script each of the individual parts, and integrating the Linux and Unix automation is fairly straightforward, but I'm at a loss as to how to reliably tie together the Powershell scripts to the rest of the processes.
+You could use something like nrpe to remotely execute the powershell script on the windows host.
+If you're willing to put in the work, the Linux master-server only has to do a bunch of curl calls to do what needs doing.
+This works best when scripts are fire-and-forget though, as building a call-back system is a lot more  effort.
+I would ideally like something along the lines of psexec for Linux to run against Windows, but the answer in that direction appears to by Cygwin, and as much as I appreciate all of the hard work that they put in, it has never felt right, if you know what I mean.
+Which does restrict what you're able to do with it.
+Can you redesign your workflow so that the Linux server simply delivers the correct boot.wim image via tftp to a PXE booted host?
+You might want to modify your powershell scripts to return exit codes as expected by nrpe, but there's no reason you couldn't call check_nrpe from your scripts on your linux host.
+We have classes and functions that are triggered from GET requests which use the "cfexecute" directive to launch specific powershell scripts.
+With the second option you're stuck fighting your way through the the GNU/Posix abstraction layer to get at the actual windows bits.
+Then, you can have the answer file call the correct PowerShell script and you don't have to deal with cross-platform yuckiness like Cygwin.
+We're looking at the powershell v3 Web service features to migrate away from having ColdFusion acting as a middleman.
+I've spent hours pounding on this very problem and it eventually came down to two viable options (there are a lot of non-viable options out there):
+Seriously though, why do you need the Linux server to call the PowerShell script?
+For the processes we currently support our approach is to have the Unix systems make Web calls to an "admin" Windows server that's running ColdFusion on IIS.
+How gross do you want to feel afterwards, because there's always telnet :)
+It's great for a desktop and gives a lot of functionality, but I feel like Windows servers should be treated like Windows servers and not bastardized Unix machines (which, incidentally, is my argument against OSX servers, too, and they're actually Unix).
+The first option pretty much builds a web-based abstraction layer you write yourself on top of your full native-stack Windows install.
+I work in a large enterprise where this issue is common.
+Anyway, I don't want to go with Cygwin unless that's the last and only option.

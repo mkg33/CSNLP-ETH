@@ -1,0 +1,18 @@
+Therefore you need to create a new default route associated with wlan0.
+Turned out I forgot to install the wpasupplicant package.
+I have my wired ethernet configured with a static IP and I have done the same thing with the wlan.
+I tried to reboot without the cable plugged into the Pi to confirm it wasn't just some sort of glitch when I unplug it while it's running but it will only work if the wired cable is attached first.
+You may try look what "route -n" gives you before and after you unplug the cable.
+I had exactly the same issue with Debian Jessie on my Raspberry Pi.
+Discovered a bad interaction between my router (Tomato) and my rpi.
+Turning off APSD on the router made the problem go away.
+Here's a copy of my /etc/network/interfaces file...
+Add this into your eth0 section of /etc/network/interfaces:
+However when I disconnect the wired cable so I can use the Pi via the wifi it stops functioning.
+Save your changes and restrict access to this file to prevent pre-shared key (PSK) disclosure:
+Further instruction can be found at: https://wiki.debian.org/WiFi/HowToUse (section "wpa_supplicant").
+Use the following command to check installed packages:
+When the wired is being used the wifi comes up and works.
+It seems really strange that it would stop working because the cable isn't attached.
+Then, calculate the correct WPA PSK hash for your SSID (replace <myssid> and <passphrase> accordingly):
+It might be useful to add wpa-debug-level 3 to the interfaces file: this writes a lot of debug messages to the log file /var/log/syslog.

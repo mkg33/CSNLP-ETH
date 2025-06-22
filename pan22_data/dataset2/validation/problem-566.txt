@@ -1,0 +1,9 @@
+I agree with the other answers on checking hardware/environments/configurations match first, but if nothing obvious comes up, start looking at query execution plans, running SQL Profiler etc.
+This has happened to me on a few occasions. Each time it turned out to be environment: someone else was hammering away and starving the db of IOPS on one server.
+Once you've ruled that out, it's time to dig deeper into the hardware: is the work being spread out across all the CPUs, has a network port renegotiated itself to 100Mb. Run vmstat and/or iostat on both machine and compare the differences.
+The other answers are good, but I would add that you should consider the amount of data in Environment B, and any contention with other queries.
+Run a top(1) on the slower server and see if the CPU is experiencing high amounts of wait states, or cpu stealing if you're in a virtual environment. 
+Some SQL queries show no performance problems in isolation (e.g. 1000 rows in table, no other queries running) , but can be horror-show with 10,000,000 rows in table (e.g. parameter sniffing issues), and/or other queries potentially writing to, updating or locking the tables involved.
+If the datasets are identical, does the same query generate the same execution plan on both? Do tables contain the same numbers of rows? Are the index definitions identical? Do the tables have similar levels of fragmentation? Similar numbers of active connections?
+In short, you need to isolate whether the db itself is slow compared to the other, or its environment is slower. Rule out the easiest things first.
+This will also help point to missing indexes that cause execution plans to perform full table scans instead of index scans (but that's easy to spot with slow query logging). This will also show up in ps as procs in a D state.

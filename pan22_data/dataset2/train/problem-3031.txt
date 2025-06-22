@@ -1,0 +1,7 @@
+Varnish caches data in RAM to send "stuff" to clients faster. It doesnt save you RAM usage, it saves you processing and I/O time.
+Without varnish, the apache accesses were around 200/sec. After varnishing the server (6GB memory total) and giving 3GB to varnish and the rest for mysql/php/apache stuff, the accesses to apache dropped to 10-20/sec and the whole server got WAY faster. But do not expect to actually gain any speeds without giving Varnish a fair part of your memory
+If you have many static files served by apache (jpgs, css/js files and html) you will find that using Varnish to serve them requires less memory than hogging a full apache process to serve that single 3kb file. 
+Nginx might be a good choice if you want a lightweight server for static files. You can select which modules you want at compile time.
+What you should be looking at is alternatives to Apache2. I saved up a great deal of RAM by switching over to lighttpd+FastCGI-PHP since I mostly share out a large number of static data.
+A rough estimate is the size of your static content + 25% for overhead. If the images are not served evenly (meaning that some are served way more often than others) you can get away with less. 
+In reverse, having many dynamic files (php with POST/GET queries etc) will not make any use of varnish so it is a complete waste of memory. 

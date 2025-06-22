@@ -1,0 +1,7 @@
+It executes a powershell script that changes the DNS servers for the network connection. (To block some websites for these users, using dnsmasq. I know this is not a bulletproof solution, but its good enough.)
+In our organisation I made a GPO that creates a scheduled task. This task triggers at logon of two user accounts.
+The problem is that this works fine, approximately 9 out of 10 times. When it doesn't work, the task scheduler still reports exit code 0, but it seems the script does not even begin to execute because, nothing happens and the log file is not created.
+Remove the -Command from your script parameters and instead use -File . Command is meant to be used when you are entering powershell commands but you have a script file instead.
+$LastExitCode has the exit code of the your script, you have to bubble it up one level to the task scheduler.
+-ExecutionPolicy Bypass –NoProfile –Command "& {C:\ProgramData\ORGNAME\scripts\SetDNS.ps1}" > C:\ProgramData\ORGNAME\scripts\SetDNS.log
+It would also be a good idea to add some error handling to your script and use Exit statements to set the actual exit codes. 

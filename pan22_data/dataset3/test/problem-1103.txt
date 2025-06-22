@@ -1,0 +1,24 @@
+It is important that you put it into the unix extension flag into global section (valid for all shares), as this is parsed before Samba knows which share the user connects to.
+Adding this to the global section of your smb.conf file should fix the issue:
+NB : already posted this to answer another question, but when posting the link only, my (very short !)
+Apparently the option's name was changed since those earlier instructions you found.
+(in addition to the Samba shares definitions themselves, of course).
+I could even use two puTTy windows next to each other, one in my /data directory and one in my /data2 directory and issue the same command: ln -s /data3/Mydata.
+NB : The "follow symlinks" directive is not necessary as it defaults to "yes"
+I've had the same problem, but for me, putting "unix extensions = no" into the [global] section of smb.conf did fix the issue.
+The Mydata directory would appear in both my mapped drives on the Win box but in one case it would work but in the other I'd get an "Access denied" error.
+reply has been converted into a comment to this initial question (see above), and turned slightly invisible.
+According to an Ubuntu Forums post on the topic, the "wide links" option now defaults to no.
+This helped me too although I didn't think it would.
+As for Windows clients, 1 setting is still missing to let them follow such links.
+To allow Samba clients to follow symlinks outside of the shared path, all you need in the Samba configuration is :
+I had no problems following the links on the linux but on the Win it wouldn't work.
+The samba team lives under the impression that only a tiny minority of people are affected by this bug, and they can only be convinced otherwise if more people make their voices heard.
+The Wide links option can go into the share to which is applies.
+Just a remark for those gotten bitten by this behavior, and want to avoid similar occurrences in the future: The samba team doesn't read distribution's bug trackers, but they do have their own list:
+There was a recent security issue in Samba (Feb 5 2010), a claimed zero-day exploit that exploited an insecure default configuration.
+So, for visibility, here's the full answer again :
+So if you care, drop a note to samba-technical@lists.samba.org
+NB : the same result can be obtaind by editing the Windows registry.
+The "unix extensions = no" did the trick but I don't know why...
+In both shares I use symlinks but in one disrectory (shared) the symlinks were working but in another disrectory (also shared) the weren't.

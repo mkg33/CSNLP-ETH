@@ -1,0 +1,6 @@
+The -h flag results in a more readable number, in kilobytes. As expected, it's half the number of 512-byte blocks:
+Here's how it works: it gets a list of all the files, and passes them to ls -l; then awk is used to count up the bytes. The -type f flag is there so that only files (and not directories) get sent to ls. Without that flag, it'll also send directory names to ls, and each file will be listed twice : once as an individual file, and once as an item in the directory.
+Finally, you can use find and awk to give you the sum of actual bytes in the files. This is kind of slow, but it works:
+The BSD version of du used in OS X reports size with 512-byte blocks -- the sizes are essentially rounded up to the next 512-byte value. This tells you the space on disk, which is larger than the amount of data. If you have a lot of small files, the difference can be large.
+This value matches exactly the number reported by Finder's Get Info window. (There are no weird forks or xattrs in this set of files.) It's significantly smaller than the value reported by du.
+The GNU version of du can give values in actual bytes instead of blocks. It's unfortunate that the BSD version of du is not as flexible.

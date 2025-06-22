@@ -1,0 +1,31 @@
+First you need to register the servers in the SSMS. Either right click a server in Object Explorer and select Register or right click Local Server Groups, select New Server Registration and select the server name. The server password will be filled if they were remembered before. Then export the servers as per @mrdenny answer.
+Now comes the tricky part. You need to re-encrypt the passwords under the user profile on the target machine. I have prepared a PowerShell script which can do that.
+    [Parameter(Mandatory=$true)][ValidateSet('Decrypt', 'Encrypt')]
+    return [System.Convert]::ToBase64String([System.Security.Cryptography.ProtectedData]::Protect([System.Text.Encoding]::Unicode.GetBytes($clearText), $null, [System.Security.Cryptography.DataProtectionScope]::CurrentUser))
+    return [System.Text.Encoding]::Unicode.GetString([System.Security.Cryptography.ProtectedData]::Unprotect([System.Convert]::FromBase64String($base64String), $null, [System.Security.Cryptography.DataProtectionScope]::CurrentUser))
+$nsm = New-Object 'System.Xml.XmlNamespaceManager' ($document.NameTable)
+$nsm.AddNamespace('rs', 'http://schemas.microsoft.com/sqlserver/RegisteredServers/2007/08')
+$attr = $document.DocumentElement.GetAttribute('plainText')
+    throw "The file does not contain plaintext passwords."
+    throw "The file does not contain encrypted passwords."
+$servers = $document.SelectNodes("//rs:RegisteredServer", $nsm)
+    $connString = $server.ConnectionStringWithEncryptedPassword.InnerText
+    if ($connString -inotmatch 'password="([^"]+)"') {continue}
+    $connString = $connString -ireplace 'password="([^"]+)"', "password=`"$password`""
+    $server.ConnectionStringWithEncryptedPassword.InnerText = $connString
+    $document.DocumentElement.SetAttribute('plainText', 'true')
+    $document.DocumentElement.RemoveAttribute('plainText')
+On the source machine run .\Move-SqlRegisteredServers.ps1 -FileName 'Your.regsrvr' -Operation Decrypt. This will replace the encrypted passwords with plain text.
+On the target machine run .\Move-SqlRegisteredServers.ps1 -FileName 'Your.regsrvr' -Operation Encrypt. This will encrypt the passwords again using the new key.
+Now you can import the Your.regsrvr file into SSMS and have your servers together with saved credentials.
+The Answer is a simple version based on previous answers in this post with some necessary fixes. 
+Go to Microsoft SQL Server Management Studio, right click on any of the server that you have already connected, click "Register" and select the server, password should be populated already if you have this server saved password. Then click "Save" Now go to Main Menu -> View -> Registered Servers, you will see the server you just registered, now right click on it and Click Tasks -> Export, specify a file name and uncheck "Do not include user name and passwords in export file", the exported server will have an extension like: ".regsrvr" now by using the following script you will see the connection string decrypted:
+    return [System.Text.Encoding]::Unicode.GetString([System.Security.Cryptography.ProtectedData]::Unprotect([System.Convert]::FromBase64String($base64String), $null, [System.Security.Cryptography.DataProtectionScope]::CurrentUser))
+$nsm = New-Object 'System.Xml.XmlNamespaceManager' ($document.NameTable)
+$nsm.AddNamespace('rs', 'http://schemas.microsoft.com/sqlserver/RegisteredServers/2007/08')
+$attr = $document.DocumentElement.GetAttribute('plainText')
+    throw "The file does not contain encrypted passwords."  
+$servers = $document.SelectNodes("//rs:RegisteredServer", $nsm)
+    $connString = $server.ConnectionStringWithEncryptedPassword.InnerText
+    if ($connString -inotmatch 'password="?([^";]+)"?') {continue}
+    $connString = $connString -ireplace 'password="?([^";]+)"?', "password=`"$password`""

@@ -1,0 +1,9 @@
+Something that worked for me in my particular setup, to get cleints working, was this:
+That moved the whole tree, and apparently works only because /fs/doom was accessible and a mountpoint.
+After server reboot it was possible to access /fs/doom and /fs/doom/localvol5/sub, but /fs/doom/localvol5 itself gave ESTALE on everything, including umount -f, -l, -fl.
+If you're expecting this level of unavailability you should also specify the sync (although maybe defailt) option to NFS to lower the chance of having unwritten changes on your client
+I sitll cannot unmount any of these filesystems, but I was able to restart autofs and get a fresh and working tree.
+I had an autofs tree with a mounted nfs fs on /fs/doom and another mounted on /fs/doom/localvol5.
+You could simply mount the remote filesystem on /srv/bind-target/sub1.
+This should work with any autofs tree that has malfunctioning nfs subdirs.
+What I did to get the client running without reboot was to move the whole /fs/doom hierarchy to another tree:

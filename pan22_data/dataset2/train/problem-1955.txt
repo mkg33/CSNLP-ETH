@@ -1,0 +1,9 @@
+this is similar to adding an entry in your host file. But adding in the DNS home routs the requests in the network level for any computer that is trying to access this url from your internal network.
+I would like users on my internal network to be able to access the application running on the internal server using a specific url, lets call say test.admin.mysite.com
+If you are using Active Directory a good place to create the test.admin.mysite.com zone would be on your AD DNS servers. 
+I do very little network admin tasks, so I apologize if the answer is obvious or if I have left something out.
+If you don't have an internal DNS server for your internal clients, (i.e. your clients go direct out to external DNS servers such as google's 8.8.8.8), you would need to configure some device as an internal DNS server first.  This would involve more than just setting up the DNS server, as you'd also have to set it up to forward to an external DNS server, as well as tell your clients to go to the internal server.  
+Currently I can setup the /etc/hosts file on my local OSx machine with an entry like 10.1.1.47 test.admin.mysite.com and it will work, but I would rather not have to set this on every machine on the network.  I assume that since I am using Route 53 for DNS, that I cannot direct urls to an internal IP address. 
+You would have to set that zone test.admin.mysite.com up in whatever DNS server your internal clients use, and create an A record in it pointing to 10.1.1.47.  This will force your internal DNS server to believe it is authoritative for that zone and won't use external DNS (your Route 53 zones) to resolve it.  
+Is it possible to have test.admin.mysite.com resolve to 10.1.1.47 by configuring something in a single location?
+Go to your network administrator and ask him to add the name  "test.admin.mysite.com" and resolve it to your ip on which the application is running.

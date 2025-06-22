@@ -1,0 +1,9 @@
+Generally speaking routers cannot perform the necessary re-writing when the request is arriving from the same network the request would be re-written to.
+I suspect your specific problem is that you would like to access the web site via its DNS host name.
+You can handle that by using "split-horizon" DNS, so it pays attention to where the request is coming from and answers appropriately:  If the request is coming from inside your network, it hands out the 192.168.0.50 to requests coming from your network and the public IP to everyone else.
+I was able to fix this by adding the DNS host name to my router's DNS Host Mapping list.
+The common solution to this problem is to place a web proxy outside the network that loops the request back through your firewall.
+I found these settings listed in the advanced options list of my router.
+On my router, I had to turn off "NAT acceleration" (Cut Through Forwarding) as this broke NAT loopback...
+The problem is that the packet rewriting can generally only take place when traversing the firewall.
+Either of these suggestions could be implemented on any host outside of your network, like a (free) Amazon EC2 micro instance.

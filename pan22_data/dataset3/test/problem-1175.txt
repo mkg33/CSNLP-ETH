@@ -1,0 +1,10 @@
+So reversing that what you can do is, if you somehow make sure that src port 53 is taken it will select another port.
+When the routers NAT they will first check if the "correct" source address is available if so they will map that to that nat translation.
+Or create a static dummy static nat which creates a static entry in the translation table forcing your service to use another port.
+Probably wont work in your case cause the router is doing the requests?
+If it is not available it will select a number as src port from a pool 1-512 (or 1024) for the service under port 512 (or 1024).
+Going by this, and this is mainly an idea i had for a case i had with similar issue (NTP src port coming as port 1, because ntp port was taken and request denied from the ntp server as it was a non ntp port number and their firewall stopped it.)
+Again it's an idea haven´t really tested it but it might work.
+So have another service take over the translation forcing your real one to be mapped differently.
+Didn't at the time really find any good way to control which services got which source port without "hacking" a bit :).
+Which ever is the first available and place that in the translation.

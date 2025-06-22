@@ -1,0 +1,38 @@
+In five years I should have one billion records, which maybe isn't a big deal considering the relatively small data size of my table.
+I'd like to keep everything in one table because from a functional standpoint I have no reason to move it, but I'm worried that by not having an archive strategy of some type that eventually I'll have "too many" rows in there.
+This constraint would be on the date field so it helps the optimizer know "Ok, even though I'm unioning these two tables, you only actually even need to look at table A if I'm asking for dates between X and Y and table B if I'm asking for dates between Y and Z".
+Mind, you've given no hardware detail so I'm making a vast number of assumptions based on ~11 years VLDB experience.
+Hopefully with that size you are on Enterprise edition?
+If it's random or you have a poor I/O setup you'll run into problems without archiving data off.
+Also, when the time comes to purge old data after several years, partition sliding makes it really easy/quick to purge data (rather than delete statements).
+You just have to make sure you rebuild that index often enough to keep that window described in the filtered where criteria within the timeframe for your queries.
+And you can change your queries to just go off Stuff.
+In otherwords: If you create a filtered index for a week, you are only dealing with 500k*7=3.5m records rather than 5billion records.
+I have a table with roughly ~500,000 rows a day getting added into it.
+Theoretically, I would assume the stats of the column/index would already tell the optimizer that, but I have always wondered (again, not had time to test) if a constraint would help?
+Will I encounter a general slowdown because of size, or is there really nothing to worry about?
+It all depends on how much history you need (remember you only get a set limit on the number of partitions per table).
+One thing I think that may help even further is to add a constraint that you will need to change each time you move records to Stuff_Archive (I have not tested this, but I plan on trying it on a DB I currently need to maintain like this).
+Boiled down: for a small data sized table with 500K rows getting added per day, is there any particular strategy I should look towards?
+But if you can only rebuild it on the weekend, then you may need to make sure stats are kept up to date throughout the week.
+I have a covering index on it because of the type of queries that run on it.
+Same with just archiving that old data to another table completely.
+I have done one  partition per day and I've also done one partition per month.
+3) Rename your current Stuff table to Stuff_Current
+2) Move everything older than a month or a year (your preference)
+This way any application that uses Stuff will still be able to read from both.
+So if you can rebuild it daily and you only need yesterday's data, then great.
+If everything is sequential and you've got a robust I/O pipe you'll be fine.
+And the other non-Enterprise idea would be to create a non-clustered index on the date field and even better (if you can fit it into a maintenance window) a filtered index where dt>=somedate in the past and dt<= somedate in the future.
+Speaking of archiving to another table, that would help as well and not require Enterprise.
+If not, good luck :) (just kidding see bottom of answer)
+If you are limiting the partition to a day AND your queries are only for a specific day, the optimizer should be able to use partition elimination to pick just the partitions it needs for your query.
+I've been considering moving the clustered index off of the primary key and onto the Created (datetime) column because so much of my querying is based on that, and I usually want the resultsets in chronological order.
+4) Create a view named Stuff that unions Stuff_Current and Stuff_Archive.
+This has saved my butt a time or two when dealing with this same kind of scenario.
+That way any queries you write will be able to use that filtered index and it will only be as big as the data within that date range (rather than on all that history you have in your ever growing table).
+Generally, I'm only working with the current day's data.
+Very few of my queries are targetting the primary key.
+If this table is only used for reads for anything older than a month or a year, then you can:
+Create your partitions on the date field and you will have to best determine how big you want those partitions.
+If you are on Enterprise, I would suggest looking into partitioning.

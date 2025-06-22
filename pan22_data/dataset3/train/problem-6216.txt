@@ -1,0 +1,35 @@
+ - Testing for trunk configuration – ports uses Dynamic Trunk Protocol
+If you turn on PortFast for a port that is part of a physical loop, there can be a window of time when packets are continuously forwarded (and can even multiply) in such a way that the network cannot recover.
+You should NOT have L2 loop through customer switches.
+Which means even one non-portfast port will kill your subsecond RSTP converge.
+You should run BPDUGuard and BUM policers all interfaces, customer facing interfaces should be 1/5th or less of core facing limits.
+Configuring switchport host will configure both access and portfast..
+This negotiation process has four major phases and may take a full minute to complete.
+ - Testing for Ether Channel configuration – port uses the Port
+   the five phases of STP: blocking, listening, learning, forwarding,
+   Aggregation Protocol (PAgP), bonding together of switch ports to
+In addition to spanning-tree portfast, you should also use spanning-tree bpduguard enable so that if someone creates a loop by plugging in things where they should not then the switch port will go into error disabled mode when it sees a BPDU rather than creating a loop and potentially bringing down the network.
+If you enable portfast on a link to a smart or dumb switch, be sure to enable bpduguard (control-plane protection), and broadcast storm-control (data plane protection) on that port...  these two features give you some leverage in case unexpected things happen:
+Configuring spanning-tree portfast will prevent the port from going through STP negotiation.
+Either via traps or waiting until they call for help will allow you to identify where those unmanaged devices are connected.
+The official and pedantic answer is "no, do not enable portfast on switch to switch link"...
+Unfortunately limiting unknown unicast often is not supported.
+ - Switch port speed and duplex – port uses Fast Link Pulses (FLP) to
+This will put any port into error disable that sees more than 1 mac address connected.
+   100-Mbps interfaces) or full duplex (FDX) (for 1000-Mbps interfaces).
+Of course the caveat from Cisco - Caution:  Never use the PortFast feature on switch ports that connect to other switches, hubs, or routers.
+As the default for Cisco switches is switchport mode dynamic desirable (Cisco Stackwise capable switches are the exception) every port attempts to negotiate its intended purpose.
+Applying port specific commands in your configuration will reduce port initialization time in the event that the switch or the connected device power cycle, reboot or reload.
+The author of that thread makes a fair point though, the network police will not arrest you for enabling portfast facing a downstream switch...
+How RSTP works is it asks downstream if it can go to forwarding mode, and downstream asks its downstreams until there are no more ports to ask frmo, then the permission propagates back up.
+These connections can cause physical loops, and spanning tree must go through the full initialization procedure in these situations.
+There is a relevant discussion about this on Cisco's support forum.
+As well, if your goal is to track down the unmanaged switches you should enable
+Configuring switchport mode access will prevent the port from going through trunk negotiation.
+ - Spanning Tree Protocol (STP) initialization – the port goes through
+Port-fast or edge port is implicit permission from RSTP point-of-view, if you remove this implicit permission, explicit permission must be gotten otherwise it'll fall back to classic STP timers.
+   a default duplex setting of half duplex (HDX) (for 10-Mbps and
+You should run 'port-fast' (in standard terms edge port) in every port not part of your switch core.
+Why running 'port-fast' or edge is crucial is performance of RSTP (and by extension MST) rely on it.
+It is possible to hack around the risks of temporary broadcast storms that you take when you enable portfast on a link to another switch.
+They may also prevent misapplied configuration settings in the event the port does not properly negotiate.

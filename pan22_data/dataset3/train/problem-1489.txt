@@ -1,0 +1,18 @@
+The argument at that link seems to be specific to local login, rather than ssh.
+The short answer is that the smaller your attack profile the better.
+That said, if you have console access to deal with these situations, closing root account may save you some headaches, as no one will be able to get to the root account using a dictionary attack (my experience is that these are constant these days - someone is always trying).
+Because root is always there, and the reward is so high, it is a priority target.
+Allowing root login via SSH also means root is attackable by brute force password guesses.
+(ssh protocol version 1 and older implementations of version 2 were vulnerable to password-guessing attacks against interactive password prompts within the ssh session, but this appears to no longer be the case with a sufficiently recent ssh implementation.)
+fail2ban won't do anything against a slow brute-force botnet, and doesn't work at all with IPv6.
+If your filesystem fills up and the boot fails while /etc/nologin is created, only the root account will be allowed to login into the machine.
+The username would have to be guessed first, which adds a few orders of magnitude to the difficulty of the problem.
+I assume that, if everybody uses a public key authentication, there's no risk at losing the root password.
+I'd say yes, login as root should be disabled for auditability.
+If you don't need it or can use an alternative such as sudo or su, then don't enable root login.
+If you are the sole system administrator on this machine, it's trivial to determine who did what to whom, but if ten people are authorized to administer the box and they all know the root password we have a problem.
+Never disable the root account if you don't have console access.
+I have recently found an argument against disabling a root user login in Linux at http://archives.neohapsis.com/archives/openbsd/2005-03/2878.html
+Is it always better to disable the root login via ssh?
+One big argument in favor of disabling root and using sudo/su is that you can track who's doing what.
+Whether or not root is enabled, neither root nor any other user should be permitted to login remotely with a password.

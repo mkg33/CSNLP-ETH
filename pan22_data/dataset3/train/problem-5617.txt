@@ -1,0 +1,12 @@
+My first instinct was the kernel-level OOM killer, but the system is never low on memory, and usually has somewhere between 1GB and 3GB of memory free at any given point in time.
+This meant that, for commands executed by apache, they would be killed whenever the worker thread that created them was recycled, and, for commands executed manually, they were killed whenever I logged out.
+The processes may be getting some signal that causes them to exit, possibly due to bad hardware (e.g., bad memory can cause segfaults).
+I log all output from the application, as well as sending stderr and stdout to a logfile, and none of these output logs contain anything that would indicate why these processes have died.
+I remedied this by simply pre-pending nohup to the command, i.e.
+Turns out that, although I was setting the process to run in the background (by appending & to the command), the command is still tied to whichever thread created it.
+I have a java application running on a CentOS 5.4 server.
+My question is: does anyone know what might be causing it, or does anyone have any ideas where I could start looking?
+Randomly, and seemingly without cause, these processes will die, not through the application exiting, or due to my killing it, but due to something that seems to kill without leaving a trace.
+If you see nothing the syslog/dmesg try enabling core dumps.
+You can then run gdb on them to get an idea what is happening.
+Showed that it was being sent a SIGHUP command which was killing it.

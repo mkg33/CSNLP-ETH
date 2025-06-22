@@ -1,0 +1,14 @@
+When there is a timeout in TIME_WAIT, it is assumed that the final ACK was successfully delivered because the passive closer didn't retransmit FIN packets.
+The purpose of TIME_WAIT is to allow the networking to distinguish packets that arrive as belong to the 'old, existing' connection from a new one.
+When in LAST_ACK, the passive closer will resend FIN when there is a timeout, assuming that it was lost.
+The timeout value in TIME_WAIT is NOT used for retransmission purposes.
+References: http://www.tcpipguide.com/free/t_TCPConnectionTermination-3.htm https://en.wikipedia.org/wiki/Maximum_segment_lifetime http://www.lognormal.com/blog/2012/09/27/linux-tcpip-tuning/
+The recommendation is to set the TIME_WAIT timer to twice the Maximum Segment Lifetime (MSL), on my system the MSL is 1 minute, so connections linger in the TIME_WAIT state for 2 minutes.
+So, the timeout in TIME_WAIT is just an amount of time after which we can safely assume that if the other end didn't send anything, then it's because he received the final ACK and closed the connection.
+If the FIN was not lost but the final ACK was lost, then the active closer is in TIME_WAIT and receives FIN again.
+Quoting from TCP/IP Illustrated Volume 1, in the TCP Connection Management section:
+After this amount of time any packets that arrive are no longer associated with the old connection.
+When you get to TIME_WAIT state the socket is already closed.
+When this happens - receiving a FIN in TIME_WAIT - the ACK is retransmitted.
+If it was indeed lost, then the active closer will eventually receive the retransmitted FIN and enter TIME_WAIT.
+TIME_WAIT is not directly waited to sending ACK packets; that is driven by the CLOSE_WAIT and FIN_WAIT states.

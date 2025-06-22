@@ -1,0 +1,25 @@
+For a basis of comparison, I'm running Exchange 2003 (w/ all of its crappy I/O perf) at one Customer site w/ 250 users and a similar email load in an ESXi 4.1 VM on an R710 w/ a 5500-series Xeon.
+I anticipate no performance problems given the benchmarking of the box I did in pre-production.
+You don't mention the box's RAM and disk configuration but, assuming they're not unreasonable, you should be fine to run E2K10 in a VM.
+I am sure that Hyper-V has similar whitepapers and best practices.
+My company planning to install a new Exchange 2010 in the domain.
+Benchmarks aside, E2K3 is an I/O pig compared to E2K10.
+I personally don't have experience with Exchange on a virtual platform but I have done SQL Server cluster on Vmware and it comes with its own share of administrative overhead.
+If you have a resilient Hyper-V cluster around, I'd go that direction, since Microsoft has finally now come around to officially supporting Exchange on top of VMware/Hyper-V/etc.
+RPC latency isn't bad and users aren't complaining about "Waiting for Exchange Server..." toast messages.
+Should I install Exchange 2010 in physical server or setup a Hyper-V VM for the Exchange server?
+The Exchange server has to serve around 200 users, with around 1000 emails in & out per hour.
+The load you're going to be dealing with is quite low, so I wouldn't anticipate any performance problems.
+I'll be 64-bit, then, so I can give it 16GB of RAM (rather than the 4GB I'm stuck with on E2K3).
+You might get more out of installing on physical box until you feel confident about the production load and then P2V some aspect of the architecture.
+I would take a look at this assuming that you are going to use Vmware:
+http://blogs.vmware.com/performance/2010/05/exchange-2010-scaleup-performance-on-vsphere.html
+Exchange 2010 has radically decreased I/O requirements as compared to Exchange 2003 (so long as you feed it enough RAM to let it cache effectively).
+For my purposes I decided that if E2K3 would run acceptable E2K10 certainly would.
+That's a fairly beefy server and a fairly small Exchange environment.
+In a few weeks I'll be putting Exchange 2010 up an indentical box to that one, as a VM ( when the Customer buys the licenses).
+I'm using 15K SAS DASD in a couple of RAID-10 volumes (one for the database, one for the logs) and it's running acceptably (for Exchange 2003).
+I think it also depends on your skillset of handling Exchange overall.
+Since Hyper-V has issues with allocating dynamic memory (I think this may have been recently added), you should make sure that you can run some kind of load tool to get idea of what you may be getting into as well as some type of capacity planner.
+Exchange is a "monster" messaging platform inclusive to the fact that it can be very resource intensive.
+I got a dual Xeon 5520 DELL R710 2U server running Windows Server 2008 R2.

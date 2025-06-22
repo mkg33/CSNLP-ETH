@@ -1,0 +1,17 @@
+This option would disable the flush command called by some application (and on machine shutdown), whose purpose is to effectively write disk cache to the disk.
+You have a couple of subsystems involved in the process of writing the data from the process to physical disk.
+The current configuration is the best trade off between performance and safety, unless you have an UPS (uninterruptible power supply).
+The problem with this is that if you reboot your machine you have very high chances to lose data.
+If this is activated, data flushed to disk subsystem will get written into the disk buffer and the operation will be considered completed by OS and programs, but the data is not yet on disk.
+Here are some reasons why processes or OS needs to flush the data to disk:
+https://superuser.com/questions/215372/what-does-write-cache-buffer-flushing-mean
+Modern disk controllers have some memory modules that are called disk buffer.
+Really the difference is highlighted in the Removal Policies.
+Now the data will go to disk, but the disk subsystem has 2 components that are important of this explanation:
+You have to understand how data is written to disk.
+You can try to enable this option, at the risk of data loss, but depending on your context, the performance gain may be not noticeable.
+You might not notice this until you have a filesystem corruption, or database corruption.
+Also the kernel itself can write some data to disk e.g.
+The second option isn't "windows caching" as you say, but the inhibition of the "flush" system call:
+The memory pages that need to be written to disk is kept in a region in physical memory called file system cache and are called dirty pages, and it will be written to disk if one of the conditions is true:
+Usually the processes are asking the kernel (the OS) to write something to disk.

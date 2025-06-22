@@ -1,0 +1,12 @@
+I'm a dev and not a DBA so I'm hoping the experts can hook me up with a solution or at least an explanation as to why.
+We created a SQL Server view (for using with SSRS) of some of the OpenEdge tables using code similar to the following:
+We also worked with progress and there was some optimizations they recommended on their side as well.
+We have a SQL Server database setup with a Linked Server setup connecting to a Progress OpenEdge database.
+What we did was dump the views all together and added sprocs that perform the openquery with the limited set of return values and a restricted where clause.
+Performance still isn't great but it's much better than it was.
+after that create a job that runs the stored procedure once a day or depending on the schedule you need.
+We are migrating from a Progress backend to a SQL and this was a step to enable Report Designer which it accomplished.
+why don't you run a job that transfers the data from your progress server to your sql server and create a view pointing to a table in your server locally.
+in your query above, every time some one views your view, an OPENQUERY is executed to your server
+For some reason the queries seem to bring back the whole table and then filter on the SQL side instead of executing the query on the Progress side.
+We aren't going to start delving into performance much more until after the data is migrated to the SQL Server environment completely.

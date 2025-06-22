@@ -1,0 +1,15 @@
+Once that is done, and check your slave has caught up with all the updates then declare a small downtime to promote your slave database to the master.
+This, of course is not a complete guide, but a recommendation for a sound combination of technologies that you can research and implement in a manner that fits your need.
+As for the way to reduce downtime, - you can not do it directly.
+You can find instructions on setting up mysql replication here.
+If you are not virtualizing hardware, you do not suffer the performance penalty that they fear.
+You should understand, that changing the column datatype, you change the underlying data structure, so that the data has to be moved around physically, and it can take quite a long time.
+I hear a lot of people cringe when you mention running a database in a VM.
+Using paravirtualization via Xen (I've heard good things about OpenVZ, but haven't used it.)
+My approach is a little more about being prepared for the future, where Dave Cheney's is dealing with what you (probably) have today.
+If your data is strictly inserted (and not updated), you could probably do something like:
+I don't know about the capacity of your hardware, but either way, it is going to take well over an hour (think, overnight).
+you can do exactly what Dave Cheney said (which is the right approach) and only have to use one piece of hardware.
+Your best option is to setup a slave database using mysql replication.
+I suppose you don't have a backup instance of the database, do you?
+Assuming your schema change is additive, then you can issue the update on that replica, which will be blocked for the duration of the update.

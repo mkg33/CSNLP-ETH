@@ -1,0 +1,17 @@
+Googling this error didn't return anything useful.
+It is also searching for the PDB for some reason for the DLL.
+I'm using Win2k8 x86 with IIS 7 and my application pool is ASP.NET v4.0 Integrated.
+Message: Unable to find assembly 'FluentNHibernate, Version=1.0.0.633, Culture=neutral, PublicKeyToken=8aa435e3cb308880'.
+The DLL also exists in the temp directory that IIS creates:
+I've been fighting with IIS the last few days and the error that IIS generates is:
+Somehow (still not sure how) this was caught by one thing, and then caught by IIS which tried to serialize an error message, but it couldn't find a DLL it needed since where it ended up catching it was in another AppDomain.
+Exception: System.Runtime.Serialization.SerializationException
+What's strange is that if I check in procmon, I can watch the IIS process find the dll in the directory where I would expect it to find it, and then it continues to search other directories for the exact same dll.
+I checked all of my web.config files and compilation debug is set to false in all cases so I'm surprised to see it looking for pdbs.
+Posting my answer in case someone else comes along in the future with a similar problem.
+So it was clearly able to copy the dll to it's running location, but it reports it can't find it.
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\ws-sm\bc2df7a7\729516d\assembly\dl3\42ab9d3b\00d491a3_3e6bcd01\FluentNHibernate.DLL
+So if you get this error try attaching windbg to your process and see what errors are being thrown.
+I ended up finding this problem by attaching windbg to the w3wp process and watching it start up.
+What ended up being my issue was that I was unable to connect to one of my databases, and this caused an exception to be thrown.
+I finally figured it out and it wasn't related to IIS.

@@ -1,0 +1,18 @@
+When I boot up virtual machines on it, they usually take 2-3 minutes to boot up; not a terribly long time, but not instantaneous.
+You're thinking about this in a very simplistic way, which is causing you to make some incorrect assumptions, which I'll try and clear up.
+A more meaningful metric for you to watch is your iowait value during boot (which may be difficult to obtain during the boot process) or the disk queues/latency during boot (which should be easier to obtain from your hypervisor).
+We also have alerts to tell us when they hit 85% CPU or RAM, and alarms to tell us when they hit 90%.
+If this is not the case, depending on the mix of processes running, you may not ever see 100% usage.
+How does your system know, for instance, how many IOps your devices are capable of?
+We have about 2000 servers in our data center, we like to see them all running at about 75% CPU and RAM, hhd space is on our SAN so that is a completely different ball of wax.
+If you see queues or latency spike, it's likely that your IO devices are a contributing factor to your performance issues.
+For instance, lets say you have a SQL database that you do not want to swap to disk but instead want to run entirely out of memory.
+It seems to me that at any given moment, the component that is limiting performance should run at 100%.
+Therefore, at least one of the areas (processor, RAM, disk, and network) should always be at 100%, unless the server is at a complete idle.
+However, when I look at the performance logs on the server, neither processor, RAM, or disk usage is around 100%; usually they average around 60%-80%  So if the server has work to do, why doesn't it do it at 100%?
+This is a question that has been bothering me for a while, and I can't seem to find anything online that talks about it.
+If your database is 24GB and the OS need 8GB you wouldn't want to only allocate 32GB of RAM for the machine, there are a lot of "things" that can go wrong, bad code, DDOS, heavy application usage, who knows, not having any head room how would you know the server is in trouble?
+Second, you need to consider IO device performance.
+For example, if I have a really slow hard drive, then it should almost always run at 100%.
+I have been working with server for about 20 years now, Its usually not a good thing when a component is running at 100% all the time.
+First, and potentially most simply, on a multicore system, in order to understand CPU usage you have to take into account whether or not the process load is multithreaded, and designed to take advantage of multiple cores.

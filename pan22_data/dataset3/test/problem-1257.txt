@@ -1,0 +1,9 @@
+You can get this error without any NULL byte or any non-ascii character in the file.
+I solved the "invalid byte sequence for encoding "UTF8": 0x00" issue after seeing Daniel Vérité's comment that "mysqldump in postgresql mode will dump null bytes as \0 in strings, so you probably want to search for that sequence of characters."
+mysqldump in postgresql mode will dump null bytes as \0 in strings, so you probably want to search for that sequence of characters.
+I remember having to update the csv file (using unix tools like sed or unixtodos) or using open office calc (excell) to fix up some items that were errors on the import step - it could be as simple as opening and re-saving the file.
+I replaced the NULL chars using the following command
+I think I ended up migrating the schema then dumping the data as csv and loading the data from the csv file.
+I had the same problem using MySQL version 5.0.51 and Postgres version 9.3.4.0.
+Sure enough a grep finally revealed the NULL chars.
+Postgres was then able to successfully load dump.sql

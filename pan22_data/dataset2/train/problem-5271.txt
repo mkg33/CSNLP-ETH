@@ -1,0 +1,10 @@
+There is a special tag -  "never", which will prevent a task from running unless a tag is specifically requested.
+Overriding via --extra-vars will still work because variables defined on the command line take precedence over all other definitions.
+I don't have enough reputation to upvote or comment on the answer suggesting the use of command-line variables (--extra-vars), but I have this to add to it:
+Ansible 2.5 comes with special tags never and always. Tag never can be used exactly for this purpose. E.g:
+In this example, the task will only run when the debug (or never) tag is explicitly requested. [Reference on ansible docs]
+With that, when running the playbook without any tag, the 'foo' variable will be set to true then to false, so nothing is executed. If you add the 'bar' tag, only the first setting will be applied, so the 'foo' variable will be true, then your task will be executed. Enjoy!
+I have an other idea to execute task only when a tag is defined, working for both Ansible 1.9.X and 2.X.Y:
+You can prevent play failure in the absence of an --extra-vars definition by defining a default value in the playbook itself:
+Inside the task list register a variable when normal execution runs.  Then, add a when condition that checks that variable to the tagged task.
+The result is that the play runs without error when thorough is not changed to true on the command line.

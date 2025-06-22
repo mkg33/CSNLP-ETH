@@ -1,0 +1,23 @@
+Yes, there are a few ways of doing this depending on what you're trying to accomplish exactly.
+There is no need to edit those /etc/pam.d/xxx files.
+There are usually examples in the file, commented out.
+https://gist.githubusercontent.com/xianlin/8c09d916994dac7630b9/raw/ee07817a03bc5904a5404a7e7c94e08ea0c7560a/CentOS_AD_Integration
+I currently use the AllowGroups directive in /etc/ssh/sshd_config to limit who's able to log in.
+An example on my laptop (Fedora 13) would be to modify the account section in /etc/pam.d/system-auth to:
+I have achieved let only one AD_USER or AD_GROUP to ssh login the linux box via AD authentication.
+If they're singing in locally, you'll need to find another solution.
+pam_winbind.conf is the file you want, it is usually located at /etc/security/pam_winbind.conf.
+This doesn't require editing PAM files, and is a nicely standard place to do it.
+With this, you'll want to add a line to your [global] section in smb.conf:
+This will only allow these users to connect to Samba, other users can still login through other services (ssh, local term, etc).
+It is the configuration file of pam_winbind module, and it works for both CentOS/Redhat and Debian/Ubuntu.
+The first method can be done through the samba config.
+You can read the man page of pam_winbind.conf for reference.
+The details are listed as here: (pay attention to step 7 and 8)
+Different distributions have slight differences here, but generally speaking there are PAM rules per service as well as common rules, you can decide what is best.
+Specify a one or more AD groups on that line, and those people will be the only ones able to log in.
+You'll want to add an account restriction using the pam_require module.
+Keep in mind that this only works if your users are only accessing the server remotely via ssh.
+Assuming the groups are available to the Linux system, I recommend editing /etc/security/access.conf for Ubuntu, RedHat distributions (and their forks) and probably a bunch of others.
+(I'm talking about samba 3 here, no experience on samba 4 now.)
+To simplify administration, you might want to create a new group in AD for the purpose of tracking users that can login to this server.

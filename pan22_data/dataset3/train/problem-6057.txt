@@ -1,0 +1,16 @@
+We currently have a self signed certificate generated automatically according to the ip of the server.
+If you trust the app server administrator with everything in that DNS zone, fine, but sounds like you use this TLD for all your clients.
+And on the local network we have a dns (or a modified host file) that map the servers's ip to a subdomain .
+My company sells application servers to customers; 90% of thoses servers are offline  in dedicated network.
+If you do not control TLS clients trust, and you do not issue certificates from any private PKI they may have, you are left with the generally trusted certificate authorities.
+Major problem with "wildcard" certs is that it is trusted for everything in *.example.com.
+If you have the internal DNS it should be ok, to avoid buying a certificate is that if the client computers on your client that needs to connect to this server are managed you can request your client to add your self-signed certificate and CA to the authorized and update their policies.
+Will it be possible to buy a wildcard certificate and use it on all the servers locally ?
+Let's say we buy a certificate for *.mydomain.com (mydomain.com will be a real domain that we own).
+RFC6125 goes as far as to say wildcards should not be used for best practice TLS domain verification.
+Does not matter who issues them as long as the clients are configured to trust their CA.
+That cert you issued to appserver.example.com can be used for evil.example.com or impersonate other servers.
+In case you are using let's encrypt it will be transparent for your client and the computers.
+We just need to avoid the big warning in the browsers saying that the certificate is invalid.
+No need for EV certification or all this fancy things.
+I tried it with let's encrypt and a standard certificate (not wildcard) and a modifed host file and it seems fine, but will it be ok with the "big" CA like Globalsign, Thwathe, etc ... ?

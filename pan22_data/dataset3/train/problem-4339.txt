@@ -1,0 +1,20 @@
+If the question is "how do I get devs to stop bugging me to run arbitrary SQL commands" then you may want to consider scripting out a way to automate it or giving them a 3rd party UI to use with an account that's locked down to prevent changes & restricts them from seeing any sensitive tables.
+Why are Developers running anything against the Production database?
+So your devs should have access to the databases, you quoted various cases which are the reality for a lot of people and the major drawback which is turning you and your colleague in a bottleneck as well as impeding your own work.
+This lets you control your changes via tracked config files in your repository and apply them via an automated & controlled process - use your normal code review & promotion steps.
+Keeping the things closed could be even worse, one dev will one day integrate a DB shell in an application to circumvent this road block and it will eventually go live in production without proper access control and expose all datas, I strongly advise you to ask your company to review this policy.
+These can then be executed on dev and staging environments as part of a partially automated deployment process.
+Everything else should be scripted, tested, audited and released through pre-prepared, controlled (and, preferably, automated) channels.
+I see a first problem, DevOps is about building teams able to handle an application from build to exploitation.
+For example in my environment (PHP Web application), I am using Doctrine Schema for schema updates, Yii2 migrations for data changes.
+Other answers address well the schema change or planned changed which should indeed be integrated as part as the application delivery process, but they don't allow to quickly fix the live access need, when a dev may need to dump the DB to understand what caused the bug and how to fix it for exemple.
+Things like ProxySQL you already quoted in a comment could be ok for MySQL databases, just configuring MySQL to log things could be a good approach also, MySQL offers a commercial audit plugin which may answer the problem of letting your devs access the database and fulfill your CISO requirements of keeping track of what is done.
+If your question is how to manage database changes consider something like Flyway.
+Users are given access to each database as and when their job role requires it and Roles are used to give them access to the tables within each database.
+Developers should never have "hands-on", update access outside of their Development databases.
+The respective commands are part of a 7 line bash script that runs all necessary commands to deploy a change in each environment
+There's one commercial solution that I know which can help (and allow auditing more than just DB requests) which is strongDM, it also allow to audit ssh and rdp sessions, as if your devs needs access to DB, they probably also need access to the machines hosting the applications for debugging purposes.
+If you have more than just Mysql DB and need to audit their access, configuring each system to audit log users actions and not application actions could be cumbersome.
+You could embed database schema and data changes into source code control by using a concept called database migrations.
+All too often, DBA's find themselves trying to close the stable door after the horse has run off.
+The process by which these accounts are created and roles granted is centrally-managed and strictly audited.

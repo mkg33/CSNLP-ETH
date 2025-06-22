@@ -1,0 +1,21 @@
+There are error messages displayed when doing ifdown bond0 but by design ifdown keeps executing the remaining scripts, and the system ends up clean (it is possible to cycle through ifup/ifdown), so I don't feel compelled to fix that.
+Doing a systemctl restart networking yields a short wait of a few seconds, but nothing more.
+There is a lot of confusion online between the different versions of the ifenslave package, notably its documentation, and on how to avoid race conditions when using ifup.
+Below, I have interfaces eth2-eth5 bonded on bond0
+Basically, whatever I try, my scripts get stuck at boot time and I have to wait either one or five minutes before the boot process completes.
+And I wouldn't be surprised if systemd were making things even more messy.
+I came up with an ugly hack for which I'd rather not get any credit, but hopefully it'll help people get started and do more important things while waiting for a proper answer/fix:
+I have a working setup running on 16.04 (linux 4.4.0-22) that is very similar.
+Also, since the slaves are taken care of in the master's script, there's no need to declare them in the config file.
+If I specify auto eno1, then the boot process stalls for five minutes, bond0 is never brought up properly, and trying to use ifdown eno1 will get stuck because it's waiting for some lock in /run/network/wherever (can't remember the exact file, and have rebooted this machine often enough already), which seems to indicate that yes, I ran into a race condition and ifup is stuck forever with eno1.
+If I use a manual setup on the command line (following the kernel instructions), I can properly setup my network connection:
+You must allow system to bring up bond interface even when slave ports are not ready to get it configured all the time, "bond-slaves none" does that.
+It pretty much consists in overloading the whole ifup scripts.
+I too have a working bonding setup on 16.04, and my setup works well on Ubuntu since 12.04, unchanged.
+Apart from LACP rate and 1G (eno1+) vs 10G SFP+ (eno49+) the biggest difference seems to be the use of auto bond0.
+Whatever worked with the previous versions of Ubuntu does not anymore.
+The problem is that I'm unable to create a correct /etc/network/interfaces file to have this done automatically at boot time.
+Does anyone have a working solution on the latest Ubuntu?
+My solution is pretty much the same as that from @timss but I did never need to mess with /etc/modprobe.d/bonding.conf and there are a few details that I found necessary over time which I included below and will comment at the end.
+At boot time bringing up bond0 stalls for one minute (because bond0 is waiting for at least one of its slaves to be brought up, that never happens, so it times out), but then once the system is booted, using ifup eno1 works and bond0 starts working properly.
+For the record, the switch used is a Cisco Nexus 2248, and I do not specify an IP address because there's an additional 802.1q layer (whose presence or absence in the configuration file has no impact on the problem).

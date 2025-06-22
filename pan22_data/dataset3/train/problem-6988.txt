@@ -1,0 +1,15 @@
+All of the other answers given so far for the page file size reference relatively out of date articles.
+(Max value of Committed Bytes + additional 20% buffer to accommodate any workload bursts)-RAM size
+I've pasted the core content of that article below to avoid link rot.
+They clearly state that the old rule of thumb of 1.5 x RAM no longer applies.
+This Technet Blog post is more up to date (October 2015) and gives a more detailed way to calculate ideal page file size on modern systems.
+However, these numbers are NOT a Microsoft official recommendation, and may be different on your servers so always test before you apply.
+When sizing the page file we need to consider our applications memory needs and crash dump settings.
+For example: If the server has 24 GB RAM and the maximum of Committed Bytes is 26 GB, then the recommended page file will be: (26*1.2)-24)  = 7.2 GB
+In most cases the Kernel Memory Dump is good enough for root cause analysis, as Complete Memory Dump is only required in specific cases, for example you want to see what happened in the user mode.
+From my experience, the size for Kernel Memory Dump is usually the following:
+How do you know how much memory your application needs?
+What about the second factor: the size we need to record information when the system crashes?
+Note: Make sure you collect the information over a long period (one week at least), and the server is running at peak usage.
+Note that they recommend collecting metrics from your server running at peak usage for at least 1 week - so at the planning and implementation stages of your projects you may not be in a position to do that, and will have to make time later in your project to do so.
+The size of the memory dump is determined by it's type:

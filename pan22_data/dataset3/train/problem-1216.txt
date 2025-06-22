@@ -1,0 +1,47 @@
+Hopefully you see what I'm saying, I have a few thousand lines on this project already.
+If you compare two lists you can see that only copy of position/rotation/direction data needs to be passed from logic to UI thread.
+You can in fact keep the game loop serial and decoupling your render frame rate from the logic step using interpolation.
+You might also need some kind of correlation id to determine which game object this data belongs to.
+This way the render thread has say bucket 0 it reads from.
+I like immutable data so I tend to return new immutable object for every update.
+Locking variables makes sure they don't change while running the code following it, so variables don't get changed by your updating thread while you are rendering them (in fact they DO change, but from the standpoint of your rendering thread they don't).
+At sync points, the indices of what each of the three buckets mean are swapped so that the next frame's data is given to the render thread and the logic thread can continue forward.
+In UI thread you might include 3d mesh, textures, light info, and a copy of position/rotation/direction data.
+What I ended up doing was creating a sequence of threads that implemented a specific interface, and loading them onto a control object's stack.
+If you would like me to try and scrape together a sample, I'll see what I can do.
+This is a bit of memory waste but with modern computers it's not such a big deal.
+First list data that should be stored in UI/display thread vs logic thread.
+You have to watch out with the synchronized keyword in Java though, since it only makes sure the pointer to the variable/Object doesn't change.
+Maybe like copy the data needed by the rendering thread after every execution of the game logic.
+But there isn't necessarily a reason to split rendering & logic into their respective threads.
+In game logic thread you might need game object size in 3d, bounding primitives (sphere, cube), simplified 3d mesh data (for detailed collisions for example), all attributes affecting movement/behavior, like object velocity, turn ratio, etc., and also position/rotation/direction data.
+Check out Exchanger class in Java, using two or more buffers can speed things up.
+To take advantage of multi-core processors using this kind of setup is where you would have a thread pool that operates on groups of tasks.
+Presumably the rendering thread needs access to various variables to figure out what to draw, but game logic could be updating these same variables.
+The attributes can still change without changing the pointer.
+Whatever the solution is will the overhead of synchronization or whatever be less than just running everything single threaded?
+So as a rule, all OpenGL calls go through the Graphics thread, all OpenAL through the Audio thread, all input through the Input thread, and all that the organizing control thread needs to worry about is thread management.
+What I have generally seen to handle logic/render thread communication is to triple buffer your data.
+I know there seem to already be questions on here asking exactly that but the answers are not satisfactory to me.
+This is not about synchronization but it does show how game logic is separated from display and what challenges you need to overcome (FPS).
+From what I understand so far the point of separating them into different threads is so that game logic can start running for the next tick immediately instead of waiting for the next vsync where rendering finally returns from the swapbuffer call its been blocking on.
+Game state is held in the GameState class, which they can all take a look at as they need to.
+If you have a octree partitioning your 3d space, and you can see 5 game objects out of 10 objects total, even if your logic needs to update all 10 you need to redraw only the 5 you're seeing.
+In C++ you can achieve the same thing using Mutex.
+I don't think their behavior is even defined, and for LWJGL (possibly also JOGL) it often throws an exception.
+When that object got a signal to shut down the game, it would run through each thread, call an implemented ceaseOperations() method, and wait for them to close before closing itself.
+Universal data that could be relevant to rendering sound, graphics, or any other data is kept in a sequence of objects that are volatile, or universally available to all threads but never kept in thread memory.
+In Java there's the "synchronized" keyword, which locks variables you pass to it to make them threadsafe.
+But specifically what data structures are used to prevent race conditions between the game logic thread and the rendering thread.
+How you do it depends on what language you're working with.
+This is an old post but it still pops up so wanted to add my 2 cents here.
+In Scala you can use Software Transactional Memory, in Java/C++ some kind of locking/synchronization.
+These tasks can be simply things such as rather than iterate a list of objects from 0 to 100, you iterate the list in 5 buckets of 20 across 5 threads effectively increasing your performance but not over complicating the main loop.
+The logic thread uses bucket 1 as it's input source for the next frame and writes the frame data to bucket 2.
+The additional concern is that OpenGL (and to my knowledge, OpenAL), and a number of other hardware interfaces, are effectively state machines that do not get along well with being called by multiple threads.
+Is there a de facto standard technique for handling this problem.
+There's a slight performance penalty there, but used properly, it has allowed me to flexibly assign audio to one thread, graphics to another, physics to yet another, and so forth without tying them into the traditional (and dreaded) "game loop."
+Still if you want to lock shared data structures you can do it.
+To contemplate for this, you could copy the object yourself or call synchronized on all attributes of the object you don't want to change.
+If I ever decide that, say, JOAL has gotten dated and I want to use the new edition of JavaSound instead, I just implement a different thread for Audio.
+Before you get into sharing data between threads work out how much data you actually need to pass.

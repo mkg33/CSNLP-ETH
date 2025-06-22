@@ -1,0 +1,16 @@
+Throwing Exception is not recommended because it's too generic.
+It doesn't give a clue to the caller as to what went wrong.
+When implementing a collection abstract data type, it's good to take a look at a similar interface in the standard library, for example Deque:
+As you see, suitable specific exceptions already exist.
+It means that callers of these methods don't have to catch them.
+since the situations in which these exceptions can be thrown are quite unexpected, and should not happen under normal circumstances.
+The same information already exists in elements.length.
+Since elements is never reassigned, it would be good to make it final,
+Keep in mind that toString is not intended for "pretty-printing".
+and without the structure, the ordering of the elements is meaningless,
+For printing the content of the heap I would suggest adding a dedicated method,
+keep the nulls, and print values of the first size elements.
+I do not endorse recursion when a clean and simple iterative iterative solution is readily available. You did the right thing.
+The only problem I have is with compareAndPick implementation. First, rightChild is not tested against capacity, and may cause an out-of-bounds access. Second, testing elements[rightChild] against null looks too late (how does compareTo(null) behave?). Finally, there is really no need to test both an index against capacity and an object against nullness: index < size guarantees both.
+You may consider renaming compareAndPick to selectSmallestChild (and choice to child).
+Also, I recommend to leave the children computation to compareAndPick, and have a terser version of bubbleDown loop:

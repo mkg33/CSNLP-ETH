@@ -1,0 +1,8 @@
+I was wondering if the request packet from Sever to PC (label in 2) carries additional ACK information (piggybacking ACKs)? If yes, how do I know if a packet is piggybacking?
+The side receiving the first FIN usually combines both flags in a single segment, just like in your simulation.
+TCP connection termination is performed by the four-way handshake, as shown below (the image is taken from here). 
+This looks like a four-way handshake where the server was done sending data to the client before the client closed its half of the connection.  
+I could be wrong, and I'm a little curious about the sequence numbers in the third diagram, but I'm not sure where the confusion lies either.
+I tried to verify it on Cisco Packet Tracer. With the following topology, I captured some packets (shown below) by initiating a http request.
+The server performed a shortcut where it used the same packet to signal confirmation of the shutdown of the client's connection to the server (ACK) and initiate shutdown of the server's connection to the client (FIN).
+Note that if the client had made a request for a large (e.g. 500MB) file and then immediately closed its side of the connection, you would see the four-way closure more clearly, and it would look like:

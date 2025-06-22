@@ -1,0 +1,16 @@
+In fact, you're also telling systemd that the init.d script – not daemon – is the service's main process...
+the java process can be seen (& that java process is not crashing so that rules out the possibility of it crashing in background)
+The problem I am facing is when I run following command:
+So it would be best if the init.d script not only didn't attempt to put the actual daemon in background, but also started it via exec like this:
+Aside from the main question, calling init.d scripts from systemd is a bit redundant and generally a bad idea to begin with.
+Systemd services are expected to follow specific rules.
+what's launched from ExecStart=) itself is the service's main process.
+With daemons which have built-in 'daemonize' mode, Type=forking has a significant advantage: the systemd service stays in 'Starting' state until the daemon finally tries to go into background, at which point it finally moves to 'Started/Active' state.
+On the other hand, Type=forking indicates that the initial process will fork and exit during the startup procedure, and that the main process should be discovered from PIDFile= or heuristically.
+(You should also set SyslogIdentifier= in both cases, if the service produces stdout messages.)
+Type=simple indicates that the initial process (i.e.
+One .service unit can only have one "main" daemon process, and the Type= option tells systemd how that process works.
+EnvironmentFile can only be plain KEY=value assignments, but if configuration must come in shell-script syntax, you can also use:
+This means that if you're using Type=simple, you're telling systemd that the daemon will not go into 'background'.
+As soon as the main process exits, the service is considered to have stopped, so any leftovers are cleaned up.
+But if backgrounding is done by external means, such as the shell & feature – without anything that would report whether the daemon is ready or not yet – then it's completely useless and you should probably just use Type=simple without any background options.

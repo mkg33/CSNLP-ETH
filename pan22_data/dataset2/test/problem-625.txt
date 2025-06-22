@@ -1,0 +1,8 @@
+ELBs don't forward these headers when using TCP in the ELB, but if you set to HTTP/3128 then it does.  But now squid doesn't work.
+We have two Squid proxy servers for High availability. We want to use Amazon ELB in front of these Squid proxy servers.
+When we use Load Balancer Protocol as TCP and port 8080, Instance Protocol TCP and port 3128 -- After exporting squid proxy using ELB name on the test instances, we are able to connect to internet.
+Any ideas on how to get the ELB to pass the server name?  Also not clear why the host header has port 3128 on it.
+Squid proxy configuration is the original configuration file that we get with the package. We have only added the virtual hostname.
+When we use Load Balancer Protocol as HTTP and port 80, Instance Protocol HTTP and port 3128 -- After exporting squid proxy using ELB name on the test instances, we are not able to connect to internet.
+1. Use your ELB with TCP (and NOT HTTP), and configure it to forward the client IP using the proxy protocol.
+I suspect they want to get at the X-Forwarded-For original IP of the requestor for the logs.  I know I am.  

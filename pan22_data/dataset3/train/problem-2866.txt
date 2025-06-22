@@ -1,0 +1,12 @@
+And at the same time you didn't accept any packets that constitute new connections and instead all your rules operate only on established connections that can never actually be established:
+Problem I am experiencing is I can only do one or the other.
+Please read the manual page for iptables and especially the part describing -m state.
+Could it be something to do with ESTABLISHED,RELATED in my OUTPUT rule for http/https?
+You prettly clearly dropped all your output packets that don't match any of the rules:
+I always use explicit REJECT/DROP rules at the and of the chain.
+The best solution for you is probably to switch the OUTPUT policy back to ACCEPT and remove the OUTPUT rules.
+I, personally, don't think it's a good idea to use the DROP policy on INPUT and OUTPUT chains and I don't care about its usage on the FORWARD chain.
+I am trying to setup firewall rules on a RHEL webserver, so that my webserver can serve up web pages and at the same time download remote files using curl/wget.
+REJECT is usually better for the beginning as it doesn't introduce lags and timeouts.
+I've tried tweaking my iptables settings and I isolated the problem to be with outbound packets cause if I enable all outgoing, it works just fine.
+Then you won't create firewalls that explicitly block your new outgoing connections and then be surprised that your outgoing connections are being blocked.

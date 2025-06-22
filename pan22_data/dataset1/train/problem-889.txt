@@ -1,0 +1,7 @@
+There are ways to load images without premultiplication in Android as suggested in this thread. It's also possible to do that without any additional memory penalty at least by doing it completely on the native side, but I don't go to the details here.
+If you can use premultiplied alpha and it doesn't e.g. make your content pipeline harder, you should. It solves among some other issues bleeding of neighbour texels when using bilinear filtering for translucent images.
+Premultiplied alpha just means that all input color values are already multiplied with the alpha value. Normal alpha blending then requires different blend function. Instead of SRC_ALPHA,1-SRC_ALPHA you need to use 1,1-SRC_ALPHA as you have already tried. What you were missing was taking premultiplied alpha into account in the shader. Since you are multiplying your texture alpha with another value, you have to do the same for texture color channels as well. Thus
+This should be enough to make your fading work correctly.
+I remember there was a way to do so, but I would like to suggest you use premultiplied alpha for transparencies, as it is much better than non-premultiplied.
+It only makes sense to load without premultiplication when your alpha values mean something different than transparency, but that doesn't seem to be your case.
+There's a more thorough explanation of why premultiplied is better in here. But for the time being, to have your code work with premultiplied alpha, you simply have to stop mutliplying by alpha when blending. This means that instead of

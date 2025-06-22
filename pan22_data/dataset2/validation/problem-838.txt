@@ -1,0 +1,9 @@
+I've had mixed success with it - some applications work fine, and report 256 colors; however Emacs (the main reason I wanted 256 colors on TTY) doesn't seem to work; there's a bit of a discussion about it here, but it doesn't really get resolved:
+If you find a TERM that works, modify the getty lines in your inittab and add the proper TERM at the end:
+Your 256-color RXVT/xterm/URXVT/etc are defined by terminfo and the setting of the TERM variable.  In most Linux distributions your virtual terminals are defined in /etc/inittab, and use a default terminal type that defines how many colors the terminal can use.  
+I've installed this and use it for console apps that require 256 colors (vim due to my configuration). 
+From memory these sequences look something like escape [ 01;34m  There are codes in the 30's for foreground and I think 40's for background.
+Note the baud_rate,...  port [term] there at the end.  That matches up with the command in the /etc/inittab line (/sbin/getty 38400 ttyN) -- note there's no [term] argument, so we get a default (run echo $TERM just after you log in on a virtual console to see what your system uses).  From the manpage again:
+The ANSI escape sequences for setting the foreground and background colors of text are what's limiting things here.
+Have a look at fbterm - it's a replacement framebuffer that can run in 256-color mode (you just run it as root from a TTY)
+kmscon is a way to get you 256 colors and video without having a windows system (X, Wayland) installed. 

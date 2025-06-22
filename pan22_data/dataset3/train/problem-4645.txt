@@ -1,0 +1,30 @@
+The priorities are attempted cracking attempts in /var/log/auth.log, shutting down uneccessary services and tightening the firewall.
+After doing what Richard Holloway says; then do a network scan of the system to check what services are being provided by the server and check this against the data you have so far.
+You probably don't need to worry too much about what they do right away but you should have a general idea of what the server is doing at different times.
+You then can poke around on the staging VM (copy of the server) and try to do each thing you are asked to do on the VM staging server first before the Production server.
+You will need to decide what needs to be backed up.
+Write down what services the server should be running.
+It is possible to do really interesting things with linux that are hard to find just looking at logs.
+You are currently the most dangerous threat to the server right now as you have a lot of power and not much idea of what to do with it.
+Zenmap is simple to install, is/has a GUI and doesn't try to exploit anything that is found.
+If you don't know what "right" looks like then it can be hard to spot where something is "wrong" (or as you put it "funky").
+Now you know a bit more about what your server is doing and who can access it, you should move on to how well it is doing.
+Check if there are any outstanding updates to do using
+Get a list of users who do have accounts from /etc/passwd.
+Now write down who should have access to the server and who is allowed to have root access.
+Make copies of all files before you edit them and test changes often so you can easily back out if something breaks.
+I suggest using Zenmap from another system on the same network and getting whatever clearances you need from your bosses first.
+Day to day duties will include, checking the log files for any problems (check out logwatch to help you), performing security updates, checking backups and goinf forward setting up monitoring like MRTG and Nagios to eventually take the heavy lifting out of being an admin.
+Do a similar thing for FTP access, and other services if relevant like Subversion or remote MySQL connections.
+I guess you may have an ftp server on there and you are able to ssh in so you need sshd running.
+This is what I would do but hopefully others will jump in with more/better suggestions.
+It may seem daunting but that is because you are asking for it all in one go.
+The server is probably fine as it is, keep an eye on the logs and apply updates as they are released, plan what you want to do and work towards it, take little steps and try to enjoy it.
+Using something like VMWare Converter to make a staging VM of the server is a GREAT idea, you should look into that.
+The quickest way to find out is probably by listing /etc/init.d/*.
+Check the log files in /var/log, especially /var/log/messages and spend some time looking for any errors.
+Then most people write a shell script to back this up locally and then use something like rsync to copy the files to another machine USB drive.
+Obvious candidates are databases, /home/ /etc/ /var/log/ /var/spool/cron/ /var/www/ and any custom scripts called by crontabs.
+Also find out if a firewall is installed (such as iptables) and how it is configured.
+You now need to review the information you have collected and decide what (if anything) needs fixing.
+I don't know what the equivalent to the Red Hat chkconfig is, but failing an alternative ps -ef will list what processes are currently running.

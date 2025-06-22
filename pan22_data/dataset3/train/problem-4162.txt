@@ -1,0 +1,25 @@
+The files that start with ._ are used to store metadata like extended attributes and ACLs.
+Sometimes (but not always) the resource you can manage without the resource fork data - for example copying an mp3 file.
+AppleDouble files (the ones named ._filename) are created when you copy a file containing a resource fork to a non-HFS file system.
+This also includes meta-data created by/for Spotlight, such as when iTunes plays a file.
+There is a tool called "dsweeper" available here: https://github.com/simsalabim/dsweeper
+Unlike .DS_Store files (which, as I understand, store desktop details such as icon location, etc.
+You can suppress the resource fork copying if you use a shell (not finder) by using:
+You can see extended attributes with xattr -l or ACLs with ls -le.
+You can use xattr -c to clear all extended attributes or chmod -N to delete ACLs, and you can copy files without extended attributes with cp -X.
+Extended attributes include resource forks (com.apple.ResourceFork) and file flags (com.apple.FinderInfo).
+HFS+ filesystems (designed by Apple) have native means to address the storage of this information.
+So my conclusion is that you probably don't actually want to delete .AppleDouble.
+http://support.apple.com/kb/HT1629 tells me that this can be done via
+-name ._\* -delete to delete ._ files recursively under the current directory.
+.AppleDouble files are created to store additional file resources (meta-data, etc.).
+This is achieved by creating additional files on the filesystem, since the filesystem does not have native means for storing the information.
+Please let me know if there are further details not addressed in my conclusions here.
+You can use BlueHarvest to automatically delete AppleDouble files or other files created by OS X:
+I think part of the question is: why do you want to eliminate .AppleDouble files?
+Via homebrew, the installation is remarkably simple:
+I arrived at this thread attempting to help my Dad with two ReadyNAS; he wanted to eliminate the files because their existence was inexplicable and causing strange behavior with the ReadyNAS backup program (which seems to be solved by using rsync).
+This means that you can probably delete the .AppleDouble files and the OS won't complain, but you may well lose meta-data if any is associated with the file.
+), .AppleDouble files actually store potentially relevant information.
+It solves the problem (once installed) with a simple
+Deleting this information is unlikely to hurt anything, but it is being created/stored for you so that the OS can optimize search and other terms.

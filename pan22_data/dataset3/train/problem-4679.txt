@@ -1,0 +1,20 @@
+This is all according to our network/server admins (I have no network/SAN/Server expertise).
+We caught it via the sudden spike in disk access and a sudden drop in Page Life Expectancy.
+Actually, it was technically an overlap, since it had one additional included column over and above from the original index.
+Without the execution plans, it's impossible to say, but I've seen a similar scenario pop up.
+Someone added an index on a large table, queries started using it (which kept big chunks of it in memory.)
+Adding the index back also caused no problems (I know--also not a good practice in production).
+The overlapping index had been in production for about three weeks with no problems.
+Everyone on the team was investigating the problem, until one team member found an expensive query in activity monitor that look suspicious.
+He inspected the table and found and index that was a duplicate.
+IOPS increased twenty-fold during the period when the problem was occuring.
+So it's possible it was a coincidence, but no other changes were made in the same timeframe, and we're 99% sure this index was somehow the cause.
+Any online sources as references would be deeply appreciated as well.
+Things all used to fit in memory perfectly, but they hit a tipping point where they started to hammer the disk much more frequently.
+Had a client once whose database was teetering on the edge of being able to fit in memory.
+Ideally, you should capture these Perfmon counters continuously on database servers, and alert when they drop dangerously.
+We recently has a massive performance problem on our system, which we narrowed down to a problem with I/O on the LUN.
+That'd help correlate things so you'd know if the PLE drop also happened, and that'd indicate you might be running out of memory to cache things.
+I realize a superfluous index can cause performance problems, but I have never heard of a case where the problem would be that pronounced.
+The index was dropped in production, and the performance problems stopped almost immediately after  We were not all in sync monitoring and trying fixes (never mind that this isn't a good practice).
+Any idea of what the root cause of the problem could have been?

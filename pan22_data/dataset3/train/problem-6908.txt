@@ -1,0 +1,15 @@
+In our case we are using Active Directory, but any username/password lookup that works with PAM would be acceptable (ie: Kerberos, LDAP, etc).
+Not knowing your exact setup, I just wanted to put that option out there for you because it could be a better solution depending on what you are trying to achieve and the scale you are trying to implement.
+This gets complicated and introduces other security issues.
+As noted in the comments it'll probably be a good idea to use a different mount point.
+To answer your headline question yes, it is possible to mount your /media/ant from a .bashrc simply put
+Now when you try to access the /media/ant files it should be autmagically mounted.
+If this doesn't do what you want then you probably want to configure the automounter to mount he share when it is accessed e.g.
+As configured the /media/ant directory will be mounted when your system is started or when a root capable account issues a suitable mount command e.g.
+In my fstab I got //192.168.1.104/ant     /media/ant              cifs    gid=users,file_mode=0664,dir_mode=0775,auto,username=***,password=***  0 0 but this is not working only when editing the fstab file and running mount -a, so I though maybe it will work if I use the .bashrc file?
+It would be most useful if you are trying to do this with many or most users that login to this computer.
+Unfortunately you have to run mount as root so you have to arrange arrange for the particular user to be able to run mount as root e.g.
+Is it possible to mount a Samba network share on start-up using the .bashrc file
+This is most useful if you are using a central database for usernames and passwords across multiple machines.
+Another option could be a PAM from the project pam_mount.
+After you configure PAM and pam_mount, everything is done for you automatically during the login process, including the username/password exchange for (in this case) your SAMBA share.

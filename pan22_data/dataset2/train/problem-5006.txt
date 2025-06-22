@@ -1,0 +1,15 @@
+The other great thing about DMARC is that you get failure reports delivered, so you can manage exception handling as required.
+2) Are there any an outside addresses that forward to your users? For example, assume the gmail account "mycompany.sales@gmail.com" forwards to "sales@mycompany.com", and your user "bob@mycompany.com" sends to "mycompany.sales@gmail.com". In that case, the message will arrive from "outside", but with a "@mycompany.com" From: address.
+SPF wont cure this as the envelope could well have a proper SPF pass (i.e. spammers using compromised server) whilst they will forge the email inside the envelope.  What you need is a block on your own domain email message that has an originating email server on the envelope not acceptable to you.
+There is a standard for doing this already. It's called DMARC. You implement it with DKIM signing (which is a good idea to implement anyway).
+However the problem arises when you have remote application servers that need to send status emails to you, as these generally use your domain name in their From address. It's possible to create an additional Receive Connector for their specific IP addresses so that you don't inadvertently exclude them.
+Whether or not you have users who might use this GMail feature and whether it makes sense to cater to them depends very much on the behavior within your company.
+GMail has a setting where it allows you to send emails with a non-GMail domain provided the email address get's first verified. Your decision would block those emails. 
+If your server naively looks at the "From:" header (instead of "Sender:"), it might reject this message because you are receiving it from outside.
+This means you can still have external services deliver email to your domain (like hosted helpdesk software, etc), but can block spear phishing attempts.
+3) Are any of your users subscribed to external distribution lists that preserve the original "From:" address on messages to the list? For example, if Bob subscribes to "foo-list@lists.apple.com" and sends a message, he will receive an inbound message looking something like:
+The high level overview is you sign every single email that leaves your domain with a DKIM header (which is good practice anyway). Then you configure DMARC to reject every email that hits your mail server, from a domain you own, that is not signed with a valid DKIM header.
+1) Does anybody in your company use any kind of external service (for example Survey Monkey, Constant Contact, etc.) to send out emails that appear to be "from" your domain? Even if they aren't doing it today, might they do it in the future? 
+You can do this in PowerShell by updating your Receive Connector permissions to exclude Anonymous users from sending as an authoritative domain sender:
+The down side is that you need to be sure you've got everything sorted out thoroughly beforehand or you might start dropping legitimate emails.
+Because of all of the above, having a blanket policy of "...from a real sender in our company, the email would never come from outside" is not always feasible.

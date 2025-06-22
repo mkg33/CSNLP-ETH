@@ -1,0 +1,5 @@
+I experienced the same issue, and documented by findings and solution in this Github issue.
+then you have CloudHSM configured correctly, and you can access it with your regular user, but the user that launches nginx cannot (which results in the misleading error that you report). See the solution post above for simple tests that you can run to verify that is indeed the case.
+The solution is to track down how the server is started (see this answer to find out what init system your system uses), and make sure that the cloudhsm credentials are part of that environment. The instructions from AWS assume that the host runs systemd as the init system. In my case, I was using init and the solution involved tracking down the corresponding script and passing the credentials (n3fips_password) before launching nginx. Again the specific details are documented in the Github thread.
+I am trying to offload SSL process to AWS CloudHSM. While configuring the web server, when I add this:
+to the top of the nginx configuration, nginx does not get restarted and the following error was logged:

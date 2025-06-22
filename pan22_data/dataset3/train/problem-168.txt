@@ -1,0 +1,26 @@
+My thought would by to create an intermediate structure or additional piece of data that tracks which parameter template to use because you appear to have fewer parameter templates than countries.
+One of the first steps toward dealing with all of these reports polymorphically is that from the calling code, they all need to look the same.
+I'd opt for the version of the CreateReport method with the most parameters and refactor the other calls to use that instead and then look at the parameters themselves.
+Each of those reports has its own nuances and differently named parameters, and what's happened is that they've pushed their confusion out into the code that calls them.
+I think it was the book Code Complete that said that the job of the programmer is to manage complexity.
+The idea is to keep the complexity of each component isolated.
+When creating the report parameters, it looks like many reports expect the same parameters, but using different names.
+At a lower level, in the varying implementations, that's where you deal with the individual behaviors.
+These solutions don't immediately get you to where you're going.
+One expects EmploymentStatusID, another fkEmpStatusID, but it's the same value.
+If possible I'd set some defaults for those arguments passed to that function and eliminate the switch statement altogether.
+That confusion makes it hard to even see what you want to do with this.
+If the calling code has to deal with the quirks and differences of all of those different reports, then the methods will be overwhelming and confusing to look at.
+Refactor incrementally, it will give you better insight into the code:
+It looks like you have a limited number of parameter templates that are being duplicated based on the country in which they are used.
+That's a little better and it allows you to focus on the primary issue; the fact that the CreateReport method is overloaded and thus it parameters can vary.
+I'd start with a quick refactor of the switch statement as follows:
+I can't see the declaration of the method that contains the switch, but does it have a long, giant list of arguments, like employeeId, taxYearId, frequencyId, and employeeRun?
+One step might be to package those up into a single parameters class.
+Use the "Replace conditional with polymorphism" refactoring.
+They just clear up some of the confusion so that you can see the path more clearly.
+Can you modify the reports to accept the same parameters - the class containing your parameters - and have them map to whatever specific parameters they need?
+Then, within their own implementations they can deal with their own issues - I don't like this parameter name, I want it named that instead, etc.
+At a higher level of abstraction you just see a bunch of reports, perhaps declaring an interface like ITaxReport.
+Everything is going to be as complex as it's going to be.
+You didn't provide much context to the switch statement, so I'm afraid that that is all I can say.

@@ -1,0 +1,19 @@
+This file will automatically be read by any mysql command-line tool, if it is run as root. No more need to provide it on the command-linea. The 600 permissions protect it against prying eyes.
+If you don't want others to get a password that will let them change data in your database, you would need to create a user with appropriate permissions.
+If you afraid that someone has access to your root account, it doesn't matter if root's mysql password is stored in the script, since you have all your data available in mysql dumps, or database files. So, the real question is what are you trying to protect?
+if these are not set, then cron will run with the shell and home directory specified in /etc/passwd (which are probably nothing, possibly /bin/sh).
+If you want to see the environment cron is running as, add a cron job that exports env to a file, eg:
+Although several of these responses are helpful several are confusing because the unix root user and the mysql root user are not the same and basically have no relationship other than they both use the login name 'root'. Maybe that's obvious but it seems some responses conflate the two.
+What might be a useful option (maybe it exists?) to mysqld would be to allow client programs such as mysql or mysqldump etc running as unix root to access mysqld's root@localhost without a password without having to store root@localhost's (mysql) password in a my.cnf file or similar.
+If the script is run by root you could create a file /root/.my.cnf with permissions 600 and the following contents:
+It would require some infrastructure and thinking because one would have to trust the mysql/mysqldump/etc to transmit to mysqld that it really believes it's being run by a local unix root account.
+But for example limiting to mysqld's unix socket only, no TCP, could help, at least as a strongly recommended option of this option. That could establish that the client is running locally tho that's probably not quite enough. But it could be a start of an idea. Perhaps sending a file descriptor over a unix socket could be another piece (google it if that sounds like crazy talk.)
+You can set a shell for cron to run under, edit the crontab and add the SHELL and HOME variables, eg.
+I know that makes some nervous but the reasoning is anyone running as local (to the mysqld server) unix root can by-pass mysqld's security anyhow, quite easily. And having a my.cnf with the mysqld root password 7x24 or even creating/deleting a my.cnf with the mysql root password (where does that password come from?) on the fly (e.g., to do a mysqldump) makes me nervous.
+Your shell use can do it becuase you have a shell to run it from, ie when you logon, all your shell scripts in your profile get run.
+P.S. No I'm not going to try to brainstorm right here how any of that might work on a non-unix operating system tho the idea probably translates to other OS's.
+If you don't want that mysql password to be seen by any local account except root set file permissions on that script to be 0700 and owner to root.
+when trying to connect.  I do not want to hard code the mysql database root password in the script (who would).  
+Considering that I can just type "mysqldump" at the command line in my bash shell there must be someway to get around using the -u parameter.I already have #!/bin/bash at the top of the script.
+Cron does not have such luxuries. When it logs on (as root) it'll log on with a default shell. This prevents anyone from logging on remotely, but it also means there is no auto-login scripts that are run.
+I setup a job in cron.daily to run and dump this to a backup drive.  The problem I have is that although the user is running as root I get the following message

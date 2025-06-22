@@ -1,0 +1,8 @@
+You can't directly filter SSMS's commands, but here's an easy workaround:
+Create another table with the subset of data you want to export:
+Ideally, you do this in a different database so you don't bloat the data & log files with your temporary export work.
+Then, use SSMS's magical wizards to export the data from your staging table. (If you have to do this a lot, though, check out SSIS.)
+To my knowledge, there is no WHERE clause when generating scripts (assuming you are using Right-click->Tasks->Generate Scripts).
+Without knowing your use case it's hard to give you an accurate answer, but one way is to:
+Since you used the same table name, you only have to change the database name in the generated script (using Ctrl+H).
+This is tedious since you have to define the WHERE clause for each table, but you would have to do it if Generate Scripts feature had a WHERE clause anyway. Unless all your tables have a common column you are filtering by, in which case you can use sys.tables to generate the SELECT strings.

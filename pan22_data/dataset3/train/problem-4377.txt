@@ -1,0 +1,19 @@
+Hence if the server over-moves the player based on some input, the updated input will cancel out those moves and the player's new position will be based upon the most recent input knowledge the server has.
+See this article for one possible way to synchronize clocks in games.
+The second half of the problem is that the server is applying input past the time the client stopped applying input.
+This requires a buffer of past movements on the server and some logic on the client to ignore movement inputs from the server past the last known movement.
+If an input is received, all recent movements applied with a clock stamp newer than the input packet are dropped and all movement is re-applied from the input packet.
+It also needs all movements it applies to a player, the clock stamp of the movement.
+This last issue with other players seeing your avatar jitter is not really fixable.
+Eventually new server updates will arrive with up-to-date input and the client can correct against those.
+The network layer needs to have an agreed-upon clock.
+The input clock should not be drastically larger than the half-round-trip time you should be calculating.
+The only correction is to play on better connections or with peers/servers with less latency.
+Clients will see a lot of jitter of other players' avatars if latency is high since they'll get updates from the server based on stale input but have no way to know that it's stale and then the server could start sending fairly different locations based on the updated input it received (and its dropping of some portion of its history and replaying it with the new input).
+They can agree upon a clock value early in the game (and resync it periodically in case of drift) so the host knows how long any particular packet took to actually arrive and when the client did the action, and vice versa.
+Clamp any that are to a reasonable range ([Now-2*RTT,Now] for instance).
+The server needs to validate the input clocks and make sure they're not drifing from expectations too much to prevent cheating.
+Latency sucks and gamers stuck on high-latency connections are going to see a lot of jittering of other players, even if their own player is moving smoothly.
+The server needs to keep track of the clock stamp of the last input received from the player.
+Since each player update from the server should have been tagged with the clock of the last input the server knew about, the client can ignore server updates that have an expired input tag and just stick with the client prediction.
+On the client side, the client knows when it last sent input to the server.

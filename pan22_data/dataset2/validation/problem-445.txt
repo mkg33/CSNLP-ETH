@@ -1,0 +1,10 @@
+Ping from server A and ensure it resolves to the same IP address as your other 3 servers are resolving it to.
+Do you have any other servers in the same data center/cabinet/rack as Server A where you could test locally?
+Failing that, I'd try a telnet from Server A on ANY port, for example to a local SMTP server at the hosting provider on 25.  If that works, I'd ask if their support could help you test by setting another of their servers briefly to listen on 1433 - Google "port listener" for examples of free software if they don't have their own.
+What's different about the three servers that work and Server A that doesn't?  Any chance Server B is accepting connections only from certain subnets, for instance?
+(Keep in mind that your outgoing traffic from Server A is actually only destined for port 1433.  The source port will be something different.)
+Does server B have more than one external IP address? SQL Server may not be listening on all the IP addresses.  use netstat -n -a to verify that either 0.0.0.0:1433 is there or each external ip address is listed as listening on :1433
+Are Server A and Server B are supposed to be on the same network then?  You can verify that there is nothing in the middle with tracert.  If Server A is on a different network than the 3 other servers that you've used to telnet into Server B with then it's not really a valid test of connectivity.  There could still be firewall rules or router ACL's that prevent connections from Server A's network.  Can you ping Server B from Server A or telnet into another port that Server B is listening on?
+Also, have you tried connecting to Server B using SQL tools on Server A?  SQL Server Management Studio for example?
+Once that works, and you've checked that Server B sees inbound connections on other ports from Server A, you'd have some evidence to bring to the Server A hosting support staff. 
+From your description the problem would appear to be Server A. Start at the beginning. Make sure the Telnet program is in fact successfully sending out packets. I'd be inclined to use Wireshark to verify that.

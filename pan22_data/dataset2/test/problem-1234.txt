@@ -1,0 +1,14 @@
+I saw the same symptoms as @thure. Then I had an epiphany; I realised I'd rebuilt the pg gem (I'm using Ruby) in a shell whose PATH had been adversely affected by Mac's path_helper (which is run from /etc/profile and puts /usr/bin before /usr/local/bin).
+So make sure you recompile your language bindings people, and let them find the correct copy of (presumably) pg_config.
+However, I was confident that I was in the same boat as @thure. I'd made sure /usr/local/bin was earlier in my PATH than /usr/bin, had checked which binaries the shell had hashed with which and type, etc.
+Also, there's something rather unusual in the ps output of your question: the postgres server is running under a meltemi Unix user, whereas generally, the dedicated postgres Unix user is used for that.
+For me I always go back to my first principle of programming: "I am usually the source of any given error!"
+So to have the psql automatically use the socket of your choice you can set the PGHOST variable to the directory containing the socket. i.e.
+I don't know of any config file for the psql client.  However psql does respect a number of environment variables that correlate to command line options.
+What I could NOT find was the config file that sets the default values for the psql CLI command.  Can someone comment with that, please?
+Here it is, 2016, El Capitan is out there, and Apple keeps changing things up. Postgres is installed as part of the OS, and the postgres config file sets the unix_socket_directories property in postgresql.conf to /tmp. The socket is in /tmp/.s.PGSQL.5432. I was able to get around the problem by executing the following:
+A plausible and typical explanation would be that the psql that comes with homebrew is in /usr/local/bin/psql which is different from the one that would be in your $PATH,  like /usr/bin/psql (bundled with OS X).
+I've only just signed up to the dba SE, so don't seem to be able to comment on the relevant post (what a crock!).
+There are a number of useful options like this for the psql command that you can find here: http://www.postgresql.org/docs/9.4/static/app-psql.html  so that you can test out your OWN particular misconfiguration.  Of course, you can simply remove your last set of config changes from the *.conf files, too, to test if those are the source of your problem.  I think it is certainly worth checking out before you muck about with file permissions and ownerships.
+I got this same error from trying to run psql on the command line.  It turned out that my solution was far simpler.  I had mis-configured the listening port in the config file: /etc/postgresql/9.4/main/postgres.conf.
+I uninstalled pg and reinstalled it in a shell whose PATH was correct. All of a sudden I could connect!

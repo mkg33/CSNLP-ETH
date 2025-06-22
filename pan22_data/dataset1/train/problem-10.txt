@@ -1,0 +1,5 @@
+I think is a default address multicast, you can drop traffic from this address, for more information about default multicast address http://en.wikipedia.org/wiki/Multicast_address
+I run two Xen/CentOS 6.5 based VMs, both hosted by the same company, but connected to different networks (basic /24s w/ a single gateway at .1) in different physical locations. I developed an iptables firewall on the first host, part of which logged and dropped traffic from the various reserved networks: 192.168.0.0/16, 127.0.0.0/8, etc. Included in this list is 224.0.0.0/4. On the first vm I rarely ever saw traffic to/from any of the reserved nets and could safely assume that it was forged and drop it without worry.
+However, as soon as I installed the same set of iptables rules on the second vm, it started logging packets from 0.0.0.0 to 224.0.0.1 every couple of minutes.
+tcpdump has clarified that the packets are in fact IGMPv2 multicast packets.
+BTW, the src/dst MAC addresses in the iptables log line are neither from the hosts interface(s) nor the gateways interface (at least according to arp), if that makes any difference.

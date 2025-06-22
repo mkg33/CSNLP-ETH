@@ -1,0 +1,27 @@
+As has been stated in other answers, the three numbers determine access permission in this order:
+I recommend chowning the plugin or the temp directory to the user that the webserver runs as.
+Any file that root has root control over can't be denied to root(*).
+Evertything else is the abbreviated Unix permissions lecture - you can get the same thing from man chmod with lots more detail.
+Think of it as three separate numbers, and from left to right it stipulates that access that the user, group and anyone else has.
+I have a Wordpress CMS and I'm trying to install a plugin, however it has decided it can't download the plugin to a temp directory, so I'm guessing I need to chmod something, doesn't say what.
+The permissions on a file are determined by those values -
+Also, check the error log for that website as it will contain a lot of useful information.
+If your webserver can create .php files inside the DocumentRoot, this is very bad in the instance that your website somehow allows this (not as unusual as you'd think).
+Things get more complicated with ACLs and extended attributes, but that's beyond this question's scope
+Annoyingly I think that Wordpress checks the user of a directory rather than its ability to write to it, so this might be your problem.
+Alternatively, create a php file inside the website with <?php phpinfo(); ?> inside it.
+I would personally try to understand what UID is involved with the failed transaction and see if granting different ownership or group access would work better, depending both on what I immediately wanted to do and what I might want to do in the future.
+In terms of a directory, they need execute to open the directory so the only really issue is the w, which means they can create a new file inside the directory or rename it.
+But I don't want to chmod to 777 and give anyone access to the server?
+So you can have a file that actually grants more access to people other than the group or owner of the file:
+Each field is a bitmask, with the values being 1 (execute (& list contents of a directory)), 2 (Write) and 4 (Read)
+Wordpress is trying to write to a directory so it really only needs access as the user it's being run as.
+The three fields for unix permissions are owner, group and other.
+It may be simplest to grant 777 access to the target directory, do your upload, then immediately lock the directory down.
+If you don't have access to chown the directories you're pretty much stuck with setting the mode to 777 (world-writable).
+Browse to this page and double check that PHP safemode isn't turned on (another common issue with PHP's writing).
+If you give everyone 7 permissions (which means read, write AND execute), they can do any of those things.
+Anyone who connects with FTP without using the password or something else?
+As Christopher Evans said, chown the plugin and temp directories to the user (or group) the web server is running as and set appropriate permissions.
+In your specific case, chmod'ing the directory to 777 will mean that anyone who can access the directory will have full access to everything.
+By everyone it means anyone who is logged into your server (via FTP, SSH or anything else).

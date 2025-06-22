@@ -1,0 +1,7 @@
+You will need to supply the owner/group/permissions to the commands, and the top-level directory to operate on for those commands to work, such as chown -R nobody /tmp/testdir.
+One dirty way of doing it is mounting FAT filesystems and use uid= gid= for it. That way you there won't be a way of changing owner of any file simply because the filesystem doesn't support users, groups or ACLs.
+You can't.  One option that may work for you would be to set up a cron job to periodically run a chown -R, chgrp -R and chmod -R on the entire directory structure to recursively set the owner/group/permissions as you would like them.  It's definitely a kludge, and will be a lot of work for very large directory structures, but it will fix the permissions.
+You can use the "set group id" feature with chmod g+s /pub to force the group to be the same for all files and directories added to that directory, but "set user id" (chmod o+s /pub) doesn't work on most systems.
+Alternately, you could set up a program using inotify to watch the directory for changes and then check or correct permissions as necessary, but inotify has it's own set of problems, especially if there are many nested sub-directories...  You have to subscribe to change notifications on all of those directories...
+Sounds like @womble's answer is the best bet, but I haven't used extended ACLs.  Just wanted to give a few alternatives.
+You can't.  Use extended ACLs to provide the permissions you need (with defaults to apply them to all new files) and effectively ignore the traditional permission bits.

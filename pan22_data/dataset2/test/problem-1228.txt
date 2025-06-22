@@ -1,0 +1,7 @@
+On my CentOS 6 servers, I made this change anywhere I saw pam_krb5.so being referenced in these two files:
+To disable keytab validation and hence suppress these log messages, add the no_validate option to your PAM settings.  For example:
+This might be an old one, but I had the same problem and wanted to get rid of the message. I followed these instructions from ArchLinux and solved it.
+The reason the message isn't seen for root is because that user is local (does not need Kerberos for authentication). When using SSH authorized-keys, you also circumvent Kerberos, so there will be no error regaring missing keytab there either.
+As @ryan-fisher mentioned in his reply, the host needs a keytab file in order for it to be able to retrieve a TGT for preauth.
+You can disable validation to avoid the message in the log as suggested by Banjer, but the purpose of the validation step is to prevent an attack where a bad guy sets up their own bogus KDC.  In other words you need a host principal to validate the TGT given by the KDC is authentic.
+Now, what you need to do is to make sure that /etc/krb5.keytab contains the keys for the principal host/domain.name.of.host for the machine. Assuming the reverse DNS is correctly set up, you will then be able to log in using ssh without typing a password assuming you have a valid TGT.

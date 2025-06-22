@@ -1,0 +1,18 @@
+However, the device is bootable and I have no way of knowing if I'd be blowing away bootstrap code or not.
+Currently my only idea is to store data at the end of this block.
+The device is only guaranteed to have an MBR at the point the meta data needs to first be written; meaning there are no EBRs/VBRs present that I could use.
+Windows NT uses a 32-bit disk signature to identify individual MBR-partitioned disks, and stores it as six bytes starting with 440 [01B8h] (four bytes containing the signature and two zero bytes).
+The disk signature was first introduced with Windows NT 4 (and became required on MBR disks starting with Windows Vista).
+There are 446 bytes at the very start of the device available for MBR bootstrap code.
+Since then is also used in a similar way to GPT's "disk UUID" by non-Windows systems (Linux and GRUB support it).
+Given your needs, the partition can be tiny (one sector).
+There is a good chance that the bootloader used by your device also leaves the disk signature untouched.
+The only truly safe way to store your data is in a partition of its own.
+Because of that, many bootloaders limit their bootstrap code in the MBR to 440 bytes, to avoid overwriting the disk signature.
+Given that it's only four bytes, taking over the partition table's serial number, as grawity suggests, is probably the safest of the out-of-partition options, but I wouldn't recommend this, especially not without more context, because the serial number is used by some tools, so taking it over might conceivably cause problems if you rely on something that uses the serial number.
+Storing the data outside of a partition runs the risk of it being overrun or of your data overwriting something important.
+Check if the two bytes starting at 444 [01BCh] are 00 00 – if they are, then the other four are likely to remain unchanged unless the entire partition table is blown away, or unless new bootstrap code larger than 440 bytes is installed.
+The sector size is 512 bytes and the MBR is the first sector, I'm pretty sure (correct me if I'm wrong) that that means the second sector is available for use by partition data, so I can't use that either.
+I need a place to store some filesystem-independent meta information on a storage device.
+The device also may have unallocated space (depending on its size) but it will be TRIMmed (and also may be blown away by new partitions in the future).
+I need a location on the device that is not unallocated and that has a low risk of being touched (outside of completely erasing the device).

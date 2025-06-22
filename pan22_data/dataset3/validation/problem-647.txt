@@ -1,0 +1,13 @@
+@Jay Int32 is correct in his resolution above but you may want to simply enable the WCF activation feature in .net 3.5 instead of going about the hard core way of installing each framework separately and starting from scratch.
+See also reset Internet Protocol (TCP/IP) that provides a fix-me.
+Reference: Net.Tcp Port Sharing Service fails to start
+I ultimately found that it was due to the fact that the system had been setup with .NET 2.0 Framework and .NET 4.0 Framework, but not 3.5 which is required for the Windows Process Activation Service Listener Adapter to function properly.
+We re-imaged the virtual server with a clean OS, installed the .Net Framework packages in order and that resolved the issue.
+The Net.Tcp Listener Adapter and the Net.Pipe Listener Adapter would hang in the "starting" state.
+If you go to Server Manager | Features and Add the ".Net Framework 3.5.1 Features" with the "WCF Activation" subfeature in it, you should get this problem resolved.
+I had the .NET Framework 3.5.1 Features already installed and the Listener Adapter still hung.
+Worked after also installing Microsoft .NET Framework 3.5.1 WCF HTTP and Non-HTTP Activation.
+And I solved adding read and execute permissions to local Users group (from right click > Properties > Security).
+In my case, the start failure was caused by missing permissions on machine.config file inside folder C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config.
+I was experiencing a similar issue on a Win 2008 server.
+Before starting, better create a system restore point, just in case.

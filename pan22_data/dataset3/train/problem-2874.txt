@@ -1,0 +1,30 @@
+You can see from inspection that if I wanted to switch to Firefox, I'd use the FirefoxURL ProgId value back up in UrlAssociations.
+Windows help says nothing about this, and just says to use the "Browse..." button, which isn't available.
+When I go to the "Set Associations" dialog, select HTTP, and click "Change Program", the dialog that pops up doesn't allow me to select anything except one of the web browsers that I already have installed.
+What I'm talking about here is what you're changing when you go to the Default Programs section of the Control Panel to set a browser:
+However, after pretty much duplicating Firefox's StartMenuInternet key, my program still wasn't appearing in the Settings app.
+So after setting up the StartMenuInternet key, add a key in HKLM\SOFTWARE\RegisteredApplications to point to Software\Clients\StartMenuInternet\YOURPROGRAM\Capabilities - yes, exactly like that, starting with Software\:
+This appears to be the case for all protocols (as opposed to file extensions, which allow you to choose from "Other Programs" or browse for a program that isn't listed).
+The minimum change you need to make to switch which browser opens when you click a link is to change the ProgId value under the UserChoice subkey on each protocol you want to change (probably http and https will be the same, but if for some reason you wanted to make each of those open in separate browsers, you could).
+Is there a way that I can set my script as the default manually (maybe by editing the registry)?
+In this screenshot I've navigated to that key in regedit.exe, and Chrome is my default browser, designated by the ChromeHTML ProgId value.
+Now it's just a matter of determining what to use for Firefox, IE, and any other browser you may want to switch to.
+The other answer to this question got me a step closer with the Clients\StartMenuInternet key, that I didn't know about for setting the default browser in Windows 7.
+Now if you've been paying close attention, you might have noticed a couple flaws with all of this:
+This is sort of jargon terminology that references the UserChoice key- there is also a standard file association-like shell registration under the http ProgId which can also be changed, but the proximal configuration for browsers is via Default Programs (see bottom for an additional comment on this).
+If there's anyone else that landed on this answer while looking to set something custom as a default protocol handler in Windows 10, I think I've cracked it.
+I even tried the 3rd-party "Default Programs Editor", but it doesn't seem to be able to do this.
+HKEY_LOCAL_MACHINE\SOFTWARE\Clients\StartMenuInternet is where all the browsers are listed, and each one should have the above structure.
+(However, if you didn't want to dig around like this, there's a quick cheat: Just set whatever browser you want as default, and refresh regedit to see what the browser has set for the UserChoice!)
+I use multiple browsers regularly, so I've written a script that will open pages in whatever browser is already running (or Firefox if there is none).
+If you wanted to determine this programmatically, you could do so by digging into the Capabilities key of the browser registration, found here for Firefox:
+All we need to do is change that key value to FirefoxURL, and now links open in Firefox.
+This seems to store all the programs registered that windows can be told about their functionality.
+Windows stores per-user standard protocol Default Registrations under the UrlAssociations key, found at
+Copy each of the following into .reg files (such as firefox.reg, chrome.reg, ie.reg) and run them when you want to switch (or, script with reg.exe).
+To configure this directly in the registry, let's first inspect that's already there.
+After doing so you can either click a link or double check in the control panel that the right default is registered:
+Similar to file associations, there can be a "Default Program" for links.
+Screenshot of regedit (I can't embed the image until I have 10 rep...)
+After using Revo Uninstaller to start an uninstall of firefox, cancelling firefox's uninstaller then letting Revo scan for leftover registry keys, I found another key: HKLM\SOFTWARE\RegisteredApplications.
+Yes, you can script it with direct registry manipulation.

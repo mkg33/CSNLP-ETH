@@ -1,0 +1,14 @@
+This does not disable the foreign key constraints on the table.
+There is no way to de-prioritize queries in MySQL, but if there were, it would likely only prolong your agony as the table-level lock would just persist longer.
+It's usually the disk, with the amount of memory available to the buffer pool also being a constraint.
+A simple Google search found this answer on our sister SE site: https://stackoverflow.com/questions/24704086/low-priority-query-in-mysql
+I have a MySQL table with 3GB data and the ALTER TABLE to create a new field lasts about 15 minutes in pre-production.
+If the reason is related to foreign keys, yet your ALTER query will not do anything to disturb the foreign key integrity, you can disable the checks that would prevent you from doing an in place alter without locks.
+The software can both do read- and write-queries with the new field or without it, so I can update the database without altering the software.
+Is there any way to run this in some way like "background" and let all the CPU cycles to attend first the "other queries" and only if there is free CPU then run the ALTER?
+It only exempts any queries you run from your current connection from the necessity to take steps to avoid violating relational integrity.
+The problem is, the resources required to do an ALTER TABLE are usually not your actual problem... it's the fact that the table will likely be locked during the operation.
+https://dev.mysql.com/doc/refman/5.7/en/alter-table.html
+What is the correct way to do a "long alter table" in production?
+As long as you aren't doing anything to disturb relational integrity, it is a safe strategy to use, but only when you need it.
+If the server won't let you do this -- which should solve your problem -- then the error message should explain the reason.

@@ -1,0 +1,28 @@
+works a lot with it), the whole machine gets stuck.
+Problem is, it bogs down my machine really bad, and causes time outs for customers since it's a server.
+If the number of files that are to be deleted vastly outnumbers the files which are left behind, it may not be the most efficient approach to walk the tree of files to be deleted and do all those filesystem updates.
+For instance, suppose you wanted to delete all files in a filesystem.
+Just unmount it and do a "mkfs" over top of the partition to make a blank filesystem.
+If that doesn't do it, you could also add a sleep to really slow it down.
+Modified kernel for real time usage could be a solution.
+What would be the point of recursing and deleting one by one?
+This is vaguely similar to copying garbage collection.
+Using nice (or renice on a running process) helps only partially, because that is for scheduling the CPU resource, not disk!
+Re-create a fresh, blank filesystem on the original volume.
+Is there any way that is quicker to delete all these files...without locking up the machine?
+There is no quicker way, appart from soft-format of the disk.
+This is a linux weakness - if one process "eats up" the disk (i.e.
+(It analogous to doing doing clumsy reference-counted memory management, visiting every object in a large tree to drop its reference, instead of making everything unwanted into garbage in one step, and then sweeping through what is reachable to clean up.)
+The files are given to rm at once (up to the limit of the command line, it could be also set to the xargs) which is much better than calling rm on each file.
+It will take much longer but your customers shouldn't notice any delays.
+You may want to actually run slower, so the deletion chews up fewer resources while it's running.
+Get the half a dozen out of there and ... "mkfs" over top.
+What I would do on the server is to manually let other processes do their job - include pauses to keep the server "breathe":
+For I/O-bound processes nice(1) might not be sufficient.
+Copy the retained files back to their original paths.
+Eventually there is some break-even point when there are enough files that have to stay, that it becomes cheaper to do the recursive deletion, taking into account other costs like any downtime.
+The Linux scheduler does take I/O into account, not just CPU, but you may want finer control over I/O priority.
+That is to say, clone the parts of the tree that are to be kept to another volume.
+Or suppose you wanted to delete all files except for half a dozen important ones?
+It may be impractical in your system and situation, but it's easy to imagine obvious cases where this is the way to go.
+There will be some downtime, but it could be better than continuous bad performance and service disruption.

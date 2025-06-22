@@ -1,0 +1,19 @@
+For TCP endpoints this is expressed not just in SYN/ACK but also in ongoing maintenance of sliding windows, sequence numbers, buffer management and QoS actions, etc.
+The amount- or type- of traffic matters a lot less than the code associated with actually allocating memory and the associated tracking of state information.
+Just using some example numbers (because we're not talking about any specific operating system) if a packet for an established session has a CPU cost of 1 unit, the cost of a new session may be 10x or 100x that cost in the number of operations performed.
+You are correct, opening a connecting will take only 3 packets/turns, but that time - 3 x your RTT - is far beyond the cost of reusing an already open connection, which is far closer to 0.
+The disparity grows even faster if you're opening and closing connections frequently.
+An incredibly rough comparison shows TCP requiring something like 10x the number of lines of code found in UDP.
+If you want to get a very rough sense of what this implies take a look at the amount of code in the Linux kernel associated with TCP vs that associated with UDP or ICMP.
+Check out the complexity of the FSM for tcp and consider the inherent lack of same in UDP...
+Additional memory has to be allocated and at a minimum networking state tables updated at each step until the session is established.
+It's certainly more overhead than sending a UDP packet and not caring what happens past that.
+In IP networking the amount of state maintenance required is one of the most important determinants of scalability.
+It's often not that big a deal, especially since a SYN-SYN/ACK-ACK happens in milliseconds, but for large systems with many customers new sessions can turn into a significant overhead.
+I believe, generally speaking, that opening a TCP connection is considered expensive when compared to the ability to reuse already open connections by keeping it open.
+TCP also comes with more header data, and maintains the connection state, which will consume resources.
+If we're talking UDP vs. TCP though, Cheekaleek here is 100% correct - the overhead of is massive in the long term when compared to the connectionless operations of UDP
+Not to mention any additional security checks that may be performed (route spoof protection, etc).
+You are certainly correct though, when compared to the number of turns you're going to see as the application "does it's thing," those 3 packets can seem pretty small, but again, it depends on how you want to compare the options AND how your application behaves/how many times you plan on opening a connection.
+Most hardware firewalls that I've worked with can handle an order of magnitude fewer new connections per second than they can handle established sessions.
+So yes, compared to UDP, TCP is more expensive, but expensive is a relative term.

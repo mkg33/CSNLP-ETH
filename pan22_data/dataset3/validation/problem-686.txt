@@ -1,0 +1,15 @@
+On the other hand, is that all the columns in the table??
+If you have category_id IN (...) then (again) we need to see the rest of the WHERE.
+It makes a big difference as to whether you are doing
+According to MySQL 5.7 Docs on Partitioning Limitations
+The table is close to 1 billion rows and 200-1000 category_id.
+You will get a error if you try partitioning by category_id because primary key needs to be in partition column.
+What do you mean by "Almost all queries have category_id"?
+What are the queries against the table -- in more detail.
+Very large tables become problematic typically because you want to delete data (which partitions on time series tables) or because of slow queries, so share a query with us and let's see if we can fix it.
+I have bad news with regard to this table: MySQL does not support Partitioning of a Table with Foreign Keys
+I believe it should speed up the queries in my case.
+If, that's all, I am having trouble imagining more than a couple of different SELECTs, namely mapping cat+title to page_id and vice versa.
+And what I have is equally optimal, with the slight improvement of having one fewer UNIQUE constraint.
+I read a lot of articles that PARTITIONing is not helpful in most cases.
+For the former case, I would push for having category_id as the first column in the PRIMARY KEY:

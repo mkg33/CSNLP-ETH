@@ -1,0 +1,17 @@
+If your server has lots of files, that can be one of the culprits.
+Try running atsar in the background for a day or two.
+If you aren't sure when this is occurring, you can get the load average values from sar.
+ionice can reschedule IO so that it has less impact on higher priority processes.
+CSF also does a md5sum on files to compare them with the md5sum from the previous day.
+There are a couple of programs which can minimize the impact of background jobs.
+updatedb in particular can slow down disk access, which can cause a heavily used DB to cross a threshold that will push up the load.
+If you also enable processes accounting, you may be able to identify a program which is causing the issue.
+nice can limit the program to using otherwise spare CPU cycles.
+Examine its data for the periods when you have a high load average.
+If this is always sometime between 4 AM and 6 AM, then the culprit is probably some daily cron jobs.
+In the general case, top will show enough to diagnose any high load problem, while sqltuner and your email which seems to give http connections will only be useful if the problem is in your DB or your http connections.
+However, either of these can increase the run time of the problem program significantly.
+This will capture performance data to a file for later examination.
+I've seen it actually cause issues in production environments (shared server for hosting company hosting 300 customers).
+Cronjobs can be definitely to blame if it occurs at a particular time of the day.
+However, your top output is taken several hours later, the problem has disappeared (and you would need the rest of the page).

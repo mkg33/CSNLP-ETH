@@ -1,0 +1,19 @@
+You could try it yourself by converting "Zurück" with the code.
+You'd either need to explicitly support UTF-8, or do hacky things like aborting/erroring when a character greater than 0x7F is inputted (because you can't know the length of the following bytes).
+The main imrovement is to efficiency, by avoiding std::string::find, which is probably implemented as a linear search.
+That initialization is not necessary, a default-constructed string is empty.
+EBCDIC is a myth made up to scare children during holidays, so here is the ASCII-dependent version, as suggested in a comment by JPhi1618.
+And s, s1 and s2 are rather poor choices for those variable names.
+Indeed, you can do this achieve this nicely using std::transform as follows.
+It iterates through all bytes in the string, and will thus do strange things with multibyte-characters like in the UTF-8 encoding.
+You're not using either of those, so remove them, and include <string> instead to get std::string.
+Something like "source", "original", "plaintext" for the input would be better.
+And you should probably check that s1.find actually found something, otherwise the line after that is undefined behavior.
+As I see this, your code would behave strangely when fed non-ASCII characters.
+You might want to reserve the appropriate size since you know it though, for optimal performance.
+You're only reading from it, so take it by const&.
+These two are constant, don't allocate them for every call, make them static (and const):
+It's always a good idea to try to avoid explicit for loops.
+Unicode is not a myth, unfortunately, so don't ever try encrypting the string "Zurück".
+For this, you'd want use an iterator pushing to a new string (the third argument of std::transform).
+Of course, if you wanted to, you could return a new string rather than write over the string.

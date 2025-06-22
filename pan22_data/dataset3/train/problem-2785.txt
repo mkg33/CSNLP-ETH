@@ -1,0 +1,22 @@
+Notable of these are IActor, IHuman, ISelectable, IUIAction & IHealth.
+Person implements IHuman (which implements IActor), ISelectable and IHealth and also inherits from MonoBehaviour.
+That's not to say you can't or shouldn't use interfaces - they're still a great tool to have in your toolbox, especially when you have some kind of well-defined need in your game and multiple ways you might want to serve that need.
+Now, the problem I see is I'm going to end up with huge classes.
+This allows AI designers to mix & match components as they need, while maintaining a clear contract for how the movement & attack behaviours communicate.
+Your "soldier" might not exist as a class anywhere in code - it's just a particular combination of components and parameter values that gives the set of behaviours you want, ie.
+an entity with both Selectable and Damageable components attached (among others).
+Unity emphasizes a philosophy called Composition Over Inheritance.
+This move from defining each entity in code to doing it in data gives us a number of outcomes that are useful in game development:
+So then, as you suggest in the question, you can break these responsibilities off into their own MonoBehaviour components:
+The idea is that rather than thinking of what a particular entity "is":
+I'm currently at the start of a project, and I'm following the wisdoms of my day-to-day career as a C# developer for large web applications.
+For example, maybe your base AI movement logic knows it wants to move into firing range for whatever weapon it's using - but that weapon might vary from one unit archetype to another.
+Whats the industry standard for this sort of thing, and how can I implement it effectively in my game?
+You think of the set of behaviours/features it "has":
+ISelectable has a property of IEnumerable<IUIAction> Actions.
+The classes are going to need properties for their health, theyre going to need properties for their actions, theyre going to need properties for what the UI panels title should be when selected, and anything else that comes up as development progresses... My other thought is to remove the interfaces like IHealth from the class itself and have them be their own class, such that IHealth will only mean a class has a property that is of the class Health and Health has all the properties relating to an objects health levels... but this removes authority from the class as to what control it has over its health.
+You could introduce an IAttackBehaviour interface exposing methods to select a target, locate a good attack position for the movement behaviour to reach, and to execute an attack.
+Your movement behaviour just needs to know it "has" an IAttackBehaviour attached, but doesn't need to implement these details itself for every archetype flavour.
+If a class implements IHealth, a healthbar will be displayed on the screen etc etc...
+The intended goal is that if a class inheriting from MonoBehaviour (person in this case) implements ISelectable and is attached to a GameObject that is clicked, a list of buttons representing ISelectable.Actions is displayed on the screen.
+Then you could implement this in concrete types likeMeleeAttackBehaviour, SniperAttackBehaviour, GrenadierAttackBehaviour, etc.

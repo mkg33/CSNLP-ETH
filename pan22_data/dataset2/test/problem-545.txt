@@ -1,0 +1,5 @@
+Linux systems using nss-myhostname will resolve the currently configured local hostname (which on some systems comes from /etc/hostname), when you use getaddrinfo/gethostbyname. Systems without nss-myhostname usually have the local hostname listed in /etc/hosts, and resolve the local hostname that way.
+The other likely case is that the system is advertizing it's locally-configured hostname using Multicast DNS Service Discovery (via Bonjour services on macOS, or the avahi daemon on Linux), and many modern distros include mDNS in their NSS lookup chain by default.
+If you want ssh@<hostname> to work from other devices, make sure hostname resolves in dns, or is listed in /etc/hosts on those devices.
+If you specifically do dns lookups (e.g. with nslookup or dig), that bypasses nss and only uses dns, so nss-myhostname doesn't get a chance to influence the result.
+Firstly, a system will often include its locally-configured hostname as a DHCP Client Identifier, and the router (which is also the DHCP and DNS server) will dynamically add a DNS record for that client ID matching the IP it gave out for that request.

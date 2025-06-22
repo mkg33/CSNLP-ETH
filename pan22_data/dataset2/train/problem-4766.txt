@@ -1,0 +1,9 @@
+If you want alerts and monitoring then I would look at Nagios if you want pure graphs then I would look at Munin or Cacti. If you just want to know how many connections a process has open at any time then use lsof.
+This maybe is not the most sophisticated solution, but - especially if you do not have other processes opening so many sockets - you could check the output of
+(n: no name resolution, t: TCP, u: UDP, p:show PID and program - you might want to only provide only one of u or t based on whether your process opens UDP or TCP connections).
+where '12345' should be replaced with your PID and 'progname' with the name of your process. The option -c for grep counts the matches. You might want to refine the search to more accurately match your needs (e.g. include only ESTABLISHED connections).
+You can write a simple script to run the command periodically. For huge number of connections, you better experiment how much resources running netstat or lsof takes and adjust the interval. E.g. once per minute (by default):
+I need to monitor a single process (e.g. be warned when there are more than 3000 connections established) and collect statistics on it (e.g. to determine how many connections were established today 01:20 AM, when the server worked too slow, as client said). What tools should I use?
+If you don't want to go for a full Nagios (or whatever) install to monitor a single process, why not just write a script to do it yourself?  I've done something similar to keep track of DB connections from one of our boxes, using the output of netstat to do the count and logging the results to a file.  Adding an extra few lines to send an email if the count is >3000 should be trivial.
+I would intall munin and write a plugin to monitor a specific process or a specific behavior of a service.
+and check the output and do some grepping. Have a look into lsof manual page to see if you can modify the output format to better suit scripted parsing.

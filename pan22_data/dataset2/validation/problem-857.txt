@@ -1,0 +1,6 @@
+A) Daily server reboots are wrong. Other than that, the proper way to restart is shutdown -r now, which properly shuts down services on the server and then reboots.
+but after these scheduled reboots, some services don't automatically start. The ones I have noticed already are OpenVPN and PostgreSQL, but I expect there to be more. Firstly, I noticed this after adding the scheduled reboot but as I recently upgraded from 15.10, it could be that something went wrong during the upgrade.
+B) Using reboot to reboot the server does not shutdown services, so those might end up in unstable state and therefore refuse to start.
+The correct behaviour depends on the init system used. It is not perfectly clear which one you are using. Since you upgraded to Ubuntu 15.10 systemd should be the default, but you are mentioning /etc/init.d and this would point to System-V style init scripts which are a bit different. 
+There might be an issue regarding the autostart of the daemons with which you are experiencing problems. 
+First you should check that the service has the correct systemd init script under /etc/systemd/system/multi-user.target.wants/{service}.service

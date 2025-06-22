@@ -1,0 +1,35 @@
+The primary shortcoming that occurs to me is in the basic design of the code, particularly the use of a fixed-size array.
+...or else (usually preferable) a design that doesn't store all the data at all. When doing your interpolation, you only really need the two values you're interpolating. You can simply walk through the values in argv, and produce output from them relatively directly, with no need to store all the inputs and results before printing them out.
+In particular, when you encounter a "real" number in argv, you can save it and print out. When you encounter a string of 0n inputs, you count them until you get to another "real" number. You can then compute all the linearly interpolated values based on the previously saved value and the count of intermediate values you need to produce. Write all them out, and then repeat the cycle by saving and printing out the second real input you received.
+This reduces storage from O(N) to O(1) with a small constant factor (you basically only store the start value, end value, and count of intermediate values). This is likely to be negligible if the number of values you process is small, but could obviously be much more significant if the number of values being processed is larger.
+Your usage string is a little...aenimic. I didn't read the initial
+part of your post about needing to use 0n as a "missing" value, and
+had to squint a little bit before I figured out what is was doing. 
+This sort of information should ideally be printed out (either when
+the user doesn't input enough arguments, or if a flag is passed; 
+There's a little trick for array initialization in C that comes in
+handy. Instead of having to loop over an array, initializing it
+This will initialize each value of your array to 0.0.
+When you start writing programs, they're generally quite small, and
+a lot of the time everything fits neatly into main. However, when
+you start writing slightly larger programs, this starts to become
+inconvenient. It makes your program harder to follow, lets variables
+live for longer than they should, and means parts of a program cannot
+easily be reused (and further along in your programming career, it
+makes things harder to test, too). A large part of programming 
+is breaking things down into small pieces, writing those small
+pieces separately, and composing them together into a solution.
+Here, there are a few things that should exist as functions. The
+first one we've already shown; print_usage(). The code that
+performs the interpolation should also be inside its own function:
+It's tempting to omit braces when you're only using a single-line
+Although this is a point of some contention, it's (generally) not
+seen as very good practice, especially in a language like C. It is
+all too easy for you (or someone else) to come back to the code to
+make a minor modification, and forget that there are no braces:
+Prefer to wrap even single line statements in { }. It is almost
+zero effort, and will stop these kinds of mistakes.
+Prefer to use const instead of #define whenever you can. Because
+#define is a very crude mechanism that can cause a lot of headaches.
+A lot of older C code uses it (because there was no other option),
+but it is still a good idea to keep its use to a minimum.

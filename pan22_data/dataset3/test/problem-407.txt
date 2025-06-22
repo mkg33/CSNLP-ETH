@@ -1,0 +1,32 @@
+I just don't get which one of these I'm supposed to be using for common graphics operations.
+In Photoshop, for example, there are blend modes that are even named "Add" and "Multiply" and they do just that.
+The classic one that was introduced is a 3x3 box filter for blurring an input image.
+In cases where out-of-range outputs do need to be handled, the most common way is what you called capping.
+If done with linear RGB, this mimics light fairly naturally, and you can apply natural photographic operations to the results, like decreasing the exposure and it will bring those blown-out highlights back into the displayable range.
+I have the same question when combining images together (such as multiply, divide, screen, etc).
+In this case it would be 1147.5 % 255 = 125.5 rounded to 126.
+Yes, it's quite common in tools that allow compositing.
+Take the highest output value and use it to scale all the values proportionally.
+Most professional tools these days do their work in higher bit depths.
+In this case, the largest possible output pixel value would be if the 3x3 input image area contained all white pixels in which case we'd have:
+Or, if you can choose the output format you can leave it in a higher bit depth.
+As we move into the era of High Dynamic Range output devices, this type of processing will only become more common and useful.
+The box filter is a 3x3 matrix with each cell value being equally set to 1/9.
+We've been dealing primarily with grayscale images with values 0 (black) to 255 (white).
+If you are working with 8-bit per channel images, they will clamp, but if you are working with 32-bit per channel images, they will simply have values greater than 1.
+You may want to down-convert the final output, if required by your processing tools.
+Another way of handling it is to either convert the input to 16 or 32-bit ints or floats and do all calculations in the higher bit depth.
+While clamping or saturating may be the most common way of handling this situation, it's usually not the best.
+I can't think of anytime that I've seen the modulo behavior used—it would be a pretty weird operation to do on a visual image.
+It seems like there are three possible approaches:
+If our example output image pixel values were 1147.5, 100, and 255, then we would perform the following operations:
+This is fine, but what if our kernel filter matrix instead had 9 cell values all equal to 0.5?
+When doing a filter operation such as a blur, in many cases the filter itself will be normalized so its values sum to 1.0, precisely to avoid this problem.
+This is the default behavior if, for instance, you run a pixel shader on a GPU and output out-of-range values.
+I'm currently taking a graphics course and we've recently covered cross-correlation with regards to using a filter matrix that is applied to a region of pixels in a sort of continual raster-type scan across a larger input image to produce some output image.
+(Though they assume the values are normalized to a 0-1 range.)
+In graphics it's more commonly known as clamping or saturating.
+Once we've completely finished producing our new output image matrix, how do we handle values above 255 and below 0?
+G is the output image, h is the kernel/box filter matrix, F is the input image
+Any value below 0 is capped to 0, any value above 255 is capped to 255.
+Renormalizing the output image might be necessary in some special cases depending on what you're doing.

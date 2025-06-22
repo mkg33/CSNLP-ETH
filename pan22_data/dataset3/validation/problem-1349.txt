@@ -1,0 +1,14 @@
+It's a little odd for the clients to be unable to route unicast to their DHCP server, but it's not at all a problem; they'll just renew later on in their lease lifetime (which gives you a little less leeway for downtime on the DHCP server).
+I should send a L3 unicast message to the DCHP server (siaddr).
+Look at the following very basic example to understand:
+When it sends out DHCP offers it sets the server identifier (option 54) to its own IP address.
+When the clients need to renew they try to unicast to that IP address, which none of them can route to.
+Is the expected behavior for the client to fail to renew by unicast during RENEWING state and then to renew by broadcast during the REBINDING state after time T2?
+How is unicast to the DHCP server supposed to work when a relay is used?
+I have a DHCP server serving a number of subnets over a DHCP relay.
+=> Where did I need to know the MAC of the server?
+It is a topology issue, and I am not even able to implement a solution where I would send the renew to the 'giaddr' IP, as this is against the standard.
+OK It seems I cannot comment on a previous answer but just spam you with an extra answer.
+Anyhow, there is a high chance that T1 exceeds the arp cache timeout...
+Well I'll eventually drop the request and any successive retry, until I get in REBINDING state.
+I cannot be sure that the source MAC of the packets I received, be they in broadcast or unicast, is the MAC of the server.

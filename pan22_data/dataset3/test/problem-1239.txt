@@ -1,0 +1,21 @@
+Finally, you haven't described what you're using to send email from your EC2 instances.
+I have a configuration where I send mail through sendgrid for multiple domains, so postfix needs to know which sendgrid account to use for each sender domain.
+Nab an EIP, associate it with your server, and then you can point a proper DNS record to that EIP.
+To get the instance host name, and then insert it into your postfix config.
+From within the instance, in my case I use orchestration (ie.
+The key is, you shouldn't have to do access control using IP addresses or hostname.
+First, most third party SMTP gateway providers support using their service as a authenticated, encrypted relay host:
+Depending on the language and library (I'm looking at you php mail) your mail submission agent (MSA) might do hairy things to mangle your message, possibly ignoring the values set above.
+php mail is infamous because on most systems it tries to invoke the sendmail binary, which you have to work around explicitly to prevent the message from being sent as the user running the webserver (e.g.
+If you want to get really fancy you can also use the sender_dependent_relayhost_maps option.
+Firstly, you can get the public IP of an instance using:
+I also had to create a transport file in /etc/postfix/transport with the following content:
+This is not really what you asked for, but my guess is that the problem you think is about domain names and your shifting IP is actually about authentication with sendgrid.
+You use encryption (TLS) and authentication, so the SMTP provider should "trust" all mail coming from your local instance of postfix once it's setup to do auth.
+sendgrid uses password based authentication  (config details for that below).
+(and if it's not a known sender domain it sends via a local relay, without using sendgrid).
+It won't care about your IP, or the hostnames you use (myhostname, myorigin, etc).
+I use servername.servers.mydomain.com (which is created automatically on boot) as the hostname and mydomain and mydestination is empty.
+Chef + OpsWorks) to automatically create a DNS record in Route53 for the instance on boot.
+The hostname your server presents to sendgrid in the HELO (or EHLO) greeting is likely to appear in mail headers.
+Some recipients' spam software may check it, so use something that does exist in public DNS, and not associated with a dodgy domain, but few systems will notice this stuff.

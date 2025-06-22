@@ -1,0 +1,15 @@
+Your improved speed on the second pass suggests to me that WP-Super-Cache is working.
+I suggest using the Apache Benchmarking tool, ab, to see which system handles more concurrent requests.
+do not change from request to request (index.html only changes if there is a new blog post, blog post pages only change if the post is edited), so there's no need to incur the cost of calculating them again and again.
+They just follow the herds and here it is the wordpress herd.
+Well why is all the world using apache when people know that it serves pages at half the speed then Nginx or Lighttpd and have serious DOS problems with people leaving connections open?
+Here's a good example of how, but googling "ApacheBench" gives many other results.
+Do some stress tests if the memory overhead will cause aborts if you get slashdotted and you get many concurrent incoming processes.
+Only if they are updated frequently you will run into problems (I'm guessing this is Twitter's problem, for instance).
+Try a "ab -c 50 url-of-your-page" from a VPS server on the net - if you can't run this for many requests say 100000 you have a problem.
+By the way when running from cache they look the same just more memory overhead.
+Just put some caching in front and most issues will be gone; if you are careful, most pages in any CMS will be basically static- i.e.
+High-volume WordPress blogs are probably using PHP accelerators, for starters.
+WP is a very include-heavy architecture that benefits particularly well from an accelerator (which is another way of saying that, as you're seeing, it suffers particularly from not having one).
+IMHO, just with Apache httpd's mod_cache and a non-broken script you should be bandwidth-bound.
+http://cms.com/index.html, /2009/11/12/my_post.html, etc.

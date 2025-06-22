@@ -1,0 +1,6 @@
+Then edit the vmx file. Look for the line scsi0:0.fileName. It should list one of the snapshot files as the hard disk. Change it to the original vmdk file. When you start the VM it will tell you that it had crashed. You lose the contents of the snapshot but at least you'll have the server back.
+It's normal for the delta file to grow. What Matt says is correct about how snapshots work. What's not normal is the snapshot not showing up in the snapshot manager. I suspect that you can't take any new snapshots of that VM either. It sounds like an orphaned snapshot.
+If the VM won't shut down you need to find the correct process on the host and kill -9 it from the service console.
+Then you need to rename or delete all the [guestname]-######-delta.vmdk, [guestname]-######.vmdk, [guestname]-Snapshot###.vmem.WRITELOCK files.
+It's a harsh solution but there's not a whole lot you can do if ESX says there's no snapshot there and the VM refuses to shut down.
+This KB might help if the snapshot can be detected. Otherwise the only way I solved this in the past was to manually delete the snapshot files, rewrite the .vmx file and bring the VM up in a crashed state, losing all changes in the snapshot.

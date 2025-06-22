@@ -1,0 +1,10 @@
+With particular note to the "when <expressions> then 1 else 0" logic common across all of them.
+but while that makes the SELECT neater you might be reducing the clarity (and efficiency, though if you write the functions carefully the query planner will unroll them to reduce this effect) of the code more generally.
+I have a query I'm working through rewriting - it has a huge bunch of case statements in the select list that all basically look like this:
+Unfortunately whilst SQL Server is able to handle something like select 1 & 0 (returns 0), it seems to choke on parsing expressions in the select list (Incorrect syntax near '=') - is it possible to do something like this?
+You could write a function (of family of functions) to reduce the amount of text in the query, so you have something like:
+Unfortunately you are not going to really get around SQL's verbosity here.
+It seems really bloated and wordy, a heavy-handed use of the case statement - my programming brain is telling me this could be achieved much more succinctly with some basic binary &ing logic, removing the case entirely:
+If you're trying to make your lines shorter then you could use IIF( ..., 1, 0 ) instead of CASE ... THEN 1 ELSE 0 END.
+Note:  Only available from SQL Server 2012 onwards.
+But you could use CROSS APPLY with a subquery that uses CASE to produce a bunch of 1s and 0s, and then combine them in the SELECT clause using the bitwise operators & and |.

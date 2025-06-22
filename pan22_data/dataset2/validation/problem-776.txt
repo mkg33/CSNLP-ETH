@@ -1,0 +1,12 @@
+Otherwise, you just change cygwin.bat to run zsh -l -i instead of bash --login -i and it will run as a login shell.  
+I was able to set the SHELL environment variable in Windows to /usr/bin/zsh and it worked without any other changes.  I just changed it for my Windows user, not globally.
+Just thought I'd add this answer in case it helps anyone who's looking for it. If you use chere (which adds a "Bash prompt here" option to the right-click context menu of any folder), you can set it to zsh ("Zsh Prompt Here") with:
+Assuming you're interested in changing the shell used in mintty/Cygwin Terminal, it first checks the SHELL environment variable, then the (now nonexistent) passwd file, then falls back to /bin/sh, which is what it seems to be doing by default.
+If I read your question right, you're looking for something else than what  chere  supplies (which, granted, is pretty cool in its own right).
+The current version of Cygwin doesn't have an  /etc/passwd  file, and the system I'm working on has Windows account information in a domain database out of my control. Consequently,  chsh  is no longer supported.
+Of course, if you want to run multiple shells from startup, just create a set of .bat files to load different shells. (sh, ksh, csh, fish etc)
+I also found that bash is not hard-coded into the  startxwin  script, nor is it hard-coded in any .bat file. Turns out you don't need to fiddle with .bat files at all.
+Unless you're using cygwin as a multiuser environment (in which case use chsh as you would under a standard environment.)
+If you want to use Cygwin shell inside the IDE Intellij, then use following setup inside settings/tools/terminal
+I felt I should update this to provide info on doing this without chsh but still doing it on the Unix end. Edit the /etc/passwd file and replace occurrences of /bin/bash with /bin/zsh. (This is effectively what chsh would do, but this way you'd do it for all users in one go.)
+Setting an environment variable probably varies for different versions of Windows.  Try searching for "environment" in your Windows Control Panel.  For me, under Windows 7, it was Control Panel → System → Advanced System Settings, which brings up the System Properties control panel/dialog, then the Advanced tab, then the Environment Variables button, which brings up the Environment Variables dialog, then create a new user variable named SHELL with the value /usr/bin/zsh.  Then OK back out of all of that and start a new mintty.

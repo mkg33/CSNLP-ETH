@@ -1,0 +1,9 @@
+My solution is to keep the main openssl.cnf like it is and just at the end to add a new section like [ cert_www.example.com ] where www.example.com is the website for which I want to create a certificate, and in it, put the subjectAltName I would need (and anything else). Of course the section could be named whatever you want.
+With the exception of the config file to set the SAN value these were similar steps I used in prior versions of Chrome to generate and trust the self-signed cert.
+I followed the steps on the above mentioned Heroku article to generate the key. I then wrote a new OpenSSL config file:
+As of Chrome 58 it no longer accepts self-signed certs that rely on Common Name: https://productforums.google.com/forum/#!topic/chrome/zVo3M8CgKzQ;context-place=topicsearchin/chrome/category$3ACanary%7Csort:relevance%7Cspell:false
+After that, I can run the openssl req command as before, just adding -extensions cert_www.example.com for its content to be picked up and I add -subj to add directly all the DN info.
+In Windows, save this script in your SSL folder as makeCERT.bat.  It will create these files:  example.cnf, example.crt, example.key
+Instead it requires using Subject Alt Name. I have been previously following this guide on how to generate a self-signed cert: https://devcenter.heroku.com/articles/ssl-certificate-self which worked great because I required the server.crt and server.key files for what I'm doing. I now need to generate new certs that include the SAN however all of my attempts to do so have not worked with Chrome 58.
+I'm on a Mac, so I opened the server.crt file with Keychain, added it to my System Certificates. I then set it to Always Trust.
+Do not forget to verify the certificate content after its creation and before its use, with openssl x509 -text

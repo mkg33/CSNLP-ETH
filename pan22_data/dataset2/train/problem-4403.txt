@@ -1,0 +1,11 @@
+Effectively, I would like the second call to try a different machine, rather than retrying the same machine. Would I have to do my own manual load balancing? (please say no!!! ;-)
+We successfully used Cisco CSMs (first generation to the ACE) to load balance custom socket calls to specialized backend database servers (running a custom C socket at the time). Previously, the front end web servers would have to time out and retry a different socket on their own, but after deploying to the CSMs, we actually saw a decrease in average request time because the CSMs eliminated all of the timeouts. 
+Also, we are assuming that all calls to all components go via the load balancing service and that all machines in the cluster have all components installed on them.
+It really depends on what's doing your load balancing and how configurable it is.  For example, if you chose to use a Linux box using LVS as your load balancer, you have a choice between several load balancing methods including round-robin (what you're after by the sounds of it), source address hashing etc.  
+Let me explain: If component A calls component B, which then fails, and Component A retries the call to Component B, how likely is it for the same machine to be accessed for component B?
+Let's assume that the software is written to use transactions and the above scenario would all be happening in a single session. I.E. something called Component A, and is still waiting for a reply after Component B is called for the second time.
+In a load balanced environment: How likely is it for two subsequent calls from a given component to arrive at the same server?
+Most other load balancing solutions will have similar functionality as well, so it'll work however you've configured it to.
+What you're asking for is very easy in any of the higher end solutions, I can't answer for your preferred solution without knowing what it is.
+There's a huge gulf in functionality between the most basic, windows-based software load-balancing through lots of options up to something hugely configurable such as Zeus's ZXTM or Cisco's ACE.
+The second call "to a different machine" is fairly easily configured on most load balancing hardware. You can usually even configure a "failure" based on the backend server's response.

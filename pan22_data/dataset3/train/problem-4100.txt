@@ -1,0 +1,11 @@
+On my macOS 10.13 system, I have a bash script launched as a LaunchDaemon (in /Library/LaunchDaemons) every minute to check whether an Ubuntu virtual machine is running in VMware Fusion.
+I have Postfix set up to relay to my email provider.
+(In the event of a power outage or something, I have to log in as my self to get the VM running again.)
+My script works fine when run in a foreground process, either as my regular user or as root, resulting in emailing or not emailing me as appropriate, but when run by launchd, it just will not send me mail.
+I'm not sure of the details, but apparently that can include something that /usr/bin/mail fires off in the background to send the message.
+I've tailed /var/log/mail.log and see nothing other than the usual daemon start and exit messages.
+When a launchd-managed process (like your script) exits, launchd will "clean up" (i.e.
+In my experience, launchd will usually kill it before it finishes sending the message.
+Any suggestions as what's going on, or how to debug further?
+Solution: tell launchd not to kill leftover subprocesses by adding this to the launch daemon plist:
+I've also verified that the return status of the mail command is 0 by echoing it to a log file.

@@ -1,0 +1,33 @@
+For instance, only route devices with an IP in the range 192.168.1.200-192.168.1.250 through the VPN.
+Then, configure a static IP range for those devices in DHCP.
+It would also require a tweak to the VPN settings.
+The only way to do this is to put all the devices on the same network.
+(2) Connect the LAN Interface of the Netgear with the LAN Interface of the TPG router.
+But, it’s complicated and I think it is really unlikely either router you have supports that.
+Instead, connect all the devices to the same router and establish the VPN on that router.
+Assuming you don’t want to replace any of your equipment...
+Build a bridge between the two inner routers without NAT.
+Depending on the router this may not be something you can do with default firmware, however it is doable using dd-wrt if you flash your router with that.
+There is no reason to use two routers to put some devices on a VPN.
+(1) Ensure all devices in the network behind the TPG have static IP's and disable its DHCP server.
+You’ve placed a lot of restrictions on what you want and some of it is just NOT possible.
+Especially if your goal is to allow all the devices to communicate.
+With that said, to get where you want to be it will require a significant change to your network.
+This will have the effect of allowing you to provide statically use a 10.x IP address to push traffic across the VPN, or DHCP or a 192.168 address for regular Internet.
+This would likely require another router because most SOHO devices do not allow you to take a LAN port and have it act as another WAN port.
+One port on the router would be for one network, the other port would be the other network, then you’d have a port for WAN.
+Maybe if you can install an alternative firmware your options would be better.
+Because it looks like you are using home routers, your options are severely restricted.
+You may be able to find an old SOHO device that you can flash with a custom firmware and basically use it to just route traffic without any bells-and-whistles (e.g.
+There may be more then 1 way to do it, but 1 way is to
+Configure your VPN settings so that only devices within a specific IP range use the VPN.
+In fact, this thought process can be confusing because routers just connect different networks together, and they can all be LAN, or all WAN or any combination thereof.
+Bring up a second virtual Interface on the TPG router in the 192.168.1.x range.
+If you are trying to stay as close as possible to the current physical layout, then you need one-to-one NAT where each device on both networks is given a unique IP on the 172.16.1.x network.
+Set static routes on the TPG router to route 192.168.x.x to 192.168.1.1 and similarly set static routes on the Netgear router to route 10.x.x.x to 192.168.1.NEWIP
+The best way to do this is with a single, more capable router that supports multiple interfaces.
+You want broadcast packets to traverse the two networks.
+This is probably your best bet using what you currently have.
+I imagine it will, as deciding what traffic is encrypted is part of any VPN setup.
+Setup routing between the two networks, NAT all packets destined to WAN, and route all traffic from one network through the VPN.
+I've somewhat cavalierly suggested adding a second interface on the TPG router.

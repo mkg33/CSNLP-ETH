@@ -1,0 +1,17 @@
+I also recently got this problem after updating ubuntu.
+That makes it work, indicating that apparmor stopped mysql from running, and explaining why the logs are empty probably too: mysql was not allowed to run.
+You get no logs because there is no where to write them.....
+MySQL can behave in this way on an empty partition.
+Their myisamchk (if you're using MyISAM) is particularly useful.
+as the aa-complain commanded complained about not finding this file.
+Also, check that you have enough (or any disk-space).
+If this works then there might be problems with your information_schema or your mysql table(s).
+WARNING:  This is dangerous, your mysql will NOT be safe and anyone will be able to connect, edit, etc your tables, do not leave your server running with this command.
+Note that in doing this I also added an (empty) /etc/apparmor.d/local/usr.sbin.mysql file
+On Debian at least, you get mysql* logs in /var/log.
+If it's not that, check out MySQL's docs on debugging a server.
+It remains an odd issue, as so far there are no "complaints" from this in /var/log/apparmor, and the only audit entry in kern.log are from chaning the profile to complain mode.
+Had this same problem, turns out the solution was staring me in the face.
+Try starting it in safe mode: /usr/local/mysql/bin/safe_mysqld --user=mysql --skip-grant-tables
+If it doesn't work than something is wrong with your install.
+One worakround that worked for the moment to get mysql running though was to do:

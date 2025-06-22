@@ -1,0 +1,20 @@
+When you first call spi_open() the modes of CE0, CE1, MISO, MOSI, and SCLK are saved.
+My main Python script runs a bunch of unittest test cases against my SPI slave, and sometimes the tests do fail because the slave is not behaving correctly - this is expected.
+Unless you have opted to control CE0/CE1 yourself (by setting bits in spi_flags) they are also set to mode ALT_0.
+The above description was for the main SPI device.
+Is there some state that RPi.GPIO can leave the GPIO pins in if it's not cleaned up properly during a tearDown(), one that prevents pigpio from working again?
+(I am doing a pi.spi_close(handle) in my tearDown() method.)
+Most of the time, my Python script runs fine and I see the expected SPI signals on the scope.
+After this, I expect gpio readall to show that CE0 is ALT0.
+The modes are unchanged during any subsequent spi_read(), spi_write(), or spi_xfer() calls.
+However when things have gone awry (CE0 isn't toggling on the scope anymore when I run my test cases) `gpio readall' shows that CE0 is OUT.
+I am using the pigpio Python module's SPI functionality as a master (communicating with an external SPI slave).
+I suspect that one of these failures is leaving pigpio in a state where it can no longer control the CE0 pin on the next run.
+The next spi_open() is then treated as the first again.
+pigpio will not notice if you have changed the mode after it has set them in the spi_open().
+When you call spi_close() for the last nested SPI open the GPIO are restored to their saved modes.
+When I execute the 3 lines of Python shown above in an interactive session, CE0 doesn't change to ALT0 after the open like it did before.
+The auxiliary SPI device is handled in the same way.
+In the same Python script I'm also using my own bit-banged SPI driver on the same pins (Broadcom 8, 10, and 11) with RPi.GPIO, but not at the same time of course.
+Is there some type of cleanup or close operation that I'm missing here?
+However sometimes on a consecutive run of my script I see that pigpio's SPI method spi_write() doesn't generate a chip-select on CE0 (Broadcom 8) any longer.

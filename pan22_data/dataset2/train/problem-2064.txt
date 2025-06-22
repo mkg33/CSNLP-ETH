@@ -1,0 +1,12 @@
+Then for each type you'd have the type specific columns which would foreign key to the Card table.  The CardId can be both PK and FK in the Creature/Spell/Trap/Quest table.
+When you read info from the database you read the main table, and later, if applies, bring additional specific info for that card.
+You may or may not want this, but if someone wants to share a rare card they own between decks, they're going to do so by swapping which deck the card's in anyway.  Might as well make it less annoying for them.  The other benefit of this is that a CardInstance may be in no deck.  The user hasn't organized it into a deck yet.
+The main table, must have a special field that indicates what kind of specific table relates that item.
+I would have a base "Card" table which would have the columns common to all cards, such as Name, Description, CastingCost or whatever.
+There are a bunch of questions there, but I'll just deal with one. I'd recommend making Abilities a different table and making a many-to-many table that connects cards with Abilities. It's common in TCGs to have multiple creatures with the same ability, and Ability0, 1, 2, and so on is sort of clumsy and limits your future options.
+You can either have an explicit "CardType" column, or you can simply say that if the CardId is in the Creature table, then it's a creature.
+If the four types are very unrelated, then I would split them into four tables, so you can manage each type independently, much like you outlined your tblCreatues.  You would need to add a cardID to each of these four tables, and this ID should be unique amongst the four tables (don't use the same ID in more than one table).
+As far as decks go, I have a CardInstance table which represents a specific card instance that a user owns, then I have a table called joining table between that and Deck (For lack of a better name, it's Deck_CardInstance) that represents a card in a specific deck.  This allows a specific card instance to be in multiple decks.  
+Below is a database diagram similar to what I'm using but simplified to your example. (For instance I don't know if you just have ability names that match to abilities in code or if you have data-driven abilities stored in the database.)
+In this setup it's assumed that a deck and a card instance belongs to a single user, which seems like a safe assumption.  
+I'm not familiar with TGC.  I assume you trade cards and each card can be categorized into one of four types: tblCreatures, tblSpells, tblTraps, tblQuests

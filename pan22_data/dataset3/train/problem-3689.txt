@@ -1,0 +1,18 @@
+Dell Provides utility called Dell Command Configure which will help you to configure all client systems boot order from windows and during OS deployment through SCCM task sequence.
+https://github.com/mmseng/bcdedit-revert-uefi-gpt-boot-order
+But you can set bootnext variable (which has no mapping in BCD).
+That works for my purposes and there may be a way to make it smarter that I just didn't find.
+I'm trying to automate the system so that it PXE boots every time, so I can control the boot option.
+I came up with this powershell script that works for me.
+In BCD there are only two mapped NVRAM variables for {fwbootmgr} - "display order"(boot order) and "timeout".
+I assume that UEFI rescans hardware on cold boot so the list of bootable devices is updated (and deletion of Network from boot order is safe as it will reappear on next boot).
+I also posted a powershell/bcdedit-based answer over at How do I stop Windows 10 Install from modifying BIOS boot settings?, to supplement aggieNick02's C++ answer.
+Boot order in NVRAM is a list of integers but Windows maps it to a list of GUIDS (eventually to maintain analogy with "display order" for {bootmgr}).
+It looks long, but it's mostly comments and formatted for comprehension.
+Deleting {GUID} of loader for Network from {fwbootmgr}/"display order" (mapped to "boot order" in NVRAM) and re-adding it as first eventually will change NVRAM boot order.
+I can't get Windows to change the uEFI boot order to PXE boot first from within windows.
+Proposed solution not tried and not guarantied to work.
+It's not perfect because it just "stupidly" moves the first non-Windows boot entry to the top.
+It seems Windows is limiting access to NVRAM for users for some reason (maybe the same reason used for forbidding chain loading Linux/other boot manager/loader on UEFI).
+You can try Visual BCD Editor 0.9.0.1 for viewing complete BCD as well as changing every element and BCD object.
+http://en.community.dell.com/techcenter/enterprise-client/w/wiki/7532.dell-command-configure

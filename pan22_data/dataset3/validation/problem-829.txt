@@ -1,0 +1,99 @@
+        } catch (SQLException | ConnectionFailedException e) {
+            headers.add("location", "customers/" + insertId);
+        try (Connection conn = MySqlConn.getConn()) {
+            Long insertId = this.service.addCustomer(registeredCustomer);
+                throw new IdDoesNotExistException("invalid id");
+    public ResponseEntity<Map<String, String>> getCustomer(@PathVariable("id") Long id) {
+        if (customerData.get("mHouseNr") != null) {
+        try (Connection conn = MySqlConn.getConn()) {
+            String sql = "INSERT INTO customers(name, email, password, telNr, street, houseNr, city, dateOfLastAppointment)" +
+    public Long findIdByEmail(String email) throws SQLException, ConnectionFailedException {
+            dto.setId(new Long((Integer) customerData.get("mId")));
+            ObjectMapper mapper = new ObjectMapper();
+I would like to get feedback on coverage of errors and the response I return accordingly, am I using the status codes correctly?
+            ResultSet rs = stmt.getGeneratedKeys();
+        if (customerData.get("mDateOfLastAppointment") != null) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+public static CustomerDto getCustomerDto(Map<String, Object> customerData) throws ClassCastException {
+                response.put("customer", customerDtoJson);
+I made a Spring RESTful api as backend for a website.
+                customerDto.setAdmin(rs.getBoolean("admin"));
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public CustomerDto getCustomer(Long id) throws SQLException, ConnectionFailedException, IdDoesNotExistException {
+    public ResponseEntity<Void> registerCustomer(@RequestBody Map<String, Object> customerData) {
+                    " VALUES(?, ?, ?, ?, ?, ?, ?, ?
+        if (customerData.get("mStreet") != null) {
+            CustomerDto registeredCustomer = CustomerService.getCustomerDto(customerData);
+            stmt.setString(7, customerDto.getCity());
+            Map<String, String> response = new HashMap<>();
+        try (Connection conn = MySqlConn.getConn()) {
+        } catch (SQLException | ConnectionFailedException e) {
+    public int updateName(Long id, String name) throws SQLException, ConnectionFailedException {
+                customerDto.setDateOfLastAppointment(rs.getString("dateOfLastAppointment"));
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+            return new ResponseEntity<>(city, HttpStatus.ACCEPTED);
+            dto.setName((String) customerData.get("mName"));
+            PreparedStatement stmt = conn.prepareStatement(sql);
+        CustomerDto customerDto = new CustomerDto();
+            stmt.setString(5, customerDto.getStreet());
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            if (city.length() > 50 || city.matches("^\\d+$")) {
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            dto.setTelNr((String) customerData.get("mTelNr"));
+            stmt.setString(4, customerDto.getTelNr());
+            dto.setEmail((String) customerData.get("mEmail"));
+            dto.setCity((String) customerData.get("mCity"));
+            String sql = "SELECT password FROM customers WHERE id=?
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public Long save(CustomerDto customerDto) throws SQLException, ConnectionFailedException {
+Basically anything that could be better I'd like to know.
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            CustomerDto customerDto = this.service.getCustomer(id);
+            stmt.setString(1, customerDto.getName());
+            Map<String, Object> response = new HashMap<>();
+            dto.setStreet((String) customerData.get("mStreet"));
+                String customerDtoJson = mapper.writeValueAsString(customerDto);
+                customerDto.setName(rs.getString("name"));
+            return new ResponseEntity<>(response, HttpStatus.FOUND);
+            stmt.setString(6, customerDto.getHouseNr());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public String getHashedPassword(Long id) throws SQLException, ConnectionFailedException, IdDoesNotExistException {
+                customerDto.setTelNr(rs.getString("telNr"));
+            Long id = this.service.getId(credentials.get("email"));
+            boolean passwordValid = this.service.authenticate(credentials.get("password"), id);
+                customerDto.setStreet(rs.getString("street"));
+            boolean success = this.service.updateCity(id, city);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (SQLException | ConnectionFailedException e) {
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            dto.setHouseNr((String) customerData.get("mHouseNr"));
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            String sql = "SELECT id FROM customers WHERE email=?
+And finally service.getCustomerDto(): (this might throw ClassCastException)
+            ResultSet rs = this.crud.readRow(stmt);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                throw new IdDoesNotExistException("invalid id");
+                customerDto.setEmail(rs.getString("email"));
+                customerDto.setHouseNr(rs.getString("houseNr"));
+                customerDto.setCity(rs.getString("city"));
+        try (Connection conn = MySqlConn.getConn()) {
+            stmt.setString(2, customerDto.getEmail());
+            stmt.setString(3, customerDto.getPassword());
+    public ResponseEntity<Map<String, Object>> authenticate(@RequestBody Map<String, String> credentials) {
+        try (Connection conn = MySqlConn.getConn()) {
+            String sql = "SELECT name, email, telNr, street, houseNr, city, dateOfLastAppointment, admin " +
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (customerData.get("mPassword") != null) {
+            dto.setDateOfLastAppointment((String) customerData.get("mDateOfLastAppointment"));
+            ResultSet rs = this.crud.readRow(stmt);
+            stmt.setString(8, customerDto.getDateOfLastAppointment());
+    public ResponseEntity<String> updateCity(@PathVariable("id") Long id, @RequestBody String city) {
+            dto.setPassword((String) customerData.get("mPassword"));
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            int result = this.crud.updateRow(stmt);
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            dto.setAdmin((Boolean) customerData.get("mAdmin"));
+        } catch (SQLException | ConnectionFailedException | IdDoesNotExistException e) {

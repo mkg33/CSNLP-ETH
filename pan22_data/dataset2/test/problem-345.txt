@@ -1,0 +1,6 @@
+The application is a ROR application. We're running 6 frontend nodes on EC2 and use Nginx as a load balancer with proxy_pass. 
+Our application is hosted on EC2, however because the nature of the app, it requires extremely high availability. We have an image of the app running on Linode as a failover. 
+Our load balancer on Linode however does not balance to the Linode nodes, but to the EC2 nodes. This is so we have the IP of our Linode LB in our DNS record. So when a client connect, the DNS round robin to either EC2 or Linode LB. The chosen LB will then redirects the request to one of the node on EC2. I case of an EC2 outage, we would simply change the config of the Linode LB to balance to it's own node (plus other things like a DB flip, etc, etc).
+However, doing a DNS flip to Linode would take some time. We came up with a strategy to minimize this downtime, but I would like some advice on how to best implement it. 
+To issue we are having arrises when for whatever reason, the Linode LB cannot connect to EC2. Nginx will in the case return a 502 Bad Gateway error, which does not cause the client to use the DNS failover. 
+We are hoping for a way to force the client into using the DNS fallback when that situation arises. Is there a way of doing this? Preferably with Nginx, but other solutions would be considered if it does not support this. 

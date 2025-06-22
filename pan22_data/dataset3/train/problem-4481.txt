@@ -1,0 +1,10 @@
+The flow of automation will be like this: Whenever a Upload occurs to ECR, CloudTrail records PutImage event and can write it to CloudWatch Logs.
+Lambda Function Contains the code to Create Task Definition Revision and Update Service with latest Task Definition.
+In fact in my pipelines I deploy the ECS Tasks through CloudFormation templates and the CloudFormation stack update is part of the pipeline.
+An Alarm can be triggered whenever a PutImage event is written in CloudWatch Logs which can further trigger a Lambda Function through SNS.
+You can however do it as part of your Jenkins pipeline - after you push to ECR as a next step in the pipeline can run a script that will reload the task.
+I don't think you can trigger re-deployment based on ECS image being updated.
+Automate Deployment whenever Docker Image gets uploaded on ECR
+There's a good article about enabling auto-deployment everytime an image is pushed to ECR here: https://medium.com/@YadavPrakshi/automate-zero-downtime-deployment-with-amazon-ecs-and-lambda-c4e49953273d
+EC2 Container does not write logs directly to CloudWatch but CloudTrail records API activity for ECS.
+That way I update the ECS Task definition automatically every time I push a new image to non-prod ECR.

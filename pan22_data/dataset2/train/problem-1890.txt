@@ -1,0 +1,5 @@
+This isn't really an answer but a suggestion: Install a monitoring tool like Munin with the MySQL plugin and watch usage and memory, CPU, TCP connections, etc. leading up to and at the time of the crash. This has been invaluable to me in similar situations.
+Another solution may be to schedule a weekly bounce of the database, in case this is not a bad query but a slow leak inside MySQL.  Is your client 24x7?
+Or is it chewing huge amounts of CPU/memory and just grinding the server to a halt or continually crashing or what? 
+Are you using InnoDB or MyISAM tables?  It sounds like you might be getting into a situation where a table's locked on a slow query, causing subsequent queries to stack up in the queue.  As others have mentioned, though, without seeing the MySQL processlist (tee /tmp/outfile; show full processlist\G) , it's really hard to give a good response.
+Can you define "stuck" ? Ie, is it dead and not responding to any queries what so ever? Can you not even get a process list of what queries it is running? 

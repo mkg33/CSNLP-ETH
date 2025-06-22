@@ -1,0 +1,6 @@
+I suppose I'm looking for suggestions, but really trying to understand what is going on eg. why searching for false works and true does not - I first thought the connection was preemptively closing, but it's not.
+"Oh we don't need to execute the first and third portions of the view because they are not in the output!  Let's skip and only run the second portion!"  This is a feature, not a bug (and it is what allows table partitioning to be useful).
+filtering on the boolean field for a true value: AND is_logged_in IS NOT NULL, AND is_logged_in, or AND is_logged_in = true, gives the following error message:
+db_remote has a view (v_sessions), which contains two fields: a text field and a boolean field, which is created with a CASE statement.
+The goal is to (1) create a connection, (2) return a view of another database, and (3) close the same connection all to be stored in a view (no stored procedure or embedded password).  I came up with the following code, which uses a trust account and seems to work, until filtering on a boolean field.  Searching for false (field=false) works, but searching for true (field=true) or IS NOT NULL prompts for the password.
+It's really odd that the data is being returned w/o needing the password, but when filtering, that is when the password is required.

@@ -1,0 +1,15 @@
+When the Cisco device is a router, the Actiontec is only aware of the two directly connected subnets (WAN and LAN).
+Build your dhcp scopes for each subnet in your dhcp server and they will hand out addresses based on the subnet the request came from.
+I think your question is not actually about DHCP relay.
+My question would be how does your Actiontec router know about the subnet behind the Cisco device?
+When the Cisco device is operating as a gateway, it is NATing traffic to an IP address on the first subnet.
+Does it support a dynamic routing protocol (and do you have it configured correctly on both devices)?
+Combining that statement with the piece of information that it works when the Cisco is operating as a gateway leads me to believe that the Actiontec device simply doesn't know where to send traffic destined to your second subnet.
+Then, to get DHCP working to a subnet other than the one the DHCP server is on put ip helper 10.10.10.10 (this address is the dhcp server) onto the gateway in the Cisco router (on the interface or sub-interface) of the vlan that isn't the same as the dhcp server.
+You are really asking why when your Cisco device is set as a router you don't have access to the Internet from the second subnet.
+Traffic for any other unknown subnet (like your second subnet) it sends to it's default route which would be upstream.
+Do this on each gateway that needs to forward dhcp request 'cross subnet'.
+DHCP relay takes the broadcasted DHCP discovery and converts it into a unicast packet destined to the DHCP server.
+Since this would be local to the Actiontec, it can send the traffic along as expected.
+Set your computer with a static IP and ping the dhcp server from both/all vlans.
+This allows the dhcp (UDP) broadcast to get to the server even though the layer 3 boundry stops broadcasts normally.

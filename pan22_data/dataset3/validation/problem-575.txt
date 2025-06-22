@@ -1,0 +1,12 @@
+Run RSOP.msc to determine if there is a GPO that manages the system and diables your ability to make changes
+So it looks like you are trying to do this on Domain Controller and see that "Add User or Group..." and "Remove" buttons are grayed out in Local Group Policy Editor (gpedit.msc).
+Attempting to change this setting in the Local Security Policy window has it the option to add the Administrator account to the groups greyed out.
+According to the Task Scheduler, I need 'Logon as batch job rights'.
+By default (if you do not modified existing default GP or created some new GP) this Local Policy is overridden by Default Domain Controllers Policy (the way to confirm is rsop.msc - Resultant Set Of Policies tool which will show you actually applied policies) on domain controllers.
+sounds like a gpo is controlling this, if so then you'll need to talk to your admins about this issue.
+I'm trying to set up a scheduled task which will work under the Network Administrators account, whether the account is logged in or not (on a specificed computer)
+You can do this in Group Policy Management console (gpmc.msc), given the fact that you have required rights.
+Currently, only LOCAL_SERVICE may Logon as Batch job.
+RSOP tells you that currently added users are defined by Default Domain Controllers Policy, so you either have to edit this policy and add users/group or disable this policy in Default Domain Controllers Policy so that it became "Not defined" there - after this local policy became "editable".
+How do I make it able to set this permission so that I can run tasks if I'm logged in or not?
+Attempting to add administrator to this group hasn't worked.

@@ -1,0 +1,18 @@
+What you are asking, essentially, is whether the decode process for a JPEG image can be reversed.
+The first problem is colour space - JPEG uses subsampled (the colour sampled over a group of pixels) yCbCr whereas a bitmap is RGB.
+One naive implementation that comes to mind is "educated guess and check": assume some common JPEG implementations were used to create the image, and try applying them until one is found that has 'JPEG-like' results from the DCT (typically zeros for high frequencies).
+After that, fine-tune the coefficients for minimum error compared to the original (i.e.
+JPEG is a lossy format and there is no way around it.
+* A set of input data exists that will produce identical output when passed through the original JPEG decoder, however it is highly improbable for any reconstruction to be a byte-wise copy (ignoring metadata) of the original file because information was lost during the decoding process.
+A more in-depth explanation of the JPEG format and encoding process can be found here http://www.guillermito2.net/stegano/jsteg/
+Inevitable losses converting between these colour-spaces (and also in any gamma adjustment) introduce noise.
+To create an approximation of the original JPEG data, we need to find the subsampling, size and alignment of macroblocks, and Discrete Cosine Transform (DCT)  coefficients that were used to encode them.
+Mathematically this is possible* so long as the image has not had a transform or other modification applied after it was encoded, but programatically how difficult could it be?
+This process will still result in tradeoff between error and filesize, but it should get close enough for practical purposes.
+The rest is identical to a normal JPEG encoding process.
+Source: Previous employment verifying DNx and ProRes video codecs, which apply JPEG-like coding to each individual frame (software reversing decoded frames would have been a very interesting and potentially useful side project).
+This is a very different intent from that of a conventional JPEG encoder, and I am not aware of any software which accomplishes this.
+The second problem to solve is JPEG records the image data as macroblocks (NxN sized sub-images), which must be inferred from the decoder's output image.
+Even at compression quality of 100 the compression ratio is still 2.6:1
+There were some variants proposed for Lossless JPEG, such as JPEG 2000, but they have not caught on
+You would be better off converting to a lossless format, such as

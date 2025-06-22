@@ -1,0 +1,20 @@
+Looking back at the more detailed results included in the question, we can see that in the TLS1.2-only config, you were using only 256 bit ciphers (even though some of the cipher suites were frowned upon), while in the TLS1.2+TLS1.3 config you were using a mix of 128 bit and 256 bit ciphers.
+Consider this snippet of the version of the nginx.conf that is part of the A+ and 100% score:
+Now, this pretty much highlights that while this tool is a very useful resource (particularly to point out actual bad configurations), it's not a great idea to focus too much on the exact scoring, rather to look at the whole report.
+Is it possible to get a perfect 100% score with nginx and TLS 1.2 and 1.3 enabled?
+It complains about a couple of the cipher suites, but it still gives an otherwise perfect score:
+Somehow enabling TLS 1.3 makes those same weak ciphers that pass before start failing.
+It's no longer mad at the strength of the cipher suites:
+Which brings us to... the same cipher suites that are required for a successful handshake for older devices/apps are listed as "weak" and pass when only TLS 1.2 is enabled.
+Now, if I add TLS v1.3 to the mix as the only config change, the score changes.
+Based on their rating system, this explain why you got a reduced score in "Cipher Strength".
+Particularly their "Intermediate" configuration strikes a good balance between broad compatibility and security, and there is a config generator for popular TLS servers for convenient translation of suggested settings into actual server configuration.
+It seems like the choice is: either enable TLS 1.2 only to get a perfect score, or, enable TLS 1.3 too but get dinged for the necessary cipher suites?
+There's not really a good way to remove the CBC mode ciphers perfectly, but maybe excluding SHA1, SHA256, and SHA384 will work.
+ssl_ciphers AES256+EECDH:AES256+EDH:!aNULL:!SHA1:!SHA256:!SHA384;
+Regarding your actual question, which is about the Qualys SSL Labs test tool itself, we'll have to dig into how their rating system works.
+As your question is about why you got a slightly lower score in the Cipher Strength category with one of your proposed configs over the other, let's focus on that category specifically:
+I have created an nginx config that got a perfect score on Qualsys SSL Labs using only TLS v1.2, and I'd like to try and get a perfect score using both TLS v1.2 and v1.3.
+But apparently it's unhappy about the failing handshakes that worked before:
+As for what is actually a reasonable TLS setup, unless you have a strong idea of what you need, I would suggest looking at the Server Side TLS guidance maintained by Mozilla's Operations Security and Enterprise Information Security teams.
+Fortunately Qualys have published their SSL Server Rating Guide, which describes their methodology for rating SSL/TLS configurations.

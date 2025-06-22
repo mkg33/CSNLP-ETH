@@ -1,0 +1,17 @@
+This is a pretty common security descriptor for services.
+If so, ProcMon would be highly useful for figuring out specifically where the access needs to be granted.
+I verified that Bob could not stop / start the Tomcat service (using "NET STOP tomcat5").
+I would think that using Group Policy to modify the security descriptor would work fine.
+I'd recommend creating a group to delegte this right to, putting a user in that group, getting the group's SID (using WHOAMI or any other tool) and modifying the security descriptor this way.
+3) I created a limited user called "bob" on my box, opened a "RUNAS" command-prompt as him, and got his SID from "WHOAMI /ALL" (a command that's on Windows Server 2003 but not on XP... don't know about Vista and Windows 7 off the top of my head).
+I have seen cases where some services don't like the default permission that a group policy-based modification puts on a service (look at this posting about the Windows Search service if you want to see what I'm talking about: http://peeved.org/blog/2007/12/07), but that has been uncommon in my experience.
+1) Downloaded the Tomcat 5.5.27 Windows Service installer and installed it.
+I'm not sure what you've tried to do before, but here's what I just did and had success:
+5) I flipped back to my "Bob" command prompt and verified that I could now stop and start the service using NET STOP and NET START.
+If you want more background on security descriptors for services, have a look at http://msmvps.com/blogs/alunj/archive/2006/02/13/83472.aspx and http://support.microsoft.com/kb/914392.
+I received the same error you report in your post.
+This SDDL string gives Bob's SID (S-1-5-21-1409082233-484763869-854245398-1009) rights to stop, start, and pause the service (RP, WP, and DT, respectively).
+2) Dumped the TomCat5 service security descriptor using "sc sdshow tomcat5", which showed me:
+You need to find out what makes these Tomcat services so special that the normal methods for controlling them in Windows don't work.
+The SYSTEM and built-in Administrators have "full control", "Power Users" can stop, start, and pause the service, and "Authenticated Users" can query properties of the service (I'm glossing over a bit here).
+4) From my regular administrator command-prompt, ran the following:

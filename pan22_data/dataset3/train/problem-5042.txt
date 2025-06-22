@@ -1,0 +1,11 @@
+Off the cuff suggestion (I don't have a database server up at the moment to test, sorry):
+I would also try and avoid the use of * in the select.
+Subqueries used as expressions must return at most one row and one column.
+Where this is a problem is if you were to go on and do something like a delete or update as the server would not know which row needed to be updated - so it doesn't like it.
+I added GROUP BY label_id to make the original statement work.
+Also, if you only need one result, is there a distinct column you can use such as an ID column?
+This will return every column and you have no control as to how that can affect the rest of the statement.
+It would seem that the query you are sending is returning more than one identical row.
+A Count(*) option will tell you how many records there are - if you are expecting 10 rows and there are thirty there is a problem - and the select 1 will return the first of the rows that it matches.
+You could also try a SELECT TOP 1 or SELECT  LIMIT 1
+I would be tempted to look at a DISTINCT statement which should only return the rows that are not duplicated, each row would be distinct.

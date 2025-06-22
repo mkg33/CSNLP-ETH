@@ -1,0 +1,16 @@
+Is there any measurable improvement in speed/throughput, or any other benefit that can outweigh the management overhead?
+If they added VPC endpoints for SQS you could access your VPC resources with a VPC lambda function, send results to a SQS queue, then have a public Lambda function watch and consume the queue messages, accessing any public AWS service (SNS, SES) as needed.
+When I first heard about VPC Endpoints earlier this year it seemed like a game-changer -- a way to access these services from instances that only had private IPs.
+Right now since Lambda functions running in a VPC don't have internet access, they cannot access any public AWS services without setting up a NAT Gateway.
+But the fact that the only supported service is S3 seems really limiting.
+VPC nodes without a public IP have to traverse either a NAT Gateway instance or NAT Service to reach S3 (ignoring VPC Endpoints for a moment).
+I'm curious if there is any other benefit to using a VPC Endpoint for S3 anyway, with the understanding that the rest of the stack will still depend on public IPs and will for some time.
+So if you want your Lambda functions to access a resource in a VPC, RDS for example, and send something to SQS, SNS, SES, any other public AWS service without a VPC Endpoint or call another Lambda function, you can't.
+With a VPC Endpoint, your private hosts do not need to traverse either to get to S3 and can do so more cheaply and potentially faster.
+This is an old thread but they just released VPC endpoints for DynamoDB.
+Currently I am stuck 'watching' S3/DynamoDB since I don't want to incur the costs of a managed NAT Gateway.
+The former is an availability and bandwidth constraint, the the latter cost per-byte to utilize.
+Every EC2 instance I currently manage has some other dependency on a non-S3 AWS resource that requires traffic to go out through a public IP.
+The ability to store/retrieve data in S3 within a closed private VPC is an attractive one to those not using AWS for public facing uses.
+The benefit to VPC endpoints is primarily security.
+I learned a long time ago that if you want an EC2 instance to be able to talk to AWS services like SQS, Kinesis and the like, the instance has to either have a public IP address or there needs to be something within the VPC doing NAT.

@@ -1,0 +1,18 @@
+Initializing it without using the Add method is quicker and allows us to mark this as ReadOnly for clarity.
+Private ReadOnly viewModelLocator As New Dictionary(Of String, ViewModelBase) From {
+                    {"dashboard_home_vm", _Locator.DashboardHome_VM},
+    viewModelLocator.TryGetValue(viewModelName.ToLower, vm)
+A dictionary is definitely the way to go, but I think you can improve on /u/ChrisWue's answer.
+                    {"job_list_vm", _Locator.JobList_VM},
+If you had fewer cases you needed to run through, and you were only returning a single item per case, I think it's slightly more readable to put the entire case on the same line by using the colon (:) as the VB line terminator like this:
+You should add another function to read the dictionary that looks like this:
+Don't just call it dict since we already know it's a dictionary from it's type.
+                    {"job_add_vm", _Locator.JobAdd_VM}
+Use good variable names like viewModelName or something similar.
+    Case "dashboard_home_vm" : Return _Locator.DashboardHome_VM
+Plus fitting it into a single line means we can initialize it outside of the flow of our constructor.
+Function GetViewModel(ByVal viewModelName) As ViewModelBase
+    Case "job_list_vm" : Return _Locator.JobList_VM
+Use a nice name to describe what this particular dictionary is doing, like viewModelLocator.
+Since you want to return Nothing if the key is not found and the associated value when it is, and since the default value of your ViewModelBase is Nothing, you don't need to specifically handle the the boolean returned by TryGetValue.
+Since I'm assuming you don't need to change it at runtime, you can use a collection initializer to create it in a single syntactic line.

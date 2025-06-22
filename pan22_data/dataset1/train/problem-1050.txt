@@ -1,0 +1,12 @@
+Since the rendering glitch shows tiles and half-tiles that might hint at a texture format or encoding/decoding issue (lack of ETC2 support?).
+Make sure the textures are square, power-of-twos and try with different sizes and formats.
+The other thing I'd try is adjust the vertex format to be padded to a multiple of 16 and not cross 16-byte boundaries.
+eg: if it is arranged v[4,4],c[4],uv[4,4] (numbers=bytes) this cuts the uvs at the 16byte boundary. It's unlikely to be the issue but this may force the driver to CPU-copy the vertex buffer to re-arrange the attribute order and pad the vertex to a size that the GPU supports natively. 
+I'd try rearranging it v[4,4,4],c[4],uv[4,4],pad[8] with a valid Z value in the vertex just in case there's an issue in the CPU-copy function and it may run faster on some GPUs.
+Since it renders fine on some but not the other(s) if those suggestions don't fix the problem I'd keep looking into driver/GPU limitations that may cause this.
+I started developing a small cross platform game engine using OpenGL, I am working actually on a sprite batch renderer.
+Everything is working fine on OS X, iOS, Win32, and some Android Devices. Here is the Results :
+The image on the left show the correct result, and was tested on Samsung galaxy S1, Galaxy J5, Galaxy S3, Galaxy Tab 3.
+The device that give these weird results on the right is a Samsung Galaxy Core 2, With a Mali-400 MP renderer.
+I start getting that weird result when I use more than one texture.
+Any suggestion about what might cause that bug is welcome.

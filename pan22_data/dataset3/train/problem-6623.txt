@@ -1,0 +1,12 @@
+There is limited support for concurrent access with Hyper-V R2 using CSV volumes but this is only for the purpose of hosting Hyper-V VM files.
+One option you have is to present the disk to a single Windows VM then to have that VM share the disk our using CIFS/SMB and have the Linux VM mount that.
+If I can find a trustworthy common cluster file system that is appropriate I'll update my answer but I'm not hopeful.
+It doesn't matter if the underlying device is a VMware vmdk in an ESX\ESXi datastore or a SCSI LUN on a shared SCSI bus or SAN.
+The problem gets even more unlikely to have a solution when you are mixing Operating Systems in the guests, as you require.
+However you will still need to be certain that the applications you are using can adequately handle concurrent access to the specific data in question.
+The best way to do this natively is to share the specific volume out in one VM (from within Windows or Linux) and map that volume in the other VM.
+I am not aware of any common clustered files systems that allow for both Windows and Linux OSs/VMs to interoperate.
+Although two or VMs can have a single .vmdk assigned as a virtual disk these are presented as SCSI disks and therefore all VMs seeing a single virtual disk would need to use a common clustered file system to manage the virtual disk or enormous data corruption would occur.
+Alternatively you may be able to connect both systems to a NAS that can provide concurrent access to both VM's.
+You may be able to present the same device to two Windows systems simultaneously but if you do then at best you will get access to the device blocked on one system and at worst data corruption.
+There is no way to get multiple Windows system's to have [concurrent] native access using NTFS (or one of the FATs) to the same block storage device which is what you are looking for here.

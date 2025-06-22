@@ -1,0 +1,26 @@
+For example, if the screen is not rotated and I'm shooting rectangular projectiles, I want them to face in the direction I'm shooting (rotation around themselves).
+Likewise if I only do the screen rotation on projectiles, the rectangles will always be facing the same way and they would only look correct if I were shooting straight up or straight down.
+This way, you shoot the projectile relative to your character
+We will first rotate the bullet around itself because it seems logic to me to apply self transformations before others.
+I think the problem is that you're not storing this original "theta" with respect to the character, but rather with respect to the camera.
+I'm working on a 2D top-down shooter game that has a rotation feature like Realm Of The Mad God such that if you press e the camera rotates around the character in a clockwise direction and q rotates the camera around the character in a counterclockwise direction.
+So my question is, how can I perform 2 rotations on a primitive around 2 different points?
+Since your game is 2D, I will assume, as I read in your comments, that there is no "camera".
+To do so, we will translate not to (0, 0) but to the position of the player, here pX and pY:
+If you want more specific code, just leave a comment.
+I have this working with my floors and walls by translating to the character, doing the screen rotation, and drawing everything with the character as the origin.
+I will assume that you have a view rotation around the player called viewRot.
+Or am I thinking about this in the wrong way and there is a different solution to accomplishing this effect?
+At the end, you may need to translate the bullet's position relative to the view (if any).
+To do so you will need the following (written in pseudo-code):
+Therefore I need to also either rotate the projectiles around the character or rotate the mouse cursor position to get the correct position (which would then totally screw up all of the collision detection).
+The camera will take care of the "second rotation" since we're placing the projectile in the world coordinates.
+However if I only do this rotation, when I then rotate the screen the projectiles will always shoot at the same position because my cursor position does not change.
+Your player is the center of rotation as well as the center of the bullet.
+which is automatically "rotated a second time" from the camera perspective.
+The problem arises when I shoot projectiles which need to both rotate around the character and rotate around themselves (shooting uses the mouse cursor so I can shoot at any angle).
+Lets say you have the character at (x,y) position with some theta rotation.
+The only way I can think of is to translate to the character and do the screen rotation, then somehow calculate the translation required to move back to the middle of the projectile (seeing as how my axes are now rotated) and do its rotation.
+Normally you apply a single rotation to get the coordinates in the "world coordinates" and the "second rotation" is automatically applied from choosing your camera location and its view direction.
+Similarly, you have the camera in the background at (x,y) + r*(cos(phi),sin(phi)) (plus a z value where you want the camera to hang in) looking at the character direction (x,y)
+It is in the end pretty simple, you only need to apply two rotation-around-point transformations.

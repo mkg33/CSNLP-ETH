@@ -1,0 +1,5 @@
+You can run some T/SQL to check the sysprocesses table (or DMV if SQL 2005+) to see if a backup is already being performed on that database. If not do the backup, if so bail out gracefully.
+The large log backup is probably happening because of database maintenance operations which happen between the last log backup and the full backup.  Reducing the interval between log backups may help with this.
+One more possibility:  if you have mirroring configured and if it is suspended, your transaction log and database backups will grow and continue to grow as long as mirroring is paused.
+In 2000, log backups could not run at the same time as diff or full backups (because a log backup will clear some transaction log and full/diffs must backup some log to allow the restored copy of the database to be transactionally-consistent).
+In 2005 this restriction was lifted. They can occur at the same time but a log backup concurrent with a full or diff will not clear the log. The log clearing will be delayed until the full or diff completes - this adds to the myth that full and diff backups clear the log - they do not.

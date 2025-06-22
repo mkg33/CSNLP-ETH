@@ -1,0 +1,14 @@
+As I'm using virtual domains, there would be a different folder for each user@domain, and not a general quarantine.
+Using maildrop you can have a default system wide config which will check the headers and filter spam into the correct location, with something like this in /etc/maildroprc:
+I wouldn't rely 100% on amavisd for dropping mail thought to be spam; I would only mark the subject somehow and still deliver
+There are several options to accomplish this, and they all largely depend on the delivery agent you are using to do the final delivery to a user's virtual mailbox.
+Using amavisd-new, I'm successfully marking multiple headers and accurately reporting most spam.
+I guess I want it to function like gmail or yahoo mail do today, automatically moving suspected SPAM into a junk folder.
+change the mailbox location depending on your local setup.
+So false negatives could be placed there and the system would learn from that.
+I'm not sure if postfix, amavis or policyd is the right place to begin.
+A wholly different approach, given that either your mail volume is low or you have access to some serious hardware, would be to run amavisd-new as a before queue filter, thereby eleminating the need for spam/junk folders or quarantine completely: If a legitimate mail is rejected as spam, the sender will be notified by it's own mail server - since you technically never accepted the mail, you won't be responsible for anything.
+From time to time I will run sa-learn on these boxes (one for each account).
+However, right now I'm delivering it to the inbox and I would like to have a Junk folder instead.
+You'll need to setup something like procmail or maildrop to filter the mail into the correct folder when it gets delivered.
+however, until there, there is greylisting, spf and rbl's which are really great

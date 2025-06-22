@@ -1,0 +1,9 @@
+Mounting /var/lib/docker as a separate partition is common on docker hosts.
+And for the more granularity, a loop device may be created to mount a fixed size file with it's own filesystem.
+These all have the advantage over ulimit in that they limit the total filesystem space, rather that the max a single file can grow, and they only limit that volume without limiting other directories inside the container.
+From the perspective of the process inside the container, the different volumes are different mounted directories, and limits apply to all filesystems.
+The size limit is applied to the process and it's children, not to the filesystem itself.
+Each of these options needs to be configured on the host outside of docker and then the volume mounted from that restricted environment.
+Filesystem quotes may also be enabled if the filesystem supports them.
+Typically, if a sysadmin is concerned of disk space usage by a container, they often isolate the volume to a partition on the host of a limited size.
+I don't believe I've seen anyone limit the max file size with ulimit, but see no reason it wouldn't work.

@@ -1,0 +1,10 @@
+Your issue is because the original directory contains one or more files that appear under two or more paths each.
+The copy lost information about which multiple paths should lead to the same file.
+doesn't use Unix-like inodes, yet it supports hardlinks in its own way and Linux driver understands this.
+For this reason each file in the copy is independent from any other, there are no two files being hardlinks to each other there; so Dolphin counts more of them.
+Dolphin like du detects hardlinks and counts each inode just once.
+It's hard to say if and how this will affect the game after you restore it to Windows in the future.
+You can have 1000 files of 1 MiB each but if they are just one file hardlinked under 999 extra names then these tools will say there is one file total and the size is 1 MiB total.
+I guess you used a copying tool that doesn't care about hardlinks; it just naively reads files and writes somewhere else, one by one.
+It probably lost more: metadata like ownership and permissions, because Linux filesystems use different scheme than Windows.
+I expect Dolphin or du to behave in a similar fashion when they calculate the number of files and total size.

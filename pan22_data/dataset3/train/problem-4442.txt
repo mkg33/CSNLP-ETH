@@ -1,0 +1,14 @@
+That is, the T2 query is complete and the T2 'if' statement happens before T1 commits and because the sum is greater than 90 it proceeds to the update.
+Don't have experimentation time - I think the NOWAIT will raise exception -54 if it's locked, but in my usual belt-and-suspenders way I'm allowing for the possibility that the SELECT FOR UPDATE will just return zero rows.
+I know that Oracle SQL works with Snapshot Isolation, which forces all transactions to work with the latest commited values, but how can this problem be fixed?
+There is no reason why the local variable 's' would be updated to track the T1 commit.
+I think that you should experiment with using SELECT FOR UPDATE NOWAIT in a loop, e.g.
+which also sees the sum of 95, as T1 hasn't commited yet and also doesn't update yet, as there is a Write Lock from T1.
+How in the world can you get T2 to block in this case?
+You could run this thing hundreds of thousands of times a second!
+When T2 issues its UPDATE, it has the sum, 95, in its local variable 's'.
+We end up having the value 10 for p1, s2 instead of the expected value of 40, as T2 should have seen the sum of 65 (because of the first update (substraction) from T1) and shouldn't have made that second subtraction.
+I guess that the solution would be that when T1 is active it should prevent all other transactions from starting, but I don't exactly know how I can achieve that.
+Also note that this will let any other exception raised bubble through and blast out.
+T1 sees the sum of 95 and substracts 30 from p1, s2 (but doesn't commit yet).
+Now T1 commits and T2 is now able to continue and substracts the value of 30 from p1, s2.

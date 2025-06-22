@@ -1,0 +1,8 @@
+I have an OpenVPN server which authenticates to an Active Directory and asks therefore each user for a username and passphrase.
+You shouldn't do that, because once your single key is compromised for any reason (stolen laptop, trojan, employee leaving the company, etc.), you will need to give each user a new one, most likely resulting in more time spent than you saved initially by creating only one.
+On top of that it also requires each user to have a client certificate and client key (+ server ca.crt).
+First off, I agree with Ingmar Hupp, you don't want to be passing around one single key for a bunch of users.  It's really not part of a good security strategy.  Additionally, as he mentions, setting up a CA and signing/revoking keys using easy-rsa is quite easy, and IMO worth the additional "manpower" (if you will) to setup / maintain keys properly, instead of passing a single one around.  
+If you want to avoid the complexities of creating a CA and signing (and revoking) client certificates (although with the easy-rsa script it really isn't that hard), OpenVPN also supports static keys (generated with openvpn --genkey) that are very straightforward to handle (although they will also be used for encryption, instead of TLS).
+Is that the correct way under these conditions? Or should the client certificate and key be created in a special way?
+I would like that each user must login with their AD username and passphrase and that all clients shares the same client certificate and client key.
+The reason I want a shared client certificate and key is for ease of management and it protects the network from someone brute forcing a password.

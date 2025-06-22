@@ -1,0 +1,11 @@
+I wanted to find out what happens when Nginx is configured as a reverse proxy in front of Apache.
+There is a file.php which when requested also calls .jpg files.
+What happens when the user requests file.php from this server, is request passed to Apache and then Apache picks up the connection and is communicating with the user directly or its sending processed info via Nginx and all communication goes via Nginx?
+Since .jpg is mentioned in .php file, will Apache serve .php and then Nginx pick up the .jpg serving?
+If Nginx will serve .php processed by Apache then is this file saved/cached somewhere while Nginx is serving it?
+Nginx is known to be prone to stuff like slowloris, will it ignore such a requests or will pass them to Apache when .php is requested?
+There are some basic questions which are rarely answered anywhere.
+Apache will only communicate with the nginx server, and the client will only communicate with nginx; as far as the Apache server knows (and as you'll see in its logs), the nginx proxy is the "client".
+A request for a .jpg file will be a separate HTTP request, even though it may occur in the same connection; the nginx server will serve each individual resource as configured (.jpg locally, .php to Apache).
+By default, no. proxy_cache configuration can change this; see the documentation.
+It will pass them along to Apache, so a connection will be used on both servers; set a reasonably low-ish timeout on either the nginx or the Apache to mitigate.

@@ -1,0 +1,18 @@
+In relational database terms that would be a relation with an "empty" key - a key which consists of no attributes at all.
+I'd answer with a question: Why do you need a table for a single row?
+I won't discuss that as it's the baseline of any design book.
+To what line you adhere, it's only a matter of taste.
+ID INT UNSIGNED AUTO_INCREMENT, Name VARCHAR(10) -- There is very little advantage for having the ID if Name is unique.
+Generally, people are more often concerned with name changes in case of divorce, but it's also useful to correct typos, or switch john to john.smith when a company grows.
+You could use the ID instead of the username in references, so that you can rename users and retain a proper audit trail.
+If user jane.doe marries john.smith, she might want to change username to jane.smith
+You are right that a table whose constraints limit it to a single row does not actually need any key attributes.
+Regarding the design of the table, any table should have a primary key.
+Anyway, it is borderline whether the GUID should, itself, be the PRIMARY KEY (and get rid of ID).
+ID INT UNSIGNED AUTO_INCREMENT, GUID VARCHAR(36) -- If this is a standard UUID/GUID, then first of all, it should be declared BINARY(36) to avoid collation overhead and *3 for utf8.
+ID INT UNSIGNED AUTO_INCREMENT, Name VARCHAR(2000) -- There you need the ID, because Name is too big to be an index.
+One possible workaround is to create some arbitrary "key" attribute, put a uniqueness constraint on it and also apply a CHECK constraint to limit the "key" to a single value.
+Regarding the way of designing that primary key, there are two schools of thought:
+Not sure what you mean by a "user" table in this context but ...
+Or a table with multiple rows, each uniquely identified by some string?
+So that's a reason why you may need to create a key attribute (strictly it's a superkey, not a key) even though you don't appear to need it.

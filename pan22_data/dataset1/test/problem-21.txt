@@ -1,0 +1,10 @@
+Here is a discussion of the things that can cause trouble when switching from MyISAM to InnoDB, and what to do about them:
+I see 8.8GB in the buffer_pool; I assume you have at least 16GB of RAM?
+innodb_flush_log_at_trx_commit = 1 is the safest, but it is the slowest.  Change that to 2; see if things run faster.  If so, then read about it to see about the speed/safety tradeoffs.
+Were you using LOCK TABLES?  If so, convert to BEGIN...COMMIT.
+More tuning suggestions here: http://mysql.rjweb.org/doc.php/memory
+I was asking for the innodb% params to verify you're not running with silly defaults. You're not, and setup looks OK.
+The inbound_link_changes table doesn't have a PRIMARY KEY. It should, as with all InnoDB tables, since these use a clustered index, which is the PRIMARY KEY. Yours does not have one, so it's clustered by internal row id, which is not optimal. Is there any UNIQUE combination on this table? 
+If not, I recommend making up a surrogate key, via AUTO_INCREMENT.
+This could actually affect your query, since secondary keys are affected by clustering index (explanation is outside scope of this answer).
+In addition, consider setting up an index on (link_id, change_type). Since you're giving away change_type as constant, this will be taken into account when looking up the index.

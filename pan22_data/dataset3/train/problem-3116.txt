@@ -1,0 +1,12 @@
+So you get protection from passive eavesdropping, but not from active MITM attacks.
+So I have taken the following steps to attempt to enforce this:
+However, I would like to ensure that we never connect to this database without SSL.
+Postgres will attempt to connect using TLS automatically.
+If you specify PGSSLMODE=verify-ca or above on the client, then the client will throw an error if can't find the root cert file.
+I've got a brand new Postgres 11 RDS instance that I can connect to with or without an SSL cert.
+However, I don't understand why AWS appears to allow you to enforce SSL, and provides a way to download a certificate to do this, but does not use it.
+If I include the environment variable PGSSLMODE=disable then it is possible to test the SSL connection fail when not using the rds.force_ssl option.
+If the sslmode is below that level and the client can't find the root cert file, then it will use the server's certificate to negotiate encryption, but will not use it to verify the identity of the server.
+If your client is libpq based, then it will verify the certificate if and only if it can find the root certificate file (generally at ~/.postgresql/root.crt, if not specified as something else).
+The server can force the client to use ssl to establish the connection, but it cannot force the client to verify the server's certificate.
+I was expecting to be forced to provide the certificate when connecting like this:

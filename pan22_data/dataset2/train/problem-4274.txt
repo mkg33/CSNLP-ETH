@@ -1,0 +1,8 @@
+Some googling for just that seems to indicate that's the issue: http://www.linuxquestions.org/questions/linux-newbie-8/ps-aux-displays-users-as-uids-instead-of-username-645456/
+I am running Debian 5.03.  2.6.18.  When I run ps aux to look at running processes, some of them show the uid of the user, and others show the actual username. However if I run top, it shows the correct username, not their uid.  Why is this happening, and should I be concerned?
+Typically, when a numeric UID is displaying in a situation like this, it indicates that there may no longer be an entry in /etc/passwd for the UID.  Is 1001 specified in /etc/passwd?
+I notice all my RHEL boxes show UIDs for an account, and it's the same on all of them.  (haldaemon)  Probably due to how long the name is?  It's the only one I see that's longer than eight characters.  Are the accounts you've shown longer than that?
+If you are running NIS or LDAP and having these sorts of problems, you may want to install nscd and investigate performance issues on the NIS/LDAP/whatever servers...
+I doubt that this is your problem, but I include it for completeness. You can override the width of the field and if it's shorter than your usernames, it will automatically switch to showing UIDs.
+Are you using NIS? LDAP? What does grep passwd /etc/nsswitch.conf say you're using?  What does grep :1001: /etc/passwd say?
+It's also possible that you have stuff running as a userid that doesn't exist on the system anymore.  Is this apache with suexec configured such that the PHP scripts run as the user who owns them?  Or some similar mechanism?  (suexec should be checking that 1001 is a valid user on the system first)

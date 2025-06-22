@@ -1,0 +1,13 @@
+However we don't currently use SSL as our endpoints don't support it.
+On the appliance side Brocade (formerly Foundry Networks) have the ServerIron line.
+Also as the first guy said, scale out not up, the TPS restriction is only for SSL terminated locally on the load balancer if you pass the SSL through to the backend cluster you get almost unlimited scalability.
+Which even on a Loadbalancer.org appliance could mean millions of concurrent users.
+I think you have your numbers wrong, "seem limited to 4k SSL connections simultaneously."
+Their SSL modules can do this, although the new versions they've just introduced won't have SSL for another few months.
+Most of the SSL accelerator cards seem to have fairly lacluster driver support.
+They certainly aren't cheap (a pair of the entry level (albeit 16M sessions) non-SSL models is ~US$30k) but they're easily the most reliable equipment we've ever used, ~10 years in production and we've never even lost a power supply or port from ~20 in production.
+Open Source SSL Acceleration has a DIY Linux SSL accelerator example - see also the F5 rebuttal.
+Use a TCP-level load balancer (Linux HA is free and outscales and outperforms every proprietary solution I've ever used), and forward the SSL connections to the machines behind it and let them do the SSL stuff.
+No need to worry about whether an individual "SSL accelerator" can handle the connection rate because if you need more, you just bung another backend box in.
+Sun have a crypto accelerator which has drivers for Solaris, RHEL and SUSE, a quick google shows IBM and Discretix have cards as well.
+Test one before deploying, many of them saturate well below host capacity.

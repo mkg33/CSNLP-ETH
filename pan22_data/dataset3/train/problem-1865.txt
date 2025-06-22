@@ -1,0 +1,23 @@
+I'll admit that I'm not entirely clear on what you're trying to accomplish here.
+It has already solved all the problems you've brought up in your question: how to handle international addresses, what all the necessary fields are, how to handle missing fields, and how to interop with Swift.
+Given an object with some properties which may not be set I would expect them to contain nil values.
+Use of magic values like ""similarly requires that consumers of this SDK rely on documentation rather than their type system.
+It turns out that there are several problems with what seem like simple concepts in everyday life.
+For example, the area of Earth that some call "Taiwan" is also called "Chinese Taipei" by others, and it's important to get it right when displaying it to certain users.
+In Swift I have to introduce failable cast operations to safely use the value.
+What is the difference between a zip set to nil and one set to @""?
+Checks against some magic value are less likely to be consistently enforced and more likely to be brittle when they are in place.
+But allowing the zip to be nil will, in some situations especially in Swift, force the user to both check for nil and check to see if the zip is empty before being able to determine that there is no zip associated with that particular object.
+In objective-c I have to be even more careful since I get less compiler feedback about unsafe casts and while I might expect [zip length] to return nil I now need to make sure not to attempt to send length to a NSNull.
+Worse case scenario, if CLPlacemark isn't quite what you need, you can either subclass it or model your place object closely around this object.
+If correctly annotated with _Nullable then these will become Swift optionals which should be both very familiar to your SDK's consumers and provide good compiler support for type checking use of those properties.
+There are several areas that currently meet this criteria.
+What you've posted is pretty minimal, but I think it's a good illustration of what can go wrong in situations like this.
+@200_success already pointed out common problems with addresses.
+My suggestion would be to rethink how your users will retrieve the data they need.
+It turns out that the concept of even the largest structure you've listed (country) is really tricky to deal with.
+At the very least, you may need to offer alternate values for these fields.
+There are some areas that aren't recognized as countries at all!
+You're probably better off with something objective like longitude and latitude.
+Use of NSNull will obscure type information in the interface (the property can now be a NSNull or NSString so it will have to be an AnyObject or id at which point I have to read the documentation to confirm it it might also sometimes be NSNumber or something else as well).
+I think the concerns here about accurately modelling international addresses are well founded but the root question seems to be a simpler problem.

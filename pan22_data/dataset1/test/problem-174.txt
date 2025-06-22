@@ -1,0 +1,7 @@
+There are some aspects you have to consider Diskspace and Fragmentation.
+MySQL's two main storage engines are MyISAM and InnoDB.
+When accessing a MyISAM table, data are always read from the MyISAM table's .MYD file. When an index is being accessing, the index pages are stored in the MyISAM key cache (sized by key_buffer_size). This being the case, if you never access a MyISAM table, index pages are never loaded into memory.
+When accessing an InnoDB table, data and index pages that are read are loaded into the InnoDB Buffer Pool (sized by innodb_buffer_pool_size). In this instance, if you never access an InnoDB table, data and index pages are never loaded into memory.
+If you have innodb_file_per_table disabled, then all data and index pages would resides inside the system tablespace file ibdata1. Then, have a large ibdata1 with a lot of unused tables could introduce fragmentation that could potentially slow down access to InnoDB tables. If you are using MySQL 5.5/5.6, this should not be a consideration to worry about.
+There are options and structures that can be used to preload index pages (and data pages for InnoDB). Notwithstanding, as long as you do not access those archive tables, you should be OK in all other aspects.
+I have huge unused databases in MySQL. Do they affect my MySQL engine performance even if they are unused? Do they consume memory on their own?

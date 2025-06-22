@@ -1,0 +1,20 @@
+As an example, nothing prevents me from setting up DNS entries for any IP address and try to connect to the address using that DNS entry.
+ifconfig | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}' | xargs -L1 host
+so clearly there is some other way these names are configured and how do I get all the hostnames?
+You can't get this information at all, at least in a reliable and complete way.
+Additionally, there can be multiple forward (A) records for a a single IP address as well as CNAME records all of which are hostnames for the system.
+But I want to get a list of hostnames using single command, much like the way I got list of IP address.
+I have a Linux box and I know I can get the list of IP addresses assigned to that box using following command /sbin/ifconfig -a but how to I get the list of hostnames / DNS for that Linux box using single command?
+I have checked my /etc/hosts and it doesn't have abc.fb.us, xyz.fb.us etc.
+Now, my Weblogic application server has defined listen address as, lets say abc.fb.us and xyz.fb.us etc.
+You could try dumping your DNS config and searching for all records that have the same IP addrress, then search to see if any CNAME records refer to the A record names.
+The system doesn't need to be aware of what DNS names for what domain are pointing to it.
+This isn't simple and certainly isn't a single command.
+Now, all those have different IP addresses, so I have 4 different IP addresses for my Linux box (please correct me if I am wrong here ??).
+Now when I ping each hostname (should I call abc.fb.us as hostname or DNS or alias ??)
+then I get some IP address which is listed when I do ifconfig.
+If PTR records are defined, you can get these like Brennen described, but everything else is unreliable.
+For most protocols, you will be completely unaware that this has happened (HTTP is a major exception, as it will transfer the hostname in the HOST header).
+There is no single command that will give you the information you want.
+I know I can do nslookup 172.22.33.11 and I will get abc.fb.us, assuming that's the IP address of abc.fb.us.
+Why I asking this is because using /sbin/ifconfig -a I see that there are ~6 ethernets connected to it and in those 4 are active.

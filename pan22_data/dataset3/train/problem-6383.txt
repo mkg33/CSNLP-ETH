@@ -1,0 +1,15 @@
+Maybe I could invoke a script with sudo, inside such script invoke
+This would be much more secure (no executing scripts from the browser - less so from the command line), faster - it can preprocess the data overnight during off-peak times rather then real time and simpler.
+Without sudo, www-data (I guess that is the user when running the script) does not have permissions to access /var/log/mail/mail.log and does not count what I want.
+Having them public readable is usually not a good idea.
+I have a perl script that works fine with sudo and parses some logfiles at /var/log/ in Ubuntu 14.
+Then check what groups is www-data in: groups www-data should tell you.
+And add the previous script to visudo so that www-data could run it with sudo without asking for authentication.
+Good start is to see who is the owner and group of the log files (ls -l /var/log/mail/mail.log).
+It outputs stuff, but only zeroes in place of the numbers I wanted to check.
+Using passwordless sudo in scripts is not a good idea.
+Why not run a cron job (as root) every morning which executes
+(Assuming Ubuntu - use the appropriate apache owner on the chown), and then simply execute the second part in the browser
+Again, it seems it is not the "good" or the "right" way of doing it...
+Putting www-data in the root group so that it can read the log does not seem right.
+My question is: what should be the "good" way of doing this?

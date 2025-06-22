@@ -1,0 +1,14 @@
+We don't want backups slowing down the rest of SQL server, and I'm guessing writing the backups the same location as the logs is a good practice because the read/write behavior in both those cases is sequential writes.
+Logical Drive C: - RAID 1 (2 physical drives) - OS
+Logical Drive D: - RAID 1 (2 physical drives) - Db Files
+I'm building a SQL Server with 48 GB RAM, 1 CPU, & 8 SATA III (6GB/s) SSD drives (128 GB Crucial m4) and an LSI MegaRAID controller (SAS 9265-8i).
+I'm thinking option 1 would give me better performance, since all DB activity would be striped across 3 drives (and mirrored across the other 3 in the array), although option 2 seems to mimic conventional wisdom (which appears to apply more to mechanical drives than SSDs).
+Logical Drive C: - RAID 1 (2 physical drives) - OS
+I'm guessing with SSD's it's OK to put every thing on a single logical drive since your server is probably more CPU constrained instead of I/O constrained at that point?
+Logical Drive D: - RAID 10 (6 physical drives) - DB files/logs/tempdb/backups?
+Logical Drive F: - RAID 1 (2 physical drives) - tempdb
+Another question I have is where should I place the nightly backups?
+It seems like Stack Overflow has gone with option 1.
+There will be some periods of heavier write activity (hourly data syncs w/ 3rd party data providers - nightly backups), but the I suspect the typical read/write ratio is about 90% reads/10% writes.
+Logical Drive E: - RAID 1 (2 physical drives) - log files/backups?
+I expect the typical work load to be mostly reads.

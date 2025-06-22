@@ -1,0 +1,20 @@
+You can use some other user than root for the ownership, perhaps the FTP user, for example.
+If you haven't, I'd recommend taking a look at something like this which will encapsulate a lot of the capabilities you need while not necessarily requiring that your users have actual shell accounts.
+When a new user is created, two folders are automatically created in the user's home directory - upload & download.
+Any assistance on this problem would be greatly appreciated!
+You can specify a predefined skeleton for his home, when you create the user (useradd -k /path/to/your/skel)
+You can specify if a user can have a chroot environment, (chroot_local_user=YES);
+I have very little background in Linux of any type, so I'm completely firing off the hip to begin with.
+To prevent that (while preserving the user's ability to easily write to files in $USERHOME), you can also do this in your script:
+I need to be able to set up permissions so that when a new user is created and the default directories are created, the user will be unable to delete anything from those folders.
+This is a great daemon for security and performances.
+Depending on the FTP software you're using it also may be possible to set this behavior in its configuration file.
+For CentOS, you will probably choose to use vsftpd.
+So far, things have gone as expected and I've been able to get most everything set up as I need it.
+The trick with this arrangement is that the user presumably owns $USERHOME, and can therefore delete the $USERHOME/upload and $USERHOME/download directories, if they are non-empty (the user will not be able to remove non-empty directories, though) (the user can do this because removing those directories depends on the permissions on the parent directory $USERHOME, not the ownership of the subdirectories themselves).
+The user will not be able to remove the directory because .dummyfile is there.
+https://security.appspot.com/vsftpd/vsftpd_conf.html
+I have been asked by the boss to set up an FTP server based on CentOS.
+Set it as needed in /etc/profile and your users will, by default, create files with the privs specified.
+We'll need more information about your setup to give a better answer, but, to start with, you can modify the script you're using to create upload and download to set permissions and change ownership, something like:
+By default, be unable to delete anything from the folders is a tipical restriction of the anonymous users, that you can get with chown_uploads.

@@ -1,0 +1,7 @@
+In comparison, when we explicitly disable TLSv1.2 and TLSv1.1 in our client, thus making TLSv1 the preferred option, handshake succeeds.
+Question: is it the server's duty to choose out of the list of TLS/SSL protocols the client supports? Can I say to the server maintainers that it is the server that misbehaves, not our client?
+However, straightforward connection fails with the server terminating handshake. Debug output we get (on the client side) looks like this:
+The server (Oracle-HTTP-Server 11.1.1.7), however, only supports TLSv1 and SSLx. Additionally, it has a very limited selection of supported cipher suites, but there is still one suite in common that we can use with TLSv1: SSL_RSA_WITH_3DES_EDE_CBC_SHA (a.k.a. TLS_RSA_WITH_3DES_EDE_CBC_SHA).
+To me, it looks like the server doesn't even try to fall back to TLSv1: as soon as the client declares TLSv1.2 as preferred, the server bails out.
+We have to connect with our application (written in Java 8) to some very old server using HTTPS. Being Java 8, our client supports TLSv1.2, TLSv1.1, TLSv1 and SSLv3. Of course, it prefers to use TLSv1.2, as it's the newest protocol.
+We also tried to connect to another legacy server that doesn't know about TLSv1.2 and TLSv1.1, but here connection works as expected: even though the client says it prefers TLSv1.2, they agree with the server to use TLSv1, as the best common protocol:

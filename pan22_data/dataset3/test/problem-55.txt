@@ -1,0 +1,30 @@
+To find out which device file is mapped to your ephemeral drive, run wget again, this time adding the name of the ephemeral drive as discovered in #2 above to the url:
+This underscores my point above that you cannot assume /dev/sdb through /dev/sde are ebs devices.
+Though some of this can be done through the EC2 GUI, a few commands would still need to be run on the server itself, so here, I just give you an 'all command-line' method.
+3) wget -q 169.254.169.254/latest/meta-data/block-device-mapping/ephemeral0 -O -
+We already examined ephemeral0, so let's examine ami:
+Relying on a mount point name with the words 'ephemeral' or 'ebs' is likewise not reliable.
+As an aside, you can run #3 against 'ebs' names, if any (e.g.
+So, let's get the 'other' drive letter from our device mappings meta-data.
+I am certain that EBS backed AMI's do not have a manifest path because only instance store volumes have a manifest (the manifest lists the names and path of the bundle segments of the AMI in S3).
+This underscores my point from above that you cannot rely on a mount point to tell you whether a device is ephemeral, or not.
+It might be true that /dev/xvdb through /dev/xvde are ebs - but my systems always start with /dev/xvde1, so existence of those device letters likely depend on the OS, region, AMI, etc, you are using.
+2) Run wget -q 169.254.169.254/latest/meta-data/block-device-mapping/ -O -
+6) wget -q 169.254.169.254/latest/meta-data/ami-manifest-path -O -
+Last but not least - you will notice that the block device mapping ami does not immediately lend itself to whether it is EBS backed or Instance Store backed.
+For comparison purposes, below is example output from an EBS backed CentOS server with EBS volumes only (no ephemeral drives):
+In this example instance store backed AMI - the output to command #2 above is:
+We can confidently conclude the lowest letter in the OS  mapping is the lowest letter of the EC2 block device mapping, and we can increment upwards from there.
+You'll also notice that the mapping between EC2 device volume letters and the OS's mapping letters do not match.
+5) wget -q 169.254.169.254/latest/meta-data/block-device-mapping/ami -O -
+For now, let's continue with the original instance store backed AMI example that shows us an ephemeral drive.
+someamibucketname/someamidescription/someamidescription.manifest.xml
+1) Install the wget utility with yum install -y wget
+In cases I have checked, the result of #6 above when run against and instance store ami is something similar to:
+whereas, when #6 is run against an EBS backed AMI you get:
+The device name is important to making a determination if it is ephemeral or not, however, as I will outline below.
+Ephemeral and ebs devices can take just about any lettered device file name, so do not solely rely on the device name.
+A small sliver of good news here is that the drive letters will increment in the same order, even if the letters themselves do not match.
+As you saw above, there were two device mappings, one called ami and the other called ephemeral0.
+I will give you examples from a m3.medium CentOS minimal 6.5 instance store (i.e.
+I will return to the EBS backed instance with EBS volumes later.

@@ -1,0 +1,7 @@
+The bulletpoint that says outer_expr and inner_expr cannot be NULL might be the problem. The inner_expr could present possible rows with a NULL in one of the columns in spite of all the data being non-null. To me, such a check is unnecessary. 
+Rather that doing a deeper dive into what makes your query's execution slow, I would rewrite the query as follows:
+It was some firewall problem on hosted server, the firm responsible for it took care of firewall glitch.
+In your particular case, you explicitly wrote the SELECT EXISTS (SELECT * ...). So, you are more responsible to optimize the subquery. Consequently, you should expect the MySQL Query Optimizer to start messing with you since it did not participate in the construction of the EXISTS strategy.
+Based on the MySQL Documentation on Subquery Optimization, the MySQL Query Optimizer performs subquery optimization by means of converting a subquery as follows:
+From the MySQL Documentation on Optimizing Subqueries with EXISTS Strategy, this is how checks on done for your SELECT:
+To make a long story short, slowness is being imposed because your SELECT EXISTS (SELECT * ...) is not optimal and the MySQL Query Optimizer is still abiding by its preset rules. There are checks being done on possible null results from the subquery even though you know there will be a non-null result.

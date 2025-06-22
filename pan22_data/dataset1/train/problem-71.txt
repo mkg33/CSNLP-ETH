@@ -1,0 +1,41 @@
+Everything that threads do is just part of the program's own code, or of some library it uses. So the answer to "What could cause a thread to send a SIGPWR signal?" is going to vary from program to program.
+In your case, it's the Mono runtime which uses these internally. From what I could find out, SIGPWR and SIGXCPU are used to trigger the garbage collector.
+On a RHEL 6 host, I have a Cassandra server listening for TCP connections on localhost. In parallel, I have a client application that sends it requests. The client (C# Mono) uses sendmsg to send the serialized bytes.
+I consistently see the sendmsg return without having sent all requested bytes. I used strace to try to debug this
+[pid 47605] 16:32:13.388307 sendmsg(8, {msg_name(0)=NULL, msg_iov(2)=[{"\4\0\0\1\n\0\0]x\0\20\2545\250\260\34\26152:{i\261\204\266\3759\0\n\5\0\2\0\0\0\4\0\0\0\1\0\0]Q0_1_2_3_4_5_6_7_8_9_10_11_12_13_14_15_16_17_18_19_20_21_"..., 16384}, {"3490_3491_3492_3493_3494_3495_3496_3497_3498_3499_3500_3501_3502_3503_3504_3505_3506_3507_3508_3509_"..., 7553}], msg_controllen=0, msg_flags=0}, 0 <unfinished ...>
+[pid 46142] 16:32:13.413922 tgkill(46142, 47605, SIGPWR) = 0
+[pid 47605] 16:32:13.414024 <... sendmsg resumed> ) = 16384
+[pid 47605] 16:32:13.414094 --- SIGPWR (Power failure) @ 0 (0) ---
+[pid 47605] 16:32:13.414191 rt_sigprocmask(SIG_BLOCK, [XCPU],  <unfinished ...>
+[pid 47605] 16:32:13.414242 <... rt_sigprocmask resumed> NULL, 8) = 0
+[pid 47605] 16:32:13.414304 rt_sigsuspend(~[XCPU RTMIN RT_1] <unfinished ...>
+[pid 46142] 16:32:13.418930 tgkill(46142, 47605, SIGXCPU) = 0
+[pid 47605] 16:32:13.419057 <... rt_sigsuspend resumed> ) = ? ERESTARTNOHAND (To be restarted)
+[pid 47605] 16:32:13.419143 --- SIGXCPU (CPU time limit exceeded) @ 0 (0) ---
+[pid 47605] 16:32:13.419236 rt_sigreturn(0x30 <unfinished ...>
+[pid 47605] 16:32:13.419306 <... rt_sigreturn resumed> ) = -1 EINTR (Interrupted system call)
+[pid 47605] 16:32:13.419360 rt_sigprocmask(SIG_UNBLOCK, [XCPU],  <unfinished ...>
+[pid 47605] 16:32:13.419431 <... rt_sigprocmask resumed> NULL, 8) = 0
+[pid 47605] 16:32:13.419481 rt_sigreturn(0xffffffff <unfinished ...>
+[pid 47605] 16:32:13.419562 <... rt_sigreturn resumed> ) = 16384
+This seems to indicate that thread with tid 46142 used tgkill to send a SIGPWR signal to thread with tid 47605 which was in the process of sending bytes with sendmsg. This somehow interrupted it and it only ended up sending 16384 of the 23937 bytes requested.
+I tried to see if the thread with tid 46142 was doing anything that could explain the cause of the tgkill, but all I see is 
+[pid 46142] 16:32:13.370983 futex(0x34af8d0, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+[pid 46142] 16:32:13.371061 <... futex resumed> ) = -1 EAGAIN (Resource temporarily unavailable)
+[pid 46142] 16:32:13.371169 futex(0x34af8d0, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+[pid 46142] 16:32:13.371221 <... futex resumed> ) = 0
+[pid 46142] 16:32:13.377014 brk(0x3d45000 <unfinished ...>
+[pid 46142] 16:32:13.377254 <... brk resumed> ) = 0x3d45000
+[pid 46142] 16:32:13.378971 mmap(0x40696000, 65536, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS|MAP_32BIT, -1, 0) = 0x40696000
+[pid 46142] 16:32:13.381868 futex(0x7feb0000b88c, FUTEX_WAKE_OP_PRIVATE, 1, 1, 0x7feb0000b888, {FUTEX_OP_SET, 0, FUTEX_OP_CMP_GT, 1}) = 1
+[pid 46142] 16:32:13.413922 tgkill(46142, 47605, SIGPWR) = 0
+[pid 46142] 16:32:13.413992 tgkill(46142, 47599, SIGPWR <unfinished ...>
+[pid 46142] 16:32:13.414221 <... tgkill resumed> ) = 0
+[pid 46142] 16:32:13.414267 tgkill(46142, 46146, SIGPWR <unfinished ...>
+[pid 46142] 16:32:13.414437 <... tgkill resumed> ) = 0
+[pid 46142] 16:32:13.414601 futex(0x1b1e320, FUTEX_WAIT_PRIVATE, 0, NULL <unfinished ...>
+[pid 46142] 16:32:13.414718 <... futex resumed> ) = 0
+[pid 46142] 16:32:13.414767 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7feb19800000
+which I can't make sense of in the context of the network system call.
+What could cause a thread to send a SIGPWR signal?
+I'm unsure if this is relevant, but I'm using a socket send buffer size of 4096 and the loopback interface's MTU size is set to 16436. I can consistently reproduce the partial sendmsg with these sizes. If, however, I double the MTU size, the problem goes away. Similarly, if I set my socket's send buffer size to something much larger like 24000, I can no longer reproduce the issue.

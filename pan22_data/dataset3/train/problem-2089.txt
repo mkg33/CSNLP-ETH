@@ -1,0 +1,18 @@
+Of course you might also find that something within your two loops (the one using the cursor and the one without) has significantly different performance metrics if they are not written exactly the same.
+What you want to do when you're eliminating cursor-based solutions is to turn them into set-based solutions.
+Obviously, most cursor-based patterns will be a lot more complex, particularly if they launch a stored procedure for each row in the cursor.
+By running the initial query into a table variable and looping through that you are essentially emulating a STATIC FAST_FORWARD READ_ONLY cursor, those options remove quite a chunk of the complexity that the engine might otherwise have to worry about.
+The options will change what locks and other resources are needed, could cause parts of the query to be rerun, and so forth.
+Why your query performs better with table variables may depend on a number of potential factors that we can't deduct from your question.
+It's not the WHILE loop in itself, but rather the coding pattern where you loop over rows in a table and execute a statement for each row.
+Your solution, although a WHILEloop, is essentially still a cursor in the sense that you loop over a number of records and execute one or more statements once for each record.
+Cursors are loops, but they can be more complex for the database engine to implement depending on the options you chose.
+Also your inner loop may be doing things that affect the behaviour of the cursor by updating base tables it reads from in a way that makes the database engine need to do more work.
+.. is equivalent to the following set-based query:
+In the first query, we loop over a table, row-by-row.
+Typically, "traditional" programming languages are row-based - this is the main difference between SQL and, for instance, C#, VBA, etc.
+If we could see the two bits of code you are talking about we could be more specific.
+Your main SELECT is definitely run once and in one go, and your loop is not competing with other activity on the base data while it interacts with the copy in the variable.
+There are many options for cursors in TSQL that can have a significant impact on performance depending on the SELECT that feeds the cursor with information (see the TSQL docs for detail).
+In the second query, the entire calculation is done with the entire table as a single "set", i.e.
+There isn't a single trick for how to convert a cursor-based solution to set-based one.

@@ -1,0 +1,21 @@
+You could pass a SpriteBatch instance into your Sprite.Draw method.
+The right solution depends on your overall architecture.
+This allows you to maintain the "feel" of the SpriteBatch object.
+It doesn't have access to the Game.Services object.
+If this is really the design you intend to use, then passing an IServiceProvider to the Sprite constructor is probably the best method to use as it allows for better encapsulation.
+But combining this with public setters, and not calling Begin and End, makes for a pretty confused design.
+This method is preferable if you are not doing SpriteBatch.Begin and .End calls in your Draw method - as this allows it to work the same as SpriteBatch.
+Problem is, I don't know what code to put in the Sprite constructor to get the SpriteBatch object from the service.
+This has the advantage of not depending on an actual instance of Game (which you might not have if, say, you end up making a form-based level editor).
+One advantage is that it makes it both locally explicit and easy to modify the shared resources that the Draw function depends on.
+This is what DrawableGameComponent and GraphicsDeviceManager do.
+I have the following Sprite class (leaving out everything that doesn't pertain to my question):
+But you have done something that strikes me as pretty unusual by making your Sprite.Draw method virtual - indicating that you will be inheriting from Sprite and using it virtually.
+This is pretty easy to do, and is the method I use for my gameplay classes - things that might have a Draw and an Update function (eg: a Player, or an Enemy, etc).
+But if your Sprite class is simply visual data for SpriteBatch (texture, position, etc), which is managed externally (having public setters for these properties, in your example, indicates that it might be), then I would recommend creating an extension method for SpriteBatch that does the drawing.
+In my Game1.cs class, I register the SpriteBatch as a service:
+You could just pass an instance of SpriteBatch in the constructor of your Sprite class, but you can then only create Sprite objects after you create your SpriteBatch, which you can only do during and after LoadContent.
+Those last two methods are the ones that I use and recommend myself.
+You could get especially lazy and create a globally accessible Game or IServiceProvider or SpriteBatch object and just use that (make it a static property on your game class).
+You could pass your Game class instance into the constructor of your Sprite and access its public Services property.
+You could pass Game.Services as an IServiceProvider into the constructor of your Sprite class.

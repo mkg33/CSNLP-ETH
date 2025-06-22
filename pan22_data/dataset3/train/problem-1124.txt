@@ -1,0 +1,17 @@
+I'm really at a loss i can't tell if it's a server error a client  and I'm hoping someone might know of something I can use to test or perhapses possibly a setting I might have missed.
+I've tested uploading from a number of other locations to the servers with no errors; and I've also tested uploading from the clients location to other services, also with no errors.
+In chrome I can watch the upload percentage and see the upload fail around the time ~4MB is reached (53%) on an 7.79MB file.
+One of our clients is having an issue where they are unable to upload any files larger than ~4MB from any computer in their office.
+No - apache only ever logs completion of a request in the access_log (unless you have some thing like mod_security which can be explicitly configured to post a log on submission).
+That implies something specific to the connection between that office and your servers - e.g.
+You can demonstrate by capturing a session using wireshark or similar (client is receiving a RST ostensibly from your server - you would be able to that packet at your end if it was your servers terminating the connection - if its something else terminating, then you won't see a RST packet leaving your server).
+Alternatively just direct them to the nerarest internet cafe and ask them to try from there to confirm its their problem.
+(particularly LimitRequestBody, LimitRequestFieldsize, TimeOut) What version of apache?
+Which rather implies some of your other assertions may be wrong too.
+The PHP.ini is set to allow files up to 500MB and we have other clients doing this with no problems.
+They get a "The connection was reset" this error in FireFox and in chrome they get "Error 101 (net::ERR_CONNECTION_RESET): Unknown error."
+Have you checked the place where the uploads in progress are stored?
+Apache is returning no errors in the logs, and is recording the start of the post in the access log.
+It's not a speed issue as I've successfully uploaded files from slower networks.
+On two of our servers we have an Ubuntu LAMP setup with PHP code designed to allow large image and audio uploads.
+We had this exact issue when a certain part of a file popped a false positive on our IPS, causing all sorts of drops and hangs with website access.

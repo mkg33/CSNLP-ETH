@@ -1,0 +1,30 @@
+However, what I want is SSH from any machine(home laptop, office machine and mobile) to instances in private subnet.
+2) Using proxy commands, configure your ssh config file, to have something like this
+2) launch a separate instance (bastion) in a public subnet in your VPC
+I've also included the below in case you wanted extra details about bastion hosts:
+Can anyone list what I need to setup to make this possible.
+The private subnet does not have direct access to external network.
+I have created a VPC in aws with a public subnet and a private subnet.
+Just to clarify: once you've ssh'd into your bastion host, you need to ssh into the NAT host as user ec2-user.
+The "destination" does not have a public IP, only a subnet ip, for example 10.0.0.1
+If you create a new instance, as an overview, you will:
+You can choose to launch a new instance that will function as a bastion host, or use your existing NAT instance as a bastion.
+I have done some research that I can setup the NAT box to forward SSH to instance in private subnet.
+So, there is a NAT server in public subnet which forward all outbound traffic from private subnet to outer network.
+4) update the security groups of each of your instances that don't have a public IP to allow SSH access from the bastion host.
+The "destination" can not connect to "nat" via nat's public.
+All     All         sg-0b6616e070b9ea2d (public security group)
+Agent forwarding takes care of forwarding your private key so it doesn't have to be stored on the bastion instance (never store private keys on any instance!!)
+1) create a security group for your bastion host that will allow SSH access from your laptop (note this security group for step 4)
+http://blogs.aws.amazon.com/security/post/Tx3N8GFK85UN1G6/Securely-connect-to-Linux-instances-running-in-a-private-Amazon-VPC
+destination (the server in the private subnet which I want to connect to)
+The AWS blog post above should be able to provide some nitty gritty regarding the process.
+This can be done using the bastion host's security group ID (sg-#####).
+Also, remember that your ssh_bastion should have an outbound rule that allows traffic out to other hosts and sg's.
+5) use SSH agent forwarding (ssh -A user@publicIPofBastion) to connect first to the bastion, and then once in the bastion,SSH into any internal instance (ssh user@private-IP-of-Internal-Instance).
+1) Make sure that the security group for this private instance has in the inbound rule the security group from the public subnet
+Currently, I can SSH from public subnet to private subnet, also SSH from NAT to private subnet.
+3) give that bastion host a public IP either at launch or by assigning an Elastic IP
+There are several "destination" servers, do I need to setup one for each?
+You can set up a bastion host to connect to any instance within your VPC:
+This trumped me up a bit, since normally the ubuntu user is ubuntu on AWS.

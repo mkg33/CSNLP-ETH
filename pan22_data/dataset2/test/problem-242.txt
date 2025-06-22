@@ -1,0 +1,5 @@
+This will make all IP address listed as clients that are excluded from smtpd_client_*_count/rate_limit restrictions. Thus this setting will suppress anvil log because there is nothing to log.
+I understand why these messages are being logged (I set up the restrictions), but I can't find any way to change anvil's log level (i.e. to suppress these informational messages from mail.log). Is there a setting I can use in my main.cf to disable these statistical messages? I'd rather stop them at the source than suppress them through a syslog setting.
+Files in the /etc/rsyslog.d directory are read before /etc/rsyslog.conf so these filters happen before the main config file.
+The first property-based filter writes messsages containing "statistics: max" in /var/log/maillog-stats and the second one discards the message for further treatment with the stop action.
+There is a parameter in main.cf to suppress the anvil process. This parameter is called  smtpd_client_event_limit_exceptions. The purpose of this parameter is to exclude some client from smtpd_client_*_count/rate_limit restrictions. In your case, you should specify it in main.cf

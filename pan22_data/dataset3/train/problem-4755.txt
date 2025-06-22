@@ -1,0 +1,25 @@
+That's basically what we monitor, which differs from alerting.
+Percona has also released a set of Nagios Plugins (which should work with Zabbix, I believe) that you can use.
+You start to see some very interesting patterns at that level of granularity.
+I highly recommend Graphite w/ statsd as a central location to collect all your metrics.
+It's aware of what stats are counters and which are absolute values (Questions is a counter, Threads_running is an absolute value) and will output the deltas for the counters.
+On my systems, I collect a ton of information and most of it has proved invaluable at some point or another.
+It watches server status variables to exceed a certain value (Threads_connected > 25 by default, but Threads_running is usually a more valuable metric, in my experience) and  when triggered, collects a bunch of data about MySQL and the system which can be reviewed with pt-sift or by just reviewing the generated files.
+For further reading, the white paper Preventing MySQL Emergencies by the Percona folks is a good read that goes into great detail on what to monitor and alert on.
+ab-tblstats2g runs from cron every night and sends table size statistics to graphite so we can track table growth.
+Monitor everything that you can as frequently as you can.
+If it exceeds that threshold, alert...there is a problem.
+It will even generate tcpdumps, gdb, oprofile, and strace traces.
+It provides a very simple plaintext protocol that makes it trivial to log nearly any metric data and a UI that makes it incredibly easy to compare one metric against another.
+Otherwise, you're ok.  No need to check "is the process running," or anything like that.
+We dump that data into Splunk for easy searching, but I still sometimes just use grep in the syslog logs.
+mysql_logger logs the output of SHOW FULL PROCESSLIST to syslog every X interval of time.
+Hit ratios are completely useless for alerting purposes - all that matters is that queries are returning within some period of time.
+You can cover 90% of cases by simply choosing a workload-representative query and setting a threshold on how long it takes to return.
+It makes it trivial to find out exactly what was running concurrently when something goes weird (table locks, long running queries, etc).
+I plan to extend it to include the maximum primary key value and the number of rows (from table statistics) in the near future.
+Other things to look for are entries in the MySQL error log, approaching too many connections, and the how well replication is functioning (slave lag, slave running, tables in sync).
+I wrote a daemon called mysampler that send the output of SHOW GLOBAL STATUS to graphite (or csv, if you want) at regular intervals.
+We log this at 5s intervals, but there are times that I wish we had it set to 1s intervals.
+pt-stalk from the Percona Toolkit is great for "what just happened?"
+For alerting, I suggest you alert on a very small number of metrics.

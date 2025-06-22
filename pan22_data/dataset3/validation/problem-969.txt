@@ -1,0 +1,19 @@
+And in any case, @Chopper3's advice is right - don't give the VM more v-CPUs than it absolutely requires.
+Depending on the loads, HT can increase performance by ~30% or decrease it.
+The above is based on the following understanding of vCPU versus pinned CPU, but also the assumption that KVM will allow a single guest (or multiple guests) to hog all the actual CPU from others if you allocate it(/them) enough threads.
+Moreover, the cores/sockets setting is just the way this process will be displayed for the VM's guest OS, on the host it's still just a process, regardless of how the VM sees it.
+Set the lowest number of vCPUs your servers need to perform their function, don't over-allocate them or you could easily slow down your VMs.
+One last thing, with kvm a vCPU assigned to a VM is just a process on the host, scheduled by the Linux scheduler, so all the normal optimizations you can do here easily apply.
+So, HT will (usually) reduce the slowdown a bit when you have more VMs then cores, provided each VM gets one virtual core.
+(Haven't played with mixed vCPU and pinned CPU on the same guest, because I don't have Hyperthreading.)
+I think to elaborate on Chopper3's answer: if the systems are mostly cpu-idle, don't assign a bunch of vcpu, if they are cpu-intense, be very careful to not overallocate.
+Typically, HT works well on workloads that are heavier on IO -- the CPU can schedule in more processing tasks from the queue of the other virtual CPU while the first virtual CPU waits on the IO.
+Normally I advise not to allocate more vCPUs than you have physical cores, to a single VM, but if the VM is rather idle (and of course, such a VM will not really require too many CPUs), it can be given up to as many vCPUs as you have threads.
+You don't really want to give a single VM more vCPUs than you have schedulable cores is what I'm getting at.
+Now, getting into the question of HT, it is generally a good thing to have, especially when you commit more vCPUs to your VMs than you have physical cores or even threads, because it makes it easier for the Linux scheduler to schedule those vCPUs.
+You can overallocate, but if you do, make sure no single guest, especially a CPU-intensive guest, has 8 vcpu, or you will have contention.
+Assigning multiple vCPUs to a VM can improve performance if the apps in the VM are written for threading, but it also makes life harder for the hypervisor; it has to allocate time on 2 or 4 CPUs at once -- so if you have a quad-core CPU and a quad-vCPU VM, only one VM can get scheduled during that timeslice (whereas it can run 4 different single-vCPU VMs at once).
+I don't know the KVM scheduler mechanism to be more specific than that.
+Really all the HT subsystems get you is hardware-accelerated context switching -- which is the workload pattern that's also used when switching between VMs.
+So, depending on how loaded and critical your VMs are, you either don't overallocate at all, stick to the physical core count, or go as high as the thread count per VM.
+You should be able to allocate a total of 8 vCPU without contention.

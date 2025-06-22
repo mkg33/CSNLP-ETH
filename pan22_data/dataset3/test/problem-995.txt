@@ -1,0 +1,16 @@
+So my SMTP server is accepting it, trying to send it to google who hosts the mail account, and it stops there, with google's mail server saying the relay is denied.
+Funny, the answer was staring me in the face the whole time in the packet capture, it was just not what I was actively looking for :-D
+It has worked for many years, but as of last week, stopped working, the message I am getting is FROM google, when my SMTP server attempts to deliver to the end user, I am getting
+Nothing in our configuration on most of this has changed in years, and it has sent hundreds of messages daily during that time.
+The issue ended up being that a DNS server in the network actually had entries for when it was originally installed that were directing MX look ups to the old postini addresses.
+Our corporate email is hosted on Google Apps, along with 5 domains for various products.
+This SMTP server is only used for internal applications to message users in the organisation, backup alerts, scheduled scripts notifying admin accounts, etc...
+We never noticed because mail from that server was making it through.
+Deleting those MX records and allowing the SMTP server to query the public MX records routed to the correct ASPMX.L.GOOGLE.COM, ALT1.ASPMX.L.GOOGLE.COM, etc.
+The messages contain no spam content, and in fact one of the processes is the Google Apps Sync for Active Directory integration reports, so a google product configured like their integrator left it.
+Diagnostic-Code: smtp;554 Relay Access Denied - psmtp
+So I can only assume google implemented some new criteria on what is and is not acceptable for other SMTP servers to be allowed to send mail to them, but I cannot put my finger on what.
+Internally (Behind our firewall, not exposed to the internet) we have an IIS server running  Microsoft ESMTP MAIL Service, Version: 7.0.6002.18264
+Final-Recipient: rfc822;username@legitimatedomain.com
+I was looking right past that at the error and ignoring WHO was responding.
+This makes my SMTP server send ALL mail to the badmail folder.

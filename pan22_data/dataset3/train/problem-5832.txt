@@ -1,0 +1,17 @@
+Cloud-init is a package that is present on Ubuntu and Amazon Linux AMI's.
+My current strategy has been similar but uses Fabric to run the Amazon shell commands locally instead.
+This post shows an example of using cloud-init, similar to the way we do it: http://www.atlanticdynamic.com/you-should-be-using-cloud-init/
+(I'm limited on the number of links I can post; Boto is simple enough to google)
+A few minutes after booting, the instance is ready for use.
+I've strapped together our method for bootstrapping EC2 from dozens of blogposts.
+As soon as you've permitted it to connect to the master (signed its certificate) the instance will automatically start configuring itself.
+The master will use a regex in the nodes.pp file to match the instance's certname, thereby assigning it a role.
+If you build your own machine images you can pretty much build whatever system you desire, but we wanted to go with the publicly available official Ubuntu images, which don't have configuration management software installed.
+Still a work in progress, but we use cloud-init for connecting the instance to our Puppet master, Puppet for configuring all packages to the role this instance will play, and Webistrano (a GUI for Capistrano) to deploy our code to the servers.
+The data passed in via user-data is executed by cloud-init as the instance has booted and can take several forms, such as shell scripts, cloud-config yaml, etc.
+It allows for various kinds of data to be passed to an instance as it is created, via EC2's 'user-data' metadata-option.
+If we need to deploy any code to the node, we don't use Puppet for that but Webistrano.
+As soon as the instance boots it will install Puppet and connect it to our Puppet master.
+For the moment we manually add the node to Webistrano's config but we intend to use MCollective to do it automatically based on node metadata.
+EC2 instances are also able to query metadata that was assigned to them during deployment, which in combination with a custom AMI can be very powerful.
+The master is then able to send a catalog to the puppet agent, which uses this to configure itself.

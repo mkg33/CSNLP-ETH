@@ -1,0 +1,13 @@
+Hopefully this post will stimulate better responses.
+Note: this interface - or at least the power supply notification has NOT been adopted by the new fangled systemd - even though, by what might be regarded as a bit of cargo cult programming it does try to ensure that the initctrl pipe exists.
+Some paragraphs in the man pages for init(8) refers to the depreciated interface of writing a one letter value to /etc/powerstatus (now replaced by /var/run/powerstatus) and then sending init a SIGPWR signal; the letter should be one of:
+I apologize for the low-quality response, I have not looked at the Linux's gpio drivers and how to extend/enhance them.
+I have also not looked up the current approved method for notifying init from within an interrupt handler.
+By delving into the source code of the SysV init available from the Free Software Foundation's Savannah server I was able to send requests to my RPi's init by filling out a struct init_request as detailed in the initreq.h header file.
+If the specified file does not exist or contains anything other than the letters F, O or L, init will behave as if it has read the letter F.
+My daemon/program which needs to be run as a user with the permission to write to the init control pipe {originally at /dev/initctrl but moved on Debian and thus Raspbian to /run/initctrl} was then able to send that structure to init which then responded appropriately by responding to the following entries in /etc/inittab:
+Page http://elinux.org/RPi_Low-level_peripherals says that Raspbian Wheezy supports GPIO interrupts.
+I guess the cleanest approach would be to have a kernel device driver manage GPIO27 and set up to receive an interrupt when it goes low.
+So while this might be an answer it isn't the answer - next, I need to look at the source code which is kept as a non-GNU project hosted at the GNU's hosting site.
+On the other hand this does exactly what I want it to do on my RPi system!
+Specifically this required the magic, sleeptime and, for my purposes the cmd fields being filled out, with the latter being set to one of INIT_CMD_POWERFAIL, INIT_CMD_POWERFAILNOW or INIT_CMD_POWEROK.

@@ -1,0 +1,13 @@
+I am using nginx on debian, and have a server configured with
+It's an ssl host, and is using pacemaker for HA, hence why I need to be able to defer the bind
+The deferred option doesn't defer the socket bind(), it defers the accept(), so this isn't what you're looking for.
+If this really isn't possible, and nginx takes longer to startup than you can afford at failover time (which would surprise me), then your only option is to initially start it listening on a different IP, and then at failover time change the configuration file and send nginx SIGHUP to reload its configuration.
+He points out that for those kind of connections there're no timeouts provisioned, so they get closed only on overflow, and that means that with backlog set to 10000 about 15000 sockets would be wasted as "hanging" in idle state.
+According to the nginx author Igor Sysoev's reply (in Russian) he considers both deffer and accept_filters being rather of disutility to nginx at contrary to apache.
+Is there a reason why you want to listen on a particular IP?
+If so, then the solution lies outside of nginx, as this operation is being disallowed by the Linux kernel.
+I don't know of any webserver which explicitly provides this feature, and in any case, you'd need to signal to the webserver when to bind.
+Anyhow it will get traffic only when HA kicks in and backup becomes primary.
+Your best option is to simply bind to 0.0.0.0 so that it doesn't matter what IP addresses are attached at the time.
+To allow processes to bind to an IP that doesn't exist you set the net.ipv4.ip_nonlocal_bind sysctl.
+If I'm understanding correctly, you are attempting to make nginx listen on an IP which may or may not exist on the local machine at the time nginx is started, correct?

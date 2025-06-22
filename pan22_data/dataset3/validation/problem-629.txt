@@ -1,0 +1,19 @@
+Also, what kind of attack is this formally called?
+If it's /24, you're likely seeing someone else's traffic because their destination address isn't in the switch's CAM table.
+In either case, go after the sender as identified by their MAC address.
+It filters by Ethernet hardware address, but it doesn't always know for sure which port is associated with an Ethernet hardware address.
+I have a bunch of UDP datagrams reaching my server that look like so:
+Maybe these datagrams are destined for another container that shares the same NIC with your node.
+This would be a UDP Flood attack, if the datagrams weren't corrupted and were destined for random ports.
+(...and for some reason your NIC is in promiscuous mode)
+Maybe someone is trying to see if 208.69.57.21 is vulnerable to MS11-083/CVE-2011-2013.
+I could be wrong, but the only way I can think of for a datagram to reach your computer when the layer 3 address doesn't match is if the layer 2 address is manually resolved on the sender and the sender is on the same layer 2 segment.
+Unless you have an atypical network, there are no rules to prevent a packet from getting switched to machines other than its destination.
+If a switch doesn't know which port a device is on it will send traffic destined to that device out every port.
+Any chance that your host is a virtual private server?
+So some packets do get flooded to all switched ports.
+The fact that the source and destination port numbers are 0 along with the UDP length error looks odd.
+The Ethernet layer has no idea what IP address the packets are bound for, so it cannot reliably filter them by IP.
+If this is true, you should be able to identify the sender by the layer 2 source address in that packet capture.
+The question is, my IP is not 208.69.57.21, (it was 208.69.57.101) so how are those datagrams even being received/logged by my tcpdump?
+I suppose it's also possible that the layer 3 device (router or firewall) that does sit on your layer 2 segment could be compromised or misconfigured to result in the improper resolution of that layer 3 address to your layer 2 address.

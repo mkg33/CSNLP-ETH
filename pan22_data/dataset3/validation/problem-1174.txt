@@ -1,0 +1,14 @@
+So Nginx could not write to the socket, it could only read from it.
+I know I'm late to the party, but this page came up in a Google search for this exact problem.
+you should probably run both webservers with the same user and/or same group so you dont have to make your socket world read writable.
+Also i dont see why a socket needs to be executable.
+The error log message I postet above lead me to the answer.
+"502 Bad Gateway" means that Nginx cannot receive response from upstream server.
+Running a shell command isn't really an ideal solution for me, and this is how I solved it;
+When Node.js was started, it created the socket with srwxr-xr-x rights.
+I always started the Node.js process as a normal user, while Nginx was started by root.
+This way everything could set up correctly, when the processes got started.
+Obviously if you have other things in your onListening event already, you should just add the call to chmodSync into the existing function.
+Instead of running chmod manually, you can make Node do it with the 'fs' library after the socket is created:
+But once I called the a web page, Nginx realized that it didn't have the rights to proxy the request to the socket.
+Make sure that you have a process listen on /tmp/app.socket:

@@ -1,0 +1,14 @@
+You can disable this behaviour (letting iptables handling bridged packets) by typing:
+When i do not add following rule the traffic is not passing through bridge.
+So why do I have to add ACCEPT rule in iptable's FORWARD chain?
+Since the traffic you are working is ip, iptables rules still apply because of br-nf passing the bridged packets to iptables.
+Because of the br-nf code that is available as a patch to linux 2.4 and used in linux 2.6:
+If you do not have the need to use iptables with the bridge on your system you can permanently disable it by using either of the following:
+Might take a look at this: http://ebtables.sourceforge.net/br_fw_ia/br_fw_ia.html
+This is a great resource to read about the interaction and this one details the functionality of br-nf code, including how to disable all or some of the functionalities (i.e.
+ebtables should be responsible for filtering traffic on the ethernet bridge.
+(see http://ebtables.sourceforge.net/documentation/bridge-nf.html)
+The ebtables chains won't see frames entering on a non-forwarding bridge port.
+As far as I understand iptables is only responsible for IP layer.
+iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
+I have setup ethernet bridge br0 that contains two interfaces eth0 and tap0

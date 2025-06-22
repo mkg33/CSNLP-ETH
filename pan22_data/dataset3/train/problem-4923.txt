@@ -1,0 +1,20 @@
+I'm currently in the same position (using both cloudflare and pagespeed)
+But as another user mentioned cloudflare sometimes has some issues and we've had to turn it off before which means we still have our pagespeed optimisations in place by simply switching it off.
+You can add the PageSpeed record in your DNS settings.
+Now we're also using google's cloudflare CDN/proxying service (elsewhere).
+Generally, this works pretty well - however, we've seen quite a few issues with cloudflare going down frequently in various network pop's (either due to congestion / upstream issues / network problems).
+I'm working with a business critical website and have been instructed not to try anything 'just to see what happens' so I'm forced to ask "what happens if you use both pagespeed and cloudflare together"?
+You don't want to stack a proxy on top of another proxy.
+Rather than having to turn back on pagespeed (means it can be done by someone less technical).
+Does it do any page optimisation as well, or does it strictly store and forward exactly what it received from our webserver?
+From what I can gather cloudflare is a big proxy/caching network/service.
+I'm wondering does it do any proxy/caching as well, or is it strictly one request in/one request out?
+From what I can gather it just draws the page from our webserver and runs it through the mod_pagespeed optimisation module.
+A lot of the cloudflare optimisations are stuff that pagespeed does, so it's either a waste or unnecessary (for example we use pagespeed to turn our jpegs into webp files from chrome) which means that cloudflare will have end up with multiple copies of the same file depending how our server optimised it (net result is that cache will take longer to warm up)
+The end result being optimized pages in the cloudflare cache.
+Mind you it is a great product with quite a few security features also available (like web application firewall, DDoS protection to certain extent, etc) but they'll possibly need to work a bit more on stabilizing their infrastructure so as to reduce website downtime.
+CloudFlare has its own web content optimiser (details are at https://www.cloudflare.com/features-optimizer).
+We can't, however, proxy that record & you would want to make sure that the record is direct (grey cloud) in your DNS settings.
+Generally speaking, this is what I see customers do with PageSpeed in their DNS settings:
+I expect the cloudflare cache would draw our pages from pagespeed which in turn is drawing from our webserver.
+CNAME www is an alias of (google's pagespeed dns value).

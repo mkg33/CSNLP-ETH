@@ -1,0 +1,14 @@
+Why rule out adding NULL data in dynarray_add and dynarray_set?
+If I was using the library I'd want a function that would call a function for every element of the array, rather than having to code such loops myself.
+A user can only find out the index of data added with dynarry_add by using the size field before the call or the size field-1 after the call; this seems a bit ugly.
+It's good practice to not define identifiers like that.
+Why require that initial_capacity be even in dynarray_init?
+It's common practice in C to have indices and sizes be size_t, you might want to do that (and eliminate all the index<0 checks).
+Further to Ratchet Freak's point about free, even if the intention is that only the one heap well ever be used, the items themselves could contain allocated data.
+A piece of pedantry, perhaps, but I think 'empty' would be better than free as dynarray_free doesn't free the container, just the contents.
+Personally I have my doubts, but I have found it useful to make library types opaque in development and testing, as an aid to identifying missing library functionality.
+Since you only have two values, I think it would be better to be explicit in the documentation, and code, that these are 0 and 1, and dispense with the names.
+You should consider passing a itemfree function to dynarray_deep_free and dynarray_remove.
+Strictly speaking, identifiers ending in _t are reserved for the OS/standard libraries.
+It can be irritating to have to remember a different name for 0 and 1 for error returns for all the libraries a program uses.
+It could be reasonable to want to first create places for items to live, and then in another pass create the items themselves.

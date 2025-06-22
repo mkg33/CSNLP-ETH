@@ -1,0 +1,8 @@
+Sorry, but i'd say that your server is properly secured if your sshd refuses attempts to authenticate with passwords.
+Its not just about cutting down on noise - most ssh attacks try to brute-force guesses at passwords. So while you'll see lots of failed ssh attempts, maybe by the time it gets the 2034th attempt they might get a valid username/password.
+It prevents more than 4 connection attempts from a single IP to ssh in any 60 second period. The rest can be handled by ensuring passwords are reasonably strong. On high security servers forcing the users to use public key authentication is another way to stop guessing.
+The nice thing about fail2ban compared with other approaches is that it has minimal effect on valid connections attempts.
+Well, it saves your network from denial attacks somewhat, and saves on the overhead of processing the failures. 
+Rate limiting login attempts is an easy way to prevent some of the high speed password guessing attacks. However, it's hard to limit distributed attacks and many run at a low pace over weeks or months. I personally prefer to avoid using automated response tools like fail2ban. And this is for two reasons:
+Tools like fail2ban help to reduce unnecessary network traffic and to keep logfiles a bit smaller and cleaner. It's not a big security heal-all, but makes sysadmin life a bit easier; that's why i reccomend using fail2ban on systems where you can afford it.
+Therefore I don't consider fail2ban (and similar automated response tools) a very good approach to securing a server against brute force attacks. A simple IPTables rules set to cut down on the log spam (which I have on most of my linux servers) is something like this:

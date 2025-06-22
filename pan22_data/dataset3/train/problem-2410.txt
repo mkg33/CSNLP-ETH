@@ -1,0 +1,12 @@
+I have a Postgres (latest version) table with about a million lines (a_lat, a_lon, b_lat, b_lon) that each have about a dozen criteria.
+These lines go together in reciprocal pairs (A - B, B - A), which I need to determine.
+Matches in each pass are removed from subsequent passes.
+Is this type of problem suitable for a MapReduce type solution?
+I'm currently doing the matching in Postgres by looping over each row in the table and doing a query to find matches:
+If you do the math its a ridiculous amount of queries (billions) and takes days to run.
+All fields have been optimized (floats and integers where possible) and indexed.
+There may be multiple lines with similar A and B lat/lon, with similar but different criteria.
+The criteria matching isn't exact, so many passes are done with less and less strict criteria (exact match on early rounds, +/- 1 one on later rounds, then +/- 1.5, etc).
+Can MapReduce handle multiple criteria, and criteria ranges (+/- 1)?
+Can a performance gain be expected on the same hardware (384 GB RAM, 64 core Xeon), or is the performance increase only due to the ability of MapReduce solutions to scale to multiple machines?
+If there is exactly one match then it's recorded and that row removed from future passes.

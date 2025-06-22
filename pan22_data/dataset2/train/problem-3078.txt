@@ -1,0 +1,7 @@
+It looks like the color values are premultiplied with the alpha but are rendered with the non premultiplied blending factors.
+Notice those greyish places on the corners of the textures - where rounded corners are supposed to be.
+You can test this by making your white rounded rectangle texture 50% opaque (the actual texture, not the vertex colors) and see if it makes a white/light background darker.
+What could be causing this? I have a pure-white texture, so I don't expect a single pixel to get any darker than the background. All pixels should have at least the color of background, but as you can see, there is something darker.
+The usual factors (glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);) will cause this darkening on premultiplied textures. A similar issue happens with linear interpolation of color when textures are not premultiplied.
+In my code, I'm trying to render this texture (a square with rounded corners, where rounded corners have some alpha)
+I have been told that this is kind of a common problem with transparent textures, but didn't get any further information on how to solve it.

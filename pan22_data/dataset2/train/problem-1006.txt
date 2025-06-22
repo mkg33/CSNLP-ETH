@@ -1,0 +1,8 @@
+But I do want to take the most advantage I can with caching and expires while still maintaining that mostly all browsers will check with the server to see if components have changed. 
+What would be the best .htaccess or .conf configuration for me to achieve my goals for this clients server? 
+Now when you see your response headers, you would see Cache-Control with an age. I have set it for 2 years
+I have access to both the .htaccess and apache .conf file and it is a single server, the content is not deployed on multiple servers.
+Basically, make sure that the server sends Etag and Last-Modified headers (which allows clients to check whether a resource has changed without actually downloading it), and set Expires and Cache-Control: max-age headers as far in the future as you can. If static content is going to be changed without being renamed, then the best you can do is set it such that it covers a typical browsing session (e.g. 15min).
+I know that I should use either Expires or Cache-Control. In additions, I know that I should use either Last-modified or ETAGs (Per ySlow docs).
+With this server I am not going to be able to rely on staff to rename images, css and js in web applications so I do not want to set the expires far in the future without knowing (with a good certainty) that "most/all" browsers will check to see if content has changed. What I do not want to happen is someone call me and say the website is broken because they replaced an image and it's not showing up.
+You should have eTag turned on although some people have recommended against it when using load balancers.

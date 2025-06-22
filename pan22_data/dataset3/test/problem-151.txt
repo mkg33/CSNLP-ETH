@@ -1,0 +1,15 @@
+When you begin with a - it means DO NOT allow them to login.
+Try switching that to a + meaning DO allow the users in this netgroup to login.
+I want to be able to authenticate users (via ssh) to specific groups of hosts based on the users' LDAP netgroup membership.
+if you are using SSSD as claimed above, then the nsswitch.conf entries should be as follows for netrgoups "compat glibc mode" to work
+Remember getent also looks at your local files (as defined in nsswitch.conf) for this information so be sure the information is only available via LDAP.
+The distro is OEL 6.5 with openldap as the client.
+Also use the getent command to check to see if you can see your users and netgroup proprely.
+What I can tell you from my AD authentication is taht your netgroup statement is the opposite of what you want.
+I am trying to get it authenticating against an old Sun LDAP server and am not having luck.
+I can see the netgroups, I can see the user with "getent netgroup {name of netgroup} and I can su to the user.
+My user belongs to the netgroup eeederp and is still able to get in using his LDAP password.
+I have Red Hat 6 authenticating against AD using Netgroups successfully.
+So I tried adding a netgroup to /etc/security/access.conf like so:
+to disable any user in that netgroup @eeederp to access the server.
+The only account we don't want to authenticate using LDAP is root.

@@ -1,0 +1,6 @@
+You could make your Webservers only consider the 'send transaction' done when they receive the final '250 OK' from the mail server. 
+If they don't get that, they should retry the send. That should take care fo the lost forever issue when the smtp server fails on the reception.
+You can build a webservice that you support can query by simply parsing those bounces and the logs from the webservers.
+If you install a local mail server you can do a bit more on the configurations (how many times to retry, when, etc as you mention). But you still may get bounces after a message is 'delivered'...
+Since bounces can be asynchronous it is a bit difficult to build a query interface for specific messages, you may be able to send a message and still get a bounce hours or even days after the fact. So the status of a message could be changing from 'sent to smtp server' to 'bounced'. 
+SMTP servers themselves have logic to keep retrying the sending of emails for a few times (configurable) when there is a failure. If the email is undeliverable you will get a bounce and should then evaluate what to do (retry or give up, depending on the reason for the bounce).

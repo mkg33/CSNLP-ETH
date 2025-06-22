@@ -1,0 +1,7 @@
+Right now, I have AWK (from bash) set to read the whole log, analyze each line and grab each line that contains "CONNECT" which works, however, it does not help me discover unique clients.
+Running the log file through sort | uniq should filter out the duplicate lines, but i would question why you have those lines in there.  Are they really duplicates?
+If they are legitimate log entries and all you want is a unique list of clients (the 2nd field) for lines which are non-duplicates, then a simple modification of @Thor's script should get you what you want:
+This isn't as compact as Thor's script, but i usually find that as soon as i've written something like this, i want to do more with the lines themselves, so i've left the seen array (tracking the count of unique lines) in there.
+This collects the first double-quoted string from lines containing CONNECT in the seen hash array. When the end of input is reached, the number of elements in seen is printed.
+If there was a way to grab all those lines in a log file, then compare them all and only count similar lines as one.  So let's say, for example:
+In this case, the answer I need would be 3, not 4.  Because 2 lines are the same, so there are only 3 unique lines.  What I need is an automated way to accomplish this with AWK.

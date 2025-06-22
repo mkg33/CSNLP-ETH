@@ -1,0 +1,17 @@
+The Netware Client for MS-DOS thus came with an NCOPY command for MS-DOS, which knew about the API extensions, called them, and thus could perform server-executed copies (that also preserved Netware file attributes).
+It was only ever exercised by workstations running OS/2.
+As with SMB/CIFS, there was no real way to plumb the Netware mechanism into MS-DOS proper for use by applications in general.
+There's been no real capability for exercising SMB_COM_COPY in workstations running MS-DOS or Windows NT.
+☺  But you seem to be asking about instigating a copy command from a workstation, that copies within a single fileserver and where the whole copy operation is executed by the server itself (subject to the normal access permissions and so forth).
+OS/2 applications have a DosCopy() system API function available to them, and the OS/2 LAN Server network redirector in OS/2 was clever enough to recognize when a file was being copied from a remote network volume to a different place on that volume, and forward the entire operation to the server.
+There's not even a "copy an entire file" system call in the (unextended) MS-DOS API to hook into.
+There used to be, in the SMB protocol, a command for performing server-side copies, where none of the copied data need travel across the LAN.
+So again, OS/2 workstations would exercise this automatically, as applications called DosCopy() to copy files around.
+However, there are Netware-specific extensions to the MS-DOS API.
+In the past for these situations I've generally terminal serviced into the server and done the copy from there.
+It would involve you invoking the command on the remote server which you might not have the authority to do.
+There is a whole file copy transaction in the Netware protocol, and the Netware network redirector for OS/2 was clever like the LAN Server network redirector.
+Obviously, if you are actually logged in and issuing a copy command on the server itself, the copy operation doesn't involve any workstations.
+As such, Microsoft decided to drop that part of the protocol from NT LAN Manager, and a CIFS transaction with that command ID now simply generates an error response.
+There's an ncopy command for Linux that issues the same Netware protocol command.
+— nothing equivalent for Windows NT, and no way to make use of this facility from a Windows NT workstation.

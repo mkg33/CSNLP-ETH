@@ -1,0 +1,20 @@
+Also, you didn't specify your Oracle version and patch level.
+There isn't any reason to use RELATIONAL in a query but there is also no reason for it to fail.
+Googling for 'SELECT * FROM RELATIONAL' only returned questions related to ORA-01555.
+We recently got some errors in our alert log of the form
+I believe this was a deprecated alias to today's TABLE function for pipelined functions, but now I can't find my reference that says this.
+The line below "ORA-01555 caused by SQL statement below " is the SQL Statement causing the UNDO to swap.
+So, my question is: What is the meaning of the RELATIONAL keyword here?
+How log does the offending query run before it fails?
+I think this is just an issue of a long running query, which is being exposed by the ORA-01555 error while internally using a query hint, which is undocumented.
+So RELATIONAL is not an Oracle thing, it is an object created by a user.
+Most tables are RELATIONAL, and that's the default.
+ORA-01555 usually means your UNDO segments are not sufficient to handle the rate of change in your database.
+I know how to handle ORA-01555 errors, but I never encountered something like SELECT * FROM RELATIONAL.
+However, Oracle also supports OBJECT tables (see the syntax on in Oracle's CREATE TABLE docs), which explains the reason for the internal syntax.
+According to this blog article the specific hint RELATIONAL instructs the Query Optimizer to
+I tested this on XE 11 and found that it does nothing.
+A second article in the Oracle Community states that
+Or is your real question, "How do I track down the SQL that caused this error?"
+You should focus on the general fixes for ORA-01555.
+I looked in DBA_OBJECTS, but there is no such function/operator/whatever.

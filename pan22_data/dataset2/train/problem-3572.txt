@@ -1,0 +1,6 @@
+I'm trying to install MongoDB on CentOS 7.2 from the mongodb.org repository. So far so good, but the hoster has created a secondary disk (/mongo) for all the MongoDB data files. This clashes with the SELinux permissions, making MongoDB unable to start. I've got it to start by running setenforce 0, but that's not really the way I'd like to run a production server.
+If you'll still have problems - run audit2why and fix another issues manually. Maybe we can help you on this step.
+would solve the issue. Afterwards, I did a touch /.autorelabel and rebooted. That, unfortunately, didn't fix the problem at hand. How would I go around fixing this?
+I've got quite some Linux experience, but all my SELinux experience is just turning it off. I've found this CentOS SELinux tutorial, which made me think running 
+Running sudo sealert -a /var/log/audit/audit.log gave some useful insights here and recommendations for SELinux config changes. (We have changed the dbPath value in mongod.conf also.)
+If you want to configure SELINUX for Mongo in simple way - try audit2why on your /var/log/audit/audit.log to see what kinds of violations would have been denied, and build custom policies with audit2allow. It works in 80% of incidents.

@@ -1,0 +1,6 @@
+I executed the a.out thus generated on the Rasperry Pi board and it displays the correct output. Next I did
+Now, I am unable to find the file libcofi_rpi.so on my host Ubuntu 12.04 machine. So I am wondering how did the hello-world program get cross compiled in the first place. If I rename the libc.so* cross compiler arm libraries on the host Ubuntu 12.04 machine, the cross compilation fails. So I know, the cross compiler is definitely looking for these libraries. How then did the cross compilation succeed without the libcofi_rpi.so library on the host Ubuntu 12.04 machine?
+libcofi-rpi.so is a hack to speed up certain memory operations. It's loaded through a linker configuration file rather than being loaded by the binary you are running.
+I successfully cross-compiled a simple hello-world.c program for Raspberry Pi Board on my Ubuntu 12.04 host machine by following the instructions given in this
+libcofi_rpi.so is a shared lib, and linked at runtime. As long, as you do not execute the program, it is not necessary to have it available, it is enough to have the contained methods and fields defined in an included header, which is surely a part of the crosscompilation suite.
+ldd output is a bit confusing in this situation. It doesn't distinguish between libs loaded by the binary and libs loaded through linker configuration.

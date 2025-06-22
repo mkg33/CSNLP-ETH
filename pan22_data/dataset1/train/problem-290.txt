@@ -1,0 +1,12 @@
+It is common for your daily log rotation scripts to restart Apache in
+order to close the open log files.  If the restart
+correspond to entries in cron (typically in /etc/crontab, /etc/cron.d,
+or /etc/cron.daily), then you can be pretty sure this is what's
+happening.  This might be controlled by a daily call to logrotate,
+which is configured via /etc/logrotate.conf and /etc/logrotate.d.
+Note that some of these paths may be distribution specific.
+Any system with an ssh port opened to the world is going to see a lot of failed ssh attempts because there are people all over the place running probes to find vulnerable systems.
+However, you've identified the connections as coming from inside your network, so the first thing to do would be contact the person responsible for the originating system and see what's going on.  It could be something legitimate like a security scanner, or it could be a compromised system.
+I'm venturing into personal opinion here, but if you allow password authentication to your system you're setting yourself up for trouble at some point.  The safest way to configure ssh is to simply disable password authentication in your sshd configuration and rely exclusively on key-based authentication for access.  By doing this you eliminate the risk posed by brute-force password attempts, and you mitigate a variety of other problems, as well.  An attacker cannot use a password captured via other means to access the system, and a successful attack via other means cannot be used to harvest passwords by installing a trojan ssh server.
+Fairly new at securing and monitoring Linux boxes but have noticed some odd behaviour with our locally hosted LAMP server that stores our disaster recovery.  Basically it has been reporting itself as being offline periodically and then comes back.  Apache2 logs show some "graceful shutdowns" while the auth.log is showing the following:
+Am I correct in assuming the the failed password from root entries are some system trying to access the box via ssh?  Annoyingly it is a system within our network.  Aslo is there any reason for Apache2 to periodically shutdown "gracefully"?  Would it do this to clear cache etc?

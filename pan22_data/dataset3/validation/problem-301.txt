@@ -1,0 +1,8 @@
+Is there a mechanism that will allow the API server to check the manifests being applied against a set of rules, and if it fails the check the manifest is rejected.
+I would be inclined to implement the Open Policy Agent as this will give you the ability to define a policy similar to this:
+OPA will enforce any policy you defined via an Admission Controller, beware though it's very powerful and I have bricked clusters by not thinking through the options carefully.
+I have built a self-service platform based on Kubernetes, where we create namespaces for each team and allow them to 'do whatever they want within the namespace' (we set resource limits so no one can kill the whole cluster).
+For example, I want every PodSpec to define its own resource limits, and I want every resource to have a label that specifies what application it belongs to.
+But the following manifest would succeed because it satisfies all the rules:
+However, now I want to implement some kind of standard across the organization.
+For example, the following manifest would be rejected because it has neither a label nor are resource limits set.

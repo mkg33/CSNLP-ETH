@@ -1,0 +1,14 @@
+As p increases, more of the shapes will pass their threshold and appear, giving the impression of a continuously varying density.
+Set the evaluation point for all texels in each component to the UV of the component's center, and generate a random threshold for it.
+So an area preserving map would result in a uniform points on the target.
+For instance, you could have the red and green channels store the UV coordinates at which to evaluate p, the blue channel store the threshold at which to turn on that pattern element, and the alpha store the antialiased gray level of the pattern to display.
+The UV+threshold data could also be in a separate, secondary texture if desired.
+The UVs of this evaluation point could be stored in extra channels of the pattern texture.
+In your example of circles, all the texels in a given circle need to agree on p.
+I assume that you have some way of evaluating p at a given point on the surface (whether it is looked up from a texture or calculated from some function).
+Then, when rendering, use a pixel shader that first samples this texture, then looks up p at the given evaluation point and compares it to the given threshold.
+To generate this UV+threshold texture, starting from an input pattern texture, you could programmatically find connected components (e.g.
+That way, each pattern shape will see a uniform p value and threshold, and will either turn on or turn off fully.
+If you have a uniform point set defined on the plane and a mapping function from the plane to the target surface then the density function on the surface is how areas map from the plane surface to the target.
+Then one way to ensure a group of texels all get the same p value is to ensure they all look it up from the same point.
+In order to ensure that the pattern shapes are always either wholly present or absent, never cut off, it's necessary to ensure that the same p value is used for all texels within the shape.

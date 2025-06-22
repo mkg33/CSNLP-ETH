@@ -1,0 +1,7 @@
+I think your assumption about things going into read only mode when the connection to the network drive is lost is correct. I made a simple test with a just a small file on a Samba share and the same thing happens if I yank the network cable.
+We are using a network Samba drive for Backup on our Linux Server. In order to store permissions (Samba does not support this), we have created a loop device to a large file (50GB) on the network drive.
+This does not get you exactly what you asked for - I would say it gets you something a little better - but I don't think you can expect the loop device to work as you want wo. some trickery anyway. 
+As far as I know the mounted drive goes into readonly mode when the connection to the physical device is lost. Thus when the network drive loses connection, the loop file is gone and the loop mount goes into readonly mode. The cifs handles reconnecting of its own mount, but loop knows nothing about it. 
+If you use rsync to do your backup, you can check on the rsync exit status to figure out if you have been unlucky enough to lose the connection while doing the backup (true for other tools too - just my preference). You may then act accordingly.
+Is there a possibility to trigger remount of loop device when the target loop file gets back online?
+Our current solution is to force remount of both samba and loop device shortly before our cronjob would start the backup process. This works, but doesn't feel right.

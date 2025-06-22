@@ -1,0 +1,7 @@
+Since I'm not a UserScript or DOM guru I'd like some feedback on it. Did I make any mistake or inefficiency? Is there something that can be improved?
+No matter how you block the click-jacked search results, if you end up on a page that happens to have some widget that reports back to their server (with the same hardware, software and network info), consider yourself tracked. These "widgets" come in a variety of forms, like ads, like buttons, tweet buttons, follow buttons etc.
+I've created a brief UserScript (GitHub repository) for TamperMonkey to stop Google from hijacking Search results URLs for tracking purposes when you click them:
+You are only removing the inline/property handler. You're not preventing handlers that are assigned via addEventListener and delegated (handlers assigned to ancestors to listen to a descendant).
+Wrong, there's a lot of ways websites profile you. One other method is your device fingerprint, the combination of hardware, software and network information that normally gets sent to the server. A server can then compute a hash and link it to you.
+First, we cannot prevent addEventListener handles since removeEventListener requires the reference of the handle function which we normally don't have access to. The best we could do is to clone the node, which doesn't copy over handlers assigned via addEventListener. 
+Then we override the inline onmousedown by defining your own function. Then we prevent delegated handlers by calling stopPropagation.

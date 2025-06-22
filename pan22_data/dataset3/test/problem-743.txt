@@ -1,0 +1,16 @@
+However, after restarting the Netlogon service all Active Directory related DNS entries were back.
+The Microsoft DHCP server has an option to update DNS records when DHCP leases change.
+I got the following message in the event log after I had to delete and recreate the DNS zone (emphasis mine):
+As mentioned, ipconfig /registerdns will force registration, but your comment that it doesn't work "for a dropped and died computer" is confusing.
+A DC's records are a lot more than what is registered with ipconfig /registerdns.
+/dsderegdns will tell the DC to unregister it's records.
+will "try" to register the A and PTR records of the machine you are running this command on in the DNS servers the NIC is associated with.
+A DC registers numerous service location records (SRV records) such as records with names starting with _ldap and _kerberos.
+I only had to recreate static machine entries manually.
+You can delete them all from DNS and they will eventually all show back up.
+If you change the IP manually or if it receives a new IP via DHCP this should be automatic.
+nltest /dsregdns run from a DC will tell that DC to register it's records.
+If the DC is dead, you can't run "nltest" so there does not seem to be a utility to clean the dead DC's records out of DNS...
+This should happen automatically (for windows machines on your domain as long as 'register this connection's address in dns' is checked under dns tab).
+I already tried the nltest.exe /dsregdns suggested in another answer here, but that didn't work for me.
+If the machine is off the network or powered off then there is no way for it to register its address.

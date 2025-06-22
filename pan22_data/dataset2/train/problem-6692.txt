@@ -1,0 +1,11 @@
+Feel free to check out the full source code here: http://www.retroaffect.com/blog/159/Image_Atlas_Packer/#b
+If you can then iterate that trying several heuristics, and/or apply a random factor in choosing the ordering and iterate until some time limit runs out.
+What is a good texture packing algorithm?  Technically, bin packing is NP-hard, so a heuristic is what I'm really after.
+"While there are numerous packers that can be found online, our difficulty was in finding any that could handle large numbers of images in multiple directories. Thus, our own atlas packer was born!
+Personally, I just use a greedy largest-block-that-fits first system. It's not optimal, but it does the trick OK.
+We recently released a python script which will pack textures into multiple image files of a given size.
+As is, our little script will start in the base directory and load all the .PNGs into an atlas. If that atlas is filled, it creates a new one. Then, it will try fitting the rest of the images in all previous atlases before finding a spot in the new one. That way, each atlas is packed as tight as possible. Atlases are named based on the folder that their images are from.
+Something I've used, which works well even for irregular UV maps, is to turn the UV patch into a bitmap mask, and maintain a mask for the texture itself, searching for the first position the UV patch will fit into. I order the blocks according to some simple heuristic (height, width, size, whatever), and I allow rotations of the blocks to minimise or maximise the chosen heuristic. That gives a manageable search-space for brute force.
+With this scheme you'll get small UV islands packed into the gaps made by large ones, and even in holes left within single UV patches themselves.
+Note that, if you have a reasonable amount of texture blocks, you can exhaustively search the best ordering even if the problem itself is NP. 
+You can change the size of the atlas (line 65), format of the images you want to pack (line 67), the load directory (line 10) and the save directory (line 13) fairly easily with no experience in Python. As a small disclaimer, this was whipped together in a few days to work specifically with our engine. I encourage you to request features, comment with your own variations, and report any errors, but any changes to the script will happen in my free time."

@@ -1,0 +1,20 @@
+The Wikipedia article on TSRs provides more detailed information.
+Typically the first program loaded is COMMAND.COM and it's at the bottom.
+I think Netware was the same way, it used DOS to boot but basically the Netware OS replaced DOS in RAM when loading.
+COMMAND.COM can ask DOS to load and give control to another program - the binary is placed into memory where COMMAND.COM ends.
+In that case executing the DOS return call would crash or behave unpredictably.
+You could even overwrite DOS entirely, that's what the LOADLIN program does - it's a Linux loader for DOS.
+When the binary executes the DOS call to terminate, DOS decrements back the free memory pointer and the memory is "reclaimed."
+No provision for removing it without special third-party utilities.
+I think the best way to describe it is that DOS treats its main memory (the "Transient Program Area" or TPA) as a stack.
+TSRs could hook into DOS functions or system interrupts and as such achieve limited multitasking.
+DOS did support TSRs, or programs that would terminate and stay resident.
+But yeah, there is no memory protection so any program can really just trash the entire RAM, including where DOS lives, at any time.
+With a real-mode flat memory model, a program has full control of 64K of memory.
+Given that, how was DOS able to "return" after the program exited?
+I suppose DOS maintains a "start of free memory" pointer for this purpose.
+So in this case DOS wouldn't decrement that pointer before returning and the program would remain in memory.
+Since you only had one program running at once, there wasn't any worry about holes or fragments in this scheme.
+First, the original IBM DOS was released in 1981 with the original IBM 5150 PC, though the CP/M operating system it was based on did exist in the 70's.
+This means that, after DOS launches it, the program can overwrite memory that DOS was in, as well as any other program.
+This scheme depends on programs cooperating and there is no enforcement.

@@ -1,0 +1,5 @@
+Just to add to @MartinC's answer that the row count for table variables is maintained in tempdb.sys.partitions and OPTION(RECOMPILE) can cause this to be used but it doesn't have any more granular statistics to use so will need to fall back on guesses based on that.
+MartinC is correct, plus you could also apply indexes to temp tables. This couldn't be done with a table variable.
+You have only shown the population code rather than any code that uses it. Another limitation of queries that insert to table variables is that they cannot have a parallel plan so that could explain why the population query might run faster. 
+Table Variables don't have statisics in the same way as Temp Tables normally they're assumed to have only 1 row.  This incorrect estimate of rowcount will make a nested loop operation look like the best plan but when this is done for a larger amount of rows the cost can easier be greater than a table scan.
+I was recently working in a very slow stored procedure (took 5 minutes to run).  I made a very small tweak from doing this:

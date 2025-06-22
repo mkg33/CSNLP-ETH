@@ -1,0 +1,11 @@
+Since the zones are integrated there isn't a local zone file on each server for each zone, the zones are stored in the Domain partition of the AD database on each server.
+(*) This is the usual behaviour, but it can be changed depending on the zone replication scope.
+And, indeed, it is considered best practice to use AD-integrated DNS zones, make all of your DCs (or most of them) DNS servers, replicate the zones to all of them and have all domain computers use two or more of them as their DNS servers.
+If the zones are integrated then they're neither primary nor secondary in the traditional sense.
+DNS is critical to proper AD operation, so that's a service you most definitely don't want to fail.
+2) Each DNS server will have a SOA record for itself.
+This of course implies that all DCs which are also DNS servers get a SOA record for AD-integrated zones; and this is perfectly fine, as all of them actually are authoritative DNS servers for that zone.
+DNS records can be created, updated, refreshed, or deleted from any server that holds a copy of the integratede zones and those changes will be replicated to all other servers holding a copy of the zones through the normal AD replication process.
+With AD-integrated zones, there is no concept of "primary" or "secondary" zones; an integrated zone gets replicated to all DCs in the domain(*), and all of them are authoritative for it and can modify it, either by admin intervention or by dynamic updates from domain computers; whenever the zone gets modified, the AD replication process takes care of synchronizing the changes between all involved DCs.
+1) You should have more than one copy of your ADI zones, it's best-practice to have at least two DCs running integrated zones.
+You can consider both servers to be primary for the integrated zones and as such each will be listed as the SOA in their copy of the integrated zones.

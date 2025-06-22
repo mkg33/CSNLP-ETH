@@ -1,0 +1,8 @@
+We have one virtual machine acting as munin master and all other virtual machines are munin nodes (version 1.4 on Ubuntu 12.04 LTS btw.).
+So my idea is to create another munin virtual machine just like the one I already have and so my question goes about if it's possible that all virtual machines only poll once the virtual machine and send their data to two munin servers.
+If you have any custom plugins, which store data, and expect it to stay the same for 5 mintues untill the next poll, you will have to fix those modules. Same for plugins that alter data somewhere on the drive*.
+The idea is to both not stress virtual machines twice just to gather the same information and at the same time be able to shut down (for maintenance, or because of an accident) a monitor virtual machine and still be able to see the graphs.
+Just fix allow directive regex in /etc/munin/munin-node.conf on your nodes to allow both servers to access the munin-node. 
+*eg. if your plugin counts the number of lines in the log file, and then empties it, the second munin poll, immediately after, will report a value of 0 lines in that log file. 
+Otherwise, most (cpu, load, temperatures, etc.) plugins work without problems. We had the same setup when migrating from munin 1.x to 2.x with cgi and new OS, when we needed the old one to work, while we tested the new one with production data. 
+I'm in the process of making everything on our server setups redundant, and so comes the monitoring.

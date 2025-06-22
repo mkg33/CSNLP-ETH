@@ -1,0 +1,7 @@
+in our PHP project we have few 404 pages, so I decide to do it on PHP level using PHP header() functions
+In our load-balanced multi-server setup, occasional 404s happen, but they're quickly fixed by rsync (via lsyncd). Before Cloudflare, a re-request to the 404ed file would very quickly become 200 as rsync does its job.
+You said all 404s, but for full reference of course it might make sense to wrap that in a <FilesMatch> or <LocationMatch> to limit the scope.  
+I have recently run into an issue after switching to Cloudflare, and the solution is to basically stop Cloudflare from caching 404 responses.
+However, since Cloudflare caches all data based on the caching header, and neither apache nor nginx send a no-cache header for 404s, Cloudflare ends up caching the 404 response for a while.
+I believe this is a new capability in apache 2.4 as using expr conditionals is not the in the 2.2 version of the mod_headers documentation.
+I've been searching for a solution to globally add such a header for 404s in both apache and nginx (globally, for all hosted domains), but so far have come up blank.

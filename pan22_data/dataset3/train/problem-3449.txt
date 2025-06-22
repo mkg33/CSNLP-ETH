@@ -1,0 +1,11 @@
+But what actually helped is adding a DWORD value MaintenanceDisabled  with value 1 to this key:
+Please advise what might be causing the unnecessary cpu use described below.
+Windows does this during the Idle Maintenance task to optimize Windows (cleanup of WinSxS, optimizing .net files with ngen)
+There is a Handles tab in the same process' properties window.
+Unfortunately I didn't have this setting in Task scheduler so I didn't have anything to disable.
+It comes from the function ntoskrnl.exe!RtlScrubMemory / ntoskrnl.exe!RtlpGenericRandomPatternWorker / ntoskrnl.exe!RtlpTestMemoryRandomUp.
+Looked up the device (VID 8087 and PID 8000) in device manager, and it is Intel Generic USB Hub
+There is this row, which might be connected the thread above, since the handle is the same as the address in the misbehaving thread:
+https://www.tenforums.com/tutorials/40119-enable-disable-automatic-maintenance-windows-10-a.html
+Run the Task Scheduler, go to Microsoft -> Windows -> Task Scheduler, select Idle Maintenance,
+This function write random patterns to the RAM to test the RAM for errors.

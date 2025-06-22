@@ -1,0 +1,12 @@
+So, sure enough it's easy to have all of your guests have a filesystem image file attached to them as a read-only block device.
+It just won't work, because nobody knows that someone else is updating the contents, so everything falls apart.
+I don't suppose this for kernel modules or portage trees, is it?
+In the cases I've used this, we actually had some code in the domU config files (since they're just Python anyway) to find the newest of these block devices and attach that, then the usual boot-time mounts did the right thing.
+Once you've got your "block device" mounted in any guest, nothing can be allowed to update it.
+Instead, you need to create a copy of the file with the filesystem image, make whatever changes are needed, and then trigger some sort of update action to make the guests unmount the old "filesystem", then the dom0 can detach the old file and attach the new one, before the guest remounts the filesystem.
+So, for us, the "update process" was "reboot the guest".
+Whether that works for you, though, is a question I can't answer because I don't know what you're trying to use this for.
+Ownerships you'll presumably take care of in the block device anyway (assuming you're using a filesystem type that stores that metadata -- but if you're using, say, VFAT, ownership is only a mount option away anyway).
+It's probably easier than all this block device frufru (we had some pretty specific requirements that made it the least-worst option, but I don't expect they apply in your case -- in fact, I know they don't apply in your case, because you've already got an NFS server).
+It's also very straightforward to have that mounted somewhere in the guest (/etc/fstab and all that Jazz).
+Alternately, just have a second NFS server that is only used for supplying these files to your domUs.

@@ -1,0 +1,60 @@
+Moreover, this does not solve the general problem of faction simulation - factions can expand or contract through many chunks, whereas keeping one chunk loaded in memory would not affect its neighboring chunks, so that doesn't quite achieve the same effect as autoplay.
+IMil's suggestion to think in terms of a 'state + time' mutation function is good, and I think you could find decent success by "binning" that mutation step into different fidelities, by duration.
+If you do develop a closed-form (or 'more-closed' form) of your sim, then you can significantly reduce the burden by marking chunks as 'pure' (unedited by the player).
+The simplest example is tree growth, if you plant a seed, you can compute the age based on the state, and from the age you derive the size.
+If you want slightly higher fidelity, maybe you introduce an 'HPS' factor (heal per second) to represent all the ways a character can reduce/repair their damage intake.
+Then think about how they overlap at high level, and you then access to simulated interaction in similar way.
+The highest fidelity is for use when the player's in the area and may be watching, or has made significant changes the area.
+E.g., an earthquake could significantly change a landscape, thus wiping out or masking the player's changes there.
+Minecraft gets around this problem by simply storing the inactive chunk in memory as-is as soon as the player leaves the area.
+Your 'closed form' suggestion is a good way to reduce fidelity (ignoring player edits), but I imagine you'll find it very hard to implement.
+instead of evaluating stats like hit, crit, dodge... Just compare the health and DPS of the combatants directly.
+If you want a huge world, you'll need to reduce fidelity.
+Reload when the player approaches to catch up on the simulation.
+On the other hand, simulating all the factions simultaneously is surely going to become a bottleneck as the map grows.
+So, weight your "chunk warmth" by time spent there by the player.
+The minecraft world is a static, never-changing place.
+You empire is declining, therefore you generate war, famine, whatever plausible excuse you can from the state.
+Correlation allows you to side step things, ie you find a state then find why AFTER, tune your simulation that it generate the right plausible coincidence, for example, it's hard to find a river for a given topology, therefore the river first, it follow the slope of the topology, and therefore define it.
+There is a new house, therefore you need new habitant and make one birth, possibly that house is actually built in the future, so it's not visible yet, let the kid grows first.
+Lowest fidelity is for when you just want to say "Are there any factions to the east of the currently known map that might launch an attack on a water-rich nation?"
+Similar to the 'closed form', this is level-of-detail applied to your simulation mechanics.
+Furthermore, when a player leaves a chunk, he has made some changes to it, but the function cannot take those changes into account when computing the state of the block the next time the player enters it, in other words all changes that the player made to the block are lost as soon as he leaves.
+Consider a character, where the character will be a time t?
+That mean that time can be segmented into chunk too, not just space, and just like procedural space, you can attach unique seed for each time chunk (and time block).
+Absence Makes the Simulation Grow ... Lower-fidelity
+But if you kill the beavers before leaving the sector, the river stays the same.
+AI and simulation are notoriously finicky even without this constraint.
+There are many other approaches, but hopefully something here is useful.
+Now instead of just generating character activity based on time chunk, try to set a high level time table for any active agent.
+With a bigger map and more factions, the performance requirements become exorbitant.
+That is, a function f(time,coordinates), such that given the time and and coordinates of a block, will tell you what state that block should be in.
+The "solution" that I thought of is to come up with a closed form formula that simulates autoplay somehow.
+This answer, broad as it is, relies on the idea that you can adjust your AI/world simulation's fidelity fairly easily, which I think is beyond what I can explain here.
+So that when the player come back you don't have to simulate every step to the output.
+It's worth considering how important the player's edits are, both to the simulation, and to the player.
+If they pass back through two weeks later, will they remember it clearly enough to know whether you just reset the state to being wild?
+As this happens, it gradually shifts to lower and lower fidelity/update frequency, and is eventually unloaded.
+What you want is a stateless "simulation", ie that is for any input state and a time variable, you get an ouput state.
+In order to model complex interaction, you need to design system in an hierachical fashion, for example, it's easy to have a stateless simulation of a planet orbit, to get the position of the moon, which depend on the state of earth, you have to get earth state first.
+So with that kind of system in mind, it's really just about choosing when you can get away with reduced fidelity, and how much it can be reduced by.
+(HP/DPS = time to kill, whoever takes longer to die is the winner).
+Similarly, chaotic AI behavior can make player prediction less effective (at the cost of your world making less sense).
+Now all you need is a starting state, everytime the player modify a store state, it's easy to advance time to another plausible state.
+If you're trying to simulate in real time, this looks a bit like a 'warmed cache' question: The chunk gets 'colder' when it's visited less frequently.
+E.g., player passes through a chunk and punches a tree over.
+Another way to 'purify' your chunks is to add entropic forces to your world.
+The important thing, again, is that players likely won't be able to tell the difference, if you're careful with when you employ different levels.
+You could either deduce the long-term effects of your AI actors yourself, or use ML techniques to predict the long-term effects of their actions.
+The problem with this is that this assumes a truly predeterministic world evolution, in which players have control over only their local chunk and no others.
+In general, the idea is to aggressively relax constraints as you reduce fidelity, thereby reducing the time it takes to simulate.
+One of the interesting things about Dwarf Fortress (and other procedurally generated games like Civilization) is that the game simulates multiple AI factions interacting with each other over time (what might be termed "autoplay") to generate an evolving world which changes over time, even whilst the player is playing the game.
+E.g., say you have an NPC with 'thirst', and it lives in an house near-ish to a body of fresh water.
+When a player comes back from a trip, the chunk is exactly as he left it.
+Using a time table and the character innate state (like personality etc ..) you can derive what a character do at any moment with a probability time table, at night a thief might try to steal house.
+Well if it's night he might be sleeping but at day maybe he is working.
+Simulations have an inverse correlation between fidelity and size/scope, so given fixed hardware you'll have to compromise.
+A player spending weeks carefully tweaking a chunk is more likely to notice weird simulation there.
+if your sector has a couple beavers and a river, then if you leave it for a month, there will be a dam and a lake.
+The most straightforward approach to this, which is to just to make chunks remain loaded in memory even after the player is no longer in them, has the same performance issues as mentioned earlier - as the player moves across thousands of blocks, you will sooner or later run into computation limits.
+In order to achieve stateless simulation, you can't use "cause", because you would have to generate all intermediate step, which is costly.

@@ -1,0 +1,16 @@
+I did a quick google search and no answer seemed to help me, so I just tried the first thing that came into my mind:
+Also occurs if your configuration produces 'multiport' and 'all' together ('all' can be used to work around bots switching from tcp to udp, which fills logs with "WARNING: ... already banned").
+Many people seem to have a problem with 100, but this is about 200)
+Now everything starts up just fine and my rule is working.
+I just tried to add a new fail2ban rule that is supposed to scan Apache2 error logs for suspicious file access attempts (People who try to access three common login urls that do not exist usually don't have good intentions).
+That - however - gave me an unexpected error message in my logs:
+Regardless of it's value, it's not going to be a known port that iptables could understand.
+To do so I added a new rule to my jail.local file:
+(I renamed the rule from apache-suspiciousfiles to apache-suspicious)
+I do not know what iptables would have been fed, I am assuming it would be blank.
+For me, a 200 was because the action.d rule sent to iptables couldn't be parsed.
+My mistake turned out to be from trying to ban multiple ports with an iptables[] action, which only works for a single port.
+I had to edit my rule to remove the --dport bit, since I wasn't actually going to pass a port, and then it was ok to load without causing it to return 200.
+In my case, my rule name was short enough, but the 200 error persisted.
+I had checked the filter with fail2ban-regex before that, so I was quite sure that it was not something in there.
+Once I changed my action to use iptables-multiport[], the error ceased:

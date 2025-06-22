@@ -1,0 +1,40 @@
+Don't forget, you are not running Ubuntu or Centos.
+the things that are mission critical for your business and for the purpose that you have for a given server.
+To do this you have to download the tarballs and build your own .deb packages, including defining dependencies so that your own dependency packages get pulled in.
+The first is more or less manual, but it can be automated with a bash script.
+Please contact what ever application vendors / developers responsible for the apps running in Tomcat.
+So only upgrade when you see a bug that does affects you or is security related within your domain (if it fixes a security bug in e.g.
+Running a server with Ubuntu 12.04 which ships Tomcat 7.0.26.
+As far as always using the latest minor version, I would not recommend that.
+Never use mission critical tools as they are distributed with your Linux distro.
+Especially when you move into reflection and byte code generation you have to be careful (this also goes for libraries like Hibernate).
+So just make sure that your devs and build environments use the same version you will have on the server, otherwise you will break things sooner or later.
+This means that you get the JDK from Oracle's site, Tomcat from Apache's site and so on.
+For instance Python always installs add-on packages in a directory called site-packages, except on Debian and Ubuntu distros.
+And if you are the developer of all webapps on your tomcat instance, the responsibility of this choice rests in your hands.
+The important thing is that you control the whole process, you make the decisions and weigh the pros and cons for YOUR situation, and then go ahead and upgrade on your schedule.
+Having said that, depending on what your application does, also minor upgrade can break things.
+Should I care about updating the tomcat installation to latest 7.0.42 version or should I stick with what's provided?
+You can also do this directly out of the Linux distribution, for Oracle JDK and Tomcat there are PPA repositories that provide the latest versions outside of Ubuntu's update cycle.
+When reading through the answers, I think two crucial things are missing and important.
+In this variant you download the package from what distros call "upstream".
+If I stick then am I not vulnerable to threats & bugs in 7.0.26 version ?
+This is preferable for a large installation, say over 50 servers, but otherwise it isn't going to save much effort beyond a well written bash script.
+While the Ubuntu repository is likely the best bet...
+Ideally, don't wget (or curl) the packages from the external Internet site, but download them once and put them on an internal http server to deploy to your servers.
+This also means that you are getting the originator's package format which is probably a tarball.
+Even in cases where the upstream provides a .deb you may not be able to use it if it specifies dependencies that you don't want to pull from Ubuntu, but want to control yourself.
+Vendors may ( and often do) have specific java version requirements.
+They often lag several versions behind and may not be configured in the way you expect.
+If the changes are small or will have minimal impact on you, it is OK to lag a few versions behind.
+Typically sticking to the latest minor version makes sense, but within reason.
+Now, when a security update comes up, grab a copy of the new tarball, put it on your http server and change your bash script (or build your new .deb), then run the bash script remotely on all servers via ssh ( or use SaltStack or Ansible to help with this).
+Sometimes the threat will demand that you upgrade now, and sometimes not; read the release notes to understand whe
+In the case of Oracle Java, I just tar zxvf the tarball, mv the resulting directory to /opt and add entries to /etc/bash.bashrc for JAVA_HOME and the PATH variable.
+There are two ways to approach these mission critical components, i.e.
+The other choice is to set up your own local repo in Debian format and add your mission critical packages to it.
+When a new version comes out you should always read the release notes, decide whether or not the changes are useful or necessary for you, run some internal tests on a test server, and only then upgrade.
+Ubuntu and Centos can make some tasks easier, especially when setting up a new server, but underneath it all, 99% or more of your system is stock standard Linux, and it is infinitely malleable.
+Then add this to your sources and configure the preference to be higher than the LTS repo so that your package overrides LTS.
+We had stuff break when upgrading a minor version of Sun JDK because a library had problems with the new byte code.
+I've been suggested to always use the latest minor version for things like JRE 7, Tomcat 7 etc, does it not hold good here ?

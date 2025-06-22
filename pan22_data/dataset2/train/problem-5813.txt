@@ -1,0 +1,9 @@
+You can transform your function to a macro with a do { /* ... */ } while (0) trick. But don't do it. The function is exactly what you need and what you should be doing.
+Since it hasn't been mentioned yet: The third version with the function and the local variable to store the length is best since it will only iterate over the string once. Of course this could be achieved via a macro as well but others have already explained why the function is the better choice
+It is now 2016. If your compiler is not compliant with C99 (preferably C11), it is time to get a new compiler.
+The inline keyword has been a keyword in C since C99. Use it! Inline functions are a much better option than macros. Macros are beasts from the previous millennium. Let them rest in peace. The function approach is much better than the macro.
+Your function will do the right thing. Your macro will potentially evaluate thing[++i] twice, incrementing i twice - and the "caller" of your macro has no idea that this could ever happen.
+The function is much better. It is in particular safe while your macro isn't. (Assuming s is never null.) 
+I thought macro one is good because it's execute one time and inject the value everytime what we pass it's fast as compare to other , so better to go with macro
+As for performance: let the compiler do its job.  In general, your compiler will make better overall inlining decisions and other such low-level tricks than you will.
+If you profile your application and you find out that that function is responsible for a measurable chunk of your runtime, then investigate what you could do to make it better. (Sometimes just making sure the compiler sees the definition (not just the declaration) of the function will make a difference.)

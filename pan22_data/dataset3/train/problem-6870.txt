@@ -1,0 +1,15 @@
+What do I wish to do is to disable LAN access except one ip, and enable internet access.
+The server is located on 10.x.x.x/24 and it has access to different subnets over the router on 10.x.x.1
+iptables -j ACCEPT -s 10.x.x.x -i ens160 -A IN_public
+So its on me to implement on the server side using iptables.
+iptables -j DROP -d 10.0.0.0/8 -o ens160 -A OUTPUT_direct
+After starting jenkins some jobs will run overriding artifacts, pushing docker images to internal registries and so on.
+I've migrated all the jobs (>600) over to a new server.
+To prevent that without going into all 600 jobs and disabling then, I wish to disable local network access from the server.
+Drop anything going from the server to the local network 10.0.0.0/8.
+Those jobs connect to different servers across our network.
+Allow access to the server for ssh on port 22 and jenkins on port 8080 (I'm located on a different subnet than the server)
+I have a server on a large company network running new version of jenkins.
+Allow access to the internet for plugin install and external build dependencies.
+iptables -j ACCEPT -d 10.x.x.x -o ens160 -A OUTPUT_direct
+The network admins said that they don't want to mess with the firewall rules in fear they'll disable access to some important servers.

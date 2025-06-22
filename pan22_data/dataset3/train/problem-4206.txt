@@ -1,0 +1,11 @@
+Removing the menu.lst from the UCF configuration system should be enough, for your case:
+You're omitting the -y parameter from your apt-get update command.
+Here is the shell script I use to perform the update:
+To add to Philipp's answer, if you are using sudo then you need to make sure to set the DEBIAN_FRONTEND variable afterwards, like so:
+Your problem is that grub file change adhere to ucf and not debconf, as per this incident on apt list you're not alone.
+Be warned that any other package using ucf  will also use the maintainer package version, for a creation from a base ami this should not be a problem, but it worth being noted.
+Anyway, in my case, I got rid of the dialogs for apt upgrade using the following sed commands around it :
+Technically, it disables the questions about keeping or not an existing configuration when upgrading grub, but only for the time of the upgrade, to avoid side effects.
+https://github.com/devopskatas/learningvm/blob/master/script/update.sh
+This is derived from a great, well-maintained library of Ubuntu Packer builds:
+Maybe because the question is about using "packer" ?

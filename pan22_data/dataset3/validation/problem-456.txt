@@ -1,0 +1,10 @@
+I'm having a weird problem with a CentOS 6.6 machine.
+Check your default gateway and static routes, make sure those are configured properly.
+It is a server running KVM and a few guest VMs using a bridge interface.
+Basically, my issue is this: The VMs on this host have no network connectivity issues at all, I can ssh to them and ping them just fine.
+If your host cannot find a route back to the devices pinging it, it cannot respond to icmp (ping) requests.
+The host, however, can pretty much only communicate with devices in its own subnet (including the VMs running on it) and a few switches...
+Since the VMs inside KVM can route independently of the host, the issue is not going to be your physical network connectivity, but rather your logical network connectivity.
+I'm pretty much out of ideas, any help would be greatly appreciated!
+If I run a tcpdump on it and try pinging from a device that can't communicate with it, I can see the ICMP echo requests coming in, but no echo reply is being sent back out.
+I've checked everything I can think of: restart networking, restart server, iptables is totally empty, selinux turned off, icmp_echo_ignore_all = 0, all routes are correct and identical to other servers in the same subnet that have no issues.

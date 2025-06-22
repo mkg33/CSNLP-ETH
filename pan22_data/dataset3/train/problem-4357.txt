@@ -1,0 +1,13 @@
+As always, if you can test in a separate environment that would be much safer.
+To be able to rollback after the transaction is committed, you need to take a backup first and your rollback plan is to restore the DB from that.
+I do sometimes use this pattern to test the results of ad-hoc update statements in SSMS before I run them properly:
+Also be careful if the code you are testing calls other procedures that may cause your transaction to be rolled back and don't include extra batches (extra GOs) - you might find a called procedure kills the transaction but the next batch runs leaving there no transaction for your ROLLBACK to affect so some of your tests end up getting applied permanently and not rolled back.
+you can use an appropriate select, for your question the select would be this one:
+Once you are happy with the results change ROLLBACK to COMMIT.
+You can't rollback a transaction once it has been committed, so you can't run this and change your mind some time later.
+Unfortunately that will rollback all other activity too so it is probably not suitable in shared or production environments.
+I would like to run a query but just to test it and have the possibility to go back to previous state
+While it can be not a problem to begin tran, do a delete and then rollback for a table with 10 rows in test environment, it can be a problem on large volumes of data or in concurrent environment, where you'll lock your table in absence of index on colname, and delete (and its rollback) will generate a lot of transaction log since delete is fully logged operation in any recovery model.
+Still be very careful with this in production or shared dev/test/other instances though: long-running updates will still consume resources (IO, CPU, memory) so may slow down other users and locks will be held as needed so you can still cause the delays and other issues (potentially deadlocks) that your data changing statements normally would.
+The correct syntax of delete should look like this:
+To test the result you need not to delete smth at all,

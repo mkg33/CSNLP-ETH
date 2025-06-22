@@ -1,0 +1,7 @@
+But ,when I restart machine or server and then check for identity with command ssh-add -L I am getting message like The agent has no identities.
+I believe this answers your question more fully. This OS X specific flag is hard to find documentation for but it's been working since at least OS X Leopard.
+On OS X, ssh-add has a special flag to connect to Keychain if you decide to store your private key in there.
+So the keys must be unlocked on each login, and you need to automate this – on Linux using pam_ssh is one option; it automatically uses your OS password to unlock the agent. Another similar module is pam_envoy, which is slightly more reliable afaik (but requires systemd).
+Does that means when we restart machine, Agent lost identity? Is this normal behavior or some thing I am missing here? 
+It's normal. The purpose of a key agent is just to hold decrypted keys in memory, but it will never write them to disk. (That would defeat the purpose – why not just unprotect the main key instead?)
+After creating keys with name id_rsa at it's default location. I am adding identity to SSH agent with command ssh-add ~/.ssh/id_rsa, It's adding successfully.

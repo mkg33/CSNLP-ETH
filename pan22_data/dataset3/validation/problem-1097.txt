@@ -1,0 +1,27 @@
+Due to longest prefix length matching, the router will forward traffic destined to hosts 207.45.222.1 to .126 towards the 207.45.222.0/25 network.
+So even if you have a host 207.45.222.17 behind eth1, the router will never send it anything.
+then you will have in the routing table two entries
+(One implication would be a single number 207.45.222.0 being used in many subnets /24, /25, /26, /27, ...)
+However, if the router receives a packet with a destination address of 207.45.222.200, the router will select 205.45.222.0/24 as the longest prefix match.
+In this example, if the router receives a packet with a destination address of 207.45.222.100, the router will select 207.45.222.0/25 as the longest prefix match.
+The router will examine the destination IP address in the IP header and run an algorithm to determine the longest prefix match against the possible routes in its routing table.
+From a theoretical standpoint, a number like 207.45.222.0/24 and 207.45.222.0/25 are distinguishable--the first network has an address 24 bits long and the second, 25 bits.
+What would be the result of pinging one such address previously assigned to a host (ex: 207.45.222.1/24)?
+The easiest way to answer the question of "So what is wrong with the above reasoning?"
+However some routers will allow it, so what happens in this case?
+part of your question is that you're talking about IP addresses as if they themselves include their prefix length (ex: 207.45.222.1/24), but when another endpoint communicates with you, they're just using your IP, meaning they would have no way of contacting two different "types" of 207.45.222.1.
+The /24 network will be unreachable from outside world.
+If I subnet to create 207.45.222.0/25 and 207.45.222.128/25, have I effectively given up all those /24 addresses?
+You can't use both a full /24 network and in the same time some subnets of this network.
+Once the longest prefix match is determined, the router will use the route information to forward the packet.
+In the /24 subnet, I would have 256 addresses at my disposal, while in the two /25 subnets, I would have 128 addresses each.
+Each route has a different prefix length, written in decimal notation /xx, and represents the number of contiguous binary 1's in the subnet mask.
+A router can hold many routes that match the destination IP address of a received packet.
+If you configured two networks of 207.45.222.0/24 and 207.45.222.0/25, traffic destined to hosts in the bottom half of 207.45.222.0/24 (.1 to .126) will find they are unable to receive traffic from outside of their subnet (this is quite a common problem when hosts have an incorrectly configured subnet mask).
+In answer to your comment on JFL's answer, the specific/closest match is known as the 'longest prefix match' and can be explained as follows.
+Below is the binary representation for each prefix.
+Therefore, it appears that a router should be able to distinguish between these two subnets and I should be able to use my old /24 addresses alongside my new /25 addresses.
+In this case the closest match is 207.45.222.0/25 via eth2 so the router will send the packet out of eth2 (after arp resolution, etc...)
+when the router receive a packet for 207.45.222.17 for example, it looks in its routing table for the more specific match (this is a very important point and a fundamental basic of how IP routing works).
+What happens to the /24 designation in terms of routing?
+First, most router will not allow to configure overlapping network, be it on different interfaces or on the same interface.

@@ -1,0 +1,18 @@
+In Debian-based systems (such as Ubuntu), you can put the following in /etc/network/interfaces:
+Are there any other approaches to requiring host traffic to go through the firewall first?
+The other option which comes to mind is a PCI passthrough of the NIC however I have run into problems with the method.
+Most of the information I've come across tends to set up a KVM firewall using a bridge connection.
+Another option is to just not configure any IP addresses on the bridge interface, which should prevent normal applications from communicating through it.
+The one exception is an IPv6 link-local address, which is assigned automatically by the kernel rather than by the distribution's networking setup scripts, so you get one even with the "manual" setting.
+Create a file in /etc/sysctl.d and put this in it:
+That may be the best approach, but I don't know enough about ebtables to provide any details on how to do it.
+From my understanding it is a security risk if network traffic can reach the host without having to pass the firewall first.
+The "manual" means "don't assign any addresses when bringing the interface up"; it's meant for setups where something else will assign an address later, but it also works when you just don't want an address at all.
+(It'd be nice if you could entirely disable IPv4 on the interface too, but there's no corresponding option for that.)
+You could probably set up some ebtables rules to block all frames going to or from the host's br0 interface.
+You can avoid that by disabling IPv6 entirely on the interface.
+Since a Linux bridge creates a corresponding network interface (e.g.
+eth0) be set as the virtual machine NIC however does this exclude the host from accessing eth0?
+br0) on the host, I don't think there's a way to make the bridge completely inaccessible from the host OS.
+It'll still be accessible to applications like Wireshark with root privileges (and this might come in handy).
+With your firewall VM running, brctl show will tell you that the interfaces eth0 and vnet0 are attached to it, but it's actually acting like a three-port switch:  one port goes to eth0, one goes to vnet0 (the VM), and one goes to the br0 interface on the host.

@@ -1,0 +1,7 @@
+I have an application which transmits plaintext data over the network on a given port, say port 4000. This data is for another application which is running on my vps. How could i encrypt this data between my home server to the vps. I have thought of an ssh tunnel but cant figure out how to accomplish this as the data is to go straight into another app on the vps. so it wouldnt be like a simple "ssh -D 9000 user@ip"
+Then, you have to change your application to no longer connect to $VPS:4000 but to connect instead to localhost:9000.
+This way, the encryption is transparent to you, and you don't have to fall on the caveat of trying to implement any encryption algorithm. Or worse - make your own.
+To make an SSH tunnel, you will open a port in localhost that will tunnel the traffic to the port 4000 on the server $VPS.
+If your application is using an ephemeral port, you may have some trouble; you wouldn't know before-hand which port will be used.
+You do have to make sure the SSH connection is always available when you need it. It might be useful to use public key authentication, in case you aren't familiar with it :)
+This works by connecting to user@$VPS, and then creating a secure connection between localhost:9000 on the local host and localhost:4000 on the remote host.

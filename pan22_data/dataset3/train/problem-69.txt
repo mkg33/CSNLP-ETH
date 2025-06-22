@@ -1,0 +1,12 @@
+Even if using MS SQL I would recommend using the NVARCHAR option alongside the HierarchyID as it generally performs better than the HierarchyID functions in most cases.
+The hierarchy maintains the other references and allows easy expansion when necessary.
+In theory, it is better you design a separate address table (without Person_fk in it), and then you can create an associate table, let's call it PersonAddress (Person_fk, Address_fk).
+The easiest and more realistic real world scenario to maintain and query is going to be either 1-1 or 1-N, choose whichever is appropriate for your business logic.
+This way, it does not matter where you have N:N relationship between Person and Address (i.e.
+Some text indexing and trailing wild card queries will cover all your expansion and filtering needs.
+If you're using MS SQL they have a HierarchyID type for this specific use case, but you can also create your own with a simple path style NVARCHAR field combined with a type field.
+Something else we've learned is to avoid separate State, County, and City reference tables as they can create some convoluted logic for querying addresses.
+Maintaining N-1 for addresses would very challenging because you will inevitably run into misspelling and different grammar scenarios (as you mentioned), but additionally you will get convoluted logic to maintain the single record reference on a table that may not necessarily be static.
+a person may have multiple addresses or an address may host many persons).
+Try turning those tables into a single hierarchical Jurisdiction table and store the 'smallest' appropriate reference (usually the town) for the address record.
+Several of the products I've worked on have used either of these methods and they are far easier to maintain than trying to get N-1 to work.

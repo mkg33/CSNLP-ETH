@@ -1,0 +1,7 @@
+I'd use InnoDB if I was concerned about multiple concurrent accesses with lots of writes, to take advantage of row-level locking.
+There are features that you will find very useful, for operational reasons, even if your application doesn't absolutely require them:
+Once we converted (or: were converted) to InnoDB, the problems instantly went away. Downsides/caveats we had:
+Another thing to consider between the two aforementioned engines (MyISAM and InnoDB) are their approaches to locking.  MyISAM performs table-locking, whilst InnoDB performs row-locking.  There are a variety of things to consider, not only downright performance figures.
+In our case we were having severe data corruption which started to show from a few times to a few times per day, always requiring REPAIR TABLE and related commands, which took ages on large tables.
+There are a good number of benchmarks out there for different MySQL database engines.  There's a decent one comparing MyISAM, InnoDB and Falcon on the Percona MySQL Performance Blog, see here.
+My hosting provider advised us to get rid of MyISAM completely and switch to InnoDB, unless it is not possible.

@@ -1,0 +1,14 @@
+http://www.sqlskills.com/blogs/kimberly/post/8-Steps-to-better-Transaction-Log-throughput.aspx
+If you have them on the same server, consider moving the distributor to it's own server.
+I have an MS SQL 2000 server that uses transactional replication and a request to user System Monitor and check if replication is doing ok and not affecting performance of the server.
+Any tips on what counters to chose from, how to interpret them, any good links in this direction ?
+Several of the agents have a Delivery Latency counter which will tell you if the replication is behind or not.
+The high number of VLFs were caused by the log expanding over time using too small a growth increment (so we probably had external file fragmentation issues too).
+If they are separate then there shouldn't be a lot of load on the publisher.
+The higher the number (you'll have to see what your environment produces) the further behind your subscribers are.
+We've had replication performance issues caused by too many VLFs (virtual log files) within the Publisher's transaction log causing internal fragmentation.
+Check these articles for further details and how to resolve the issue if your environment is affected:
+Replication should have a huge number of specific counters to choose from.
+You can check the number of VLFs by running DBCC LOGINFO against the Publisher database.
+http://www.sqlskills.com/BLOGS/KIMBERLY/post/Transaction-Log-VLFs-too-many-or-too-few.aspx
+As for effecting performance on the server if your distributor is running on the publisher that can cause performance issues, especially if you have a lot of Subscribers that will impact the load on the publisher.

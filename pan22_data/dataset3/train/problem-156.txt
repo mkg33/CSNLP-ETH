@@ -1,0 +1,17 @@
+I just cannot agree with some of the answers here.
+It has a very easy fix, just use the -N switch with your (Open)SSH client.
+Which works great 99% of the time, however, when the command fails, it just closes the session.
+I found this solution at https://discuss.linuxcontainers.org/t/regular-user-is-unable-to-login-via-ssh/4119
+Works great when there's actually a session to resume.
+Plesk, make sure the user has the ability to access the server.
+So don't try to "fix" it on the server, just use the -N switch with your SSH client.
+Make sure that /etc/passwd has the correct shell for the user.
+In my case, it was caused by a user without a shell on an SSH server.
+For example, the user ahmad couldn't login to the server due to missing shell:
+The authconfig to configure LDAP, Kerberos, and SMB settings was run without,
+A user with the shell /bin/false, /bin/nologin is a proper configuration, it's usually used for users used only for SSH tunnels, without the possibility to login and execute any commands on an SSH server.
+Comment out the session required pam_loginuid.so line in the /etc/pam.d/sshd file, and then restart the container.
+I had put a remote command to send to the server under "SSH" configuration.
+After a lot of searching, I finally found an answer in the case of CentOS 7 running in an unprivileged container.
+Since the shell set to /bin/false it means the user ahmad does not have a shell, and to fix this you have to change /bin/false to /bin/bash for bash or whatever other shells.
+In my case, it was a PuTTY setting that causing my pain:

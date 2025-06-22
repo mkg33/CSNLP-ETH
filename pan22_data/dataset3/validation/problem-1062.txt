@@ -1,0 +1,15 @@
+Second, (assuming the service definition lives at /etc/sv) change your /etc/sv/logstash/run to say:
+This turned out not to be a problem with runit but with logstash.
+However, I was not seeing the error because I was not catching the output from the run script.
+All of the output from logstash will be fed into svlog, which in turn will write a log file to the /etc/sv/logstash/log/main symlink, which in turn drops off in /var/log/logstash/current.
+If I run this script manually it takes 30 or 45 seconds for the process to properly start up and start doing work, but it will stay up afterwards for a couple hours.
+This allowed me to discover the real problem was that I needed to set HOME in my script so logstash could find HOME/.netrc to authenticate with the Heroku plugin.
+How can I have runit properly let this Java process process run and only restart it when it dies?
+This creates a log entry for the service, sets up a stub file to be edited, creates a directory to hold the log files, and provides a symlink for the logging service to divert output to.
+Then, do this (adapting to your installation as needed):
+You are right in that stderr must be redirected to stdout.
+I've tried setting the -w option, but it doesn't seem to wait any longer for the process to run.
+Terminating the logstash service with sv stop logstash will allow any final output to flush into svlog which will write to disk before exiting.
+I'm attempting to run Logstash under supervision with runit.
+Restart your service with sv restart logstash and wait a few seconds...and you should have two processes listed, your logstash service and the svlog running with it.
+However, when I try to do sv start logstash it executes the script (and Logstash definitely starts because I see output written to /var/log/logstash.log), but after 15 or 20 seconds runit seems to kill and restart the Logstash java process.

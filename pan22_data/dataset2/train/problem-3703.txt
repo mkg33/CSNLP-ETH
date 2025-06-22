@@ -1,0 +1,9 @@
+I haven't worked it all out yet and I am not sure if it is fully working. The code is in python however and seems to be fairly manageable, so it shouldn't be too hard to dust it off and get it working.
+I'm not sure what you mean by many, nor do I know if you're willing to change, but Kerberos is the droid you're looking for.  That will solve your problems elegantly, and will authenticate both people and machines.
+I'd check out the Red Hat FreeIPA project, which is a bundle of software that makes it easy to get an AD-like Kerberos/LDAP/DNS system up and running quickly.
+See http://code.google.com/p/openssh-lpk/ for the patch and further details.  I don't know any OS that ships with this patch by default, but if you're running FreeBSD it's an optional patch if you use the OpenSSH from ports.
+I am currently checking out SSH KeyDB. It is meant to do exactly that, administrate roles, servers and users, distribute user keys, gather host keys etc.
+Public-key auth is an ok way to authenticate sometimes, but doesn't address authorization at all. I don't like public-key auth, as it is very easy to compromise (especially internally) unless you have some good controls in place.
+That's where solutions like Kerberos come into play. In the Windows world, Active Directory solves this problem. In the Unix world, there are an abundance of choices, which is both a good thing and a bad thing.
+You can use Bcfg2 with bcfg2-accounts to distribute authorized_keys. As added bonus, you'll have ability to control users and groups.
+There is a patch available for OpenSSH that allows it to use public keys from an LDAP server, but this only really makes sense if your auth/account checks are also done against that LDAP server (which is how my environment is set up).  Also it's only as secure as your LDAP configuration (so you want to be using SSL & verifying keys).

@@ -1,0 +1,13 @@
+That tool is reading by the block device (the RAID array) directly, without using a filesystem, and probably is looking at some data that is made up of blocks which are in the wrong order. Totally without meaning.
+You overwritten the RAID superblock on all the disks, again and again. No change to your data (assuming the old and new RAID superblock were the same version)
+Your data is still there, but you have overwritten the information that tell mdadm the layout of your RAID array.
+Oh dear, no no no! You started corrupting your data here. There's no chance to recover all your data intact now, since you wrote that data in an unknown position (with respect to the original layour of the grown array).
+Fair enough. It means that you don't care much if you'll lose that data, especially during a so delicate operation as growing/reshaping a raid array. As you can see on the Linux RAID Wiki about growing an array, the first works right after the chapter title are:
+But, since you simply wrote little data to the array, there's some chance that you can recover the data, once you find out how the original, grown array was setup.
+Then, another suggestion: I always make RAID arrays of partitions, not of whole disks. But this is something like a "preference", that I'm following since when I learnt about mdadm raid. Actually, all my disks contain more than one RAID (example: a first partition in raid1 with the OS, then another one for a bigger RAID).
+Without a backup of the RAID superblocks, it will be really difficult. Unfortunately, you learned the "make a backup" suggestion the hard way. Good luck!
+Using raid5 with so big drives is about searching for troubles. You can find many warnings against doing that here and there on the Internet, but I'll warn you once again: your data is in danger. Once one of the disks in the raid5 array fails, you are left with no redundancy at all. Once you insert a new spare and start the resync process, the chance that another disk experiences a read error are high. Once that happens, your data is gone.
+This should have made you stop and say: what's wrong? Let's fix this, before I'm going to lose all my data.
+Probably you forgot to populate, or better, update your /etc/mdadm/mdadm.conf file with a line similar to:
+This should have stopped you from proceeding, and searching more info about the error returned. Most probably, the layout of data on the drives was not the one that mdadm was expecting, or something similar. Not a big problem per se.
+Assuming that the old superblock and the new one were the same version (1.2), you could recover this situation by overwriting the RAID superblocks with a backup from the original disks.

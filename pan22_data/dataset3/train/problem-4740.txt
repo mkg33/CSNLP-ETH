@@ -1,0 +1,12 @@
+Currently, libvirt does not support this parameter in its XML format directly, so you have to pass it in as a qemu:commandline parameter.
+Here are the relevant bits of a libvirt configuration that I use for an OSX guest:
+If you set it to 1, the guest should treat the disk as an SSD.
+As a workaround, for Linux you can override this by unsetting the 'rotational' flag for the block device in sysfs for any disks backed by SSD.
+There is no mechanism in QEMU today to mark a SCSI, ATA or VirtioBlk disk as being backed by non-rotational storage.
+If the virtual disk is a QCOW2 image, or is on thin provisioned media such as SAN storage or a sparse LVM or ZFS volume, then it will be presented appropriately as a thin provisioned volume to Windows.
+This disk is on a QCOW2 disk image on local SSD storage.
+I'm talking to people to find out if it is possible to add this feature to QEMU to make it 'just work' in future releases.
+This will cause Windows to only issue TRIM commands, and not to attempt to defragment the drive.
+You don't need to do anything at all with current versions of qemu.
+Recent versions of QEMU (I tried with 2.12.0) support a rotation_rate parameter.
+So the guest OS wouldn't do the optimal settings out of the box.

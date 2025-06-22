@@ -1,0 +1,8 @@
+Taking above under consideration I would love to stick to 'cold' backup with snapshot or a solution like xtrabackup that could provide compressed data without intermediate steps.
+Is there any command sequence that would allow me to create a valid snapshot and not interrupt database functions for too long? For example, would:
+I have a slave database of about 120GB in size on which application is performing select statements.
+Script was waiting for lock for some time (300 secs) and then killing the session. I thought that I will be able to cancel acquiring a lock and allow application to run. Unfortunately it appears it is not possible (or I am unable to do it correctly).
+I was looking into some alternatives like xtrabackup or mysqldump to make a backup and simply copy files later but:
+I also have a backup system (Acronis backup) available to me from a hosting company. Unfortunately backup agent is not mysql-aware. It can perform file backups and whole machine backup - it makes a snapshot of machine. It also enables to run a script before/after a backup and before/after snapshot creation. 
+I went with simple script making flush tables with read lock before making a snapshot and removing a lock after. Unfortunately, because of long-running select statements, it happens that acquiring a lock takes a lot of time. 
+or similar do the trick (some data de-synchronization between master ans slave is not a big issue for my app)?

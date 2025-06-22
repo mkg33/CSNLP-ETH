@@ -1,0 +1,19 @@
+Is there a client utility (win/linux) either opensource or Dell, that will let me see the state of those RAID volumes?
+All the RAID config was done via the PERC 6i BIOS.
+(fwiw, this is a test/dev box, so no, I'm not using this for critical production)
+However, I felt it important to add some additional info.
+I believe Dell had some plugins for vmware to allow additional healthcheck gathering.
+Monitor the VMware host via SNMP (or CIM or other systems management) using the Dell MIB instead.
+So, while it isn't sending me email notifications the way an SNMP monitoring util would, or even Nagios would, it's sufficient to let me do a spot check on RAID health without having to reboot the box and get into the RAID BIOS.
+I tried googling "perc 6i utility", and scrounged around on support.dell.com with little success.
+I'd be running this in one of the client VMs on the server.
+does not exist), all state information is maintained by the vmware host, and all guests are only aware of the abstracted virtual hardware, unless you have actually done a PCI passthrough to present actual physical components to a particular VM.
+Keep in mind that your VMs are virtualized within an environment that abstracts storage in a way where to VMs inside of this environment anything outside of it is simply unknown (i.e.
+The server has a PERC 6i controller in it, and there are two RAID-5 volumes running.
+Problem is, though, I've got no way of knowing what state the RAID volumes are in.
+I got a Dell PowerEdge 9500 which is running VMware ESXi 4.1.
+Anyhow, if I click that "Health Status" link, it shows the status of the host, including an expandable "Storage" entry which shows status of all the drives and volumes on the PERC 6/i controller.
+Now, you could certainly run your systems management software inside a VM.
+You will not be able to do any direct monitoring of the hardware from the guest unfortunately.
+Just today, I noticed in the vSphere Client, if I pick the host (not a vm) in the left col, and pick the "Configuration" tab, in the mid-upper-left is a "Hardware" menu containing a "Health Status" link.
+As such, I will echo the comment about monitoring via SNMP.

@@ -1,0 +1,8 @@
+I always set up Tomcat environments with Apache HTTPD in front of it, serving as a proxy server for the Tomcat backend. 
+The contents of the daemon.sh and startup.sh look very similar (at least for the env variables, and stuff like that). Daemon.sh calls jsvc in the end. Catalina.sh calls java.
+What is the (practical) difference between using the two of these when setting up tomcat as a service?
+The first one is to copy the daemon.sh from $CATALINA_HOME/bin to /etc/init.d, and the other one I have seen is to create a simple init script that class $CATALINA_HOME/bin/startup.sh, etc. Startup.sh calls catalina.sh.
+I have never deployed a setup that uses jsvc. I have written a simple init.d script that starts Tomcat on a "service account", and then I let mod_proxy(_ajp) talk to it from Apache. That way, you can make your tomcat listen locally on a non-privileged port, and let Apache do what it's good at. 
+jsvc will enable you to run the Tomcat itself as a non-privileged user and only create the listener as privileged user. 
+I am installing tomcat on a linux server, and would want it to be available as a service. I have found two different ways to achieve this.
+Ports below 1024 are privileged ports. Basically, this means that if you run Tomcat directly using catalina/startup/shutdown you will need to run as root, to bind to 80 or 443 (SSL). 

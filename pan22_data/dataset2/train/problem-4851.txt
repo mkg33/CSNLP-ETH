@@ -1,0 +1,9 @@
+Use wireshark http://www.wireshark.org/ and a host outside the firewall to see what ports are used by this particular FTP+SSL configuration.
+That said: The port range that you have configured for passive FTP in the server software needs to be opened from the client to the server. Also, the client needs to know that it must use passive mode. I've had my first FTPS deployment in the past weeks and it works exactly like that.
+Usually, explicit "active" FTPS is port 990 and the control port is 989.   Passive is the same as active but just means that in addition to 989 you use a few ports over the 1024+ range open on the server (for the client to initiate data connection), depending on how you configured your server.
+Personally I prefer to use NULL FTP Server, run a implicit SFTP on port 22, and just have single port implementation.
+The problem with FTPS is that all the workarounds which firewalls have implemented to handle the FTP protocol weirdness work no more. This is because the firewall can't inspect the encrypted connection to dynamically open the required ports.
+(What is it with the renaissance of FTPS lately? FTP is an archaic 1970s nightmare of a protocol and, for the sake of humanity, people should really stay away from it, encrypted or not.)
+However SFTP has significant performance issues with large files and high latency (or long distance) connections. So as bandwidth improvements allow larger file transfers, SSH/SFTP's limitations become more significant and FTPS is the only other alternative. 
+Yes, FTPS has big issues in terms of port use. It retrofitted encryption on a protocol, FTP, that was designed for a network without firewalls and black hats. 
+Based on the traffic you see, create firewall rules to allow that kind of traffic from the IP address of FTP server.

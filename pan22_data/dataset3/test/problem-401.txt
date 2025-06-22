@@ -1,0 +1,17 @@
+For e.g , I have mentioned DEV environments DNS server, so it resolved only DEV servers .
+I would like to take your opinion/suggestion on how do i achieve this requirement.
+I read multiple blogs and post and general consensus is that resolver just check first entry and in case of time out or SERVFAIL then only it goes to second name server from resolv.conf.
+Do a root cause investigation after any connection to the wrong environment.
+What you need to do at this point depends on whether each environment has its own unique domain suffix.
+Deny connections that are not in the design with firewalls and segmentation.
+What we want now is create one mamangement server , who will be able to resolve all environment servers (DEV,TEST,PRE_PROD) except PRODUCTION environment.
+There are many naming schemes but make the service names obvious: db.dev.example.com is  dev,  db.test.example.com is test, and so on.
+BUT it is just resolving servers hostname whose entry is registered with first DNS server type.
+Configuring a device to rely on multiple recursive servers with different configurations is an inconsistent user experience in the best case scenario, and extremely hard to diagnose and troubleshoot in the worst.
+Presentation of internal domains is handled by your recursive DNS servers, not by the resolvers present on individual devices.
+In our environment we have a very uniq requirement.
+We have DEV,TEST,PRE-PROD & PROD environment, and every environment has its own DNS server ( Primary and slave ) to resolve the hostnames.
+So I thought, putting all environments DNS servers IP address in this management servers resolv.conf will resolve the issue.
+Enforce the configuration of each environment with deployment tools and change control.
+When I try to resolv other environment servers like PRE-PROD or TEST, they didn't resolv.
+Each environment has its own unique version of the same zone

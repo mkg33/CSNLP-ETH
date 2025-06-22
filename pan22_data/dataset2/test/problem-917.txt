@@ -1,0 +1,13 @@
+I've also thought about storing each planet's data in a save file, using initWithCoder however there could be a boatload of files on the user's device?
+I am open to other ideas on how to store and read game data to prevent using a singelton to store everything, everywhere.
+But I need to expose pretty much everything, especially on the map page, and I am not sure how else to do it.
+You seem to be worried about how to store your data when you should be concerned with the design of both your data, and how you expose it. Storing data in files or using a database is not a solution to design.
+An approach that I used was to create property lists that defined the initial state of each planet, and loaded them into dictionaries as I needed them.  Assuming the player could be at one planet at a time, you would only have one dictionary to contend with at any given time, which could be accessed via your singleton, if you wanted to use a singleton, or just have the dictionary as part of your games main controller.  If the status of the planet is changed and needs to be stored, then you just save the dictionary back to a plist, outside your bundle of course, and reload it if the player returns to that planet.
+I've been told that I can use a controller for the map page which has the information I need for each planet, and other controllers for other items I require global display for.
+My game makes use of a map which allows you to select a planet, then it will give you a breakdown of that planets troops and resources,
+I really don't want to use a database, mainly because I would need to translate NSObjects and non-NSObjects like CGRects and CGPoints and Colors into/from SQL.
+I don’t know how much data you are referring to, but this approach could certainly work and is very easy to implement.
+I am not storing files or anything on the disk just yet, with exception to a save/load state, which is a capture of everything.
+I am using a singelton to store a bunch of arrays for everything, a global list of planets, a global list of troops, a global list of products, etc.  And only now I'm realizing that all of this will be in memory and this is the wrong way to do it.
+I'm quite new to cocos2d and games programming, and am currently I am writing a game that is currently in Prototype stage. Everything is going okay, but I've realized a potentially big problem and I am not sure how to solve it.
+Instead of a singleton, pass the data by reference into functions. It may make sense to use a hierarchy of data types, such as a planet type that contains the troops, and a universe that contains the planets.

@@ -1,0 +1,15 @@
+Since the query is in the procedure body, not a prepared statement, SQL injection is impossible since the server has no chance of blurring the distinction between data in variables and the literal query.
+Since the criteria added to the prepared statement and thus the number of parameters to be bound may differ depending on the user input, I devised the method below to determine which variables will be passed to the EXECUTE statement.
+If the program variable "optional" is null, the optimizer realizes that entire expression (in parentheses on that line) will be true for each row, no matter what, since, in the context of the running query, "optional" is a constant value, and optional is NULL is always going to be true, just like 1 = 1 is always true.
+To avoid potential injection points, I'd like to utilize parameter binding for the values that are to be part of the interpolated criteria.
+The server will always return all of the rows, because 1 = 1 contains all the truthiness required to conclude "yes, this row matches the WHERE clause"... and it will not bother scanning the values in col1 to see if they contain 'foo' because the optimizer has found a more obvious, simpler, "lower cost" approach... (any expression) OR (TRUE) is always true... and the shortest path to truth is the one the optimizer is supposed to find and take.
+It doesn't need to evaluate whether 1 = 1 row-by-row, since that's a constant expression.
+The optimizer is left, in each case, with query that can still use indexes as appropriate.
+You don't even need a prepared statement, just a query in the procedure:
+On the flip side, if "optional" is not null, then optional IS NULL gets optimized away, since it's impossible for that expression to be true, and you are left with AND (field = optional).
+However, I was wondering if anyone else has ran into this desire to handle dynamic construction of an EXECUTE statement purely with SQL.
+Some stored procedures I work with need to interpolate WHERE criteria based on if procedure input parameters have been supplied.
+The contents of "field" never need be evaluated, because the OR expression has been determined in advance to be true.
+The optimizer realizes that this also is a constant expression.
+At least in this example, there's an easier approach than this.
+Remember that the optimizer is always trying to plan the query execution in a way that the path involving least amount of work necessary to retrieve a valid result set will be the path chosen.

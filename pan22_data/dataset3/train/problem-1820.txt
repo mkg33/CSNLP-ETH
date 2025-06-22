@@ -1,0 +1,19 @@
+Won't help with re-writing to a different A record though...
+Depending on the regex that could result in an almost infinite number of possible records, which is clearly impractical because the transfer may never complete, leaving systems out of sync.
+Although regex handling could be written into a DNS server it would be a bad idea to do so.
+If you know 'C' it should take less than an hour to implement.
+Zone transfers to "standard" servers would either be incomplete, incorrect or absolutely massive, as each permutation would have to be sent as a separate record.
+I don't know how much DNS traffic you expect to have, how mission critical your web site is, but you could try a DNS server implemented in Perl, using the Net::DNS::Nameserver module.
+As jrockway suggested, if you can afford to roll your own nameserver, you have full control over the replies you give.
+Of course if transfers were only ever to happen between modified servers this might be OK but the universe has a tendency to destroy such simplicity.
+Alternatively, since your regex is just a shortcut for 100 DNS resource records, you could just run BIND, and have a script generate the zone file you want.
+Note however that all authoritative DNS servers for the domain would need to have this feature.
+It would actually be trivial for example using my evldns server framework.
+Or, just use your registrar's tools to create the 100 CNAME records.
+In that case, you could reply with the CNAME record you want, based on the query.
+It is possible if you use a custom DNS server which recognises that particular pattern and then dynamically synthesises the correct response.
+which won't quite do what you want, but maybe you can do some server-side validation to ensure that the hostname is valid?
+Beware that this is incompatible with other DNS server software.
+Any DNS server modified to handle regex expansion is going to have trouble co-existing with the rest of the world.
+But the most popular bind9 nameserver daemon supports this kind of syntax in its zone files:
+Whilst a wildcard record can be happily transferred from primary to secondary servers using AXFR, that only works because it's built into the DNS protocol.

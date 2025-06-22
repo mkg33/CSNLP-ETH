@@ -1,0 +1,16 @@
+The two options you are interested in I think are:
+This can result in decreased performance of the application, as you loose the O/S caching and subsequent speed up.
+If there had been a bunch of block cached due to I/O from a process that is going to repeat later, and then a one-off (or regular but not frequent) task is run that results in a chunk of data getting cached (but not enough to push the first lot out), I might like to tell the kernel that I no longer care about the second lot of blocks so that if a third chunk of I/O occurs it gets nixed not the first lot that was loaded from disc - so the soon-to-repeat task isn't slowed down on next run due to the one-off task.
+Is it possible to selectively clear content from a particular filesystem, or file/directory within a filesystem, under Linux.
+In the mean time it will sit in otherwise unused memory.
+This could of course be me wanting to waste time micromanaging something that I should leave well along and let the kernel get on with without interference...
+You will likely want the data cached during the run.
+The system call for this in Linux is fadvise where you can suggest that different files be cached or not cached, and also suggest the type of read pattern (ie sequential or random).
+This can be done globally with sync; echo 3 > /proc/sys/vm/drop_caches and for a whole filesystem by temporarily umounting and remounting it, but I've not come across a more fine grained option.
+The benefit of caching vs I/O has been steadily increasing since.
+When I first started worrying about relative access speed, it was on the order of 100/1 in favor of memory.
+Doing raw I/O will likely keep the buffering to the drives internal cache.
+Once the run is done the cached data will age out of memory as newer requests come in.
+Someone wrote a command line wrapper for this in perl here.
+Alternately, is there a way to start a process in such a way as to tell the kernel "this is a one off, don't go out of your way to cache what it touches after it finishes".
+Any security considerations are a moot point as the disk image will likely be available.

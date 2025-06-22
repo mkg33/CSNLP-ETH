@@ -1,0 +1,7 @@
+dude if you've got 100% cpu utilization, then you are most likely missing indexes.  Learn how to run the database tuning advisor in order to build optimal indexes.
+You haven't mentioned the edition of SQL Server but I am guessing its Standard here. Have you enabled the trace flag 845 to use the lock pages in memory. This TF is still required i nSQL Server 2008 R2 as well and see the notes below from Aaron Bertrand.
+Have the devs profile their queries; I'll bet one function or another takes an absolutely inordinate amount of time and it's the root cause of the CPU spike.
+http://sqlblog.com/blogs/aaron_bertrand/archive/2011/02/07/sql-server-2008-r2-still-requires-a-trace-flag-for-lock-pages-in-memory.aspx
+From all the info you've posted I'm 99% sure it's just the T-SQL queries they're running. I'd bet money it's code generated queries and something is issuing a query with a thousand JOINs or similar.
+I know nothing about SQL I'm going to put that out there. Our dev people have said this is an OS problem. Can you help me figure out where to start to determine if this is an OS issue? SQL isn't locking memory in page files apparently so we don't see a high SQLserver.exe utilization. 
+If the CPU utilization is caused by the sqlservr.exe process (and not other processes or the kernel - you might want to check on that using Process Explorer) and you do not see disk load, it probably is not an OS issue but simply computational load caused by the queries. 

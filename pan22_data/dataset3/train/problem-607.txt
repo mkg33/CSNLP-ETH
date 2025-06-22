@@ -1,0 +1,17 @@
+RECOVERING = Database is recovering and not yet ready for queries.
+In Ola Hallengren's blog  (an SQL MVP), in his tool to verify the database integrity, I found he's using the view sys.database_recovery_status to query a db status.
+This is the query that I inherited for this check:
+Also, depending on what you're looking to do, has_dbaccess might throw some false positives.
+EMERGENCY = Database is in an emergency, read-only state.
+Remember that databases participating in mirroring or log shipping will not be online or may change state regularly.
+I.e., I want the query to be able to tell what whether or not the database is in a good state.
+SELECT DATABASEPROPERTYEX('AdventureWorks', 'Status').
+I want to be able to run a query to get the crucial information about a database's status.
+If you're using SQL 2005+ and only want to return the DB name where the DB isn't in the "ONLINE" state I'd use this:
+the way that I found to see the db status is to use the function DATABASEPROPERTYEX ( database , property ), like this:
+PS: the databaseproperty function that you use is going to be removed in future versions, so databasepropertyex is replacing it.
+If that query returns any results, the assumption being made is that the database is in a suspect or potentially bad state.
+Rather than query for specific conditions, I'd take a look at anything in sys.databases where state_desc <> 'ONLINE'.
+If the db has a row in this view, then it's live and kicking, if not, it's offline.
+For more info about the sys.databases DMV see documentation here: http://msdn.microsoft.com/en-us/library/ms178534.aspx
+I'd use the newer sys.databases not sydatabases but otherwise this is OK

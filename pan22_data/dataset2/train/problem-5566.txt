@@ -1,0 +1,10 @@
+For me (Windows 10 x64) helped disabling SuperFetch feature. This service (called SysMain in Services) is causing start of the Application Frame Host process several times per day and this process is responsible for slow shortcuts.
+My personal experience was that there was a program that was delaying Windows' handling of the hotkey. For myself it was Steam, for Andreas it was Akamai. 
+The reason for this is DDE.  I don't know the specific technical details this problem generally boils down to a message queue meltdown.
+http://www.howtogeek.com/224798/how-to-uninstall-windows-10s-built-in-apps-and-how-to-reinstall-them/
+I decided to uninstall both apps since I don't need them. To learn how to uninstall built-in apps, I have followed this page successfully:-
+The culprits for me are the "Movies & TV" and "Photos" app. Once I killed this 2 apps in task manager, my keyboard shortcut launched without the 3 seconds delay. Yes, I have to kill both.
+I know this is a fairly old question, but after not finding an answer I stumbled upon the solution and felt the need to share it with the community.
+To diagnose which application is responsible simply close an application and try your hotkey again. Once you figure out who the culprit is, decide whether it's a service that you can deal with not running at all times.
+The only way I know to avoid this problem is to avoid running certain applications over time and by trial and error you will notice when running cause delay.  There might be a way to tweak things such as changing timeouts or isolation of DDE broadcast domains or tools to look into DDE but I am clueless on this topic.
+Some applications are not expecting/able to handle DDE messages on an interrupt basis and so when something they ask for arrives or something is broadcasted to them they don't provide an instant response because they are not waiting on the queue. Things get backed up and everything with a dependency on DDE takes forever.  In extreme cases even in command windows sometimes you can see letters you type will be lagged for the same reason.

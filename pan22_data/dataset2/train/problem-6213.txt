@@ -1,0 +1,6 @@
+I'm unsure how to fix this. Previously when I had this problem on a cpanel server, I would edit the remotedomains and localdomains files, moving domains from one file to another and it would fix the problem.
+I think it is something to do with the email routing internally, or the DNS servers that the box uses not reporting the correct MX records.
+I can't seem to send mail through my php scripts or through the linux console on my Centos 5.5 LAMP server, when the email is addressed to go to a domain that is hosted by my box. 
+If you run sendmail -bt (test mode for sendmail) and then type $=w you will see that the domains that you have problem with are listed. This is because sendmail believes that the mail addressed to said domains must be delivered locally in the box, instead of sending it to Google.  So what you have to do is to modify your sendmail.mc in two places (or add them if they do not exist).
+Basically my box doesn't host any mail, it's all hosted on google apps. My name servers are hosted by a 3rd party provider and I am using webmin. Webmin doesn't recognise the settings on the 3rd party provider.
+Next, in the LOCAL_RULE_0 section where sendmail selects a delivery agent use the map above to route mail to Google:

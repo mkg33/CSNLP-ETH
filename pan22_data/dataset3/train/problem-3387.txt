@@ -1,0 +1,15 @@
+The reason the remote node is in a cluster at all is for the SQL Server Availability Groups, to manage the replication to the remote node.
+I've also considered removing the file share witness and giving the remote node a vote.
+The one node that was up in the primary data center (and had services running) noticed that the remote cluster node was down and attempted to bring the cluster name online.
+I've considered attempting to remove the remote cluster node from possible owners of the cluster name, but I've not done or tested that before and I don't want to blow up my production cluster.
+The third node is in a remote data center and has no votes (node weight of 0).
+The cluster name failed to the remote data center node and the remote node was able to get a lock on the file share witness file.
+One cluster node (which owned the cluster name), went down for automatic updates.
+If we have to fail our services to the remote data center, there are a number of moving pieces that need be coordinated, so I don't want "automated" failover of service to the remote data center.
+The new dynamic quorum "should" keep the cluster online if one node goes down for a reboot and network connectivity is lost to the remote data center.
+Three node (shared nothing) cluster on Windows Server 2012.
+Given my scenario, which option (or other alternatives) will give me the highest availability.
+The file share witness file was still locked by the remote node, and the one visible running cluster node in the primary data center was unable to bring the cluster name online and it shut down the cluster service on itself.
+Firewalling the file share from the remote node is not an option due to other processes that use it.
+Two nodes in the primary data center, both with votes (node weight = 1), and a file share witness.
+Is it possible to remove a cluster node from possible owners for the cluster name?

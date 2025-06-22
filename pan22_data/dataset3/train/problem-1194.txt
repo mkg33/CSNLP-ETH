@@ -1,0 +1,23 @@
+So the link to what is the Kerberos bible for setting up SQL Server correctly – http://msdn.microsoft.com/en-us/library/ff679930(v=SQL.100).aspx.
+I remember having a similar issue in the past with the double hop which some colleagues resolved by having the SQL service accounts as members of the Domain administrators group when the services start, then removing them afterwards.
+On the right side of IIS manager, double click on the "Authentication" icon.
+That probably wasn't the right way to fix the problem but it got everything up and running at a crucial period of unplanned downtime.
+I know it is specific to Reporting Services but still applies to an application server also as you can consider Reporting Services to be another application.
+Change the user to dom\web and enter the correct password.
+You can find that tool here:  http://www.iis.net/community/default.aspx?tabid=34&g=6&i=1434.
+If you open up the IIS manager, on the left side there is a tree.
+I have found the best way to troubleshoot authentication issues is with a tool called DELEGCONFIG; it helps you setup the correct SPN’s for Kerberos to work.
+I use mainly these two links only to resolve the issues.
+On the next screen, right click on "Anonymous Authentication" and choose "Edit" from the context menu.
+I run it until all the checks are green - you will understand if you run the tool.
+Make sure "Specific User" is seleced and click on the "Set" button.
+I believe IIS has the website set for "Anonymous" with the IUSR account.
+To add to the others - I have been in the situation where running the query works from SSMS but not from IIS via an application front-end.
+Once you do it right, then remove the site or hide and secure it.
+There are so many different settings for Active Directory, config files, IIS and the O/S to consider and it can be something you don't quite expect.
+At this point, you may have an issue with dom\web not having access to the SQL server.
+The key is to know what the operating system/IIS/SQL Server thinks is going on, see DELEGCONFIG link below.
+This is an IIS website that you install on the server and it tells you whether or not your SPN’s and delegation are setup correctly.
+You will have to create a SQL login for dom\web, and then create a user in the database that you want dom\web to have access to.
+I don't leave the DELEGCONFIG website around in production but when setting up or having your production admins setting up the db/app servers they can use it to figure things out.
+In this tree, expand the server, then expand "Sites", then click the website you are using for this project (i.e.

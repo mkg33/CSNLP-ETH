@@ -1,0 +1,11 @@
+Some older software will specifically search out the domain controller holding the PDC role and authenticate against that.
+If you're actually talking about an Active Directory domain, the architecture is designed so that all Domain Controllers in the same AD Site are considered to be equivalent workers.
+This is usually (unless some hand tampering has been done) a round-robin of the DCs in the site.
+Password and account-status (disable/lockout) events are replicated as immediately as the synch policy allows.
+First and foremost, if you're still using Windows NT (the only Windows domain with a PDC/BDC environment) you're several years past end-of-life of the product.
+All DCs in the same site should get notified of a password change in very short order, generally less than a minute; the same goes for account lockouts and disable/enable events.
+Stations tend to glomb onto a single DC and stick with it until it hasn't needed auth long enough for the DNS entries to expire or the DC goes away for some reason.
+All authentication is handled by the PDC anyway, so load spreading doesn't really exist.
+When traffic is crossing an AD Site, the replication policy governs how fast such events will propagate.
+When an AD system needs authentication services is queries DNS for the SRV entries of the authentication servers in its AD Site.
+This is a result of how the SRV DNS entries are created.

@@ -1,0 +1,22 @@
+To get multiple copies, you would then rsync your backup drive to another backup drive.
+Store your data in different places and have different backup strategies.
+Basically this uses rsync to make copies to a remote system (or external drive), and uses hard links against files that don't change between each backup, to save space.
+It also, as a side effect, does file-level de-duplication when backing up multiple hosts to a single backup server.
+However, this doesn't solve your problem of wanting a minimal number of copies of each file.
+Something that will be available soon, is a backup tool that I've been working on myself.
+The Gnu Tar manual (section 5.2 and 5.3) has a brief discussion of these type of backups.
+Normally this is solved with either an incremental backup (backup all files since the last backup) or differential backup (all files since the last full backup).
+Or perhaps you can set aside archived tapes containing static data on a regular basis to reduce the daily backup load.
+In my opinion, it doesn't make sense to backup these large files all of the time, three or five times would be enough.
+I have worked for a huge company and even there, that was the setup for the petabyte of data.
+Is there something like "stateful" backups which store what files are already "safe" (already on 5 tapes or so, using maybe file-hashes) and then only backup the rest?
+But, if you want this to all happen on tape, the only thing I'm aware of is commercial backup tools such at Tivoli.
+Hardlink them into the layout you need to use them in.
+We constantly receive new data of this type and the size of our backups is exploding.
+Store the files you import based on the date you get them.
+I need to put together a bit more documentation and clean up the code before putting it up on github, but basically it does the snapshot-style incrementals-forever backups, keeping track of files by MD5 hash, and storing a catalog of snapshots of what a system looks like at each backup.
+If you are interested, I'll come back later and update this post once I have the initial version of this tool uploaded (assuming it isn't against policy here to promote your own projects -- if it is, my apologies).
+Some variant of an incremental backup would work for this.
+You might look into Bacula, which I think also supports keeping a minimum number of copies, but I haven't used that one yet.
+I work in bioinformatics and we store a lot of very large files which never change - plant genomes, genomic reads etc.
+Another option, if you want to get an exact snapshot of the system on each backup, yet still save space is to use rsync snapshot backups (do a google search for rsync snapshot, there are several articles and tools that implement this).

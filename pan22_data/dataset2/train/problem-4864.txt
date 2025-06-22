@@ -1,0 +1,10 @@
+You may need a specific drive letter mapped (eg you are launching from G: but the wrapped executable expects an H:), or to be authenticated to a different machine, or just a missing component.
+Some (especially older) exe's cannot run directly from a network share, but they can run from a network share if you mount the share with a drive letter.
+Not sure what causes it but if you copy the file to your local hard drive then run the EXE, it should work.
+When you have to enter credentials to access the network resource or if you are operating on a mapped drive, elevating a process may fail because of UAC.
+This is because with UAC you are actually logged in with two sessions, one with administrative access and one without. These sessions are mostly separate, they don’t share mapped drives or network login tokens.
+When I ran into this it was because the share didn't have permissions set correctly.  Try allowing "Domain Users" and "Domain Computers" access to the share.
+It seems unlikely the OP is ever going to return, so I’ll address two specific cases that could have caused this:
+Your non-admin session has its mapped drives and any network login tokens. After confirming the UAC dialog, Windows tries to load the program in the admin session. It doesn’t have any network login tokens nor the mapped drives. As such, it will fail with either “file not found” or “access denied”.
+Luckily, there is a workaround, enabling “Linked Connections” (described in the article mentioned above). The following .reg file will accomplish this:
+You might check with the developer to see if the executable you are launching is just a wrapper for one or more secondary executable's, which also have a particular path requirement.  

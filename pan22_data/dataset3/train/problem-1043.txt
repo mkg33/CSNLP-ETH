@@ -1,0 +1,18 @@
+You should use is_file() instead of file_exists().
+It's much better to avoid using PHP and allow your web server to manage this.
+This will help you to avoid the Arrow Anti-Pattern.
+An easy way to do this if your PHP version is >= 5.2 is to use filter_input().
+If you're using Apache, the following lines in your .htaccess file will do the trick quite nicely.
+A better way to use variables in a string is to use curly syntax so this line
+However, neither is actually necessary in this context.
+is_readable() also checks if a file exists, so this is redundant and unnecessary.
+Also look into other ways to sanitize $_GET['file'] properly at the moment I could pass in something like /../ and I could access other files.
+There is no need to explicitly use an else statement and force yourself to indent your code unnecessarily.
+The difference is that the latter doesn't assume its parameter is an actual file and will also return TRUE for directories.
+You've already validated, you just need to sanitize.
+Don't use an if/else statement if you can get away with just using the if.
+Depending on the size of these files, imploding the input into an array and iterating over that will allow you to download multiple files, though at this point you will want to offer links to said files instead of automatically generating a save file dialog.
+From the docs you can save on a fopen() call by using readfile() instead see fpassthru()
+This is much less server intensive and more secure.
+I agree with most of these other answers, there are just a few things I thought I'd point out.
+Your if statement returns early, therefore the else statement is implied.

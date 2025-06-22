@@ -1,0 +1,29 @@
+If you have operating system space monitoring, then autoextend could work for you.
+The SYSTEM tablespace always contains the data dictionary tables for the entire database.
+The SYSTEM and SYSAUX tablespaces are reuqired by the RDBMS to function correctly.
+You always have the option of sqlplus / or sqlplus /nolog if sysaux runs out of space.
+SYSAUX and SYSTEM are no different to any other tablespace in that they need to sized right.
+In my experience, space pressure in SYSAUX is pretty much always down to AWR data.
+Reference: Database Components and the SYSAUX Tablespace
+Your db is never 'critical' when you are about to run out of space.
+The largest portion of the SYSAUX tablespace is occupied by the Automatic Workload Repository (AWR).
+The SYSAUX table is home for the following components:
+There are known issues with AWR retention/purge settings not playing nice (e.g doc 1912201.1)
+This query will help you to track what is in sysaux.
+Do not wait until 95% or higher to act upon adding space.
+If you can reduce the size of the data being stored by the components, then you can reduce the size of the required SYSAUX tablespace.
+A list of objects that reside in the SYSAUX tablespace can be retrieved using the V$SYSAUX_OCCUPANTS view.
+There are certain tables in SYSTEM and SYSAUX tablespaces that store historical query data, AWR snapshot and audit information, which can be deleted/truncated.
+If your database has been constantly growing, or if you are monitoring a lot of objects with Enterprise Management Console, then your SYSAUX tablespace will slowly fill up.
+The following size recommendations are provided by Oracle to determine the AWR size and to a large portion the size of the SYSAUX tablespace:
+So if your database grows in size due to new objects, then your SYSTEM tablespace will require more space too.
+You should look specifically at the sys.aud$ table.
+You may also want to query dba_segments filtering by table space name, looking for the largest object.
+One option is to use the autoextensible feature of the datafiles of your tablespaces.
+If you need to keep auditing records, back it up before truncating.
+First of all check which table is taking the most space in those tablespace.
+If you are not sure or concerned if deletion of records in a table would affect something else, then just add extra space in those tablespaces.
+Reference: Controlling the Size of the SYSAUX Tablespace
+but be careful of using this feature, as buggy software can use up your allocated space quickly.
+You can also set resumable_timeout parameter so that sessions waiting for space wait for you to add space and do not end abnormally.
+You can also use the space monitoring features of OEM to send you a notification when your tablespaces reach a certain percentage, for example 80%.

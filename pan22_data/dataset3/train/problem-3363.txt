@@ -1,0 +1,17 @@
+Is this a surprising discrepancy, or is it normal for /etc/group to list only members where the group is secondary?
+When I look at /etc/group, filesender_1 is not there:
+Typically, when a user is created without specifying a group with -g or --gid, the default behavior is to set their primary group as their username, and this gid is not placed in the /etc/group file.
+There exists a program called members you can install on most linux distros that lists the actual members of a group whether it is their primary group or a supplementary group.
+Hence files and directories created by the user joe will have ownership joe:joe.
+on a group will show users who are members, either primary or supplementary, of groupname.
+When I look at /etc/passwd, the group id for valid_senders is listed for filesender_1 ...
+... so I know valid_senders is the primary group for filesender_1.
+I want to verify that the user account filesender_1 is a member of the group valid_senders.
+Programs aren't supposed to read /etc/group or /etc/passwd directly, they are supposed to use the system calls.
+If you add the user joe to group 'students', then running
+All this has been true for at least 20 years now, and probably much longer.
+I read this as "production_1 is the only member of the group valid_senders, whose group id is 12345."
+I've seen it so many times I stopped looking at the /etc/passwd and /etc/group files and instead started looking at group memberships the way they should be looked at: getent group <groupname> and groups <username>.
+Generally speaking, system administrators should add the user to their primary group's member list in /etc/group because the getpwent() family of system calls will remove duplicates when called.
+But you will not find group 'joe' in the /etc/group file.
+will show joe in the list of users in group students.

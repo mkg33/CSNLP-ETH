@@ -1,0 +1,12 @@
+I think the only way to get this to work would be to make a software(or possibly hardware if you're man enough to configure it) RAID 1 setup with another harddrive.
+The problem with imaging a running disk is there's no way to ensure consistancy - files change while you're working on them for one.
+So, no, unless its a OS or FS that can snapshot, its not a good way to go around doing things.
+This would probably have serious performance concerns depending on how smart your RAID is(if you have to completely resync the drive everytime the backup completes), but this is a way to do it without taking your server offline
+If you are using LVM volumes (which you probably should be using in a production enviroment), there is a copy on write snapshot facility that can produce exact snapshots.
+I've never tried this on a raw filesystem image, but it works well on a directory structure.
+There's several commercial products that can do this, in some form or another - vmware vCenter Converter can make a virtual machine out of a live machine, Acronis TrueImage has a linux version of one of their enterprise products that supports live copies.
+Even if your conversion succeed, you will have a hard time verifying the content.
+There's several approaches to avoid this - one is to use some way to make a snapshot of how files are at a very specific period of time and make a backup - windows has VSS, but linux / ext has no equivalent to that.
+Otherwise, a hackish way to do it that might work would be to use rsync repeatedly until the differences are small enough that you can remount filesystems read only, rsync one last time, and then remount rw.
+The other is to make the image off a non live system
+From there, ensure that it's synced and then when it's time to take a backup image, take the second disk in the array out(with a script, not physically) and copy the second harddrive.

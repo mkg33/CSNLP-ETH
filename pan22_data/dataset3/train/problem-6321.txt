@@ -1,0 +1,17 @@
+So yes, all three (Ethernet source address, request SHA and reply THA) should match.
+RFC 826 does not specify any sort of check to verify that the Ethernet address of an ARP frame matches that of the SHA.
+So, if an interface is not the TPA, it should hit a negative condition in response to ?Am I the target protocol address?
+Since the request's SHA/SPA are now swapped to the reply's THA/TPA, they should match.
+As such, the Ethernet source of that interface should be the SHA.
+If it is a match to the TPA, then again we swap the TPA and SPA.
+It would still not have an entry for the original request's TPA and as such would start the ARP process again.
+Also, I should point out that if you step outside of Ethernet to FDDI, the FDDI source address will not match the SHA.
+Looking at RFC 826, you can easily find that the request SHA/SPA should always match the reply THA/TPA:
+Since this is all driver level implementation, this should be the driver of the interface out of which the ARP request is being sent.
+As for the request TPA being the same as the SPA, we can expand out the previously quoted section of RFC 826 a bit:
+This comes from the section detailing how a received ARP packet is handled.
+Additionally, if the TPA in the request where to reply with a different SPA, note that the original requester upon receipt of the reply would put the reply SPA into its ARP table.
+When FDDI came along later, while it used the same bit order as Token Ring, for ARP payloads they used the Ethernet ordering of bits to avoid this "ugliness."
+That doesn't mean such a check doesn't exist, it may be added to the driver or implemented on the network to help prevent abuses of ARP that you allude to in asking your questions.
+There is some ARP "ugliness" that was necessary when Ethernet was bridged to Token Ring that required the payload of ARP packets to be modified by the bridge due to differences in the bit order used for addressing.
+Now, all that being said, that is what should happen.

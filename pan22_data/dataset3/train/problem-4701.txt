@@ -1,0 +1,15 @@
+Of course if your workloads are all very light on write operations then you shouldn't spend too much time worrying about keeping data and logs separate, as it'll make little performance difference and dedicating a whole volume for them would be quite wasteful of available space.
+So most people consider that a reasonable trade-off.
+One thing you didn't mention, but could try (if you haven't already): Microsoft recommends splitting your TempDB up over several files (one per CPU).
+Depending on what you are using the DB for (OLTP vs warehousing) your config looks like a good general config.
+For a write heavy situation separating the logs from the data can make a significant difference as each write involves updating both the log and the data files, so involves a fair amount of extra head flipping if both sets of files are on the same set of spindles.
+If your workload is not heavily dependent on tempdb for things such as sorts, hash tables, and snapshot isolation, then you might be better off using the 6 SAS drives together in RAID 10.
+However, if you know or have the metrics to prove that tempdb is heavily utilized, then you should keep it separate as you have.
+It increases your risk for failure, but since TempDB only buffers data, you can't experience data loss.
+You could get better performance if you switched the disk for your TempDB to RAID 0 (stripe).
+Without further reference to your workload (and the spec of those drives and any controller that is between them and the machine) I'd be inclined to go for three volumes: one for OS+programs and tempdb (data), one for main DB data, and the third for logs (both tempdb and main DBs).
+It all depends on your workload, but with only 6 drives it does limit your options.
+http://msdn.microsoft.com/en-us/library/ms175527(v=SQL.105).aspx
+If you had more disks, you would have more options.
+It very much depends on what you mean by "very busy": different workload patterns (write heavy or not, bulk operations common or not, level of concurrent access, to name but three of the many variables) can have a drastic effect on the performance of any given spindle arrangement.
+Of course, it is best if they are on separate disks, but simply having separate files helps.

@@ -1,0 +1,7 @@
+ELB has no way of adding that header, as this header is a function of HTTP, and this is a TCP load balancer. All it knows is that it's passing some TCP flow and no more. If you need the ELB to add this header, you'll need to terminate HTTPS at the load balancer. From there it can communicate with your backend instances via HTTP or HTTPS as required.
+As you can have multiple distributions pointing to the one load balancer and AWS provides certificates for SSL, you can terminate the SSL at the edge location. CloudFront will add the header and forward the request (if needed) to the load balancer. From there the header will reach your server.
+While I highly doubt it is possible to get the X-Forwarded-For working when the SSL termination isn't being done on the load balancer, I haven't found a definitive no. However there is a solution I've made work using CloudFront. 
+Dumping all attributes in PHP I can see the header for HTTP requests but not HTTPS, so I don't think it's a config issue.
+I've updating my logging format to log the X-Forwarded-For and this works well for HTTP however not for HTTPS. 
+I have an AWS TCP load balancer on an autoscaling pool, There are multiple domains behind it so I can't do SSL termination on the load balancer, hence TCP.
+Forums don't indicate that this can't be done as it talks about HTTP(S) however I can't get it to work. Can it work?

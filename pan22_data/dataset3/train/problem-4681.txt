@@ -1,0 +1,8 @@
+(SPDY also allows for transaction multiplexing - but that's something different again).
+In addition to what appears to be a flawed premise and incorrect assumptions, you've omitted a lot of information which is relevant - What OS is running at both ends?
+Adding servers (appropriately configured) will decrease connection re-use hence worsening your performance.
+If SSL is not a consideration, then make sure you've got window scaling set up properly with appropriate RWINs at both ends.
+Transaction pipelining is possible (see HTTP keepalives) but this has nothing to do with the process engine.
+There is no such thing as connection pooling in HTTP.
+Most OS will cache the slow start threshold across connections which means that it shouldn't have too much impact unless connections between the end-points are relatively infrequent - in which case you might want to set a higher default.
+If network latency is the big problem here, then running the HTTP through a VPN or IPSEC instead of SSL will improve the situation (no need for SSL [re-]negotiation for every request but you still have a TCP handshake).

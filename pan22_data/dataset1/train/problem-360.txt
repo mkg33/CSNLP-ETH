@@ -1,0 +1,7 @@
+I posted a comment asking for more information, but with a (loose) understanding of what you're trying to do, I'm recommend the following:
+I'm assuming budget constraints are in the "small business" range, so I'd say get an ALIX-based pfSense firewall from Netgate for each location, setting up IPSec/OpenVPN site-to-site tunnels to one "HQ" -- whatever location has the most on-site users should get the Small Business Server.  
+As for separating user data from AD and email, you can move the Profiles, User's Shared Folders, and/or any other network shares to any logical drive -- as long as the server can see it, you can move it there.  Same goes with Exchange's database.
+You mentioned email, so I'd recommend setting up Outlook Anywhere to work across the tunnels or perhaps using IMAP; both a little more friendly for higher-latency links like your IPSec tunnels than MAPI profiles.
+No idea what other user applications you have, can't comment on that.
+I would probably setup some type of samba fileserver with a LVM (OpenBSD, FreeNAS, Debian, Redhat, etc take your pick) along with postfix running a local mail account for each user.
+Assuming you're running Exchange, you can backup email in a clever manner by setting up a forwarding address for each user's mail to [username]@nas.local or something similar thereby creating a constantly updated backup of each message.

@@ -1,0 +1,9 @@
+When using RHEL's network scripts, /etc/sysconfig/network-scripts/ifcfg-eth? is what they'll get their information from.  If you use ifconfig to set up your network interfaces, keep in mind that you'll need to duplicate your changes in these files to get your configuration to survive a reboot or service network restart
+4.If you need to be really really sure about it, you can browse through the developer python source code for "system-config-network" in "/usr/share/system-config-network". Which might point you back to (3) that the tool will finally copy or write the config file in "/etc/sysconfig/network-scripts".
+1.During bootup or network service restart, it will use this startup script "/etc/init.d/network", which is a plain bash script that you can check it out in details yourself.
+/etc/sysconfig/networking/profiles/ is used only by system-config-network to store network profiles.  Nothing under that directory is ever used by the network start/stop scripts by default.
+b.Then it change directory to "/etc/sysconfig/network-scripts", which means, this is the main directory it refers to and load the config file.
+/etc/sysconfig/network-scripts/ifcfg-eth? should be the only files you'll need to edit to get a working network configuration.  You can manually edit these files according to this doc or use system-config-network to get up and running.
+/etc/sysconfig/network is your system's global network configuration file.  It contains the default route and hostname
+To be honest, I don't know what /etc/sysconfig/networking/devices is used for and have never had to edit any files under this directory.
+3.About the other two directories or ultimately one "/etc/sysconfig/networking/", it has been warned in RHEL manual that it is a no fly zone. I believe when you use the "system-config-network", it will utimately copied the file over to the main directory as per 2(b).

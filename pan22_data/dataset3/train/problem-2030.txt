@@ -1,0 +1,12 @@
+An update to NFS may well overwrite your good work...
+Note  that update-rc.d will not change an existing entry and silently fails to remove an entry (if script still exists) unless you add the -f.
+The underlying problem is the symlinks in /etc/rc*.d are scattered around a bit.
+Ideally you will end up with something like this -
+I have tested most of the previous solutions, they don't work after a restart of the Raspberry Pi ( the command rpcinfo -p | grep nfs gave me nothing ).
+In reality, you only need them started at level 3, so I edited /etc/init.d/rcpbind, /etc/init.d/nfs-common and /etc/init.d/nfs-kernel-server so "# Default-Start: 3" and ran this to enforce it -
+You have to setup systemd to do the order properly
+I fixed my locales, reinstalled the packages and now it works.
+Make sure you don't see an error about your locales during the installation of these packages.
+https://github.com/geerlingguy/raspberry-pi-dramble/issues/65#issuecomment-283046966
+The following line popped up in the terminal during installation of: nfs-kernel-server nfs-common rpcbind.
+Some of the suggestions above rely on remaking these links and, perhaps, they get made with more appropriate order.

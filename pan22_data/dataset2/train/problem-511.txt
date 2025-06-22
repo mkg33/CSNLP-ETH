@@ -1,0 +1,7 @@
+I'm using SQL Server 2005 and I have a column where I need to store large amounts of text (sometimes over 8000 characters, the varchar limit).  Is there a disadvantage to using the "text" data type?  I also read about using varchar(MAX) -- would that be better if most of my data stored in there was less than 8000 characters, but I needed to be able to support more?
+You should always go for the new LOB types in 2005 instead of the legacy types (text, ntext, image) as long as you have the potential for data over 8000 bytes.
+If the content is less than 8,000 bytes it will be stored inline. However, if the content is greater than 8,000 bytes, it gets stored in the LOB just like a text field.
+I posted a blog post that discusses this in more detail at http://www.sqlskills.com/BLOGS/PAUL/post/Importance-of-choosing-the-right-LOB-storage-technique.aspx.
+The new types work with the majority of the intrinsic string-manipulation functions, whereas the legacy types do not. They are stored in the database in the same exact way, but there are some small tweaks to read algorithms for the new types too.
+A few good blog postings from MVP Simon Sabin on these at his blog. Search for Simon Sabin varchar(max)
+Use varchar(max), it's the recommended approach going forward, so it will save you upgrading problems, it's also much easier to work with then the text data type.

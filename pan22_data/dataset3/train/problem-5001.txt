@@ -1,0 +1,28 @@
+I've been a long stackoverflow supporter and its great to see this is just a great :-)
+Is there any reason you can't just do dcpromo on AD01, demote it from a domain controller, reboot, then bring it backup to a domain controller using dcpromo again?
+A couple of months there was some hardware issues with AD01 so the operations master, PDC and Infrastructure Master was moved to AD02.
+It makes me think there is an erroneous DNS entry somewhere.
+In this case the behavior you are describing is correct.
+01 has no idea that it is no longer the master it once was.
+When running "dcdiag" on AD01 i get the following errors (excerpt of the Final output):
+Last week we did a major mailbox move to a new mailstore and this appears to have now stuff mail on all our mailboxes.
+This time the synch worked and everything came back to life.
+Point DC01 to one of the other DCs for DNS, restart netlogon on DC01 (or better yet, maybe reboot the server), then see if you can force a replication through AD Sites and Services.
+In either case I would remove dc1 fro the domain and re-add it using Dcpromo as replication has somehow been disabled
+Once AD starts replicating, ensure DNS is set to be Active Directory integrated and point DC01 back to itself for DNS (assuming it is a DNS server).
+I've been googling for nearly a day and all solutions lead to "the cake is a lie"
+So the problem appeasr to be that when i moved the operations master, AD01 never got the memo, and now that it's started up, all the other AD servers don't think its the boss anymore when it trys to replicate etc.
+The next thing i would have tried would have been to do as Josh suggested and dcpromo down the box.
+If you can dcpromo it down and back up, that would probably be best.
+I have a domain with 3 AD servers for now i'll just call them:
+Once AD begins replicating again, you should see the correct FSMO roles on all servers.
+So i really need to manually update AD01 so that it knows who the operations master, instrastructure and PDC is - but i'm not having any luck
+If NetLogon is ever "paused" there is probably a good reason.
+Thank your very much for the quick replies though.
+jason's comments about DNS were also very helpful, as this is one of the first things i thought to - so if someone else comes along i'd check that first.
+Another possbility is that the roles were moved but that 01 was shut down before all of the DNS entries that got changed somehow did not get replicated in an AD integrated zone back to 01.
+By restarting NETLOGON and enabling synch's again i have let bad data back into AD on the other boxes.
+I suspect that instead of moving the operations master roles from 01 they were seized by 02.
+It appears that i was experiencing and "USN rollback issue"
+I did this for both the options mentioned in the log - Then i noticed that for some weird reason the netlogon service was paused... say waaa?
+Upon starting this machine up with replaced hardware (NIC and RAID card) i now have a weird problem.

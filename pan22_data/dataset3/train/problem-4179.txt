@@ -1,0 +1,17 @@
+1.Rsync supports for copying, links, devices, owners, groups and permissions.
+rsync is pretty fast as it only mirrors the difference as opposed to doing a full copy.
+MySQL has tools to dump the databases - mysqldump.
+Personally I use DAR to make differential backups and then rsync to transfer them to another server.
+Restoring is as simple as copying the backup files back and un-suspending them (you will have a short downtime while this happens, though some VM systems can minimise the downtime if you suspend and use a snapshot filesystem).
+I would go with DRBD to sync the web content and the web configs onto another server or share.
+Alternatively, you could use a virtualization system to hold your web server, then backups involve suspending the VM image, and copying its files (using rsync!)
+I use this to create a backup sql file that is backed up, I ignore the mysql files themselves after this, when I come to restore, I know I can restore the dumps.
+These create a spare partition and all disk writes from the time the snapshot is taken transparently go to the snapshot partition, meaning your original drive remains unchanged.
+However, as a general purpose backup tools it has a couple of failings (not failings in itself, its a fine file-copy tool).
+Rsync is very fast, its extraordinarily versatile file copying tool.
+After you have taken the backup, delete the snapshot and all changes are 'committed' to the main disk.
+2.Exclude and exclude-from options similar to GNU tar
+You could use 'scp' (which uses SSH) to backup the data but the better option to look into is setting up 'rsync' : Replicating Webservers
+The best alternative, if you have money, is to use something like r1soft's continuous data protection, which constantly backs up changes.
+The solution is reasonably simple: ensure all running services that are important flush their data to disk immediately before backup, and then ensure you take a snapshot of the disk state.
+Don't forget that you can't backup your MySQL database by simply backuping /var/lib/mysql ; it will be likely be in a corrupt state.

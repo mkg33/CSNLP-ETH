@@ -1,0 +1,11 @@
+I tried going direct to the IPv4 address in Safari - it worked apart from the obvious certificate mismatch error.
+Thanks for replying. I figured it out in the end by sniffing the connection between Safari and Apache and then Chrome and Apache. The server is on a private network, as I said, and I am using Avahi (zeroconf) to provide name resolution so I can use something like web-server.local and it automatically gets resolved to the correct IP address. Safari was trying to use ipv6 to connect and Chrome was trying to use ipv4.
+But still the site stubbornly refuses to open in Safari. What makes it very odd is that Chrome works OK! Any public SSL sites I try to go to in Safari work fine.
+I've set up an SSL virtual host in the normal way and I'm using a web server certificate signed with an intermediate which in turn is signed by a private root certificate installed on all machines using an Apple configuration profile and I've verified the root is installed on the keychain.
+I thought this must be an issue with the Apache configuration so I've stripped out as much as I can that I think might be causing the issue and now in my ssl.conf I have set SSLProtocol to ALL -SSLv3 and SSLCipherSuite to MEDIUM:!aNull and in the .conf file for the vhost I have got SSLEngine on and the only other SSL configuration in there are for the certificate file, intermediate and key.
+In Chrome - this setup works fine. The page loads and the SSL certificate chain is good and Chrome reports no errors and the green padlock.
+So I disabled IPv6 in Avahi (the zeroconf daemon) and in Apache on the server. Rebooted and it works now.
+I'm having this unusual SSL issue with Safari. Basically I have a Debian server running Apache 2 (2.4.10) with OpenSSL 1.0.1t on a private network.
+Oddly enough if I restart the Apache server it works in Safari for a couple of seconds - enough to get one page load in - before it fails again.
+In Safari (10) - but it happened with v9 as well - and on iOS 10 - all I'm getting is "Safari can't open the page xxx because Safari can't establish a secure connection to the server xxx".
+Wireshark gave me some very unusual results when I tried to connect using Safari - here's a screenshot. It seems like the SSL connection starts being established and then the server sends a 400 error immediately. 

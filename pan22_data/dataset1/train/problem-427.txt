@@ -1,0 +1,9 @@
+Until now I used a local CA signed certificate for my Exchange, but all foregin users could not trust the connection with their Outlook or browser to OWA webapp.
+I bought a wildcard certificate for my public domain mydomain.com (that it is different from my local domain name mydomain.local) and I want to use it for Exchange services. 
+I learned that I cannot use different certs for inner/outer connection so I dediced to let local user use an external address and create the zone forward in the local DNS. So everybody uses a single name to reach the Exchange server: mbox.mydomain.com
+I changed my OutlookProvider from old CertPrincipalName msstd:mbox.mydomain.com to the new the wildcard name:
+Then I activated IIS service in the new wildcard cert loaded by web ECP interface of Exchange.
+I waited a few for Outlookprovier refresh (TTL=1 hour)
+The external connection works but I have a proxy error for all my local Outlook clients:
+You can use different certs for external and internal connections. One possible option would be to involve a loadbalancer. You might also use a web application proxy (see here). 
+And then you can use one certificate (the external) on the LoadBalancer / Web Application Proxy. And reconfigure your Exchange environment to use internal and External URLs.

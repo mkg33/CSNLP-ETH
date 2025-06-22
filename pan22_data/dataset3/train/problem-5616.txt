@@ -1,0 +1,14 @@
+The question doesn't specify if the server is a RDS/TS application server.
+And as Chris S mentioned you should be able to access the server using "mstsc /admin" to at least get into the server to checkout the issue.
+http://www.brianmadden.com/blogs/brianmadden/archive/2004/04/01/the-ultimate-guide-to-windows-2003-terminal-server-licensing.aspx
+It's called either the console session, or the admin session, depending on your version of windows, but the effect is the same.
+This is the same error you would receive if you're trying to access a Remote Desktop Services (aka Terminal Services) server that uses device licensing (not user licensing).
+The other option (which is a better one) is to install the Remote Server Administration Tools for your choice of OS, and then connect to the RDP machine using the RDS Session Manager and just disconnect the people who are hogging your sessions (this only works if the remote server is on the same domain and it's on the sane LAN, you have access to it via a VPN or somesuch).
+It sounds like you are using an RDP server to publish access to other servers.
+If your RDP client is on Windows XP, run mstsc /console, or if it's Vista or Windows 7, run mstsc /admin - this will always get you in to your server, but will disconnect anyone else who is using that session.
+http://www.microsoft.com/windowsserver2008/en/us/licensing-rds.aspx
+As joeqwerty mentioned, RDP/RDS/TS CALs don't expire per se.
+Remote access is limited to two instances per server in server 2008 so you can either just scrap the RDP and allow users to remote directly into your servers, or you can stand up a license server and point your RDP server to it (they can be the same server, jsut add the new role).
+Then subsequent computers (the 21st+ computer) that try to connect will get the error you described.
+The RDS/TS device licenses get "assigned" to the computers that connect to it until the server it out of licenses (let's say you purchased 20 RDS licenses).
+You will have to activate it as well as add your licenses, which it sounds like you already have.

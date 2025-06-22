@@ -1,0 +1,13 @@
+Our file cache hit % has increased from 5% to 33%, so this definately helps a lot.
+We had this in our web.config for the site (despite not running any managed code on the site)
+We're running a Win 2008 R2 server with IIS 7.5 for serving image files.
+However the IIS frequently completely flushes the cache (seen by using Perfmon)
+Not sure why kernel caching causes this behaviour, but I can live with the slight overhead of caching in usermode.
+I've included a screenshot of the perfmon graph where you can clearly see the issue.
+After changing this to false the IIS stopped doing these full flushes.
+It still flushes some files regurlarly, but it's no longer a complete flush (around 50k files stay in cache)
+It's not application pool recycling, it's not because the TTL has expired, so now I'm at a loss :-(
+(Note: I'm aware I could maybe detect it by attaching a debugger to the process, but that's not an option because it's a production server, and it cannot handle the slowdown a debugger would cause)
+Is there anywhere I can see WHY it's doing these flushes ?
+Thought I'd add this as an answer to help others with similar issues.
+It's only used for static content, and file caching has been set up to cache files for 10 minutes.

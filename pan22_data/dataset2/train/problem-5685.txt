@@ -1,0 +1,7 @@
+Keep in mind that currently it's not possible (okay, it's possible, but definitely not easy or safe) to remove or resize disks in a storage pool, so you may want to plan ahead if you think you may need a different layout in the future. 
+You'll have the most options with same-size disks but mixing is possible. In your case e.g. a "three mirrors vdev" pool with 
+Technically there's nothing wrong with putting different sized disks in to one storage pool. Your performance will be limited by the slowest disks in the pool, which you may or may not care about, depending on your application.
+With ZFS you'll create vdevs from the disks and then build the pool from those vdevs (all of this happens behind your back when you execute the single command zpool create). There are various vdev types:
+ZFS then stripes over all the vdevs in the pool. A pool can be extended easily. But you can't add disks to an existing raidz{1,2,3}-vdev with the current ZFS version. However, you can always add a new vdev to an existing pool.
+Any documentation would be really handy or guidelines on what to do when we have a lot of disks that are paired.
+I'm just wondering whether its wise to add 4x500Gb and 2x750 into the same ZFS pool? Or should we only add the same size hdd's to the pool?

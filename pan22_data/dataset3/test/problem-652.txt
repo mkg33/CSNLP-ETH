@@ -1,0 +1,9 @@
+To migrate data from the master/slave-system to the cluster one cluster node is set up as slave to that m/s-system (backup from master is imported, slave replication on the cluster node starts from the point where the backup is taken).
+General replication in the cluster works fine like expected.
+Our cluster was not replicating neither when we had just the cluster operational (without replicating from the master node) with repl.commit_order=2.
+The cluster node never catches up to the master (seconds-behind-master is increasing).
+But we then experienced that the other cluster nodes weren't replicating any more (though their state was synced and the wsrep%-variables did not show anything unusual, no throttling), replication within the cluster seemed to have stalled entirely.
+When resetting repl.commit_order replication worked again.
+we are currently testing if moving from mariaDB master/slave replication to a 3-node-galera-cluster is an option for us.
+Setting repl.commit_order=2 improved performance, replication from the master to the cluster node went fine.
+Load test shows that write-performance does not meet our requirements though.

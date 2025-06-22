@@ -1,0 +1,7 @@
+I have a 3-node FCI:  1 primary / 1 secondary co-located in same data center on same subnet, and 1 secondary in a DR data center on another subnet.  
+The main reason is that by default SQL Client will select the first IP address it learns about.  If DNS returns more than one IP address, it'll pick the first one.  Its possible for the the order from DNS to shift.  This setting overrides that behaviour.  Now SQL Client will attempt connections to all IP addresses and resolve which is the correct one to use.
+Periodically, the virtual IP (VIP) for the AG name flips to the DR site and clients can't connect the Primary site.  The quick fix is to remove the listener from the node in failover cluster manager, then remove the DNS entry that points to the DR site from AD.  
+Has anyone else experienced this?  I have 13 AGs, on a 9 node cluster, and only 2 AGs have experienced this.  One of those I tore down and completely rebuilt with a new IP on the AG listeners, but the issue returned a week or two later.  
+See https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql/sqlclient-support-for-high-availability-disaster-recovery#connecting-with-multisubnetfailover
+I've checked most SQL and Windows logs and I can't find anything related to this.  In fact, the AG doesn't actually flip to the DR site; it's just the DNS entry that gets updated with the incorrect IP for the DR server.  
+That article explains fully why you need it enabled and even why you should specify it even if only using one subnet.

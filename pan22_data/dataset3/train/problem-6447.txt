@@ -1,0 +1,21 @@
+You can define it to look at files, timestamps, if something exist or even to run your script and check for output.
+In my experience, pre-built probes rarely handle the file-exists or file-too-old events, but some do include the ability to test that certain long-running executables are running.
+We develop most things in Ruby on Rails, use NewRelic, Bluepill and Munin, and run on Ubuntu.
+We use monit or mmonit (http://mmonit.com/monit/) for these kind of things.
+In one situation, we have a server at a client which pushes data to us to parse every night (yes, Windows Task Scheduler).
+I am running into a couple of issues with some applications we've deployed and maintain.
+Is there better tooling to track things that should happen, and raise alerts if they don't?
+In another scenario we have a lot of background job processes that should be running.
+I've been toying around with counting ps aux | grep processname | wc -l in Munin scripts, or capturing the age of a file and raising alerts over 24-26 hours, stuff like that.
+This heavily impacts our business since we run with stale data in that situation.
+This is highly unstable however, so once every month this doesn't happen because of reasons out of our control.
+Most quality monitoring frameworks that work well in the Linux space have the ability to have custom-written probes.
+We already keep them up using bluepill ( http://www.github.com/arya/bluepill ) but obviously restarts happen, both automatically and manually, and people forget things or systems mess up.
+I have the feeling we have approached this with some anti-patterns up to now, but I would like to see how to make this more flexible and stable.
+Alternately, you can tie these scripts to your snmpd process, so when a specific OID is accessed they're run and return their value.
+Like the existence of a process, the execution of a program, or the creation/age of a file, and track it when they don't happen or exist.
+I know some things are suboptimal, like manually having to define bluepill for applications and then forgetting to do so.
+From the sounds of it, you'll need two custom probes:
+The same goes for the push based approach of the first application, a dedicated daemon that manages that on the client side that we control and can track its connection to us might be a much better solution.
+These can often be used over SSH, which allows you to essentially write bash scripts that get run every time the monitoring system probes your assets.
+What I would like to track is events that should occur or should be available.

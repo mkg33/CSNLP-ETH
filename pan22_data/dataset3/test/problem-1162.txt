@@ -1,0 +1,18 @@
+I work in an office complex that has two seperate ADSL connections, which they use to provide two seperate networks (actually both the ADSL routers go into a Cisco managed switch with two VLANs, one for each ADSL connection).
+Zyxel P-663H) which will support two internet connections and balance outbound sessions across the two links.
+It would obviously mean changing public IP etc, but your new IP would be spread across the two connections, not dependant on either line seperately.
+Circumstances have changed so that 95% of the users are all on one ADSL connection.
+So, is there a sensible way to take two completely seperate ADSL lines and use them to provide a single internet gateway?
+Basic algorithm for choosing line switches between them for each connection.
+The alternative is to swap to an ISP who can bond lines so that each line is properly bonded.
+Balancing inbound traffic resiliently is a lot harder, since you have to publish an IP address for each inbound service, and those IPs can only ever be associated with one link.
+It will work on any BT line that can have broadband.
+For example first connection goes thru line A, second thru line B, third thru line A, etc.
+This algorithm needs support only on your site - your router.
+When new connection appears, loadbalancer decides which ADSL line will use.
+Are there any more specific reasons why you wouldnt want to move ISP?
+And if you went for a bonded provider that does it without using MLPPP then you don't have to worry about linux boxes or unsupported equipment in the future.
+Ecessa makes some reasomnably priced load balacer/failover devices.
+It would definitely be worth considering a fully bonded connection.
+For IP routing reasons this almost always involves NAT, although if you're already using NAT that shouldn't be an issue for you.
+It would be great if there were a way to join together both connections to emulate a single connection at double the speed, but the ISP doesn't support bonding.

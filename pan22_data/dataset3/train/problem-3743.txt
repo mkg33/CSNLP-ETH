@@ -1,0 +1,24 @@
+Do you have any suggestions where I can look further in order to get into this problem?
+When restarting the systemd-networking service (or rebooting) a vlan1 interface gets created.
+According to Archluinx Wiki I have tried to configure.
+However, the file vlan1.network seems to be ignored completely.
+I had to rename the vlan interface to enp4s0.1 instead of vlan1.
+I am running an Archlinux machine and I want to get VLANs running.
+The 192.168.4.0/24 network is not assigned to any adapter.
+I tried it in a small virtual environment to avoid messing with the production machine, there the behavior is perfectly useful: The vlan interface gets only the configured IPs in the *.network file.
+Additionally I want to create a virtual controller vlan1 that is in VLAN with id=1 with the IPv4 192.168.4.5/24.
+I have a running configuration without the VLAN thing in my productive system.
+This seems to be a bug regarding the logging output as far as I understood.
+Network card enp4s0 gets 2 IPv4 addresses 192.168.0.249 and 192.168.5.5 both /24.
+I added also two more files in /etc/systemd/network:
+The new interface gets the IPs copied from enp4s0.
+In the logs of systemd-networkd.service the following lines appear after the restart:
+The error in the logs are 1:1 in the logs of the test system as well.
+I will maybe ask the developers of systemd but for now a workaround is found.
+I tried to add the other parts to the configuration like the following:
+So I cannot reach any of these machines while having routes to the wrong devices.
+Maybe I am simply silly or overdue but I do not get the reason why this happens only in the production server and not in the test server.
+For details, see comments in https://github.com/systemd/systemd/issues/11921.
+You should not use MACAddress= in [Match] section if the .network file contains VLAN=.
+I thought I could give any name I liked but this did not work as expected.
+The original routes are not copied over (which seems nasty at best).

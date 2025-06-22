@@ -1,0 +1,18 @@
+Is there anything specific that I need to take care of in this regard?
+Something tells me that you really want to think this design through.
+Looks like exadata v2 should more than easily do the job.
+When you do bulk processing it is about bytes and NOT about the number of rows.
+only use option #3 if you can't meet the requirements of a transportable tablespace.
+Optimizing using replication is not an option, unfortunately, so I guess the easiest solution is to create a new Oracle database, and copy all the data, and do this once per day.
+http://www.oracle.com/us/corporate/press/033684 and
+That's right about at the theoretical max for GigE.
+I have received a request to make a 100 billion records database available on Oracle, too.
+In other words, you're going to be maxing 'normal' bandwidth and disk I/O even with these simple assumptions.
+Materialized views suck for large amounts of data and full refreshed.
+My guess from this is you need to move data from one DB to another right?
+If you have 100,000,000,000 records at 100 bytes each, that's 9,536,743 MB per day without any incidental I/O for indexing, etc.
+Divide that by the number of seconds in a day and you get 110 MB per second.
+http://faisalgh.blogspot.com/2009/10/embarrassingly-fast-exadata-v2.html
+Not enough detail to give a quality answer, but I think 'server' is going to be 'servers'.
+This is what I would do (without know the actual size of your database and other stuff going on )
+Even that is assuming even distribution and a full 24 hours.

@@ -1,0 +1,7 @@
+So, when you connect to DB2 using your domain ID, DB2 asks the domain controller what groups you belong to, so it does not see that your ID belongs to the Administrators group on your local PC.
+not using your domain account), start a DB2 Command Window and issue the following:
+The reason this occurs has to do with how DB2 enumerates which groups a user belongs to upon successful authentication.
+The short answer to this problem is that you need to set the DB2 registry variable DB2_GRP_LOOKUP to local.
+After doing this, DB2 will see that your Domain ID belongs to the local Administrators group, and you'll end up with full SYSADM privileges (and the ability to create a database).
+When you set DB2_GRP_LOOKUP=local, this modifies this behavior:  It tells DB2 to always enumerate groups from the local machine, regardless of whether the user was authenticated by the domain or the local machine.
+In a Windows Domain environment, the default group enumeration behavior is to ask the system that authenticated the user:  If a user is authenticated by the local machine, DB2 asks the local machine what groups belongs to; if the user is authenticated by the domain, DB2 will ask the domain what groups the user belongs to - and it will not ask the local machine.

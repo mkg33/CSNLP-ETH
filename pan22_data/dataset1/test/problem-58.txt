@@ -1,0 +1,13 @@
+I think you want method 1, not method 2. I assume you a constant turn rate towards the desired heading? In that case, torque, being angular force, is not what you'd want to use here. (You'd need infinite torque to get the initial immediate start, and then infinite torque to stop immediately at the target direction) so the first method is more accurate.
+There's a couple places where your variables don't seem to have the right units. It may help to write out (on paper) what units each of your variables is and check the units with dimensional analysis.
+The following two lines of code clamp totalRotation/tempSpeed to [-π, π]. Assuming tempSpeed is  your maximum angular velocity, this doesn't make much sense to me. I think you should remove the tempSpeed parts, and thus the logic is that "total rotation" needs to be in that range.
+The following two lines seem wrong to me as well -- your desiredAngularVelocity is angular velocity (unit: 1/time), and not a rotation (radians are unitless), you need to divide by a time variable. Also, the change variable has some  you're not allowing 1 degree rotation per timestep, you're allowing 180 degrees rotation per unit time (i.e, second). 
+With these changes, it should remove the wobbling, which was caused by an incorrect impulse calculation that always overshot the desired value.
+I'm using Box2d as my physics engine and I'm trying to solve what would normally be a simple problem but what has become a nightmare for me and preventing me from finishing my app. (6 months work)
+I've tried implementing this: (Example of implementation below)
+http://box2d.org/forum/viewtopic.php?f=18&t=7306 but it's got three problems.
+1: When reaching the top angle it stops and goes the other way. (Example in logs)
+3: Large objects with moving joints spaz out rocking all over the place.
+I have a desired angle and I want my body to rotate at different speeds (depending on turn speed setting as I want large slow turn objects).
+1: Large object with a moving joint either spin very fast or rock constantly.
+This is within a game loop, so have access to delta.

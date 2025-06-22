@@ -1,0 +1,16 @@
+This is cheaper than passing by value as objects don't need to be copy constructed.
+This allows the logic to be reused in multiple places.
+The function does not change r so it is also const.
+If this is intended then make numerator and denominator const.
+However, I would create a simplify() method which performs this simplification instead.
+Currently simplification of the fraction is handled by the constructor.
+The current implementation of your class is immutable, none of the member functions alter the contents in any way.
+This can be used on the signatures of functions that don't change the object state eg.
+Only const functions can be called on const objects.
+Instead, I would let the caller decide whether they want a new object or whether to modify the existing one.
+So by declaring a function const in can then be called in the body of a function like void print(const Fraction &f);
+In order to enforce immutability you create a new object on each method call.
+l is copy constructed as it's passed by value leaving the passed object unaltered.
+Define operators +=, -=, *= and /= as member functions and then define non member +, -, * and / in terms of those.
+As others have mentioned the c++ way of doing things is to overload operators rather than writing functions such as add().
+double decimal() const; The preferred way of passing objects (that won't be altered by the function) in c++ is const reference eg.

@@ -1,0 +1,9 @@
+Look into network-scripts whether there is no other interface that could crash network.service
+as it has been already identified - this error pops up with any issue while setting up network: IP conflict, routing issues, etc.
+You can use the below commands for the first interface.
+If there are more files in network-scripts than interfaces in ifconfig, you can delete the additional useless files and then do a systemctl restart network.
+Had this error after cloning a virtual server, the clone was given a new hardware address ( MAC ) and the network adapter config still had the old one.
+Find MAC address of the interface through command /sbin/ifconfig -a and append that in /etc/sysconfig/network-scripts/ifcfg-<interface_name>.
+It seems this happens also if you manually configure an interface that isn't connected to the network.
+I too faced this today on a CentOS 7.2 cloned virtual machine.
+Look at your gateway settings to confirm your gateways are set properly and things are what they need to be with /etc/syscofig/network and each of the /etc/sysconfig/network-scripts/ifcfg-* look for duplicate IP, routes set via /etc/sysconfig/network-scripts/route-* if memory serves me right gateways now can be set in both ifcfg-* and route-* files.

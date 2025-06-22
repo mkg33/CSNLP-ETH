@@ -1,0 +1,16 @@
+I am not aware of any tools which attempt to make a better estimate than this, but it is theoretically feasible to do a bit better with the new diagnostics available in /proc in recent kernels.
+The other to look at is RES which tells you the amount of space in resident memory.
+The other is RSS, or "resident set size", which is the amount of memory in pages which are currently resident.
+This does NOT necessarily mean that it's allocated or in use, but simply available should the process request it.
+There are two columns to pay attention to: VIRT and RES.
+From what little I've searched, it looks like showing swap IN USE isn't possible.
+There are two counts per process, which are (vaguely) useful.
+When the kernel gets a bit short of memory, it tends to discard pages which haven't been used much recently.
+However this isn't really the true picture either:
+That is, pages which are not backed by any disc file (not mmap'd file-backed pages).
+VIRT tells you how much memory has been reserved for the process.
+However, there isn't a single process which triggers it, it's just general memory pressure.
+These are VSIZE (or vm size) which is the total number of pages that a process has allocated - but this tends to be a big overestimate of how much is actually "used", as it can count pages twice, and count pages not being used at all (mapped but not used).
+"swap" is really considered to be "non-resident anonymous pages".
+It might choose to discard file-backed pages, or anonymous pages.
+Moreover, you can't even measure page usage very accurately.

@@ -1,0 +1,11 @@
+The Model information value is this guaranteed speed. That means that under proper cooling conditions the chip should always be able to run at that frequency. In this example that is 2.13GHz.
+So, even if you choose the performance governor you will see two speeds, the minimum and maximum -- but the minimum frequency is really meaningless, as the CPU isn't doing anything because it is in a c-state.
+As more CPUs are in c-states/idle, the turbo ratio can go up, to a maximum of 30, or 3.0GHz if only 1 or 2 cores are active.
+In this case, if 7 or 8 cores are active, the maximum multiplier is 0x1b or 27. The multiplier is generally 100MHz, although another MSR specifies this. So, this EE part is capable of running at 2.7GHz while the guarantee frequency is 2.2GHz.
+Because these CPUs are superscalar and can execute out of order operations, and because macro instructions in CISC can take more than one cycle, clock rate is not a meaningful indication of cycles.
+What makes this even more confusing is that the governor requests the maximum frequency available, and there is sufficient thermal room available, the cores can be overclocked, and it will not be reported msr 0x199 nor in cpuinfo. A utility which uses aperf/mperf is necessary to determine if your CPU is operating above the guaranteed speed.
+Bogomips is an arbitrary indication basically based on the number of no-ops in a cycle, but there are too many variables to simply do performance based on CPU frequency.
+These values are really directly related to a set of registers, msr 0x199, 0x198, 0x1a0, and 0x1ad which can be read directly via the rdmsr utility if you are curious.
+In general, if you are thermally safe, and you know that you are CPU bound but bursting the CPU and you don't care about power, you can use the performance governor and leave c-states enabled.  C-state power savings are significantly higher than any savings due to p-states. Many workloads also benefit from racing to wait in a c-state anyway.
+When a processor is idle and in a c-state, it will report the minimum frequency for that processor, generally as seen in available_scaling_frequencies.
+More interesting to look at would be the actual instruction performance itself. You can monitor this by using perf tools, and count instructions and other operations in more meaningful ways across workloads.

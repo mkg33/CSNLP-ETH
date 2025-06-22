@@ -1,0 +1,21 @@
+In the past when we have found it necceary to reboot the switch all running VM's get shutdown, and then rebooted by the ESX hosts.
+In the "Cluster Settings" dialog box, choose VMware HA on the left.
+I know this answer comes quite a while after the questions, but I recently ran into this issue and found a completely different resolution to the reboot of VM's.
+Is there a configuration change that I can make in VirtualCenter that would prevent this from occuring?
+There is a timeout value for your storage hidden somewhere in the guest os.
+This switch has our three ESX servers and the iSCSI SAN that the ESX server use connected to it.
+If this isn't your situation please could you add some additional details to clarify the situation.
+If you have a VMware HA cluster, then in VirtualCenter, Right-click on the Cluster, and choose Edit Settings.
+I am trying to avoid this as it is not a graceful shutdown event.
+Mind you if you have all of your ESX networking plugged into a single switch then you have a network that needs to be re-designed a bit.
+This weekend we are planning on upgrading our IOS on our Cisco switch.
+The only way to survive this sort of change, bar building in redundancy, would be to Storage vMotion every VM to each hosts local storage for the duration of the switch outage and then back to the SAN when the switch is back up.
+when windows cannot access it´s disk for more than x seconds it crashes.
+If that's the case then taking down that switch will absolutely 100% kill every VM stored on the iSCSI SAN box as each host will lose not only it's networking but also its persistent storage on the iSCSI SAN box.
+Or any other ideas as to why this would happen in it's not VirtualCenter related?
+In the right hand pane, you will see a section titled Default Cluster Settings  Set the Host Isolation response dropdown to "Leave VM Powered On"
+That way, when the network connectivity comes back, the hosts are still there and can continue doing their jobs.
+Sorry if I'm being dim here but are you saying that you store your VMs on the iSCSI box and each host is only connected to one switch?
+That sounds like you have a dodgy VMware HA setup.
+If ESX hosts are configured in a HA cluster and they lose contact with each other's Service Console interfaces for longer than 15 seconds HA will attempt to restart protected VM's, and will (by default) shut down the running VM instance.
+If you have an ESX Cluster (especially with HA enabled) then each host should have two separate service console ports connected to two separate physical nics that are plugged into two separate switches so that you never lose management access to the Hosts when you lose a single switch (or take it out for maintenance).

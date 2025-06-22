@@ -1,0 +1,16 @@
+To formulate the command-line for the DSACLS command you're going to need to know the distinguished name of your Exchange organiation. The easiest way to do this is to install the "Windows Support Tools" from the W2K3 CD, in the "SUPPORT" folder. After you've got that installed, start "ADSIEDIT.MSC" from Start / Run.
+Perhaps an obvious question, since you say it was working y'day, but: The client computers are joined to the domain and the users are logging-on with domain accounts and not local accounts-- correct?
+Are you seeing anything amiss in the event logs on the Exchange Server computer? That is the absolute first place to look.
+When passwords expire this happens - it's unlikely if it's all of your users but ask a couple to reset them and see if it changes anything.
+Close up ADSIEDIT. Click Start / Run and enter the following command, pasting in the "distinuguiedName" value you copied inside the double-quotation marks (leaving the double-quotation marks in the command):
+Expand the "Configuration" container in the left pane, the "CN=Configuration,..." sub-node, the "CN=Services" container, and the "CN=Microsoft Exchange". In that "CN=Microsoft Exchange" container you'll find your Exchange organization as a "CN=Organization Name Here" node.
+Since your "Domain Admins" can access their mailboxes without problems this doesn't point to a database mounting problem. Has somebody been playing around with permissions in the Active Directory? Start by querying everybody who would have access to do such a thing (Enterprise Admins, Domain Admins). 
+These users had un-prompted access to their accounts yesterday without any problems or prompts. Today I have the credential prompts. 
+I can ping the server, ping by FQDN, and ping by short-DNS-name. I can browse sites and resolve DNS addresses outside of my domain, and those within. 
+Also check for any cached credentials in Control Panel | User Accounts | Advanced | Manage Passwords.
+I'm having a really hard time finding a doc from Microsoft that describes the default top-of-the-organization permissions for Exchange 2003! It would probably be easiest if you dumped a copy of the ACL using the DSACLS command and added that as an edit to your question. 
+When users attempt to open Outlook 2003 and gain access to their mailbox, the system is prompting them for a username/password. Even when the correct credentials are entered, the box just prompts them again, and again...
+For any user with Domain Admin, the system does NOT prompt them. They have access just like the did before today - just double-click on the Outlook icon, and the mailbox opens.
+I'd examine the default permissions on the Exchange organization by turning on the "Security" tab in Exchange System Manager (create a REG_DWORD value called "ShowSecurityPage" in the key "HKEY_CURRENT_USER\Software\Microsoft\Exchange\ExAdmin").
+I need to get my users access to their mailboxes without a prompt, and without granting additional privileges. Upgrading software or operating systems is not an option.
+Bring up the properties for your organization, scroll down to the "distinguisedName" attribute, highlight it and click "Edit", and copy the contents of the "Value" text-box (making no changes!). 

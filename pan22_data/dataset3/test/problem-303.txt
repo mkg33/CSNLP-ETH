@@ -1,0 +1,11 @@
+Thus it'll be using stale cached metadata after the resume, the result being drive corruption.
+A filesystem that supports quick removal will flush lazy writes quickly (~1 sec).
+So fiddling with the optimize option after the formatting won't help.
+Your use case determines which option you should choose.
+The "Optimize for Quick Removal" setting forces any changes to data on the USB stick to be written immediately when they're made; the "Optimize for Performance" setting allows writes to be buffered as they usually are for a mass storage device.
+The former is slower; the latter offers increased scope for data corruption, in that pulling out the USB stick, while writes remain in the buffer to be committed, will cause those writes (and their changes to the data) to be lost.
+In short, the Windows XP NTFS driver does not support "Quick Removal" mode.
+The FAT driver in XP does this, while the NTFS driver in XP doesn't.
+According to a comment by Adrian Oney, a Microsoft developer, in this conversation:
+The FAT driver will remount the drive, tossing out all its cached state on the assumption an offline edit may have occured.
+In summary - NTFS in XP just doesn't play with removable media well.

@@ -1,0 +1,18 @@
+But what we really want is the point on the segment clamped between 0 and 1 (in yellow), this is why the above function returns an interpolation value and not an actual point.
+If the rail is more than two points how do I determine which two points do I use for lerping?
+Retreive the array and loop through each of its points to find the 2 points closest to the players point of contact, a simple distance check should suffice (keep in mind that circular grinds could create problems, depending on the distance between each point).
+If the value returned is < 0 the player is before segment_point1, if > 1 then the player is past segment_point2.
+(In gray is the extended segment A to show how i is outside of 0..1 for that segment before clamping)
+you can check the distances between the points in the rail compared to your skater, then whichever is greater than playerVector but closest is the next point, and whatever is lesser than it but least distance is the previous point
+Outside of this question: You need to build grind segment chains to know which segment comes next when grinding and use some way to limit the search for grind segment chains such as an octree or other method to avoid going over the >10000 segments in the entire level.
+What you then do is calculate the distance between the point on the segment and the player for every segment (grinding edge) in the area and find the closest one.
+You can then find the exact point on the segment by doing Lerp(segment_point1, segment_point2, i); where i is the returned value of the above function (in red on the image).
+Note: You may want to check if length_squared is zero but we're assuming your level does not have any zero-length segments.
+Use the characters speed and direction to do the rest, the path can be determined by the points in the array.
+Make all of the points of any grindable rail part of their own array.
+The first thing you need is a function to find the closest point on a segment as an interpolation value of 2 points we'll call i.
+I'm making a skating game and I'm having trouble figuring out how to snap the player onto grinds and rails in between multiple points.
+My plan was to snap the player onto a point in between the two points using lerp, check which direction the player is facing using the dot product to compare direction of the rail from its first point to second and its second point to first and move them in direction that they are closer to.
+Then if the closest distance is less than a grind distance threshold, you can snap to that edge.
+Use collision detection to see if a player is touching the rail (initiating grind).
+You must find the grind segment that's closest to the player.

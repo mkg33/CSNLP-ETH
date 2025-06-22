@@ -1,0 +1,9 @@
+In my case, I have a multi-line prompt (gives most space for current command regardless of path length displayed by prompt).
+\033[00m terminates the color. If it is after the new line (\n), it prevents proper redraw in the terminal, to overwrite previous commands with background color. Moving it behind the new line resolved the problem.
+The color codes need to be wrapped in square brackets. The brackets inform bash that the enclosed text should not be printed
+Somewhere your prompt is fubar. What usually happens is that your shell thinks its outputting non-printable term codes and expecting it to take up space.  The best advice I can give you is to systematically add to (or take away from) your prompt until this behavior stops to isolate the code that is causing this issue.
+I had exactly the same issue, but moving it before the newline (\n) didn't fix it. Instead I correctly surrounded all non-printing characters (here, colouring commands) with '\[' and '\]'.
+Since PS1 formatting causes the value to be so long and hard to read I put the format codes in variables:
+(This is definitely true of SecureCRT and may be true of others, such as PuTTY or TeraTerm - testing required on your part.)
+building on @Phreditor's example, this shows that any formatting done after the newline will result in the original issue:
+And if you are putting this into something like SecureCRT to auto-send upon login to a system, you may have to double escape everything (put double backslashes everywhere) if auto-login system consumes the first backslash itself to determine the character to be sent:

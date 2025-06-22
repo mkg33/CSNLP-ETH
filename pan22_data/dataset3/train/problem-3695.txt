@@ -1,0 +1,17 @@
+So, the mip levels used are the two integers nearest to $\lambda$, and the fractional part of $\lambda$ is used to blend between them.
+A good place to read about mip selection  in detail is in the OpenGL spec, section 8.14, "Texture Minification".
+With trilinear filtering, since you usually don't land on an exact 1:1 mapping, it picks the two nearest levels and linearly interpolates between them, so that you have a smooth transition between mip levels as the camera or objects in your scene move around.
+For example, if the X gradient is 4 times longer than the Y gradient, you'd use 4 aniso samples, with their positions spaced out along the X gradient.
+Each one would be a trilinear sample, using a $\lambda$ corresponding to 1/4th the length of the X gradient (i.e.
+If anisotropic filtering is turned on, then instead of simply using the longer of the two gradients, you use the ratio of them to set the number of aniso samples.
+For example, if the gradients have a length of 4 texels per pixel, it would pick mip level 2 (which is 1/4th the size of level 0 and therefore gives you 1 mipped texel per pixel).
+Mip selection is pretty well standardized across devices today—with the exception of some of the nitty-gritty details of anisotropic filtering, which is still up to the individual GPU manufacturers to define (and its precise details are generally not publicly documented).
+To be mathematically precise: you take the screen-space gradients of the texture coordinates, scale them by the texture size (to get them in units of "texels per pixel"), take their lengths, take the longer of the two (X and Y) gradients, and calculate its logarithm base 2.
+Essentially, it tries to pick the mip levels that produce as close as possible to a 1:1 mapping of texels to pixels.
+In other types of shaders besides fragment shaders, there's no notion of "screen-space gradients", so the latter two operations are typically the only ones allowed—any operation that tries to use implicit gradients would give a compile error.
+This quantity is called $\lambda$ in the OpenGL spec; it's also commonly known as the texture LOD (level of detail).
+I'm not positive that's how Metal does it, but that's what I'd expect from working with other APIs.
+(Apple could have changed something, considering they make both the hardware and the API...but I doubt they have.)
+It's simply a continuous version of the integer mip level index.
+The default mip selection (not using any of the lod_options modifiers) uses the screen-space gradients of the texture coordinates to pick the mip levels.
+For example if $\lambda = 2.8$, the GPU will sample mip levels 2 and 3 of the texture, then blend to 80% level 3 and 20% level 2.

@@ -1,0 +1,12 @@
+Besides turning on the inheritance option, you can repeat the related Rewrite directives in the virtualhost you are testing. 
+"Invalid command 'RewriteEngine', perhaps misspelled or defined by a module not included in the server configuration"
+The exception to that would be if you wrapped all your Rewrite directives in "IfModule" blocks, so that they simply disappeared when the module was missing.
+I think you need both to specify the absolute path, and ensure the pattern is at the beginning of the local path:
+I notice that in your rewrite rule, the pattern to match ends with a slash, but the URL you accessed didn't. Try removing the slash from http-poll/ in the RewriteRule and see if that makes it work.
+Anyway, it works for me if I put the rewrite rules in a server configuration (<VirtualHost>), but not if they're in the mod_rewrite.load (Ubuntu 8.04, Apache 2.2.8).  If you don't use virtual hosts, try putting them in the <Directory> section for your document root.
+since otherwise the rewrite rule will apply again if the same Apache conf file interprets the proxy.
+I am trying to get mod_rewrite rules to work under apache 2.2 on Debian Lenny.  To try to get it to work first I put the rules in /etc/apache2/mods-enabled/rewrite.load:
+The suggestion elsewhere to check your "LoadModule" line is not related. If that were missing, your configuration most likely would be broken, and you would get an error like this instead:
+Additionally, if you want to redirect URLs under /http-poll/, you should specify regex substitutions:
+However I get 404 error when I use a browser to go to http://localhost/http-poll after restarting apache.  Error.log has:
+Here's my guess: unless you have included the directive "RewriteOptions Inherit", global rewrite directives will not be inherited by VirtualHost directives (which is inconsistent with how a lot of other Apache configuration works). 

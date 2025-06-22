@@ -1,0 +1,27 @@
+Don't use it to solve a performance problem until you know you have one, and test thoroughly to validate you're getting a performance boost.
+I took a stab at cleaning things up by breaking the coupling and removing the multithreading and progress bar indicators.
+It seems like other implementations will inherit the same, so you probably could combine the parent class and the interface.
+Your hardware can handle 8 or maybe 16 threads in parallel, then the threads wait for cpu time.
+For each request you allow 5 threads for calculation, so you have 35 active threads.
+In general I wouldn't use protected members inherited from the parent class (use getters instead).
+If you really need to, make one thread that does all the correlation work.
+I searched for the definition of those variables in the class and it needed a second before I looked into the parent class member definitions.
+Each close price should be dependent on its StockDetails like with a HashMap.
+I think it is confusing to have a variable named correlation which is a Double and not a Correlation and a method correlation() which isn't returning a Correlation.
+But again, make sure that the computation really is the bottleneck, because I don't think some simple math is going to cause any issues worth the complexity multithreading adds here.
+As Xean points out, your Executor is probably not buying you very much.
+Maybe this is ok in this context but in general this is not very clean (IMO).
+Hope you have some thoughts to think about now ;-)
+You have a getter for the sourceClosePrices, so you should use this instead of the protected variable.
+Context switching, many cache misses all the time.
+The PearsonCorelationImpl inherit CorrelationVariables and Correlation.
+Also, your three classes are really tightly coupled.
+Correlation computations should be fast enough that the bar wouldn't even show up.
+You have to test if this improves your performance.
+And this is why: if you are going to get many requests per second (even minute) and all the computation (which maybe take some seconds) only needs cpu time but no I/O, then you do not get any performance boost (depending on your hardware ), but it'll be slower.
+In PearsonCorelationImpl.compute() you have a variable named correlation of the class type Double.
+For me it is not easy to give you any hints related to stock related stuff but maybe some general thoughts to think about:
+Don't spend time on this until you know for sure you need it.
+The ordering of this array depends on the ordering of the stockDetails list.
+Make sure you track computation time separately from network latency.
+The progress bar support is also probably not necessary.

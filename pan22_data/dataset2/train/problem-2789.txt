@@ -1,0 +1,7 @@
+If you install Apache (for example) and configure it to listen on port 80, you can also configure Apache's mod_proxy to forward requests onto your Node.js apps. This is known as a reverse proxy. But since Apache would then be binding to port 80, you would need to pick a different port number for your app to bind to.
+I'm not sure of any other solutions to this, but you could try a reverse proxy set-up. You could so a similar thing in Nginx but the example uses Apache.
+Of course if you are not so bothered about having everything connect on the default port (80) then you could just have them running side-by-side and ensure you include the port number when accessing the server on any other port.
+So currently my linode (ubuntu 11.10) serves up three node.js apps for me using connect's vhost middleware listening on port 80. Here is an example of how vhost sets up a domain:
+However I would now like to add a wordpress installation to my vps as well. In the past for me this has meant a traditional apache installation; however I'm a bit unsure of how node.js + a different webserver (apache or nginx) should interact. 
+For each of your Node.js applications you'll need to configure a virtual host with a ProxyPass entry (see http://httpd.apache.org/docs/2.2/mod/mod_proxy.html).
+Now when Apache recieves a request that matches that VHost, it will forward it  on to the Node.js middleware which will, in turn service the request and send it back to Apache.

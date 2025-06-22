@@ -1,0 +1,15 @@
+If no other VM is under load at that moment, the former could use two physical cores, instead of only one with Option 1.
+In the VMware world, we don't do this unless there are very specific requirements, but for the workload and applications you've described, it's not necessary.
+In order to improve performance by keeping caches hot, I'd like to pin the vCores of the VMs to fixed host cores.
+The VMs all run mainly web services (Nginx, MySQL, PHP-FPM), so I know the question is of rather theoretical nature - but still I'd like to know.
+But CPU isn't going to be the limiting factor in such a small deployment.
+But given the fact that two hyperthreads also share some functional units, they would slow down each other under computational load.
+I usually run 3 virtual machines on this host, each with 2 virtual CPUs.
+The manual assignment of cores here could actually result in lower performance.
+The question now is the mapping of VM cores to host cores, considering the fact that the host CPU uses Hyperthreading:
+I think option 2 is better if your neighbor doesn't mind the ~tiny~ slowdown.
+Option 1 should't slow down in most cases but the OS and the programs could go trigger-happy with their workloads.
+Guest code would profit from cache locality, as the two host cores share some caches.
+I'm using KVM/libvirt on a Linux server with Core i7-2600 CPU, which has the following CPU topology (1 Socket, 4 Cores, 8 Threads):
+This way, the two virtual cores of a VM would be mapped to sibling hyperthreads on the host CPU.
+This mapping has the advantage that, if a VM experiences computational load on both of its two virtual cores, this load is mapped on two separate physical cores on the host.

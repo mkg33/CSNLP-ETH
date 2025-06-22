@@ -1,0 +1,41 @@
+We currently control access to the locations based on client user's group membership.
+I'm open to suggestions, hints and corrections of my assumptions!
+rename the above /etc/pam.d/http to /etc/pam.d/http-xyzzy, copy to e.g.
+As coded, the mod_authnz_ldap.c module seems to imply that authentication and authorization can be combined into a single module.
+It is however reasonably easy to achieve the desired effect by enforcing the group restriction at the PAM level instead of the Apache level.
+Plenty more possibilities available; see man pam_succeed_if and man pam_listfile...
+But I've never coded or debugged an apache module, so there's an unknown learning curve involved in that approach.
+For the case of multiple locations each needing different restrictions create separate PAM services for them, selected via AuthSaslServiceName in the Apache configuration.
+(Why am I using the system passwd, shadow and group files for authentication instead of a separate database for http?
+So we use the system in order to give our clients relatively easy switching between the two protocols)
+And I'm further assuming that if the credentials supplied by the browser are valid according to the authentication function, the userid will be passed along to subsequent authorization functions.
+However, we've found that this module won't load under 2.4 because the module calls ap_requires(), which is not present under 2.4.
+This suggests that httpd is not going through saslauthd in order to validate group membership.
+/etc/pam.d/http-abcd and modify to restrict to group abcd, then configure Apache thus:
+I've created a very basic, stripped-down module modeled somewhat after the mod_authnz_ldap module.
+Our current web site has various locations that contain downloadable material for different sets of clients.
+mod_auth_kerb: http://modauthkerb.sourceforge.net/
+mod_auth_external: https://github.com/phokz/mod-auth-external
+After looking at some alternatives, including those suggested by Unbeliever, I've decided to go ahead and try to rewrite the original mod_auth_shadow to be compatible with the current authentication/authorization architecture.
+I've also run into this restriction of mod_authn_sasl.
+Clients all have system accounts on the server box.
+It looks like you've already explored one option, here are a couple more possibilities although it looks like both will require some work.
+so I've been looking at using PAM through mod_authn_sasl as a replacement for mod_auth_shadow.
+We are currently in the process of migrating to new hardware running RHEL 7.1 and Apache httpd 2.4.
+And here's where I get very confused: during testing, I find that the valid_user_check_authorization and group_check_authorization routines are called with r->user set to NULL.
+We have been successfully using mod_auth_shadow to implement this access control under Apache 2.2.
+So far, I haven't found an httpd directive that would force group authentication through sasl in the way that user/password authentication does.
+I believe this validates that the basic connection between Apache -> saslauthd -> PAM is working.
+With this combination any user with valid login credentials can access the xyzzy location.
+My employer has been running RHEL 6.x and Apache httpd 2.2 for many years.
+In the original example, leave the Apache configuration requiring only valid-user but add the restriction to the desired group in the relevant PAM service configuration, /etc/pam.d/http:
+But I'm assuming that the authentication function, if present, will always be called before any authorization functions.
+I've created a secure test directory on my web server defined as:
+But the authentication routine authn_shadow_check_password is never invoked.
+As a last resort I'm prepared to try updating mod_auth_shadow for 2.4.
+Some clients prefer to download their support files via ftp rather than http.
+But I haven't found any definitive documentation on that topic one way or another.
+Right now, I'm just trying to understand the overall logic sequence of auth modules.
+But that's not the level of granularity we're looking for.
+I've had partial success with this apache configuration:
+To restrict to any of a list of groups / users make that first auth line something like:

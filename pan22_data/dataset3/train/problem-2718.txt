@@ -1,0 +1,16 @@
+You should never give this private key to end users.
+How do you handle the situation where an engineer with  acccess to the private key for that key pair leaves the company?
+This can be done for login to a shared account or with each developer getting their own individual user account (my preferred).
+This includes (but is not limited to) your ssh key concerns:
+Would it work to add individual ssh access, and deauthorize the initial key pair, immediately after instance launch?
+When an employee or contractor leaves the company, you need to disable any privileged access they had to company resources.
+After an employee leaves, you'll not only have to clean up running servers, but also the process that adds the ssh keys to new servers.
+This is exactly why the use of shared credentials is completely forbidden by all security and compliance regulations.
+In order to launch an EC2 instance you need a key pair.
+This can be a bit more work to maintain lots of ssh keys across lots of servers, but that's where automation comes in.
+And, when an employee joins, you'll need to do the reverse: Add ssh keys to running servers and update the new server process.
+End users should be provisioned with their own means of login, such as public key authentication (using their OWN password-protected private key), followed by LDAP authorization.
+Use something like puppet or solid ssh script to run around and replace all the instances of the old key if you don't want to relaunch everything... or just relaunch everything.
+Distributing the private key given to you by ec2 makes it impossible to de-provision users.
+The alternative method you propose is also good and is one that I use: Disable the initial ssh key and add individual public ssh keys for each developer so they can log in with their normal private ssh key.
+See Amazon's documentation on access credential rotation.

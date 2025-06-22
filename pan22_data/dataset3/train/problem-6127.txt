@@ -1,0 +1,33 @@
+Athough it does have an IDL like CORBA, you're not forced to use it, especially if the interfaces you define are only used within your project.
+By changing 2 lines of code live you can save yourself a 20 minute compile/build/test cycle to check a trivial UI fix.
+Also, I know there's at least one proprietary game engine that does the same.
+However, the following will stop this from working:
+First of all, DirectX uses COM interfaces to expose it's functionality and that works well enough, as do a multitude of applications that embed Internet Explorer using it's ActiveX control.
+We've implemented on-the-fly reloading of Lua, such that you can change a line of code, reload, and keep going.
+Hot-swapping is a very, very difficult problem to solve with binary code.
+And that comes down to the same issues - even with all the guidance that Microsoft offers, COM/ActiveX/OLE was/is difficult to get right.
+If you are not writing for Windows, don't think that COM is not worth considering.
+This is NOT a full solution for a production environment, and I've found the best solution there is to move as much of your logic as possible into data files and then making those data files reloadable.
+Secondly, it's one of the simplest ways to dynamically link C++ code - a COM interface is essentially just a pure virtual class.
+As others have said, it's a hard problem, dynamically linking C++.
+This essentially means not using virtual functions, and anything that uses function pointers do so via some sort of dispatch table.
+It's better to use a scripting language for code that needs fast iteration.
+I will emphasise that the technology of COM is not itself inherently bad.
+If you are using Visual Studio C++ you can in fact pause and recompile your code under certain circumstances.
+This is a C method, and has some pitfalls by using it in C++, you can read about that here.
+COM has a bit of a bad name from a developer point of view because it can be a lot of effort to implement C++ components that expose their functionality using it (although this is made easier with ATL - the ActiveX template library).
+I have used Edit and Continue to dramatically improve the speed of things like UI iteration.
+There's an implementation of runtime-compiled C++ for gameplay code here.
+In fact, you can do this in order to fix crash bugs that occur in Lua code, without restarting the game!
+If you are to save and then continue, Visual Studio will attempt to recompile the code, reinsert it into the running executable, and continue.
+Attach to your game in the debugger, make it stop at a breakpoint, and then modify the code after your breakpoint.
+Lua is no small part of our project, either -- it's almost a 50/50 split.
+You can do something like hot-swapping modules at runtime implementing the modules as dynamic link libraries (or shared libraries on UNIX), and using dlopen() and dlsym() to load functions dinamically from the library.
+But it is a solved problem - you might have heard of COM or one of the marketing names that have been applied to it over the years: ActiveX.
+For Windows, the equivalents are LoadLibrary and GetProcAddress.
+From a consumer point of view it has a bad name because applications that use it, for example to embed an Excel spreadsheet in a Word document or a Visio diagram in an Excel spreadsheet, tended to crash quite a bit back in the day.
+Mozilla re-implemented it in their codebase (used in the Firefox browser) because they needed a way to componentize their C++ code.
+At work, our current code base is a mix of C++ and Lua.
+Let's say you have a working UI built entirely in code except that you accidentally swapped the draw order of two boxes so you can't see anything.
+If all goes well the change you made will live apply to the running game without having to do an entire compile-build-test cycle.
+Even if your code is placed into separate dynamic link libraries, your code needs to ensure that there are no direct references to functions in memory (as the address of functions can change with a recompile).

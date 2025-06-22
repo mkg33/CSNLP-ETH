@@ -1,0 +1,11 @@
+I provide no guarantee that a full listen queue is actually your problem, but this is a good first thing to check.
+Try setting num to something larger than the default, like 1024.
+I just discovered that Linux TCP clients change their SYN packet after 3 tries, and remove the Window Scaling option.
+To carry on what Ansis has stated, I've seen issues like this when the firewall doesn't support TCP Windows Scaling.
+Ngnix allows the backlog argument to listen to be set in the configuration:
+The client was behind a veth and running ethtool -K veth0 rx off tx off did the trick.
+I guess the kernel developers figured that this is a common cause of connection failure in the Internet
+It explains why these clients manage to connect after 11 seconds ( the window-less TCP SYN happens after 9 seconds in my brief test with default settings )
+I had a similar problem, but in my case it was the TCP checksum that was wrongly computed.
+This is the behavior of a listening TCP socket when its backlog is full.
+What make/model firewall is between these two hosts?

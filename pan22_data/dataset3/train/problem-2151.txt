@@ -1,0 +1,15 @@
+Then you could have BGInfo consume the contents of that text file.
+You only have to modify the maximum password age-value.
+I also made a new script which displays the expiration date in format DD:MM:YYYY HH:MM.
+I just wanted to throw out a slight modification of the suggested Powershell script based on the msDS-UserPasswordExpiryTimeComputed property.
+So if I changed my password 30 days ago, it would write "30" into the text file because I have 30 days to go until my next password change.
+Moreover set the setting: Run PS-Scripts first in Policy.
+BGInfo supports the following for defining custom variables:
+So there's no need to hard code any known values for your existing password policy and if you ever change your policy, you don't need to update the script.
+One thing I had to change (encoding from txt from utf to ascii) because BGInfo cannot display UTF TXT-Files.
+If you have users who do not logoff at the end of the day BGInfo keeps displaying the same days until password expiration which results in a wrong value.
+First thing that comes to mind would be to define a logon script for the user first.
+It has the benefit of automatically giving you the exact date/time when the given user's password will expire even taking into account things like fine-grained password policies if you're using them.
+Something that finds the expiration date and then writes it to a file on the local computer:
+It is also important that you create 2 policies (1 for BGInfo and 1 for PS-Script) because otherwise PS-Script takes too long to create the .txt-File and BGInfo can not display the value on desktop.
+That will figure out the last time the user's password was changed, calculate how old that is and write the difference from 60 days into a text file in the user's profile folder.

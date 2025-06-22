@@ -1,0 +1,21 @@
+I'd encapsulate the networking within it's own class.
+Since this is single-threaded at the moment, and just sits there blocking on the call to receive, you might want to look at launching it in a separate thread.
+is more readable compared to the for_each with a lambda.
+As a suggestion for future improvements, you might want to eventually do other things with the program instead of just the network component.
+And similarly for waitForConnect using a slightly different lambda.
+If you're going to make a copy of a string that is passed in by const reference, you might as well pass it by value and then move it.
+Further, since it isn't modified, it should be const static.
+The easiest way would be to create another function that takes a templated parameter:
+This could then be called by both receive and waitForConnect:
+Since your handle function is going to be called relatively often, you might want to consider making the regex inside it static.
+This returns a new string, so you might as well just use this directly (and get the benefits of having an rvalue that gets moved, instead of copied):
+Here are some of the notes i jotted down while reading through your code:
+This makes it much easier to isolate just the error messages (for example, by redirecting it via piping using 2> errors.txt).
+Instead of using raw arrays here, using std::array will probably make your life a bit easier.
+It'll get rid of having to use macros to calculate array sizes, and having to use memset.
+In terms of reducing the duplication in receive and waitForConnect, the biggest difference is the function that gets called in your for_each.
+I just want add to what Yuushi wrote, that you don't seem to use any classes.
+This will be both threadsafe and will save you having to recreate the same regex every time the function is called.
+Often use of algorithms rather than raw for loops is better, but I think use of std::for_each should probably be deprecated, and use of range-based for loops should take priority since C++11.
+If you'd like an example (but with Boost.Asio), you can look at my network code my IRC bot in development at GitHub.
+Instead of having errors print out on std::cout, you might want to have them go to std::cerr instead.

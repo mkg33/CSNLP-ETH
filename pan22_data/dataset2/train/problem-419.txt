@@ -1,0 +1,8 @@
+/var/log/messages (or your distro's equivalent) should tell you the specifics of what command was run when and as which user.
+Then inspect the file when it comes around, and either modify your script(if you can) to set the environment properly, or write a short wrapper script that your crontab will call.
+As you can see there isn't anything particularly special about this environment.  At least on Debian/Ubuntu it all is run as the root account.
+If you restart cron, then the first time it runs(if from /etc/crontab or /var/spool/cron/$USER) it will make a note of it in /var/log/cron. Otherwise it will just note that cron.hourly ran
+On my RHEL 5.1 system, the PATH environment variable is set from /etc/crontab. All that stuff up at the top is stuff that's fed into the environment.
+When I write cron scripts at the very start of the script I always set my PATH and other environment variables i will be using, so I can be certain that it will work correctly in any environment.
+Never assume there is anything in the environment. Always code defensivly. You have a whole file to put whatever environment set up stuff you want in there. Use it.
+Not much other the portability, the last time I checked (in Debian) it was recommended to put stuff in cron.hourly (and the others) and not directly into crontab if you wanted to create a package with your stuff.

@@ -1,0 +1,27 @@
+Having noticed that UDK (Unreal) and Unity 3 include similar pre-computed visibility solutions that unlike Quake are not dependent on level geometry, I've been trying to figure out how the calculation is done.
+I can see how to adapt it to a UDK/Unity scheme that has regular source volumes and deals mostly with arbitrary meshes as the targets, but is there a better way than stochastic ray testing?
+(see Towards Image Realism with Interactive Update Rates
+And because the position of the camera in the source volume could have an effect, those thousands of rays would have to be fired from multiple places in the source cell.
+This technique tries to choose better visibility cube source locations than a simple uniform or random sampling.
+Algorithms based off this tend to be easy to implement and give good results in practice (fast as hell, since they use the GPU), but the sampling distribution (millions of rays cast from a realtively small set of single points), may make it take longer to converge on an accurate solution then one would think.
+Generally, analytic visibility is hard to get right (mathematically complex, numerical issues, speed, etc.
+There are plenty of other visibility techniques (hundreds).
+The original Quake system is well documented: You divide the world into convex volumes that limit both the camera and the geometry.
+See the papers on Peter Wonka's page (Guided Visibility Sampling and Adaptive Global Visibility Sampling).
+Visibility would be computed by firing rays at some random distribution of points in the target volume and see if any hit.
+Rather than casting a gazillion ray in the hope that N=gazillion is actually enough, there are researchers who have developed analytic algorithms, which will compute exactly which triangles, objects or cells are visible from another cell (i.e., the same result as if you case an infinite set of rays).
+Jiri Bittner's thesis also presents an analytic solution.
+), but if done right it would make for a compelling piece of middleware.
+Each volume has a list of all the other volumes that are visible from it.
+Researchers have devised algorithims that choose fewer, but better rays using heuristics, and also may compute visibility over multiple cells simultaneously.
+So what I'm wondering is if there's any been fundamental change to this basic scheme in the intervening 15 or so years?
+I don't know whether or not this technology is used in the Umbra product or not.
+I suggest reading some of the background chapters in the theses linked to, if you want to know more.
+These just sample visibility from a set of points by rendering a 6 sided cube map and reading back object/triangle/cell indices as data.
+Probably the class of technique that is still used the most today in practice is the GPU accelerated hemicube algorithms.
+The algorithm you described has been around since the late 80's
+You may note that one of the authors of the 2005 paper is the CTO of Umbra Sotware (the visibility middleware paired with Unity 3).
+For scenes with specific structure (i.e., cell/portal), an analytic solution is covered nicely in Seth Teller's 1992 thesis here.
+See Shaun Nirenstein's exact visibility page for a set of publications on this subject.
+There have been many advances in the ray-casting approaches in the last few years.
+Occlusion queries can also be used to reduce the amount of data read back.

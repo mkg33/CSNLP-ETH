@@ -1,0 +1,26 @@
+Because the game seems a bit underspecified, I wasn't able to bring all behaviours across: what exactly is promtp_change meant to do?
+This is also duplicated in menu, so extract it into a function.
+There's no need to return None from roll_dice, and no need to print the return value (which is None).
+In roll_dice, you don't need total_rolls since it's just num_rolls.
+This would be improved if you used a library built for this.
+You should look into structured approaches like JSON or databases.
+For example, instead of using # Restart the game by calling it again, have an outer loop that calls promtp_change after the game has ended to allow it to restart.
+However, this hasn't separated logic from UI (output), which is another important aspect of code quality.
+You are using haphazard recursion to generate loops.
+Not only do I personally dislike end-of-line comments, these should be doc comments
+It seems like you're using options_file as an ad-hoc data store.
+You shouldn't give a default to roll_result; it just hides bugs.
+open_file doesn't really do anything, so remove and inline it.
+A simple solution is just to pass these around as arguments.
+This all gives a much cleaner control flow and execution model, and the much less buggy code:
+Unfortunately you're using Python 2, so you'll need contextlib.closing.
+You should handle your files with a with statement, not manual closing.
+Normally one would mention something terribly complicated like ncurses but I shall mention blessings, easily the nicest way to mess with the screen.
+The terminal is buffered so you need to flush is between prints.
+I would move to new-style formatting ("{}".format instead of "%s" %).
+You do screen constrol mostly by just running clear at opportune moments.
+This should remove the need to call sys.exit from the functions (you shouldn't be doing that).
+It also doesn't deal with invalid input (such as non-integers being passed to int).
+Instead, define suitable functions to guide your loops and make functions self-contained where possible.
+The easiest in this case, perhaps, would be shelve.
+Note that as I made this change it became apparent that initialize_variables wasn't needed since it mostly initializes global constants.

@@ -1,0 +1,6 @@
+Everything works great and browsing to 127.0.0.1/app/* works as expected. The problem arises when I browse to a url that performs a redirect to a resource at the same hostname but a different port. Initially I thought I could handle this situation as follows:
+But whilst this works, cookies don't appear to carry across the redirect. How would I get cookies to carry across the redirect? Also whilst the port is actually known in advance, is there a more robust method of handling this such that a redirect to any arbitrary port is handled correctly?
+I'm attempting to setup a reverse proxy using Apache on my local machine, I have the following in my httpd.conf:
+Create a second VirtualHost set to port 81, then place a ProxyPass /app http://x.com:81 inside of it to get the behavior you're looking for.
+You can't have a port specification on ProxyPass /app:81 - instead, the port to listen on should be determined by the VirtualHost block that the ProxyPass resides in.
+I prefer using names of the applications on the backend.  In fact, you may have many different application servers but want all web requests to look like they came from the same spot:

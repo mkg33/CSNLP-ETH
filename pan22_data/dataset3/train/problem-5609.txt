@@ -1,0 +1,13 @@
+open("/etc/ssl/certs/3c58f906.0", O_RDONLY|O_LARGEFILE) = -1 EACCES (Permission denied)
+With strace, I found out that it's trying to open an SSL certificate which is denied:
+It's not anything unique to your system and is included in the default install: http://packages.ubuntu.com/lucid/all/ca-certificates/filelist
+The permissions are such that indeed my user isn't allowed to access it:
+This certificate is a symlink which points to AddTrust_External_Root.pem which in turn is a symlink to /usr/share/ca-certificates/mozilla/AddTrust_External_Root.crt.
+There is no reason for this file not to be world readable.
+There appears to be something wrong with your installation, or a previous administrator changed the ownership/permissions for obscure reasons.
+), cURL fails to establish SSL connections with this error:
+Generally I think anything under /usr/share/ may be world readable (since its under "share").
+Now why this file is not world readable on your system is the real question.
+There's probably a reason why this file isn't world-readable, but it's stopping cURL from functioning.
+After extensive searching I haven't found documentation of this problem yet.
+Does anybody know the reason, and, more importantly, a safe and secure solution?

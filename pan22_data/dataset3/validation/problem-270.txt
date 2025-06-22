@@ -1,0 +1,22 @@
+Vlan W for the wireless clients, that could be a bit more interesting, will you have one SSID for the whole building and guests or will it be multiple SSIDs with one per business?
+You can use almost any addressing scheme that makes sense to you, as long as you can summarize each business' block of IPs.
+Instead of assigning ranges by floor, assign a unique block for each business.
+What would be best practice in terms of creating a network to satisfy three separate businesses located in one building?
+Range for devices on first floor:  192.168.2.10-35
+If a business spans more than one floor, your scheme will not work.
+For a bit more complex business segregation you could also use vrf-lite, but that's a bit more complex though it still requires vlans on the switches and their respective SVIs.
+Could I assign each interface on the router as follows:
+Vlan Z for the printers, the SVI on the core switch will allow all required business to print to the few printers.
+I would recommend not to use the router but instead use a Layer3 switch for better performance routing of the packets between the floor.
+The businesses can span all floors that way and secure from each other.
+Range for devices on first floor:  192.168.1.10-35
+My current plan is a backbone from router which has 4 interfaces going to a switch on each floor located in the server room on each floor, a firewall would separate the router and switch ensuring that each business cant access another businesses devices.
+Vlan X for Business 1, it's SVI on the core switch once again has an ACL as required.
+Leave the router for the main connection to the ISP.
+The building in question has three floors, each floor has 25 workstations and 2 printers.
+Range for devices on ground floor: 192.168.0.10-35
+Vlan 999 for switch/router/wireless/etc management, it's SVI can be created on the core switch and have an ACL in place to deny/allow access as required.
+You can make use of Vlans and separate each business that way.
+Vlan Y for Business 2, It's SVI on the core switch also has another ACL.
+The building itself has only one external IP address.
+The switches placed on each floor need only be access (Layer2) switches only.

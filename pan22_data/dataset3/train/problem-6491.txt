@@ -1,0 +1,22 @@
+https://bugs.freedesktop.org/show_bug.cgi?id=16770
+Basically, I am following the steps outlined in the article from my question.
+The main shortcoming is finding a FOSS program to cryptographically sign and verify a PDF document.
+LibreOffice developer blog post about signing existing PDF files in LO 5.3 or newer: http://vmiklos.hu/blog/pdf-sign.html
+I know that solution is not cryptographically correct, but it works for me!
+For signing, there is a FOSS java app called PortableSigner that can sign PDF documents.
+As an alternative, a PDF (or any other file) may be signed using a detached signature with GPG or any of its numerous frontends (such as Kleopatra or Kgpg in KDE).
+Recent versions of LibreOffice also feature document signing.
+I think the accepted answer details the situation best, as well as why Okular falls short.
+Anyone having access to your PNG or any document where it is used, such as the PDF you are intending to embed this on, will have a perfect, infinitely reproducible copy of your autograph signature.
+It offers no security at all and in fact is detrimental to it: upon seeing your scribble on a document, recipients may be tempted to assume that it is authentic and not bother to check for an actual (and legally valid) electronic signature.
+The cli tool pdfisg that comes with recent version of poppler can read signatures and determine if the signature is valid and if the cert issuer is trusted.
+IMHO pdfsig is a good choice to check signatures of PDF.
+To my knowledge, currently none of Okular's backends support electronic signatures, although that feature has been requested a number of times.
+However, until this functionality is exposed in it's API (also being worked on) and until that API is utilized in Okular, it won't be able to sign/verify signed PDFs.
+So, it's been about 1.5 years since I asked this question, and I still haven't found an optimal solution for this issue.
+So, I just wanted to share my current solution, which inserts a png of my image using GIMP.
+But I also use a GIMP plug-in to handle multi-page PDF, outline here: http://www.zyxware.com/articles/4438/how-to-export-multiple-layers-from-gimp-into-a-pdf-file And here is the plug-in: https://www.dropbox.com/s/jzdkgv2f0jrbw6i/export-layers-to-pdf.py?dl=0
+Within the last few months poppler has slowly been adding support for the nss backend.
+Acrobat is, or at least used to be, a major offender in this regard—I have seen documents trivially "forged" because of this ill-conceived feature.
+If you are willing to use ruby ​​look at the origami gem, here you will find an example to embed a signature in a PDF with your self-signed certificate.
+But if someone can outline a FOSS solution that can cryptographically sign a PDF document, I will gladly accept that answer!

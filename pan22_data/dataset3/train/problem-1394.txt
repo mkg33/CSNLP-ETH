@@ -1,0 +1,12 @@
+The settings from that file should have been restored successfully.
+For this we will create a rule file of our liking that matches the camera.
+The file can be called /etc/udev/rules.d/99-v4l2-default-settings.rules and contain something like this:
+Once you get it working like that, it's time to automate it with udev.
+Move camera-settings.txt to the specified directory, unplug and plug again.
+First, we need a programatic (script-friendly) way to set these settings.
+First the bad news: There is currently no built-in solution to do that in any distro I know.
+The above will run as root the script /etc/camera-defaults/udev-hook.sh  that we will soon create whenever a device of subsystem video4linux whose manufacturer name is "HD Pro Webcam C920" is detected or unplugged.
+Any time in the future you need to save your settings permanently, use your favorite program to tweak them and then run:
+The good news is that such a solution is very easy to implement and can be adapted for many similar problems: we only need to use a bit of udev and bash.
+My favorite is v4l2ctrl, as it can save V4L2 configurations and then restore them on demand.
+You can use udevadm info -a -p $(udevadm info -q path -n /dev/video0) to get all possible variables for the device, as well as for its parent devices.

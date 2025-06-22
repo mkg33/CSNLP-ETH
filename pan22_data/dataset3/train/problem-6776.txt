@@ -1,0 +1,13 @@
+If MySQL fails on NS1 then PowerDNS should stop to respond as well, right?
+I had two PowerDNS servers - ns1 and ns2 (which are in different datacenters).
+I'm open to creative solutions, like using pdns on an abnormal port and then nginx to "proxy" the connection to another port on the server, and allowing nginx to be notified of the mysql failure and redirect to the other server.
+The problem being I wouldn't know where to start to set something like that up!
+This works very well, as updating the dns database on db will replicate to ns1 and ns2, and then powerdns will properly show the DNS records in both places.
+If mysql fails, how can I tell powerdns to forward DNS queries to the other server temporarily (until mysql comes back online)?
+I think you're trying to create redundancy at the wrong level, as you already have redundant nameservers.
+I'm wondering (a) what is best practice / most reliable, and (b) how specifically do I do it!
+When a resolver doesn't get a response from NS1 then the built-in redundancy in the DNS protocol steps in and resolver will resubmit their query to alternate authoritative nameserver NS2.
+I have looked into pdns-recursor, but I can't seem to see how to configure it only to run when mysql is down.
+Both connet to MySQL on localhost, but MySQL on both servers are replication slaves of the MySQL master db.
+I've been searching around, but cannot seem to find an answer so I apologize if this has been asked here before.
+What I am trying to accomplish, but cannot seem to figure out, is how to deal with a situatuion where the mysql host on either ns1 or ns2 crashes.

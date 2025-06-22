@@ -1,0 +1,15 @@
+Also, the boolean flag saying an object is free/used would be moved to a separate array.
+Having said this, I've rarely found my logic loop taking more than 20-30% of the time allocated for a frame, most of it going to the graphic loop, so I would first really look at the general performance of your game and see if you are not doing something wrong somewhere else.
+Add a boolean flag to each bullet object which says if the bullet is in use or not.
+During startup loop over the array and assign them the individual bullet objects.
+This mechanism has the drawback of having a linear search when adding a bullet to the scene because you need to search for a bullet object with the boolean flag set to false.
+But for 20-30 objects the linear search should not really be a problem, I've had linear searches for several arrays of 50-100 and that's never the bottleneck.
+Simply use an array of pointers, no need for the NSMutableArray which is not useful at all.
+Create a global variable which is an array of pointers to your bullet objects.
+Now, if even this is too slow or you are scaling to thousands, I would ditch objects and create an array of structures which guarantees memory cache locality.
+Since bullets tend to live not very long, start the search from the index position of where you created the last bullet + 1 (and wrap around in the array).
+Your idea about creating a pool is good (if you actually know that the creation/destruction is what's dragging down your fps) but not implemented efficiently.
+You avoid memory fragmentation and more importantly, memory operations at all.
+You might want to keep a total counter at least for debug versions to know you don't ever overflow the array of active bullets and keep looping forever searching a valid position.
+Having all the booleans in a separate structure helps the cache locality and you will have less CPU penalty than jumping around the whole structure block looking for the correct boolean offset (you could even use bit arrays for the separate on/off structure).
+Remember that optimization is the root of all evil, be evil only in moderate amounts.

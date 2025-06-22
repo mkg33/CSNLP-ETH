@@ -1,0 +1,22 @@
+If you create user accounts using other means ("NET USER ... /add", for example) then no userPrincipalName attribute will be assigned to the account.
+Or you could use a "Get-adorganizationalUnit" with a -Filter switch and pipe that to a 'Set-ADOrganizationalUnit -Add @{upnsuffixes="@UPNSuffix.com"'
+It searches for a specific suffix (the default in most cases) and switches it to another.
+That said, I've written a script that runs in task scheduler every few hours at more than one client.
+This does not affect however, the default UPN assigned to a user created within that OU.
+The script is on my blog but I'll post it here as well :)
+You can set the allowed UPN Suffixes, by going into ADSIEDIT.MSC, plug down to the OU Structure, right click the OU (in the default configuration), and edit the OU Attributes.
+Set-ADOrganizationalUnit "OU=XXX,DC=Domain,DC=com" -Add @{upnsuffixes="@UPNSuffix.com".
+There is no documented mechanism that I am aware of to change the default UPN suffix that gets chosen by Active Directory Users and Computers.
+The default UPN suffix is really just a default in AD Users and Computers, not a default of the directory service itself.
+AD Users and Computers just happens to be hard-wired to do this.
+This can't be done as far as I know (Evan's answer is still true 4 years later).
+In this case, users created with an ad.example.com UPN suffix will be updated with example.com suffix.
+I believe that the tool is hard-wired to take the first portion of the "canonicalName" attribute defined on the "crossRef" object for the domain specified in "CN=Partitions,CN=Configuration, ..." in your forest.
+I found this after looking for quite a while, so I hope this helps anyone.
+Create multiple template users for the different UPNS.
+Actually, you can run in the Active Directory Module for Powershell:
+I'll include a fixed version with a minor improvement at the end of this post (it shows you the names of individual OUs where additional UPN suffixes might be defined).
+I'd love to be corrected by somebody more "in the know" than me, but I'm not seeing any way to get AD Users and Computers to act differently.
+To create a new user, right click the template user and copy .. fill out the selected fields, and the new user will be created with the proper UPN.
+Should you run into the Microsoft KB article with a script in it that shows you how to programmatically obtain the default UPN suffix (http://support.microsoft.com/default.aspx?scid=kb;en-us;Q269441), beware that the script has a couple of syntax errors in it (lines 17 and 32 are malformed and srrNamingContext on line 32 should be strNamingContext).
+Right click the OU, create a new user to use as a template, assign the correct UPN Suffix, and then right click the user once created and disable account.

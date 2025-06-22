@@ -1,0 +1,30 @@
+The answer is to upgrade to a 64-bit version of Excel.
+You need 64-bit MS Office so that it will be free to use RAM above 2GB.
+So if you have 4GB of RAM, set it to 6144 / 6144MB min/max.
+I think it's because the 6G PC has a lot of excel add-in on it consuming RAM as well.
+It looks like you construct very large Excel sheets.
+When I run excel/vba on the action "Calculate Sheet" (The current worksheet only), the program would pop the following error message:
+The Non-working Computer can handle data within 100,000 rows of data
+on neither I "refresh" a pivot table in (Excel or VBA)  or "Calculate Sheet" in (Excel or VBA)
+One possibility would be to increase the size of the Windows page file.
+In any case, it's possible to test: disable the extra RAM and see if the problem goes away.
+So it doesn't matter if you have 16 or 32GB RAM even.
+EDIT:I am thinking of removing the formulas, and move the logic into vba, and do it by caching the data maybe per 10,000 rows.
+I also notice that on my development PC, it is using ~ 1.2G RAM, and the non-working PC, it is using 900M RAM prior to clicking the "Refresh"/"Calculate" Action.
+Only then will your extra RAM of 6GB be actually useful to Excel.
+My worksheet contains: (Inside a single worksheet, not workbook, there are formulas in another worksheet)
+"Excel ran out of resources while attempting to calculate one or more formulas"
+Any help is appreciated, please point me into the right direction or simply give some clue.
+It can address a much larger memory range, and is also just generally much faster and the right tool for the job if you have a big spreadsheet.
+32-bit applications can only use up to 2GB of RAM, unless they can be configured to use up to 3.2GB with a special "switch".
+But this won't solve my problem if "refresh" pivot table would show the same error.
+And the reading http://www.add-ins.com/support/out-of-memory-or-not-enough-resource-problem-with-microsoft-excel.htm suggest why 6G RAM PC is facing this issue rather than 2G RAM PC.
+It was a known problem in 32 bit Windows (and an even bigger problem in 16 bit Windows).
+One possible reason why it might run out of resources on a 6GB machine, and not a 2GB machine, is that Windows itself takes more resources to manage 6GB of memory than it does to manage 2GB of memory.
+So Excel 32-bit is actually running out of memory after 2GB.
+I set it to 1.5X physical RAM and set minimum and maximum pagefile size THE SAME.
+Otherwise, it is stuck with having to figure out how to run with only 2GB of RAM, and most likely, will start using the pagefile on the hard drive.
+So be careful trying to make formulas ready for data expansion, keep the ranges small :)
+DO_CALCULATION(D1:D100000) will take significant amount of time and memory even if only cells D1:D10 have any value.
+It is supposed to be solved on 64bit systems, but...
+old queston but still valid for all the versions, I run into similar issues when the formulas I used had too big scope even though most of the fields were empty, ex:

@@ -1,0 +1,15 @@
+If you're willing to do a little C programming, you can do this by writing a library that wraps execve, logs to syslog, then dlopen's the library containing the real execve syscall.
+As you get closer to "fully controlling" things, the harder it is to track down what they're doing.
+Sounds to me like you're looking for something like rootsh (man page).
+You will want to be careful about entering a loop here, so you may want to either only log the exec's of certain binaries, or exclude others (like syslog) from being logged.
+Auditing the things you actually care about, like others are suggesting, probably gets you to a better end state.
+I've recently been looking at tools like this, for example.
+Install the acct package (package name varies by distro, also known as process accounting) and use lastcomm <username>:
+There's also sudosh (http://sudosh.sourceforge.net) that will do session logging.
+Mostly they just create logs which are difficult to manage if you have enough users and machines to make such a thing worthwhile.
+Consider all the information you'll be generating.
+You're probably better off having users use sudo (or similar) to run commands you care about, and trusting the users at some level.
+You have the option of running it as a defined shell for a user or through sudo.
+It tracks timings for each session as well so you can replay the session and watch it (including edit sessions and whatnot).
+Probably very little - so you're generating logs that are mostly worthless.
+Then in /etc/environment, set LD_PRELOAD to the path for the library you've made.

@@ -1,0 +1,9 @@
+An index on (Enroll_Date, UserID) will give your query a highly optimized, non-blocking query plan with Stream Aggregates.
+The query that you posted will usually be executed by first grouping on (Enroll_Date, UserID), then again on (Enroll_Date).
+It takes effect in case of a single COUNT DISTINCT.
+I'll answer the question assuming you don't want to take that approach.
+As an alternative to @AaronBertrand's solution (if you can't or don't want to create an indexed view), I would recommend you to create an index on (Enroll_Date, UserID).
+I would not generally recommend high-selectivity indexes as a general "best practice", but rather look at what index will give your query the best performance.
+An index on those two columns in the specific order (Enroll_Date, UserID) will suffice to get an efficient plan that funnels an index scan into two consecutive Stream Aggregates.
+If this type of question is very common on your table, this should probably even be your clustered index.
+"Non-blocking" in this context means that the query doesn't need to buffer any significant amounts of data (like, for instance, a sort or hash aggregate would), which means it (a) starts returning rows immediately, and (b) consumes practically no working memory.

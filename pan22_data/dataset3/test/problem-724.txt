@@ -1,0 +1,13 @@
+This may still be true, apart from the offset now being 37, but a recent ntpd can at least be configured to set the offset.
+As I am running chrony instead of the old ntpd, I didn't have an automated way of getting the kernel parameter right, so I looked into an alternative.
+Searching the chrony source with grep -P '(ADJ|MOD)_TAI' finds no matches, so it seems that chrony does not yet have this capability.
+I think that ntp sets the offset using ntp_adjtime with MOD_TAI.
+Then clock_gettime(CLOCK_TAI, &res) seemed to work correctly.
+There is a test application for setting the kernel offset in the kernel sources, in tools/testing/selftests/timers/set-tai.c.
+The critical sentence in the referenced answer is: "Please note that the offset from CLOCK_REALTIME is initialized on boot to zero and neither ntpd nor chronyd set it by default to the correct value (currently 35)."
+As the offset between TAI and UTC is relatively constant (changes < once per year) it is possible to statically set the kernel parameter, and then using the CLOCK_TAI clock in an application will give the correct value.
+Then, for my use case, it was just a matter of extracting the correct value from the leap-seconds.list file and running set-tai with this as a parameter (in /etc/rc.local to get it to happen at boot time).
+I chopped down the kernel test application so the main became:
+You can use libtai from djb: https://cr.yp.to/libtai.html
+I think you want clock_gettime with CLOCK_TAI to work properly.
+And, assuming you have the tzdata package installed, there is a file with the offset between UTC and TAI in /usr/share/zoneinfo/leap-seconds.list.

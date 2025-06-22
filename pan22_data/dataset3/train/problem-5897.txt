@@ -1,0 +1,15 @@
+The sshd is running on port 22, there is nothing running on port 25 on that server.
+You can reproduce this by setting up SSH dynamic port forwarding:
+So my guess is that the OP had a user login with weak or trivial password, "disabled" the account by setting shell to /bin/false or /bin/nologin, and it was exploited to send spam by ssh port forwarding.
+Perhaps someone who logs in to your server is trying to establish an ssh tunnel to 1.1.1.1:25?
+In order to make use of the SOCKS proxy with other traffic, you can use a socksifier program like tsocks:
+You'll see something like this in the /var/log/secure on SSH server:
+I've changed the actual IP address, they are external addresses that often belong to mail servers.
+What exactly does this line mean, who is initiating the connection and why is sshd involved?
+The part I don't understand is who exactly is trying to connect to those addresses and what sshd has to do with it.
+To route HTTP traffic via this tunnel, in Firefox:
+I've noticed several repeats of the following error message in /var/log/auth.log on a server:
+Setting a user's shell to /bin/false does not prevent ssh port forwarding.
+To narrow down, take a look at the /var/log/secure (auth.log on your distro), and examine who has logged in before this:
+On my Gentoo, edit the /etc/socks/tsocks.conf as belows:
+http://random.cconn.info/2012/05/06/binfalse-sbinnologin-and-ssh/ http://www.semicomplete.com/articles/ssh-security/

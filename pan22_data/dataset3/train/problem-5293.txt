@@ -1,0 +1,19 @@
+You said that it is showing less load than your old setup, but could it be too much?
+I have done some more experimenting with calling the scripts with wget instead of as CLI scripts, and furthermore having Lighttpd serve these special search scripts on port 81 - to keep the burden off the main Apache server.
+You put a message into the queue - what you want to search for - and a background task, which is already running, that picks the jobs up as they come in and it has the capability, performs the appropriate tasks and passed the information back, either via the DB, or some in-memory system like Memcached.
+In other words, Web Script ---- spawns -----> CLI script in the background which loops through all of your searches.
+If so, you could potentially see it run out of resources...
+This would allow you to use one mysql connection for all 20 searches and should increase your connection capacity accordingly.
+It might be more efficient from a database point of view to have your 20 searches only be in one script, rather than spawning multiple scripts.
+There is also reference to running out of RAM/resources being a cause of the mysql error.
+When these scripts are running, is there an opportunity to start a connection to the mysql server using the GUI (mysql administrator)?
+Not knowing your code, or exactly what you are doing, this is just a guess as a coding fix.
+Edit: I am the original poster, don't know why it looks like somebody else's post.
+I think that php loads support for mysql whether you use it or not in your script, but it shouldn't start a connection unless you are using Persistent connections.I wouldn't think that the cli scripts would inherit the mysql connection from the Apache child, but apparently it must based on your testing.
+You might also be running into to too many files limit on mysql.
+That separates the front and back-end, and avoids having to close all the connections your script has open (see the warning on exec)
+To avoid that, I'd use some form of queue - either through a database table that lists what is required, and is then checked regularly, or a job-queue system, something like Gearman or Beanstalkd.
+I'd say the spawning of jobs is a little too simple, and certainly open to a starvation of resources situation.
+The front-end system can refresh (or use Ajax) to call back and see if any info has been found yet, displaying it as appropriate.
+So far it looks promising, but I will perhaps ask again when I have done a bit more testing.
+I am definitely not an expert on this, but a couple of things come to mind.

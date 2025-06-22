@@ -1,0 +1,24 @@
+It allows the user to pass in just about anything without an explicit cast, but I'd suggest that it would be better to have it be const uint8_t * instead and have the caller cast if necessary.
+See Koopman's CRC Zoo for more information about that, and how to interpret Hamming Distance and Hamming weights.
+Also, the use of ssize_t is incorrect in this instance.
+The crc_seed is not a bad name because it suggests the meaning of the variable within the context of the function, but _crc as the input variable is a terrible name because that's not at all what it represents.
+Because they are required by the crc routine, they are important to show.
+What the code is attempting to do is to calculate an 8-bit CRC from high memory to low memory, so the logical way to do that is also the most straightforward:
+That's not good, but in this case it's easily fixed because the copy isn't needed anyway.
+I see a number of things that may allow you to improve your program.
+In this case, I'd recommend simply removing that restriction, since it's simpler than enforcing a limit.
+In particular, if the concern is in detecting 4-bit errors in a 32-bit message, there are other polynomials that perform better.
+There's not much reason to have _crc passed in as a void *.
+The _crc_cpy, crc_cpy_pointer and _crc_u variables are not necessary.
+The code calls malloc but never calls free so it leaks memory.
+As you can read in this answer, global names that begin with an underscore are "reserved to the implementation;" that is, they are for your compiler rather than for you.
+There is nothing in the signature of the crc routine that would suggest to the user that it's limited to a 32-bit message, and nothing in the code that checks for or enforces that.
+A short comment in the code would be sufficient to make this code much more understandable to anyone reading it.
+To get size_t, malloc and memcpy we need the following includes:
+Also note that in C++, these are actually in the std namespace.
+Read this question for details on size_t versus ssize_t.
+To me, it makes the use of the variable more clear.
+In particular, the polynomial used and the fact that it processes memory from high to low (reverse from the usual) arre important points to note.
+This particular polynomial is not terrible, but it may be useful for you to consider alternatives.
+Avoid using a leading underscore for items in global namespace
+The crc function does not need to alter the passed message, so that parameter should be declared const.

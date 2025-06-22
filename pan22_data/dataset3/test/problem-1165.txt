@@ -1,0 +1,13 @@
+This means that queries expend a lot of CPU cycles scanning in-memory data pages, because the index structures to simplify and accelerate that process are missing.
+But with plenty of RAM and a smaller data set, you get a CPU bottleneck instead.
+If the data were bigger, or the RAM smaller, this would reveal itself as an i/o bottleneck.
+Perfmon -> Batches and Compilations per second, to see if you have a few nasty queries or a whole lot of small ones.
+Take the results with a grain of salt, though, and implement selectively.
+Secondly, run SQL Server Profiler to find out what the heck is hitting your box.
+Thirdly, check the memory allotted to SQL Server, as a choked memory causes page file usage which ups CPU consumption.
+Perfmon -> CPU consumption per process, to be sure SQL is the offender
+After that, just do some query optimization (indexes, etc) if there are long-running queries hitting the box.
+Check the activity monitor to make sure that you don't have any large rollbacks/transactions going on.
+Generally (not having seen your setup) if you have a lot of CPU action and not a lot of disk activity, then it means that the data SQL Server is using fits in memory BUT is not indexed effectively.
+So the next stop is a query to the Missing Index DMV, where you might find a lot of high-cost queries that are begging for better indexes.
+Fourthly, check to make sure there isn't another process that's running on the server chewing up memory or CPU.

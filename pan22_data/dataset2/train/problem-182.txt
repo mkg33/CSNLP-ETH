@@ -1,0 +1,5 @@
+I am trying to replace a Firewall/VPN appliance (Snapgear SG300) with another (Mikrotik RB951G-2HnD).  My current router works, but, for the new mikrotik router, when I add the phase 2 tunnel, I can no longer access the router.
+Take a look at the RouterOS's packet flow diagrams. should your tunnel's CIDR be that wide, all of the packets will reach the IPsec Encryption step, and once there, IPsec policies won't provide that "ignore IPsec" behavior you intend to configure; packets may not be encrypted (IPsec action=none), but IPsec protocol headers will be added and IP address may be mangled according to the SAs.
+The only way to avoid routing inconsistencies will be to configure a tunnel that does not overlap with your LAN segment.
+I did try to create a policy that excluded 10.1.1.0/24 --> 10.1.1.0/24 pass but either I did it wrong or it wasn't the right thing to do.
+If I have a phase 2 tunnel of 10.0.0.0/8 and my local LAN is 10.1.1.0/24 (and the router is 10.1.1.1), how do I set this up?

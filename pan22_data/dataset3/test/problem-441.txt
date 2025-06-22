@@ -1,0 +1,12 @@
+I'm having some difficulties logging in to my Windows 2008 server (a DC) running Cygwin sshd.
+After way too much time spent stumbling around, I've finally discovered the cause of my problem.
+Open Allow logon locally and add the Users group (or, you may want to create a 'SSH users' group and add that instead).
+I can log in fine with an account that is a member of the Domain Admins group, but when I try with a regular user account, ssh says "Permission denied."
+When sshd tried to switch context from the sshd service's account to a non-privileged user, the operation failed because the user didn't have the logon locally permission.
+However, after removing it from the Admins group, it is again unable to login.
+In fact, if I add an account to the Admins group, it can login.
+After editing the policy, run gpupdate in a command prompt to refresh the changes and you're good to go.
+This can be found in Group Policy Management > (your domain) > Group Policy Objects.
+Go to Computer Configuration > Policies > Windows Settings > Security Settings > Local Policies > User Rights Assignment.
+To fix, I had to edit the Default Domain Controller Policy to give the Users group the Allow logon locally right.
+In short, I was getting "Permission denied" for my non-administrator users because on a DC, the Users group does not have the "Allow logon locally" user right.

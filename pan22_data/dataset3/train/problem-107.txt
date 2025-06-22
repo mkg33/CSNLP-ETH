@@ -1,0 +1,19 @@
+You assign it a virtual IP and it redirects the connection automatically.
+If this is for storage, like a file server and you do not have a sync process like rsync or DFS running to keep that replicated, you can look at corosync (http://corosync.github.io/corosync/)
+If I have 5 IP addresses available for these 5 machines can I essentially assign those 5 just to the block of servers so each one can access each IP individually?
+If the process is locally installed on the other machines - as is normal for a cluster setup - then only if there are shared ressources it needs.
+This is perfect if the target app is say MySQL in master-master mode or a web server where the actual storage is not unique.
+You can either just have it make a tcp conenction, if the server is up, it is considered active, or you can have it do a evaluation on a response.
+all major OS support clustering which does that - given that the process is installe on s2.
+Say I have for example 5 physical machines with similar resources (CPU speed, RAM and storage)  named s1, s2, s3, s4 and s5.
+If I have a processes running on s1 but then s1 fails somehow, how can I automatically run that process on one of the other 4 servers?
+So if a process runs and is accessed on xxx.xxx.xxx.1 but then s1 dies it swaps over and runs on s4, could s4 then have access to that IP address before so a user only sees a brief interruption in their service?
+Anyhow, you got a generic answer - time to sit down and start reading documentation of whatever you have available on your operating system.
+Ours checks the content of a html request to evaluate if the server is up or not.
+And sometimes if the application is cluster aware.
+For windows, there is a cluster system integrated that allows you to assign an IP to a cluster program - which then moves when the program fails over.
+Would that require shared storage across all these servers so the process can essentially just be started again on another machine?
+Just the IP switch is easily done through linux virtual server (http://www.linuxvirtualserver.org/)
+Example SQL Server, Exchange - will not need shared storage in some configurations because every cluster node keeps a copy of the data (because shared storage ALSO has issues - not so much on the hardware side which you can make redundant, but if a failing machine trashes your file system then ..... there is nothing to be shared ;)
+If that is not the case, virtualization can come to the rescue by starting the VM on another server.
+Which may be the case for the majority of programs.

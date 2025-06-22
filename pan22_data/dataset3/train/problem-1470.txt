@@ -1,0 +1,12 @@
+The VPN server has to be configured accordingly to assign virtual IPs and DNS servers to the clients.
+if servers are received, or if there is perhaps an error during installation of the received DNS servers).
+Similarly, if you use the NetworkManager plugin you'll have to check the "Request an inner IP address" option to request a virtual IP and DNS servers.
+I'm connecting to an IPSec VPN with strongswan and swanctl.
+My problem now seems to be that the DNS information is not updated.
+I had some trouble getting it to work with the ipsec command, but after changing to swanctl instead, initiating the connection works fine.
+Strongswan comes with the ResolvePlugin that should handle this, but I can not seem to get it to work.
+DNS servers are only installed if they are received as configuration attributes, and these are only requested together with a virtual IP address (and, of course, the server must also be configured to send a DNS server back to the client).
+Considering that the config you posted in your other question does not contain vips = 0.0.0.0 (see VirtualIP on the strongSwan wiki) no virtual IP address will be requested from the server and, thus, no DNS servers either.
+I can connect to the remote servers by IP, and name resolution works if I add the name servers to resolv.conf by hand, but resolv.conf is not updated automatically when I connect.
+swanctl --stats reports that the resolve plugin is loaded.
+When I tried connecting with the ipsec command, the name servers got updated, so it seems that the gateway server is sending the information.

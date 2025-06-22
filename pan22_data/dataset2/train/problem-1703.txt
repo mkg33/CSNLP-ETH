@@ -1,0 +1,16 @@
+It's probably not wise to just remove this without finding out why it's there but, in my case, it was a holdover from the past and removing it solved the problem.
+I'm trying to install this RPM locally via yum and am greeted with just a "Error: Nothing to do" message.  
+Now you can use yum install Percona-Server-server-56-5.6.22-rel71.0.el6.x86_64.rpm to install the wanted package (and keep it up2date with yum)
+I didn't realise until I added -v to my yum invocation, but sometimes packages are ignored because you or someone else has written a matching wildcard in an exclude directive in /etc/yum.conf.
+CentOS provide some great guidance on rebuilding a SRPM in order to inspect or customize it: Rebuild a Source RPM
+I'm at a loss for even the right question to ask at this point.  How can I identify the problem and get this installed?
+So if a *-release package is already installed, then there's really nothing to do and nothing you should do about it. You have to proceed to install the packages from that repository.
+First check that the package is not already installed. In this instance you will need to connect to MySQL (mysql -u root -p) and then check the version (SHOW VARIABLES LIKE "version";). For many packages you can simply run httpd -v or nginx -v etc etc.
+When creating a RPM a spec file lists which packages and versions are required for the package to be installed. Reading this 'spec' file is the best way to fully understand what is required and to do so you will normally have to find the source RPM aka SRPM. 
+The reason for Nothing to do message in case of release packages is simple: it's either already installed or you're using an outdated URL which installed older version of the release package.
+Release packages contain YUM repository information. You typically install a release package first (using URL), then install the packages of interest from that repository (using package name).
+Yum will normally give some good guidance on what the problem is, if there is one, but sometimes it will return "Nothing to do"!
+yum install http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
+Within the spec file you will probably find both Requires and BuildRequires, pay close attention to these as they are the dependencies the package requires. Another configuration that is often overlooked is the "Epoch". The Epoch number allows old packages to be replaced by different names where their version numbers are lower than the installed version. This is important for packages that change names but is often added in.
+First command adds repository information, can give "nothing to do" in case it's already present (that's OK).
+If the package is not installed already, or a lower version is installed, then you should normally be able to install or update.

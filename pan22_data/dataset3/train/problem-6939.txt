@@ -1,0 +1,17 @@
+A batch is a collection of otherwise unrelated SQL commands.
+A transaction is a collection of SQL commands that operate (as far as all other users of that database are concerned) as one statement.
+[https://msdn.microsoft.com/en-us/library/ms188037.aspx]
+Transactions and Batches are two independent concepts.
+[https://msdn.microsoft.com/en-us/library/ms174377.aspx]
+A batch is just that, a batch of commands that need to be executed.
+For example, if you update two tables linked to each other; both must succeed for the data change to be committed.
+For example, if you create a variable and use it outside the batch, the tool will throw an error.
+Connection is simply the communication handshake that approves one to run queries on server.
+As far as they do not violate individual batch execution plans that is.
+With the tools created by Microsoft such as sqlcmd and osql, the batch simply ensures a single execution plan.
+So, you can have multiple batches that update multiple tables inside one transaction block.
+Transaction blocks are a single "unit of work", a concept that committed sql must either fully work or not work at all.
+GO (T-Sql batch separator) and BEGIN TRANSACTION (ANSI SQL for starting new transaction block) are both statements.
+As far as I am aware SQL Server makes use of connection pooling so I wouldn't rely on the one connection per client idea.
+A transaction is a set of commands that are guaranteed to succeed or fail totally (i.e it won't complete half the commands and then fail on the rest, if one fails they all fail).
+Also, within a batch, you can have multiple transaction blocks, ensuring data integrity between database entities like tables.

@@ -1,0 +1,8 @@
+Static vs. instance scopes - you chose to put some of the state in the instance, and some in the class, but you manage both from the class. This means that if you create two instances of your class, their state will be unexpected, as they will change each-other's state. If you this class is meant to be a Singleton, make it a Singleton.
+The following code is intended to implement a LinFu DynamicProxy interceptor to lazy load given virtual properties from an Umbraco datastore.
+Also, why is Parent() a method? It sounds like it should be a property. If you want to keep it as a method, I think a better name would be something like GetParent().
+I'm not familiar with Umbraco, and I could not find any documentation on LinFu, I do, however, have some remarks on your code:
+Use locks properly - you chose to use ReaderWriterLockSlim as your lock object. That's OK, though I don't see why you would need a reader-writer lock. 
+Sometimes, extracting subexpressions into locals and giving them a name can improve the readability of code. But other times, it just makes the code longer for no good reason. I think this is the latter case, so I would rewrite this as:
+Comments - your code is more than 40% comments, and un-useful comments at that - a comment that tells me that id is /// The id is a waste of space and reduces readability of your code - I actually needed to copy your code locally and remove all the comments to read it.
+The problem is that you misuse it - the way you use it is as if it was just a regular object. Again, a simple lock object is fine, but declaring it as a fancy lock type, you confuse the code reader to look for (and assume) its use.

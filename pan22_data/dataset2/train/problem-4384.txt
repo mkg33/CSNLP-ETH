@@ -1,0 +1,10 @@
+I didn't seed the random number generator, so we get reproducible output.  But if you do choose to do so, that must be before the #pragma omp parallel.
+It's a bad idea to seed the random generator repeatedly from the current time (which changes very slowly compared to your program execution).  Seed it once, around the beginning of the program (or once per thread; see below).
+The += operation on score is not atomic, so it needs a critical section, or we can use an OpenMP reduction clause to give each thread its own copy, and add them all together at the end:
+The other point is that I should have a different seed for each and every thread, so in the code I've passed the thread ID to the random generator function and used the rand_r() with different seeds.
+I did have to add a couple of orders of magnitude to DARTS to get a meaningful difference in execution time between the single and parallel cases; the overhead of thread creation is simply too large otherwise, when the total runtime is under 100 ms.
+As others have noted, rand() is not thread-safe.  We could create a critical section where you use it:
+Here's a modified version that lets OpenMP divide the work amongst the cores - note how we can make the execution single-threaded just by setting OMP_NUM_THREADS in the environment:
+Instead of having to specify the number of threads to use, we can just ask OpenMP to divide the work across all available cores (which won't suffer the possibility of rounding when DART isn't an exact multiple of MAXPLAYERS).
+However, that will really hammer performance here (where rand() is a large part of the runtime).  We will be much better off using rand_r() (if you have it; it's required by POSIX but not standard C).
+So according to your helpful answers and a little surfing on the web I found out that I need a pseudo random generator, which is a kind of RNG that does not generate repetitive numbers.

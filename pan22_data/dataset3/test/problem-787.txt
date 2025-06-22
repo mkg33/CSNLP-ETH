@@ -1,0 +1,14 @@
+If you do see performance problems, or you anticipate much larger imagery, you'd need to come up with a tiling scheme, which will determine which tiles of your map need to be on the screen and render them.
+On the other end of the scale there's the "draw every single tile individually" approach.
+I'd try to render images at the same size as the source image, so if that is truely the max size (and also the size of your .png or whatever) I'd render it as-is and be done with it (unless I saw noticable framerate drop by doing that).
+The number of render calls is at worse 9, and the hardware should cope well with a texture size that is half the screen.
+On one end of the scale there's the "have everything on a single 3000x3000 framebuffer" approach.
+Each Tile knows its realitive position on the screen and can react to user-input in order to move on the correct axis.
+This is probably the fastest method (one single render call) but a framebuffer that big can cause problems.
+One way to do it (maybe not the best) is to use a Tile class, then have an array[x,y] of tiles.
+This way, for a PC screen with 1024x768 pixels, you will probably be ok with 512x512 textures, while for a mobile device with a 300x256 pixels, 256x128 should be ok.
+Then, you'll just need several small images, and a grid describing the map in 32x32 chunks.
+Unless each pixel of your 36MB map is unique, you can break your map up into tiles.
+This is memory-conservative, but requires a lot of render calls.
+During a frameDraw, just draw the portion of the grid relating to what the screen around the character shows.
+To me, the sweet spot is bundling the tiles on chunks that take rougthly half the size of the screen.

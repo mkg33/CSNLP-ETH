@@ -1,0 +1,13 @@
+If your inner loop started at one index after the current outer loop index, then you'd never generate a pair of indices with i > j ... or even i == j, so you can omit that test as well.  Finally, since the inner loop starts at 1 index above the outer loop, the outer loop should end one index early:
+Explanation - My solution is to reduce the nums size until it becomes the size of one. Once it is the size of one, check if we have reached 24 or close enough. Basically, I tried to pick two elements from the array and apply all the possible computations and recursively call itself now with the array that has the result of the computation and the rest. As soon as I see True from the call, I return True as well.
+Assuming nums is a list of numbers (int or float), you never need to call float() on any of the values.  If you expect a list of 4 strings ("1", through "9") from the contest input, turn them into numbers using int(_) and then pass the List[int] to your judge function.
+But this is still a lot of extra work.  Simply copy the numbers to a new list, and then delete the i-th & j-th entries.  Since i < j is guaranteed, deleting the j-th element first won't change the location of the i'th element:
+First set([x for x in range(len(nums))]) could simply be set(range(len(nums))).  There is no need for the list comprehension.
+The test nums[0] == 24 or abs(nums[0] - 24.0) <= 0.1 could be simplified to just abs(nums[0] - 24.0) <= 0.1.
+Your doing a lot more work than you think you are.  This code is looping through your list, finding pairs of values:
+For each pair, i & j, you compute all possible combinations of those values, including reverse subtraction and reverse division.
+If you don't need this to be a class as a requirement of the leetcode automated judging, you can gain some efficiency by not passing an extra self argument all the time.  This can simply be a function.
+2+2 == 2*2 and 1*1 == 1/1 == reverse_div(1,1).  It is a small optimization, but instead of making a list of all possible operations values, you could make a set() of the values, which would eliminate some redundant recursive steps.
+And then you can refer to a instead of nums[i], and b instead of nums[j], which will prevent repeated indexing into the nums[] array, which will result in decreased performance.
+And later, you'll encounter the same pair only as j & i!  And you'll compute all possible combinations of those values a second time.
+Is nums really of type List[int]?  Perhaps the first time it is, but after the first step, it is going to turn into a List[float].

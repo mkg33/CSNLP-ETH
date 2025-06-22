@@ -1,0 +1,14 @@
+I believe nslookup is used to test a DNS server itself, as opposed to utilizing your HOSTS file.  http://support.microsoft.com/kb/200525 seems to indicate as much.
+I thought I could fix this by using my hosts file to avoid the need for a lookup. I added an entry to my hosts file like this
+Some people on web forums claim that creating a new hosts file and restarting the DNS client service fixes the problem, but I'm not sure why that would work if you've already tried rebooting.
+Also, when I run nslookup on the domain myMachine.MyDnsSuffix, I notice it uses my network's DNS server to find the IP. Could this be related to my problem or am I just mis-understanding how nslookup works?
+I'm having a DNS resolving issue that is affecting the performance of my locally hosted  web site when browse it on my local machine. If I attach my network's DNS suffix to my local machine name when I go to the URL in my browser, the site has terrible load times (100+ times slower) than without the DNS suffix.
+But this didn't change the load times, even after a reboot. Although it is not important to resolve this specific problem, I would really like to know why this happens.
+OK, brand new approach.  Let's have you clear your IP and NETBIOS cache.  ipconfig /flushdns and nbtstat -R.  Then fire up a packet sniffer like Wireshark, and do a ping while it's running.
+If we don't see either of the above despite you flushing your cache, then it's likely that the name is being pulled from either hosts or lmhosts.
+The hosts file or name resolution order is nothing to do with this problem, and the festering sore on the backside of humanity that is the hosts file should be taken out back and noisily shot.
+When using the full DNS name your browser is attempting to go through your proxy server  - clicky for IE.
+Try just a simple ping.  Does ping myMachine.MyDnsSuffix resolve to the loopback address you have specified in your HOSTS file?
+I realize this is a longshot, but there aren't any Microsoft-related words like MSDN, Microsoft, or MSN in the hosts file entry, are there? Microsoft has written dnsapi.dll to ignore hosts file entries matching certain names. For example, if I add the following entry, Windows skips it and resolves both hostnames in the entry using DNS:
+This appears to be the actual cause. Leave it to Microsoft to suddenly and without warning ignore a 25 year old convention.
+B) If there's a NETBIOS request going out.   It's possible this name is being resolved via NETBIOS instead of proper DNS.

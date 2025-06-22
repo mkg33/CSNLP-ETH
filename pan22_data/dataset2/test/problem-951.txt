@@ -1,0 +1,5 @@
+I have two example Queries (shown below).  Both (drop and) create a database and a partitioned table in it. The table has several partitions, with data in each of them (including the last, unbounded, one).  The partitioned data goes from 1 to 3996.
+I thought RANGE LEFT or RANGE RIGHT just controlled if the border value went with the left or right partition.  But it clearly does something else too.
+Also, I like the idea of adding partitions without impacting my system.  And I am willing to use RANGE RIGHT if it gets me that.  However, I am worried that this may be a bug of some kind and that I should not rely on it (as it may be "fixed" in a later version).
+The ONLY difference between the two scripts is the RANGE LEFT vs RANGE RIGHT on the Partition Function.  RANGE RIGHT causes no deletes or inserts, RANGE LEFT causes all the rows in the last partition to be deleted and reinserted.
+In the first script the transaction log shows that every record in the last partition (Partition 4) is deleted and re-inserted.

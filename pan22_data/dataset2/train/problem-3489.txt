@@ -1,0 +1,8 @@
+My mysqld.log gives a errno 12 error that's why I also did innodb_buffer_pool_size=256M in my.cnf but didn't bring anything.
+Your issue may actually be down to "CPU steal" which happens across Amazon's stack (and as a matter of fact, any virtualised infrastructure). You can read more about CPU steal here.
+Keep in mind, the m2.micro instances are just that--they're small.  Any real amount of load will max them out.
+I only have a wordpress installation on it. I'm still in production mode, so no users but I get 100% CPU usage.
+I get Amazon Email notifications every hour because of that that lasts over a period of over 300 seconds.
+I already moved my database to RDS but didn't solve that problem. It just made it a bit better. Before moving to RDS with my database my Website always totally crashed when loading just one webpage.
+Essentially, your VM is idle and Amazon is "borrowing" some of your CPU cycles to give to someone else who needs it - this is standard practice for a virtualised environment where physical server resources like RAM usage and CPU cycles are often hugely over-committed.
+As @zvik pointed out in his comments, you should find out what processes are consuming the most memory and/or CPU cycles.  He recommended running top, which is a command found on Linux distributions.  By pressing Shift-P, it will sort them based on CPU usage.  You will need to use this information to figure out where the bottleneck is.  For example, if this is running Apache, the default config for Apache may be to launch more processes than the server is capable of.

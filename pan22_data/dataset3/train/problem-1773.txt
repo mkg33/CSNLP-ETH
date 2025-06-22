@@ -1,0 +1,24 @@
+Boot support and a slightly different feature set.
+At best they store a bit, which tells the Option ROM to refuse running on unsupported chipsets.
+The problem is that this remap only happens on a write - the disk will delay remapping if a read occurs on a bad sector and on some disk models will repeatedly re-read the bad or failing sector, comparing the result each time until it decides it has the best data it can get from that sector before remapping it.
+But the reality is you are choosing between a green Piece of C or a blue Piece of C.   The reality is that software RAID is basically "last ditch CYA" raid.
+RST "raid" is mainly for use if you are dual-booting a workstation since Intel produces windows and Linux drivers and you can configure the raid in BIOS.
+Western Digital makes "Red" drives that are supposed to be used in software RAID arrays that do not do this, they just fail a sector read immediately when they detect a bad sector and remap it so the array manger can take the data from the sector on the good drive and write it to the drive with the failed sector.
+In summary, do not use software raid for a server that cannot tolerate some downtime if a disk fails.
+Regular workstation disks as they age start to develop bad sectors which are internally remapped by the disk into spare sectors.
+You configure RAID, partition the virtual disk and can dual boot with both OS'es understanding the multiple partitions.
+On reboot you now have 2 disks with the same sector which might have different data between disks, so now the software RAID manager does not know which is "good", the disk that didn't have an error or the disk that remapped a sector with the best approximation of the data that it had.
+With a hardware array chip all the disks can go into hot-swap trays and when one fails, a red light turns on, on the failed disk, you eject it, replace it with a new disk, then the hardware raid card automatically rebuilds the array while the server is still running.
+Quite often it is faster to replace the disk then erase everything on them and recreate the array and then boot from a backup restore disk then restore from backup.
+While in theory it is possible to do this if you have hot swap trays and a Linux mdam software array in practice you are risking a panic and the server can easily fail to boot on the remaining disk.
+Needless to say they charge extra for these disks.
+It is mainly intended for workstations where people don't regularly backup, and for small SOHO servers that are backed up and can tolerate a day or so of downtime if a disk crashes.
+This process can take a minute or so and during that time you now have 1 disk in the array ignoring command codes so the Software raid software will crash and mark the array as degraded.
+It is "better" since if you are rebuilding an array you are doing it from the OS not from BIOS so the rebuild speed is much faster.
+When in RSTe mode, is the actual RAID I/O path (i.e.
+With large disks a BIOS raid rebuild can take several DAYS.
+What the format implies is written in the mdadm man page.
+This leaves one question open: Why is Intel’s RST limited to some chipsets only?
+mirroring and striping) handled by the Linux md or by the BIOS.
+If you lose a disk in a software RAID array essentially this allows you to immediately stop the server, make a complete backup, replace the failed disk and maybe the rest of the disks, then either recreate the array or attempt to rebuild.
+– You could even use it without Intel’s RST Option ROM (then you have no special boot support).

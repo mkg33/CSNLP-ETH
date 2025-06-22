@@ -1,0 +1,32 @@
+I've tested this and the rule shows the correct match on my test sites (filehippo.com etc) and the search engines are no longer auto-adding, so I believe this is a full solution.
+Just rename the search alias to something cryptic like "§$%!/()&/".
+A1: Yes, this is default behavior, but it's not the websites adding themselves, it's Chrome adding the websites.
+The trigger basically looks for any inserts with a non-empty originating_url field, and issues a RAISE(IGNORE) which causes the statement to be silently skipped.
+The way it works is that when chrome goes to add auto-add a search engine to the keywords table, chrome sets the originating_url field to the web site it came from.
+(ignore the specific subtltle of this section for our purposes as it's just an example of it in use)
+A2: I do not believe you can disable this behavior, however you can remove search engines by going to the tool menu -> Options -> Manage Search Engines; they will appear under "Other Search Engines".
+If anyone else tries this let us/me know how it works!
+Though any editor capable of working with sqlite3 databases will work.
+I say "permits" because it's hardly mandatory, as, so far as my research has shown, Firefox simply reads this information and makes it available for easy addition under the Search Engines dropdown box, rather than quietly auto-adding it like Chrome does.
+The use of the feature is described in the Opensearch specifications in multiple places:
+Here a somewhat hacky workaround which works just fine for me.
+I found that you can create a trigger when chrome goes to add the search engine that causes the database insert statement to be ignored.
+The official sqlite web site has a download page with a pre-compiled command line utility for the various operating systems.
+A quick note on the history I've found behind this: Chromium's engineers have labeled this "WontFix" several times over the years (a power-user disable option/flag was requested multiple times) stating that this is considered a niche issue since the feature is "generally useful", their stance is that niche issues should be solved by extensions or 3rd-party scripts rather than by the devs adding countless flags and the like to cater to all whims, so basically what we're doing here is just in line with their preference and keeps it nice and manageable.
+Adblock, and its variants/successors (uBlock is my weapon of choice), have the ability to block web page elements, including <link> elements, which is used for autodiscovery of OpenSearch Descriptions (OSDs), the XML files that contain the information which permits auto-adding search engines and causes us these headaches.
+##link[type="application/opensearchdescription+xml"]
+You may be able to specify that one should not be re-added when you remove it, I'm not sure -- I happen to like this feature, so I'm not going to try removing them.
+Chrome stores it's search engines in a simple sqlite3 database.
+http://www.opensearch.org/Specifications/OpenSearch/1.1#Autodiscovery_in_RSS.2FAtom
+While the search engine is still there you won't see it again, ever.
+For the command line utility, use a command such as the following (don't forget to escape or quote the space in the file name):
+If I'm understanding what you're describing correctly, then this isn't the websites doing anything at all.
+This was making me absolutely insane, so I found a hackish, but effective solution to the issue.
+As it states that OpenSearch Descriptions (OSDs) have a unique type, we can filter them out with the following AdblockPlus/uBlock rule:
+However you wont have to clear them out all the time, and so if you want to add your own search engines, you won't have to worry about accidentally deleting them (yes, manually adding search engines will still work).
+Note that the search engines are still kept in memory, so they will still show up in the list until the browser is restarted.
+I have an alternate, less-intrusive idea for you here (at least if you're running an ad blocker, as so many of us are for our own sanity/safety).
+Manually added search engines don't have an originating_url, and so the trigger allows them to be added.
+Rather, Chrome itself identifies search boxes on websites and then itself adds those to its list of search options in the omnibar.
+Pretty annoying if you can't google for "jenkins" because chrome forces you to search in jenkins.
+I like using existing extensions/scripts as much as possible to avoid the bloat of a whole extension for just one feature (worst-case scenario) so this solution works under this principle.

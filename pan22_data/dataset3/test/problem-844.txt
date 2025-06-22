@@ -1,0 +1,13 @@
+In this case, uname -m returns x86_64 but I don't have any 64bit libraries installed so most 64bit programs won't run.
+On my (debian) system the fakeroot package does just that.
+If you want to know if your CPU can handle 64bit, cat /proc/cpuinfo and look for lm within the flags.
+(as a fun aside, my 64bit FreeBSD server returns "amd64", which might be a bit strange for an intel quadcore but totally understandable if you know the history of the x86 64bit architecture)
+Another way to do it is to ask perl what compiler said the size of a long integer is:
+Looking for existence of /usr/lib64 (as has been suggested) is not going to help you either, since some hardware and system related packages will install both 32bit and 64bit libraries to be on the safe side.
+Another useful piece of information is the output of lsb_release -a which is cross-distro and will report what architecture-specific LSB modules are available.
+what would be a command to run in different distros?
+And to really make sure, run those files and see if they execute correctly.
+Just to confuse things, you can run a 64bit kernel with a 32bit userland, which is what I'm doing.
+So once you check uname, you need to look for /lib64/ld-linux-x86-64.so.2, /lib64/libc-2.7.so and /lib/ld-linux.so.2, /lib/libc-2.7.so to see whether 64bit and 32bit libraries are available.
+You can run both 32bit and 64bit on modern intel and AMD processors, so "uname -p" is not going to help you (in addition it mostly doesn't work these days, this here core2 thinks the response to "uname -p" is "unknown").
+As for the output of "uname -m", if it's i386 or i686 it's 32bit, if it's x86_64 (or alpha, or ia64 or some other 64bit architecture I've never seen :) it's 64bit.

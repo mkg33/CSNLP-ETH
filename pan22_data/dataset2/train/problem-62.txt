@@ -1,0 +1,5 @@
+This depends on how you provide the  repo config through puppet. Do you place a file under /etc/yum/repos.d or  a custom provider?
+In my use-case, I'd like to disable all non-Red Hat repositories (provided by the subscription-manager plugin). However, would be nice to have a flexible solution that disables all repositories not managed by Puppet.
+Depending on how you plan to implement your yum repo config, I suggest you change the "reposdir" in /etc/yum.conf to something like "/etc/yum.repos.managed.d/", and place your puppet configured repos in that directory. That way, yum will not read anything from the standard repo config directory, and only from the ones provided by your puppet implementation.
+You could take measures to make sure that the /etc/yum.repos.d/ dir is purged (ie kept free from files not provided by puppet), check the file resource in the puppet type reference for details.
+Problem with this approach is that some 3rd party applications provide their own repos and package them into rpm:s which gets installed during puppet runtime. This can be hard to take into account when writing the puppetclasses.

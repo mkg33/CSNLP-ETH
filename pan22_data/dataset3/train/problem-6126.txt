@@ -1,0 +1,14 @@
+With that configuration I'm able to run TLS-encrypted connections using:
+So I've configured my /etc/default/slapd to listen on port 389:
+I generated a certificate and enabled TLS by adding the following entries to /etc/ldap/slap.d/cn=config.ldif
+And finally I added an /etc/ldap/slapd.conf with the following content:
+You have not declared anything about other types of connections.
+man slapd.conf sections sasl-secprops and security for more information.
+I'm using slapd under Debian/Squeeze and trying to configure the system to only allow TLS-encrypted connections using STARTTLS on port 389.
+With the additional entry olcSecurity: tls=128 in /etc/ldap/slapd.d/cn=config.ldif everything works like expected.
+From my point of view it seems that the security directive in /etc/ldap/slapd.conf isn't used at all.
+I figured out that the problem has been, that I've been cn=config-style configuration format (I've been aware of that), but I thought /etc/ldap/slapd.conf would be used too.
+Also when I try to convert the slapd.conf to the cn=config configuration format, I can clearly see, that the security directive isn't included in the resulting cn=config configuration files.
+But beside that unencrypted connections are still working using:
+You have declared that all tls connections must have a strength of 256.
+Does somebody know what's going on there and how to change the configuration to forbid unencrypted connections?

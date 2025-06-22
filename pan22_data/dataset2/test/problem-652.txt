@@ -1,0 +1,5 @@
+Designing private classes allows you to have more leverage in defining access modifiers and validating arguments of internal state and methods. However, I would include some sort of debug-only checks on validating arguments to detect bad design early in unit tests.
+I appreciate you taking the effort to edit your question time and again to clarify your goal. At first, I thought you were making a synchronous task scheduler using whatever thread is available at any given time, which would have been really cool as well! In fact, your smartly designed API could be augmented to become one if you allow:
+I haven't found any scheduling-related or other major issues. I only have a couple of small remarks.
+(After discovering this defect, I first incorrectly edited the code, which a moderator pointed out to me. I've reverted the fix and moved it to this answer.)
+This is the most significant I've found. The thread responsible for Starting the Pending Task first awaits the Current Task completion, but an exception will abort this continuation, leaving the queue in a hung state. The exception should be caught.

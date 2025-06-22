@@ -1,0 +1,16 @@
+1) If you have a unique 'ID' column in a table make sure you index it and that it is set as "unique".
+Is it slow if you go direct to the MYSQL DB and run the query?
+SELECT * FROM userdetails WHERE username='harry';) then you should put a secondary index on the 'username' column.
+It doesn't have as many advanced features as InnoDB but with what you're doing it really doesn't matter.
+I suspect that you have two problems that are not dependent on table type: the main one is indexing and the other is memory.
+InnoDB and MyISAM also implement indexing differently, so an index that makes a table more efficient for one of the types could make it actually run slower using the other table type.
+For example, MyISAM is generally faster than InnoDB, however, MyISAM has to lock the entire table when performing updates or deletes, or Inserts that don't get appended to the file, preventing all other operations (including Selects) until the operation finishes.
+InnoDB doesn't do table-level locking, so it can handle that scenario more efficiently.
+I would recommend MyISAM as it is  simpler to administer and takes up a little less memory.
+(either from commandline mysql tools or using a GUI like SQLYog)
+Shouldn't matter, not for small scale databases anyway.
+Table type makes a huge difference in determining how the database will perform, particularly under heavy load with a lot of rows.
+There are too many differences to list here, and most of them take a while to explain, but I would suggest perusing the relevant sections from High Performance MySQL for more information.
+2) Memory -- are you running on shared hosting or a VPS?
+We may be trying to solve a MySQL problem when the DB is fine and the performance bottleneck lies elsewhere; from your description the query is very basic and should be quick even without optimisation.
+Also, you  should try to have indexes on any column that you use in a 'WHERE' clause.

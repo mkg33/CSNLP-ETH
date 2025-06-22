@@ -1,0 +1,26 @@
+By splitting out the data to a separate database, the main Production database is reduced in size, helping the overall performance.
+Archive schema or just archive table is a bit more complex to implement but much easier to use.
+No cross database queries making for easier performance tuning, monitoring, troubleshooting, etc...
+That said, it is the most complex to implement and requires on-going care that isn't easy for a beginner.
+once archive data is written in the Change archive database for 2014 there will never be any change to that data again.
+Ignoring license for now as that's not where I spend my time.
+Note: I think the answer to many of your questions is all depends on your circumstances, nature of data and the performance problems that you were having.
+Data movement and load/resource controls have clear boundaries.
+This may mean that Archived data could be backed up less often.
+Also due to the sequential nature of how Archived data is logged, it may be possible to backup sections of the Archived database once and then never again.
+I would prefer splitting the database into a separate logical database for the following reasons:
+You can then also use simpler schema and drop some of the indexes making the database smaller
+It saves license costs is easier to manage and query.
+Table partitioning is a great solution and afford many of the benefits of a archive table/schema but provides transparency to users/queries.
+IMHO, archive database is simplest to implement and maintain.
+For example, if your historical data is modified/updated regularly (more than once a week), using a separate database means you have to either use DTC for those queries or manually manage transaction safety (non trivial to assure always correct).
+These are important considerations as they can have significant impact on the solution you choose or may not even allow certain solutions.
+Backing up archived data may not be deemed as essential as the ‘live/current’ records in the main SQL database.
+But since you have the enterprise edition you have the third option which is to partition your tables which, when put in place makes it easier to archive the data and querying the old data is transparent to your users and you will not need to make application changes.
+Can easily move to a different instance or server for better performance management and cost is not a major issue.
+I would prefer having a history schema or a second historical database over a linked server any day.
+It actually has a quite a bit more tasks but they're all simple tasks with two important exceptions:
+Cost is significantly higher than immutable historical data.
+By splitting this out into a separate database, it can be stored on a different drive and monitored at a different rate to the main production data.
+All objects in the same database means you don't have to replicate and maintain access controls.
+Also, if you're thinking of upgrading, do consider 2016 and the new Stretch Database feature: https://msdn.microsoft.com/en-us/library/dn935011.aspx

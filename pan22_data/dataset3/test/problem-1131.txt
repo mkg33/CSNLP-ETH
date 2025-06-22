@@ -1,0 +1,23 @@
+The article is pretty old, but perhaps this answer can help also others: Windows 2008 server R2 64 bit, RAID Level 5 with 3 x 3 TB Seagate ST3000DM001 (AMD 5050e, Gigabyte Motherboard GA-MA78GM-US2H, onboard graphic card & gigabit-ethernet).
+I might also have something to do with you are using a software raid and not a proper hardware raid controller.
+Changing the drivers speeded up my system four times - unbelievable.
+That said, I would consider ~4 days a bit slow, but doubt that 2003R2 would be any faster on the same hardware.
+Concurrently reading 4 drives should yield 480MB/sec, then parity needs to be calculated (concurrent with read because the write is going to the 5th drive) and the parity is written (again, concurrent with read).
+It has to read 6 TB worth of data from the other disks, do checksumming etc.
+No other system that I have used exclusively syncs a new volume without the option for "quick build" with no sync.
+That's the problem with using large disks with a RAID: Reconstructing takes ages.
+But then again nobody ever claimed that built-in windows raid solutions were fast or optimized.
+Please keep in mind that your calculations are assuming that the system can only read from one drive at a time.
+I believe that the system is doing this as a very low-priority process in order to not overwhelm the rest of the system, but 1/20th seems to be unnecessarily conservative.
+Modern processors should be able to easily XOR 480MB/sec of data (heck I can MD5 100MB/sec of data) - meaning that a 5x2TB RAID5 should take no longer than 4.3 Hours if operating at full speed.
+Did you install the right motherboard sata-driver or did you use an pci(e)-card connecting your harddisks ?
+Considering that single-drive reads operate at 120MB/sec that is 1/20th of the maximum read speed.
+In case of a software RAID, it has to do this while normal operation continues.
+The original windows drivers are pretty slow and produced a blue screen.
+In reality my rebuild is looking to take about 96 hours - or operating a 5.5MB/sec total speed per drive.
+Resynching-time before driver change: 40 hours, afterwards only 10 hours.
+Reading and writing on the RAID while reconstructing is happening is not a problem except that both normal IO and reconstructing will be a lot slower than usual.
+This is also completely ignoring the fact that a brand new raid does not need to synch.
+Actual read performance per drive should be on the order of 120MB/sec.
+It should be trivial to throttle the speed of the rebuild based on the overall usage of the system instead of at a low rate fixed speed.
+I did not get windows 2008 r2-drivers, I used vista-64-bit drivers from my motherboard manufacturer.

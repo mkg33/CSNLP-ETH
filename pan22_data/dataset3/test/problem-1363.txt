@@ -1,0 +1,17 @@
+Try ls -lZ /etc/init.d/rc5.d/ to see the scripts' contexts
+If so is it turned on and is the context of your script the same as the other start up scripts?
+There should definitely be a way to do what you want from the /etc/rc*.
+With vixie-cron it's possible to specify tasks to run on reboot with the @reboot keyword in your crontab:
+It's also worth checking /etc/inittab to ensire that you're booting into runlevel five by default, look for a line like:
+you should have your link named S99something, where S stands for starting, and 99 stands for the order in which the scripts in that directory are started.
+Search for "vixie-cron specify tasks on boot" on Google, and it's the first result.
+As mentioned in the article, it's a great way to allows users to run commands at startup without granting them root access.
+Besides: you may want to rework the script to honour start / stop arguments, and add a K99something symlink to make sure the services are properly stop when leaving this run level.
+The above table is from a blog post by Jeremy Zawodny which I'm not allowed to post a link to as a new user.
+* files that are run at different parts of the startup.
+On RedHat derivatives (like openSuSE) runlevel five is the default when running X11, runlevel three is the default to boot to the console.
+That's from my debian laptop and shows that I boot into runlevel two by default (which is debian's default).
+Another alternative you might want to look into is cron.
+Have you tried adding a call to the script in your /etc/init.d/boot.local?
+Try getenforce to see if selinux in installed an turned on.
+There is a pretty good explanation at Cool Solutions as well

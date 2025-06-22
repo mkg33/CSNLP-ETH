@@ -1,0 +1,5 @@
+DDL statements seem to be replicated properly but the replication process stops effectively as soon as myloader starts to load data into tables. There is nothing relevant in MySQL error logs. The cluster status looks like:
+For anyone having this issue, you must enable binlog (--enable-binlog) when importing with myloader. Source.
+We are trying to populate an empty Galera cluster using myloader. We use the latest version of myloader from repo trunk, the command is as follows:
+We have tried two different Percona XtraDB Cluster versions with wsrep_provider_version 2.8(r165) and 2.10(r175). We also tried MariaDB Galera Cluster with wsrep_provider_version 25.3.5 (I believe this is the latest version of wsrep provider according to http://galeracluster.com/downloads/). We also tried to set up two completely separate environments with different network latencies but to no avail.
+We were able to resolve this using mysqldump instead of mydumper/myloader. Apparently there is a bug in myloader or in Galera itself which prevents replication to flow normally.

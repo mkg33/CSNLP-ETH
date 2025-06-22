@@ -1,0 +1,13 @@
+To the question: Both algorithms are based on mathematical problems which are not proven to be secure (RSA uses the problem of factorizing numbers and DSA uses the discrete logarithm problem), you cannot say one is more secure than the other, because not the one problem nor the other has ever been solved.
+But by using DSA with SHA-1 you may have a security problem, as already said by pgs.
+The GPG maintainers are thinking of changing the default to RSA (source: Dealing with weakness in SHA-1 [LWN.net]).
+ssh-keygen defaults to creating RSA keys, but gpg --gen-key prefers DSA/ElGamal.
+Both RSA and DSA have been substantially evaluated; if you are using a realiable code base (RSAREF, RSA commercial, Mozilla/Netscape, Microsoft, OpenSSL, ...) then you probably don't care which cryptosystem you use so long as you use it correctly and utilize current best practices
+There were some weaknesses discovered in SHA-1, which is the hash used by DSA.
+So, it seems they think RSA is currently the better option (and they should know more about it than you or me).
+Concerning to the current DSS specification (FIPS-186-3, p. i) any hash function specified in the SHS (FIPS-180-3, p. iv) may be used:
+Debian are migrating all their keys from DSA to RSA.
+3) make sure you age your keys - been using the same key for ssh-auth for a few years, might be time to regen even if you chose a key size that is still reasonable for the application today.
+2) chose a base/modulo to optimize for signing, or verification - depending on what will be doen more often (keys to be used in issuing TLS/SSL server certificates should be optimized for verification since every web browser will check the signature... keys used to be used in signing software should be similarly optimized)
+Also the use of SHA-2 algorithms is possible and allowed since current revision of DSS; but I was unable to find out which revision GPG follows.
+The fact is it probably doesn't matter much to you :)  As part of preparing to generate a key-pair and as part of maintaining existing key-pairs - regardless of what asymmetric crypto you choose you should be :

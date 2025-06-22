@@ -1,0 +1,17 @@
+2) write individual /json and /socket location blocks in nginx
+If any request experiences a PHP fatal error, the upcoming requests will still be served.
+3) rewrite the Go code and use fastcgi_pass in nginx instead of proxy_pass
+Ideally, I want nginx to serve all existing (static) files and proxy everything that doesn't exist to Go:
+I've seen some benchmarks that show that nginx can serve a lot more requests per second when it comes to static files.
+However, if my Go code calls panic() the program will be terminated and the service will stop responding.
+Additionally, FastCGI seems to be 4 times slower than HTTP: https://gist.github.com/hgfischer/7965620.
+But if I want to add more handlers in Go, I also have to update the nginx vhost accordingly.
+I would also have to change the Go code to use net/http/fcgi instead of net/http, the problem with this is that I don't know how to specify the paths (/json or /socket) with fcgi.Serve().
+Currently I have the following HTTP server written in Go:
+Make Go serve everything (including static files) and handle gzip compression on every request.
+How can I make nginx and Go to behave like I want (preferably with the HTTP interface)?
+But this will proxy everything, even the existing (static) files.
+Another useful feature of nginx is that it can gzip responses transparently and even serve pre-compressed files with the gzip_static module.
+In PHP, I point fastcgi_pass to the php-fpm Unix socket.
+Unfortunatly, nginx doesn't like the above configuration:
+Apologies if this question is too basic, this is my very first experience writing a Go web app.

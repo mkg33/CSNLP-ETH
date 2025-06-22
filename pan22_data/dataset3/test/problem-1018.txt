@@ -1,0 +1,10 @@
+But given the caching capabilities of Reporting Services and extensive built-in capabilities for scale out (see Planning for Scale-Out Deployment), one has to wonder whether such a replication topology is truly needed.
+There's no need at all for RS to use a DE on the same machine.
+Wouldn't it be a lot better to have multiple servers running Reporting Services, all of them querying a single Database Engine server?
+However, I would take a long deep look into the MS SQL deployment and architecture documentation to see if there's anything that says "build it this way, taking care that you do X and don't do Y" or "It won't work at all because of Frob."
+About NLBing Reporting Services: yes, you can, but it has some caveats.
+As long as you're only doing queries to the NLB name.
+One solution is to stage the distribution, have one of the subscribers (or more) act as a publisher/distributor too.
+Make sure you do not have the publisher act as its own distributor, with many ('unlimited') scaling the subscribers load on the distributor becomes quite significant.
+See http://technet.microsoft.com/en-us/library/cc281307.aspx.
+This way more subscribers can be added as subscribers to this second-hand publication without adding further load on the original distributor.

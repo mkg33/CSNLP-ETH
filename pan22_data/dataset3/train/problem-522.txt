@@ -1,0 +1,22 @@
+In the second case you aren't limited by packet loss.
+Adding extra connections is a crude way of expanding the total window size.
+Try sort all files on inode (find /mydir -type f -print | xargs ls -i | sort -n) and transfer them with for example cpio over ssh.
+Faster than that it's hard to go when going across network.
+You could also improve this by changing congesting control algorithms or by reducing the amount of backoff.
+In the first case each TCP connection would, effectively, compete equally in standard TCP congestion control.
+(This might require TCP window scaling if the connection latency is sufficiently high.)
+You can tell approximately how large the window needs to be by multiplying the round trip "ping" time by the total speed of the connection.
+You could spawn off multiple instances of rsync on specific branches of your directory tree.
+There are tons of unix  tools to slice, dice, and reassemble files.
+If you can setup passwordless ssh login, then this will open 4 concurrent scp connections (-n) with each connection handling 4 files (-L):
+You can create simple bash scripts to automate "*.torrent" file creation and ssh a command to the remote machine so it downloads it.
+Additionally, you'll be able to review ALL transfers' states in a nice ncurses screen.
+1280KB/s needs 1280 (1311 for 1024 = 1K) bytes per millisecond of round trip.
+This will max out your disk and make the network you bottleneck.
+This looks a bit ugly, but I don't think you'll find any simple solution without developing :)
+It all depends on how your source data is structured.
+You may be able to tweak your TCP settings to avoid this problem, depending on what's causing the 320KB/s per connection limit.
+My guess is that it is not explicit per-connection rate limiting by the ISP.
+The tool is called 'rtorrent' package/port that's available on both hosts ;) BitTorrent clients often reserve disk space before the transfer, and chunks are written directly from sockets to the disk.
+If you can manually increase the window sizes the problem will go away.
+A 64K buffer will be maxed out at about 50 ms latency, which is fairly typical.

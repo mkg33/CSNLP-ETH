@@ -1,0 +1,8 @@
+If I shut down the DHCPD daemon on one server the peer doesn't seem to take over even if it detects that other peer is down
+I can't remember having seen the message not responding (recovering) back then, but I also had peer holds all free leases on both DHCP servers.
+The error message peer holds all free leases can also mean that the request has been received on the wrong network interface, e.g. if a computer is only configured to get an IP on eth0, but the DHCP request is received on eth1. deny dynamic bootp clients is typical for such a setup. In my case one interface was for the workstation network and the other one for printers only and someone plugged a workstation into the printer network.
+IP helper (aka UDP helper) and DHCP relay is enabled on router that connects the network of the primary server with the network of the secondary server
+See my blog posting about when I ran into that error message and found no obvious reason on Debian, too.
+Try with a smaller pool to verify your failover is working correctly, then readjust. Your range is very large and likely the cause of why it seems to hang on update.
+I've ran into this issue before.  For me it was the firewall blocking port 647/tcp on both servers.  I ran the following on each server and it resolved the issue.
+The message not responding (recovering) indicates that the server is not responding because it is recovering from a failover (or initial start). And is probably still populating the lease databases with all of the free leases from your pool, which could take a while if you have a large pool.

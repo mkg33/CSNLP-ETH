@@ -1,0 +1,15 @@
+CloudFormation has available intrinsic function Fn::GetAtt which you can use to get such parameters (http://is.gd/slXkIE).
+You still need to have a procedure to bootstrap EC2 instances, to create facts directory etc.
+1) You can pass master node private IP address or DNS name to EC2 instance by  instance UserData property in CloudFormation template (http://is.gd/6cmsRt).
+I am trying to do something in the vars section like master_node: {{tag_node_type_master[0]}} (pick the first, and only, element of that hosts group), but that does not work (it says that the variable is undefined, which makes sense because it's not a variable but a hosts group).
+If you want to make it more generic I would put a private ELB in front of your master node so you don't have to tackle with IP addresses or DNS names changes when the instance is e.g.
+3) I would use such custom local facts in your playbooks
+There is a single master node per stack and a bunch of worker nodes.
+To discriminate between master or workers in the playbooks I am using a custom tag (e.g.
+2) I would save such parameters by UserData as Ansible local facts (Ansible >= 1.3, http://is.gd/QdZrUm).
+The problem comes when I need to let the worker nodes know which is their master node.
+Currently there is a template that references a statically defined variable with the private DNS name of the master node, and that's not an acceptable option anymore.
+I use a similar procedure with SaltStack and it works well.
+tag_node_type_master or tag_node_type_worker) as the host group (and using --limit tag_env_XXX to restrict to one specific environment).
+I am porting some automation scripts that used ansible with static inventories to use dynamic inventory (we have a AWS Cloudformation stack per environment and it seems silly to update static files every time we re-create a stack).
+I'm not an Ansible expert but I'm pretty familiar with AWS and other configuration management systems.

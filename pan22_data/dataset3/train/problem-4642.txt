@@ -1,0 +1,23 @@
+Does anyone know why addition of a query hint would cause the engine to pick a different query plan?
+There are two little known trace flags that can resolve the poor statistics with ascending dates and keys issue.
+But its not, its quite different actually (much much faster).
+Quote from Ascending Keys and Auto Quick Corrected Statistics:
+As code is passing in the date values I can't use a plan guide to override the default behavior, looks like code change will be required.
+But I wish I knew where to look on why recompile would force a different plan to be used.
+There was also a recent article on SimpleTalk discussing these flags, Statistics on Ascending Columns.
+Check out: http://msdn.microsoft.com/en-us/library/ms175037.aspx
+I've confirmed this is the case by checking the cached plan_handle, always a different ID as values in batch change.
+I've got an adhoc sql statement that gets a different query plan solely because of  OPTION(recompile).
+The batch statement is never (in practice) being reused as it is using non-parameterized dynamic sql generation where the statement changes with dates / other parameters.
+SQL Server doesn't do variable sniffing so without OPTION (RECOMPILE) it will compile a general plan as it would for OPTIMIZE FOR UNKNOWN.
+Except under a few circumstances; and one of these is when the query has OPTION RECOMPILE.
+See Statistics, row estimations and the ascending date column for more about this potential issue.
+If the version without the hint is better the statistics themselves may need updating.
+This is on SQL 2005 SP2, but I suspect this is something that applies to all query hints in general.
+When I do dbcc freeproccache I expect that the query plan I get for the statement would be exactly the same as one with "option (recompile)" query hint added.
+At one point you seem to be saying that the version without the hint is "much much faster" and  then later you say the version with the hint is "much better".
+When the PARAMETERIZATION option is set to FORCED, any literal value is converted to a parameter.
+This could happen if you have your database set up for forced parametrization.
+If you find the version with the hint is better than this is because SQL Server can use statistics to estimate the number of rows that will be matched by the date predicate and choose an appropriate plan for that case.
+all I have to do is change the statement to use recompile query hint and I get different (much better) query plan.
+Perhaps when they were last updated there were few or no rows meeting that predicate and so SQL Server massively underestimates the number of rows that will be returned.

@@ -1,0 +1,7 @@
+So in client specific override in field "Common Name" try to write username instead of the Common Name.
+I have tried to assign static IPs with the client specific overrides in pfSense. I used the commonly advised ifconfig-push command, but the clients I tested with(Windows 8 and Arch Linux) just don't take the IP assigned in their respective override. I've tried ifconfig-push with different arguments(client-IP + server, client-IP + subnet mask, ..).
+The LAN network is 10.0.0.0/24, the pfSense machine is 10.0.0.10 and clients DHCP range is currently 10.0.0.200-10.0.0.220.
+After some deep digging I found a bug in pfSense's Redmine tracker. This states that the OpenVPN server is missing the client-config-dir variable. 
+if you have problems with assigning static IPs, try to inspect your openvpn server config in "/var/etc/openvpn/server1.conf" for that option.
+If I leave the DHCP for the tap-interface on, clients will take an IP address from the client DHCP range, if I switch DHCP off clients don't get an IP at all. I have tried to push the static IP inside and outside of the DHCP range.
+Is there any way to make the override work and force the assigned IP to the client? I would need this especially for access limitations with pfSense's firewall.

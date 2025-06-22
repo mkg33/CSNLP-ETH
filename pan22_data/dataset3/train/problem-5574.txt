@@ -1,0 +1,12 @@
+In fact, it appears that Linux simply shows a different value.
+The argument to compute_averunnable, is sched_nrun in sched_average.c, getting its value from sched_run_count in sched.h.
+The load is the average number of runnable processes.
+Judging from this article, Linux really uses the number of processes that are runnable as opposed to XNU's threads.
+The scheduler header file sched.h declares it as extern, and all scheduler implementations in xnu-1699.24.8/osfmk/kern/sched_*.c periodically call it via compute_averages in sched_average.c.
+It simply uses the number of runnable threads to compute load averages in 5 second intervals.
+Assuming Mac OS X 10.7.2, the getloadavg function calls this code here (search for the second occurrence of sysctl_loadavg), which, in essence, returns the current value of averunnable.
+This number is modified by the macros sched_run_incr and sched_run_decr, used exclusively in the file sched_prim.c, which are the scheduling primitives responsible for unblocking, dispatching, etc.
+You can also obtain the same information by running sysctl vm.loadavg.
+Since every runnable process has at least one runnable thread, the load average values on OS X will, assuming an equivalent load average calculation (which I didn't bother to check), always be at least as big, since the item counts they're based on are different.
+This file also defines compute_averunnable, which computes the new weighted value of averunnable.
+While the systems are totally different, I find it hard to believe that Linux always has lower loads than OS X.

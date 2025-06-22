@@ -1,0 +1,7 @@
+This thread was very useful and because there were so many options to achieve the result, I decided to benchmark few of them. I believe my results can be helpful to others have a sense of what worked faster.
+When I have to copy a large amount of data, I usually use a combination of tar and rsync.  The first pass is to tar it, something like this:
+When doing local a local directory copy, my experience is that "cp -van src dest" is 20% faster than rsync.  As far as restartability, that's what "-n" does.  You just need to rm the partially copied file.  Not painful unless it's an ISO or some such.
+Usually with a large amount of files, there will be some that tar can't handle for whatever reason.  Or maybe the process will get interrupted, or if it is a filesystem migration, the you might want to do the initial copy before the actual migration step.  At any rate, after the initial copy, I do an rsync step to sync it all up:
+I've seen 17% faster transfers using the above rsync settings over the following tar command as suggested by another answer:
+rsync is great, but has issues with really large directory trees because it stores the trees in memory.  I was just looking to see if they'd fix this problem when I found this thread.  
+On my case I preferred to use rsync + parallel. I hope this information helps more people to decide among these alternatives.

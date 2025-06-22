@@ -1,0 +1,5 @@
+The goal is to make sure your script follows the program [options] [operands] syntax. I mean, instead of rely on the position of arguments to assign variables (as in name=${1}), your script should parse --name foo (or something similar) to change the value of the name variable.
+First, I recommend you to read the Utility Conventions chapter of the POSIX specification. It's useful to understand how argument syntax works in standard utilities and serves as a guide to the rules you should follow when you create some program.
+For example, if you use a recent version of bash and portability is not a big deal, you could rewrite uppercased_name=`sed -e "s/\b\(.\)/\u\1/g" <<< "${name}"`  as uppercased_name="${name^}"
+Unquoted expansions are the most common source of bugs and security issues in shell scripts. There are cases where it's safe to leave expansions unquoted (as in foo=$bar) but, unless extremely necessary, it's preferable to double-quote every expansion you have.
+I suppose you use the rest variable to save your remainder arguments. The problem is that you are saving them as a single string and you are relying on word splitting to handle it.

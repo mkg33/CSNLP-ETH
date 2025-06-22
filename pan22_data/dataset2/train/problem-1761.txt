@@ -1,0 +1,6 @@
+your guest is in one network, and the host in another. The traffic goes through the tap device  and bridge to eth0, is it supposed and expected to be able to reach the xx.xx.129.69/28 network at all? The typical working setup would be to have the bridge IP and the VM's attached to it in the same network, and if you want the host not to see that network, leave the bridge without an IP at all.
+I wanted to assign an external IP address to my KVM guest and went the bridged networking way. Unfortunately the guest has no network connectivity and I don't know why. After investigating it seems that it doesn't get any reply for it's ARP requests.
+You can follow the flow through by checking tcpdump on the bridge itself, and possibly on the underlying eth0
+I have one physical interface: eth0, the bridged interface: br0 and the tap interface: tap0 brought up by qemu-ifup script by kvm. The host machine runs the latest Ubuntu Server. The guest machine runs GKRML live-cd (based on slackware).
+What could be a potential problem is that the host machine and the guest machine are in the different networks. Unfortunately both IP addresses were assigned to me by the datacenter and I cannot change them. 
+Have you enabled IPv4 forwarding in sysctl.conf? Again on Fedora/Red Hat in /etc/sysctl.conf you need to set 

@@ -1,0 +1,12 @@
+This means that you do not have to specify the port (http://www.example.com:80, https://www.example.com:443) when using a web browser.
+One way of boosting performance would be by having a load balancing device/service listening to TCP80/443 which would then redirect the request to servers on different ports and/or ip (Local Balancing) or even different remote sites (Global Balancing).  But this is another topic altogether
+In addition to this unfriendliness, there is no performance benefit: a port is just one part of the (dst ip:port, src ip:port) 4-tuple which uniquely identifies a TCP connection. If two connections share a dst ip:port, that doesn't mean they share some system resource - they can reside in different threads, or different processes.
+The server doesn't waste resources by handling connections in one or more ports. Server resources are allocated to handle connections, and the port number is just a way to connect a specific program to a specific connection.
+Now, if you have logically different services which both happen to use HTTP, there is no problem with running them on different ports. It just makes the URI a little uglier.
+For example: the HTTP server knows that he'll listen to connections that come in the port 80. And the server knows that anytime he receives some request on port 80, he'll handle it to the http server. After that, the http server will handle the communication and then will consume resources.
+Why isn't it sensible to dedicate more than one TCP/IP port to http? Although admittedly naive, isn't it somehow intuitive to think that server performance could somehow be increased?
+Having a default is useful precisely because you don't have to type it into your web browser with the URI.
+Also, most Proxies and Firewalls will not let connections to those ports unless specifically configured to do so (Without configuration, Outgoing proxies won't be listening to non-default ports, hence will not forward the request to the webservers, while Firewalls would simply block non-TCP80/443 connections attempts)
+Port 80 is a well-known port, which means it is well-known as the location you'll normally find HTTP servers. You can find it documented in the HTTP/1.1 RFC.
+If you want to have a webserver listening on any other ports, the users have to manually add the port to the URL, or it has to be encoded in any link to that particular port.
+If you run an HTTP server (or in fact any service) on a non-standard port, you force the client to remember which arbitrary 16-bit number you chose and type it in.

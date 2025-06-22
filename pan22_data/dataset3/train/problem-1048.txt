@@ -1,0 +1,21 @@
+I'm using Ubuntu 12.10 and looking for a way to shape network traffic based on the IP address.
+This will leave some bandwidth to your other clients.
+I pretty much have a server and if my own PC connects to it, I want full speed.
+http://www.lartc.org/howto/lartc.qdisc.classful.html, section 9.5.3 "The PRIO qdisc"; by default it creates 3 queues but you can ignore the 3rd one.
+Can anyone help me out with a script or maybe a program that already exists?
+Using ranges that are powers of 2 is a lot easier than decimal limits.
+Only if I'm not using the server, the rest should have full access.
+The trick is to create to 2 classes with a skewed bandwidth ratio, say 1:10 (100 mbit vs 1000 mbit).
+I however want all people to have the max speed, except if a certain IP is connected.
+So basically my IP should have the highest priority and the rest the lowest priority.
+On the same page, Hierarchical Token Bucket is discussed, which is a more finegrained way of distributing bandwidth.
+They all have the same queue algorithm; then assign your servers (IP 192.168.1.0-127 in this case) to handle 10: and the rest to 20: :
+Once the IPs traffic is finished, the rest of the connected IPs' speed should be restored.
+Use a /26 to limit the range to 0..63, if necessary.
+The /25 after the IP address ignores the last 7 bits of the IP address, hence a range from 0 to 127.
+(Disclaimer: it's a been a while since I touched this stuff, you may have to experiment with the values after parent and flowid)
+I've found some solutions online with tc, but they all limit specific IPs with a certain speed.
+The trick is to prioritize traffic without limiting it.
+I have a LAN, lets say from 192.168.1.2 - 192.168.1.254.
+All IPs should have the maximum possible network speeds (all ports, but Samba is the actual culprit).
+The moment a specific IP or IP range (eg: 192.168.1.100) connects, the full speed should be given to that IP, all other IPs speed should be reduced to the minimum.

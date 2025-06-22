@@ -1,0 +1,19 @@
+What you need to do is to see what samples batch_y has and give them the respective weight!
+model.fit(X_train, y_train, class_weight=weight_dict, ...)
+from sklearn.utils.class_weight import compute_class_weight
+weight_dict = dict(zip(np.unique(y), weight_array))  # dictionary containing your weights
+Then pass the batch_weights to the weights attribute of the loss (through a placeholder using the feed_dict - like you do with batch_x and batch_y)
+weight_array = compute_class_weight('balanced', np.unique(y) y)  # y is the array containing your labels
+This will essentially tell your network to pay more attention to some classes (note that this might deteriorate performance on the rest of the classes).
+Scikit-learn has a function that calculates what weights you should give each sample.
+To see what weight you'll give to each class you can either put it yourself or you can let scikit-learn help you.
+Through the use of class weights you can make it so that your model pays more attention to the under-represented classes, so that they appear balanced.
+This requires you to pass a Tensor with a shape of (batch_size,) where its elements are the weight you want to pass to each sample.
+In TensorFlow you can do this simply by using this softmax_cross_entropy loss instead of the one you are currently using.
+This means that you have much more samples in class 2 than you have in classes 0, 1 and 3.
+batch_weights = [weight_dict(x) for x in batch_y]  # assuming that your batch_y is a numpy array that is not one-hot encoded
+In keras you can also add class weights in the fit method (which trains the model).
+This is easier as you just need to pass a dictionary with the weight of each class (i.e.
+# if batch_y is not a numpy array you need to get it through
+batch_weights = [weight_dict(x) for x in np.argmax(batch_y, axis=1)]  # assuming batch y is a numpy array
+What you want to do to boost the performance of one of your classes is to add class weights to your loss function.
