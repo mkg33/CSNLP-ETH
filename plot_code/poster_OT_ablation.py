@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-lambda_ablation_heatmap_pdf.py
-"""
 
 import matplotlib as mpl
 mpl.use("pgf")
