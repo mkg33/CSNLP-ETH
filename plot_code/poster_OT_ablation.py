@@ -11,15 +11,16 @@ from matplotlib.cm import ScalarMappable
 mpl.rcParams.update({
     "pgf.texsystem": "pdflatex",
     "text.usetex": True,
+    "font.family": "serif",
     "mathtext.fontset": "custom",
     "pgf.preamble": r"\usepackage{mathpazo}",
     "figure.facecolor": "none",
     "axes.facecolor":   "none",
-    "axes.labelsize": 8,
-    "font.size": 8,
-    "legend.fontsize": 8,
-    "xtick.labelsize": 8,
-    "ytick.labelsize": 8,
+    "axes.labelsize": 10,
+    "font.size": 10,
+    "legend.fontsize": 10,
+    "xtick.labelsize": 9,
+    "ytick.labelsize": 9,
 })
 
 """
@@ -37,6 +38,7 @@ models = {
 """
 
 
+"""
 models = {
     r"\textbf{Sliced}": np.array([[0.9122, 0.9118, 0.9108, 0.9143],
                                   [0.8261, 0.8263, 0.8258, 0.8261],
@@ -48,10 +50,11 @@ models = {
                                    [0.8235, 0.8263, 0.8273, 0.8223],
                                    [0.7650, 0.7708, 0.7715, 0.7677]]),
 }
+"""
 
 
 #Projection dimension ablation:
-"""
+
 models = {
     r"\textbf{Sliced}": np.array([[0.9118, 0.9118, 0.9115, 0.9092],
                                   [0.8263, 0.8263, 0.8262, 0.8262],
@@ -60,7 +63,7 @@ models = {
                                    [0.8274, 0.8267, 0.8277, 0.8254],
                                    [0.7690, 0.7667, 0.7692, 0.7696]])
 }
-"""
+
 
 
 
@@ -68,7 +71,6 @@ tasks   = [r"\textbf{Easy}", r"\textbf{Medium}", r"\textbf{Hard}"]
 lambdas = [0, 0.001, 0.4, 0.7]
 
 dim = [64, 128, 256, 512]
-
 
 cell_w = 0.4
 cell_h = 0.25
@@ -106,7 +108,7 @@ for ax, (model_name, arr) in zip(axes, models.items()):
             txt_colour = "white" if norm(arr[i, j]) < 0.55 else "black"
             ax.text(j, i, f"{arr[i, j]:.4f}",
                     ha="center", va="center",
-                    fontsize=6, color=txt_colour)
+                    fontsize=9, color=txt_colour)
 
 
     #ax.set_xticks(np.arange(len(lambdas)))
@@ -114,9 +116,12 @@ for ax, (model_name, arr) in zip(axes, models.items()):
 
     ax.set_xticks(np.arange(len(dim)))
     ax.set_xticklabels(dim)
+
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     ax.set_title(model_name, pad=6)
     ax.grid(False)
+
+    ax.tick_params(axis='y', which='both', left=False, labelleft=False)
 
 
 axes[0].set_yticks(np.arange(len(tasks)))
@@ -124,16 +129,24 @@ axes[0].set_yticklabels(tasks)
 
 
 sm = ScalarMappable(norm=norm, cmap=cmap)
+
+"""
 cbar = fig.colorbar(sm, ax=axes, orientation="vertical",
                     fraction=0.05, pad=0.04,
                     label=r"Macro F$_1$ score")
+"""
 
+# just for the dimension (poster)
+"""
+cbar = fig.colorbar(sm, ax=axes, orientation="vertical",
+                    fraction=0.05, pad=0.04)
+"""
 
-#fig.supxlabel(r'Projection Dimension', fontsize=8, y=-0.08)
-#fig.supxlabel(r'$\lambda$ (Orthogonality Loss)', fontsize=8, y=-0.08)
-fig.supxlabel(r'Style Dimension', fontsize=8, y=-0.08)
+fig.supxlabel(r'Projection Dimension', fontsize=11, y=-0.08)
+#fig.supxlabel(r'$\lambda$ (Orthogonality Loss)', fontsize=11, y=-0.08)
+#fig.supxlabel(r'Style Dimension', fontsize=9, y=-0.08)
 #fig.savefig("dim_ablation_heatmap.pdf", bbox_inches="tight")
-#fig.savefig("lambda_ablation_heatmap.pdf", bbox_inches="tight")
-fig.savefig("style_ablation_heatmap.pdf", bbox_inches="tight")
+#fig.savefig("poster_lambda_ablation_heatmap.pdf", bbox_inches="tight")
+fig.savefig("poster_proj_ablation_heatmap.pdf", bbox_inches="tight")
 plt.close(fig)
 print("Wrote ablation_heatmap.pdf")
