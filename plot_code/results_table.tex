@@ -1,0 +1,61 @@
+\documentclass[border=0pt]{standalone}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+
+\usepackage{booktabs,multirow,pifont}
+\usepackage[table]{xcolor}
+
+
+\definecolor{petrol}{RGB}{20,199,211}  
+
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\begin{document}
+\footnotesize
+\centering
+
+\begin{tikzpicture}
+\node[
+      draw=petrol!80,             
+      fill=petrol!12,             
+      rounded corners=6pt,
+      line width=0.6pt,
+      inner sep=8pt               
+] {%
+  \begin{tabular}{@{\hskip4pt}ccccccc@{\hskip4pt}}
+  \toprule
+  \multirow{2}{*}{\textbf{Model Variant}} &
+  \multirow{2}{*}{\textbf{Features}} &
+  \multirow{2}{*}{\textbf{OT Variant}} &
+  \multicolumn{4}{c}{\textbf{Macro F1}} \\
+  \cmidrule(lr){4-7}
+   & & & Easy & Medium & Hard & Mean \\
+  \midrule
+  Balanced OT (\texttt{blur}=0.05)                    & \cmark & balanced Sinkhorn   & 0.9050 & 0.8114 & 0.7644 & 0.8270 \\
+  Unbalanced OT ($\tau=0.8$)                          & \cmark & unbalanced Sinkhorn & \textbf{0.9134} & \textbf{0.8224} & 0.7853 & \textbf{0.8404} \\
+  \rowcolor{yellow!35}
+  CL + OT ($\lambda=0.1$)                             & \cmark & balanced Sinkhorn   & 0.9024 & 0.8215 & \textbf{0.7871} & 0.8370 \\
+  \midrule
+  Balanced OT (\texttt{blur}=0.03)                    & \xmark & balanced Sinkhorn   & 0.9118 & 0.8252 & 0.7698 & 0.8356 \\
+  Sliced OT ($n_{\pi}=64$, \texttt{style\_dim}=64)    & \xmark & sliced $W_{1}$      & 0.9122 & 0.8260 & 0.7725 & 0.8369 \\
+  \rowcolor{yellow!35}
+  Max-proj OT ($n_{\pi}=128$, \texttt{style\_dim}=64) & \xmark & max-sliced $W_{1}$  & 0.9133 & \textbf{0.8273} & \textbf{0.7731} & \textbf{0.8379} \\
+  Multi-scale OT ($n_{\pi}\!\in\!\{8,32,128\}$)       & \xmark & multi-scale sliced  & \textbf{0.9140} & 0.8262 & 0.7715 & 0.8372 \\
+  \midrule
+  Multi-OT (5 ep) + CL+OT + 2×UB + B (no feats)       & \xmark/\cmark & mixed & 0.9179 & 0.8286 & 0.7933 & 0.8467 \\
+  Multi-OT (7 ep) + 2×CL+OT + 2×UB + B (no feats)     & \xmark/\cmark & mixed & 0.9186 & 0.8299 & 0.7942 & 0.8476 \\
+  \rowcolor{yellow!35}
+  Multi-OT (5 ep) + 2×CL+OT + 2×UB + B (no feats)     & \xmark/\cmark & mixed & \textbf{0.9186} & \textbf{0.8301} & \textbf{0.7943} & \textbf{0.8477} \\
+  \bottomrule
+  \end{tabular}%
+};
+\end{tikzpicture}
+
+\end{document}
